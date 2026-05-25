@@ -23,7 +23,16 @@ class FakeExtractor:
 def test_extract_design_tokens_packages_zip_and_restores_db_env(monkeypatch: MonkeyPatch) -> None:
     """The bridge disables legacy extractor persistence during API calls."""
     monkeypatch.setenv("RESEMBLIO_DB_URL", "postgresql+psycopg://example")
-    monkeypatch.setattr(extractor_bridge, "CodexExtractor", lambda: FakeExtractor())
+    monkeypatch.setattr(
+        extractor_bridge,
+        "_load_extractor",
+        lambda: (
+            FakeExtractor,
+            1,
+            dict,
+            lambda ts: {"color": {}, "dimension": {}, "fontFamily": {}},
+        ),
+    )
     bundle = extractor_bridge.extract_design_tokens("https://example.com")
     assert os.environ["RESEMBLIO_DB_URL"] == "postgresql+psycopg://example"
     assert bundle.dtcg_json["schema_version"] == bundle.schema_version

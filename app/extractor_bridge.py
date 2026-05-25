@@ -4,25 +4,39 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from io import BytesIO
-from pathlib import Path
-from typing import Any, Iterator
+from typing import TYPE_CHECKING, Any, Iterator
 from zipfile import ZIP_DEFLATED, ZipFile
 
-EXTRACTOR_ROOT = Path(__file__).resolve().parents[2] / "extractor"
-if str(EXTRACTOR_ROOT) not in sys.path:
-    sys.path.insert(0, str(EXTRACTOR_ROOT))
-
-from codex_extractor import CodexExtractor  # noqa: E402
-from drl_adapter import SCHEMA_VERSION, TokenSet, to_dtcg_json  # noqa: E402
+if TYPE_CHECKING:
+    from extractor.drl_adapter import TokenSet  # type-check only; safe at runtime
 
 
 class ExtractionBridgeError(RuntimeError):
     """Extractor failure surfaced as an API boundary error."""
+
+
+def _load_extractor():
+    """Lazy-import the DRL-backed extractor.
+
+    Returns a tuple of (CodexExtractor, SCHEMA_VERSION, TokenSet, to_dtcg_json).
+    Raises ExtractionBridgeError if the upstream DRL _scripts package is not
+    reachable on this host (production deploy when DRL is not vendored, etc).
+    """
+    try:
+        from extractor.codex_extractor import CodexExtractor
+        from extractor.drl_adapter import SCHEMA_VERSION, TokenSet, to_dtcg_json
+        return CodexExtractor, SCHEMA_VERSION, TokenSet, to_dtcg_json
+    except ImportError as exc:
+        raise ExtractionBridgeError(
+            f"Extractor unavailable on this host: {exc}. "
+            "DRL _scripts/ is not reachable; deploy needs vendoring or a "
+            "DRL-on-path link. See projects/Resemblio/code/api/CODEX_REPORT_S1.md "
+            "and the v1.1 follow-up task list."
+        ) from exc
 
 
 @dataclass(frozen=True)
@@ -57,6 +71,7 @@ class BundleManifest:
 
 def extract_design_tokens(url: str) -> ExtractionBundle:
     """Run the existing extractor and package the result for the API."""
+    CodexExtractor, _SCHEMA_VERSION, _TokenSet, _to_dtcg_json = _load_extractor()
     with _without_extractor_db_url():
         token_set, error = CodexExtractor().extract(url)
     if error is not None or token_set is None:
@@ -64,8 +79,9 @@ def extract_design_tokens(url: str) -> ExtractionBundle:
     return bundle_from_token_set(url, token_set)
 
 
-def bundle_from_token_set(url: str, token_set: TokenSet, extracted_at: datetime | None = None) -> ExtractionBundle:
+def bundle_from_token_set(url: str, token_set: "TokenSet", extracted_at: datetime | None = None) -> ExtractionBundle:
     """Build DTCG JSON plus a ZIP bundle from a validated TokenSet."""
+    _CodexExtractor, SCHEMA_VERSION, _TokenSet, to_dtcg_json = _load_extractor()
     completed_at = extracted_at or datetime.now(timezone.utc)
     tokens_json = dict(token_set)
     dtcg_json = {"schema_version": SCHEMA_VERSION, **to_dtcg_json(token_set)}
