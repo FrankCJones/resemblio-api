@@ -1,30 +1,129 @@
-"""Bridge from the FastAPI service to the existing Codex extractor."""
+"""Bridge from the FastAPI service to the existing Codex extractor.
+
+DRL import precedence is fixed at module load:
+
+1. The API vendored corpus at `_vendored/drl/drl`.
+2. The local workspace DRL folder as a development fallback path.
+3. A clear runtime failure if the vendored corpus is missing or broken.
+
+The bridge validates vendored `_scripts` before loading `extractor.*`. That
+keeps the extractor adapter bound to the shipped copy even though the adapter
+also adds its historical workspace path.
+"""
 from __future__ import annotations
 
+import importlib
 import hashlib
 import json
 import os
+import sys
+from collections.abc import Callable
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from io import BytesIO
+from pathlib import Path
+from types import ModuleType
 from typing import TYPE_CHECKING, Any, Iterator
 from zipfile import ZIP_DEFLATED, ZipFile
 
 if TYPE_CHECKING:
     from extractor.drl_adapter import TokenSet  # type-check only; safe at runtime
 
+ToDtcgJson = Callable[[Any], dict[str, Any]]
+ExtractorLoad = tuple[type[Any], int, type[Any], ToDtcgJson]
+
+API_ROOT = Path(__file__).resolve().parents[1]
+VENDORED_DRL_ROOT = API_ROOT / "_vendored" / "drl" / "drl"
+WORKSPACE_DRL_ROOT = API_ROOT.parents[2] / "Design Reference Library"
+DRL_STARTUP_ERROR = "DRL vendored corpus missing or broken; see _vendored/drl/README.md"
+DRL_REQUIRED_MODULES = (
+    "_scripts.extraction",
+    "_scripts.fetch_html",
+    "_scripts.recon",
+    "_scripts.recon_ping",
+)
+
 
 class ExtractionBridgeError(RuntimeError):
     """Extractor failure surfaced as an API boundary error."""
 
 
-def _load_extractor():
+def _prepend_sys_path(path: Path) -> None:
+    """Move a path to the front of `sys.path` without duplicating entries."""
+    path_text = str(path)
+    if path_text in sys.path:
+        sys.path.remove(path_text)
+    sys.path.insert(0, path_text)
+
+
+def _install_drl_paths() -> None:
+    """Put the vendored DRL root before the optional workspace fallback."""
+    if WORKSPACE_DRL_ROOT.exists():
+        _prepend_sys_path(WORKSPACE_DRL_ROOT)
+    _prepend_sys_path(VENDORED_DRL_ROOT)
+
+
+def _clear_drl_module_cache() -> None:
+    """Drop any already-imported `_scripts` modules before vendored reload."""
+    for module_name in list(sys.modules):
+        if module_name == "_scripts" or module_name.startswith("_scripts."):
+            del sys.modules[module_name]
+
+
+def _module_file(module: ModuleType) -> Path:
+    """Return the resolved file path for a loaded module."""
+    file_name = getattr(module, "__file__", None)
+    if not file_name:
+        raise RuntimeError(DRL_STARTUP_ERROR)
+    return Path(file_name).resolve()
+
+
+def _module_is_vendored(module: ModuleType) -> bool:
+    """Return whether a loaded DRL module came from the vendored corpus."""
+    try:
+        _module_file(module).relative_to(VENDORED_DRL_ROOT.resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def _load_required_drl_modules() -> dict[str, ModuleType]:
+    """Import all DRL modules needed by the extractor adapter."""
+    return {module_name: importlib.import_module(module_name) for module_name in DRL_REQUIRED_MODULES}
+
+
+def _verify_vendored_drl() -> ModuleType:
+    """Validate that required DRL modules load from the API vendored tree."""
+    if not (VENDORED_DRL_ROOT / "_scripts" / "extraction.py").exists():
+        raise RuntimeError(DRL_STARTUP_ERROR)
+    _install_drl_paths()
+    modules = _load_required_drl_modules()
+    if not all(_module_is_vendored(module) for module in modules.values()):
+        _clear_drl_module_cache()
+        _install_drl_paths()
+        modules = _load_required_drl_modules()
+    if not all(_module_is_vendored(module) for module in modules.values()):
+        raise RuntimeError(DRL_STARTUP_ERROR)
+
+    extraction_module = modules["_scripts.extraction"]
+    if not isinstance(getattr(extraction_module, "SCHEMA_VERSION", None), int):
+        raise RuntimeError(DRL_STARTUP_ERROR)
+    if not callable(getattr(extraction_module, "validate_token_set", None)):
+        raise RuntimeError(DRL_STARTUP_ERROR)
+    return extraction_module
+
+
+VENDORED_DRL_EXTRACTION = _verify_vendored_drl()
+VENDORED_DRL_SCHEMA_VERSION = int(getattr(VENDORED_DRL_EXTRACTION, "SCHEMA_VERSION"))
+
+
+def _load_real_extractor() -> ExtractorLoad:
     """Lazy-import the DRL-backed extractor.
 
     Returns a tuple of (CodexExtractor, SCHEMA_VERSION, TokenSet, to_dtcg_json).
-    Raises ExtractionBridgeError if the upstream DRL _scripts package is not
-    reachable on this host (production deploy when DRL is not vendored, etc).
+    Raises ExtractionBridgeError if the vendored DRL corpus is not reachable
+    on this host.
     """
     try:
         from extractor.codex_extractor import CodexExtractor
@@ -33,10 +132,13 @@ def _load_extractor():
     except ImportError as exc:
         raise ExtractionBridgeError(
             f"Extractor unavailable on this host: {exc}. "
-            "DRL _scripts/ is not reachable; deploy needs vendoring or a "
-            "DRL-on-path link. See projects/Resemblio/code/api/CODEX_REPORT_S1.md "
-            "and the v1.1 follow-up task list."
+            "DRL vendored corpus missing or broken; see _vendored/drl/README.md."
         ) from exc
+
+
+def _load_extractor() -> ExtractorLoad:
+    """Load the production extractor, keeping a test patch seam local."""
+    return _load_real_extractor()
 
 
 @dataclass(frozen=True)
@@ -114,4 +216,3 @@ def _without_extractor_db_url() -> Iterator[None]:
     finally:
         if previous is not None:
             os.environ["RESEMBLIO_DB_URL"] = previous
-
