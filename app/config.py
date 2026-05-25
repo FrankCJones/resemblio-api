@@ -18,11 +18,16 @@ def load_project_env() -> None:
     ignored so tests and local shells can provide environment variables directly.
     Lines without an equals sign and comment lines are skipped.
     """
-    candidates = [
-        Path(__file__).resolve().parents[5] / "_credentials" / "credentials.env",
-        Path(__file__).resolve().parents[4] / "_credentials" / "credentials.env",
-        Path(__file__).resolve().parents[3] / "_credentials" / "credentials.env",
-    ]
+    # In the workspace dev layout, _credentials/ sits 3-5 parents up; in
+    # production deploy (/opt/resemblio-api/app/app/config.py) it doesn't exist
+    # and the env comes from systemd EnvironmentFile. Walk safely.
+    here = Path(__file__).resolve()
+    candidates = []
+    for depth in range(2, 8):
+        try:
+            candidates.append(here.parents[depth] / "_credentials" / "credentials.env")
+        except IndexError:
+            break
     for candidate in candidates:
         if not candidate.exists():
             continue
