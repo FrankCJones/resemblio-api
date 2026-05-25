@@ -14,6 +14,7 @@ os.environ.setdefault("RESEMBLIO_KEY_PEPPER", "test-pepper-value-with-thirty-two
 os.environ.setdefault("RESEMBLIO_DB_URL", "sqlite+pysqlite:///:memory:")
 
 from app import db  # noqa: E402
+from app import extractor_bridge as _extractor_bridge  # noqa: E402
 from app.config import reset_settings_cache  # noqa: E402
 from app.constants import DEFAULT_API_SCOPE, ONBOARDING_GRANT_CENTS  # noqa: E402
 from app.crypto import generate_api_key, hash_password  # noqa: E402
@@ -66,16 +67,45 @@ class FakeStorage:
         return f"https://r2.test/{object_key}?expires={expires_in}"
 
 
+class _FakeBridgeExtractor:
+    """Minimal extractor stand-in used when the real DRL extractor is unavailable."""
+
+    def extract(self, url: str) -> tuple[dict[str, str], None]:
+        """Return the shared synthetic TokenSet without touching the network."""
+        return TOKEN_SET, None
+
+
+def _fake_load_extractor() -> tuple[type, int, type, Any]:
+    """Lazy-import stand-in returning (ExtractorCls, SCHEMA_VERSION, TokenSet, to_dtcg_json)."""
+    return (
+        _FakeBridgeExtractor,
+        1,
+        dict,
+        lambda ts: {"color": {}, "dimension": {}, "fontFamily": {}},
+    )
+
+
 @pytest.fixture(autouse=True)
-def isolated_database() -> Generator[None, None, None]:
-    """Reset SQLite schema, rate limiter, and settings around every test."""
+def isolated_database(monkeypatch: pytest.MonkeyPatch) -> Generator[None, None, None]:
+    """Reset SQLite schema, rate limiter, and settings around every test.
+
+    Pins ``RESEMBLIO_KEY_PEPPER`` and ``RESEMBLIO_DB_URL`` via ``monkeypatch.setenv``
+    so the values are guaranteed restored after each test, even if an earlier test
+    or a credentials-file load mutated ``os.environ`` directly. Without this pin,
+    ``test_crypto.test_generate_api_key_hash_and_prefix`` becomes order-dependent
+    because it hard-codes the expected pepper.
+    """
+    monkeypatch.setenv("RESEMBLIO_KEY_PEPPER", "test-pepper-value-with-thirty-two-chars")
+    monkeypatch.setenv("RESEMBLIO_DB_URL", "sqlite+pysqlite:///:memory:")
     reset_settings_cache()
     db.reset_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(bind=db.engine)
     reset_rate_limiter()
+    monkeypatch.setattr(_extractor_bridge, "_load_extractor", _fake_load_extractor)
     yield
     Base.metadata.drop_all(bind=db.engine)
     app.dependency_overrides.clear()
+    reset_settings_cache()
 
 
 @pytest.fixture
