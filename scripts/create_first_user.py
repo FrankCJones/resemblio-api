@@ -21,7 +21,7 @@ from app.crypto import generate_api_key, hash_password  # noqa: E402
 from app.db import SessionLocal  # noqa: E402
 from app.models import ApiKey, ApiKeyEvent, User  # noqa: E402
 from app.payments import StripeClient  # noqa: E402
-from app.users import ensure_onboarding_grant, ensure_user_has_stripe_customer  # noqa: E402
+from app.users import ensure_onboarding_grant, provision_stripe_customer  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,12 @@ def main() -> int:
             user = User(email=email, password_hash=hash_password(password), status="active")
             session.add(user)
             session.flush()
-        ensure_user_has_stripe_customer(session, user, stripe_service)
+        stripe_ok = provision_stripe_customer(session, user, stripe_service)
+        if not stripe_ok:
+            logger.warning(
+                "stripe customer not provisioned for user=%s; topup will reject until /v1/account/provision-stripe is run",
+                user.email,
+            )
         ensure_onboarding_grant(session, user)
         plaintext, digest, prefix = generate_api_key("live")
         api_key = ApiKey(

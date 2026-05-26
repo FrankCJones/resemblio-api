@@ -19,6 +19,18 @@ from app.rate_limit import rate_limiter
 TOKEN_RE = re.compile(r"^rsmb_(live|test)_[A-Za-z0-9_-]{43}$")
 AUTH_FREE_PATHS = frozenset({"/healthz", "/v1/healthz", "/readyz", "/v1/readyz", "/v1/webhooks/stripe", "/docs", "/redoc", "/openapi.json"})
 
+# Constant-shape pepper used when the operator has not configured an old pepper
+# (i.e. no rotation is in flight). The lookup still hashes the presented token
+# twice and runs an IN-list of two values against the index, so the query shape
+# is identical regardless of whether pepper rotation is active. Without this,
+# the query degenerates to a one-element IN-list during steady state and a
+# two-element IN-list during the 48-hour rotation grace window; the timing
+# difference is a (small) side-channel that leaks "rotation in progress."
+# Closes audit finding M-API-2 (security-audits/2026-05-26-initial.md).
+# The string is constant, well outside the token-hash output space, and is not
+# secret; its only job is to occupy the second slot in the IN-list.
+_DUMMY_PEPPER = "RESEMBLIO_DUMMY_PEPPER_NEVER_MATCHES_REAL_KEY_HASHES"
+
 # Trusted reverse proxies. The API service sits behind Caddy on localhost; only
 # requests whose immediate peer is in this allowlist are permitted to declare a
 # different client IP via X-Forwarded-For. Spoofed forwarded headers from any
@@ -68,8 +80,27 @@ def _append_event(api_key: ApiKey, event_type: str, ip: str | None, metadata: di
     return ApiKeyEvent(api_key_id=api_key.id, event_type=event_type, ip=ip, metadata_json=metadata)
 
 
+def _candidate_hashes(token: str, active_pepper: str, old_pepper: str | None) -> list[str]:
+    """Return exactly two key-hash candidates regardless of rotation state.
+
+    Always emits two hashes: the active-pepper hash plus either the old-pepper
+    hash (when rotation is in flight) or a dummy-pepper hash (steady state).
+    The dummy hash never matches a real stored key. Keeping the candidate count
+    constant makes the downstream SQL ``IN (?, ?)`` lookup constant-shape, which
+    closes the timing side-channel called out in audit finding M-API-2.
+    """
+    second_pepper = old_pepper if old_pepper else _DUMMY_PEPPER
+    return [hash_api_key(token, active_pepper), hash_api_key(token, second_pepper)]
+
+
 def _lookup_key(token: str, peppers: Iterable[str]) -> ApiKey | None:
-    """Find an API key by hashing against active and old peppers."""
+    """Find an API key by hashing against active and old peppers.
+
+    Retained for callers that pass an explicit iterable of peppers. Production
+    auth uses ``_candidate_hashes`` via ``AuthMiddleware.dispatch`` to keep the
+    SQL query shape constant; this helper preserves the older calling pattern
+    for direct script use and tests.
+    """
     hashes = [hash_api_key(token, pepper) for pepper in peppers if pepper]
     if not hashes:
         return None
@@ -93,9 +124,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return _error(401, "invalid_credentials")
 
         settings = get_settings()
-        hashes = [hash_api_key(token, settings.key_pepper)]
-        if settings.key_pepper_old:
-            hashes.append(hash_api_key(token, settings.key_pepper_old))
+        hashes = _candidate_hashes(token, settings.key_pepper, settings.key_pepper_old)
 
         ip = _client_ip(request)
         with SessionLocal() as session:

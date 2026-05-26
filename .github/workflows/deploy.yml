@@ -74,10 +74,34 @@ jobs:
             CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.resemblio.com/v1/healthz)
             if [ "$CODE" = "200" ]; then
               echo "healthz OK (HTTP $CODE)"
-              exit 0
+              break
             fi
             echo "healthz attempt $i: HTTP $CODE; retrying"
             sleep 5
+            if [ "$i" = "8" ]; then
+              echo "healthz failed after retries"
+              exit 1
+            fi
           done
-          echo "healthz failed after retries"
-          exit 1
+
+      # Closes audit finding M8-API (companion to the web-side security-header
+      # smoke check at `projects/Resemblio/code/web/.github/workflows/deploy.yml`).
+      # Asserts (1) Caddy-fronted HSTS is present (so a future Caddyfile edit
+      # that breaks TLS hardening fails the deploy) and (2) the Server response
+      # header has been stripped by the FastAPI middleware (regression guard
+      # for the fix at `app/main.py` that closed the v1 hardening backlog item).
+      # Headers checked here are intentionally conservative - the API service
+      # does not own the full web-frontend header set (CSP, X-Frame-Options,
+      # etc. are scoped to the browser surface). Widen this check if the API
+      # Caddy site config later sets additional response headers worth gating.
+      - name: API security header smoke check
+        run: |
+          set -e
+          HEADERS=$(curl -sI https://api.resemblio.com/v1/healthz)
+          echo "$HEADERS" | grep -i "^strict-transport-security:" || { echo "MISSING: HSTS on api.resemblio.com"; exit 1; }
+          if echo "$HEADERS" | grep -iq "^server:"; then
+            echo "REGRESSION: Server header is present on api.resemblio.com; middleware strip is not effective"
+            echo "$HEADERS" | grep -i "^server:"
+            exit 1
+          fi
+          echo "API security headers OK (HSTS present, Server header stripped)."

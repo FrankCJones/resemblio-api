@@ -7,7 +7,8 @@ from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.auth import _client_ip, utcnow
+from app.auth import _DUMMY_PEPPER, _candidate_hashes, _client_ip, utcnow
+from app.crypto import hash_api_key
 from app.models import ApiKeyEvent
 from tests.conftest import auth_headers, seed_user
 
@@ -100,3 +101,37 @@ def test_client_ip_returns_none_when_no_client() -> None:
     """A missing request.client yields None rather than raising."""
     request = _fake_request(peer_host=None)
     assert _client_ip(request) is None
+
+
+def test_candidate_hashes_constant_count_without_old_pepper() -> None:
+    """Steady-state lookup still emits two hashes via the dummy pepper (M-API-2)."""
+    hashes = _candidate_hashes("rsmb_test_token", "active-pepper", None)
+    assert len(hashes) == 2
+    assert hashes[0] == hash_api_key("rsmb_test_token", "active-pepper")
+    assert hashes[1] == hash_api_key("rsmb_test_token", _DUMMY_PEPPER)
+
+
+def test_candidate_hashes_uses_old_pepper_when_present() -> None:
+    """Rotation-in-flight lookup pairs active and old peppers (M-API-2)."""
+    hashes = _candidate_hashes("rsmb_test_token", "active-pepper", "old-pepper")
+    assert len(hashes) == 2
+    assert hashes[0] == hash_api_key("rsmb_test_token", "active-pepper")
+    assert hashes[1] == hash_api_key("rsmb_test_token", "old-pepper")
+
+
+def test_candidate_hashes_treats_empty_string_old_pepper_as_absent() -> None:
+    """An empty-string old pepper is treated as not configured and dummy fills in."""
+    hashes = _candidate_hashes("rsmb_test_token", "active-pepper", "")
+    assert len(hashes) == 2
+    assert hashes[1] == hash_api_key("rsmb_test_token", _DUMMY_PEPPER)
+
+
+def test_dummy_pepper_does_not_collide_with_realistic_peppers() -> None:
+    """The dummy pepper sentinel must not be a realistic pepper a deployment would set.
+
+    Guards against a future copy-paste mistake where the dummy string becomes the
+    active or old pepper in some environment. A short obviously-constant string
+    is fine; the explicit assertion documents the intent.
+    """
+    assert "DUMMY" in _DUMMY_PEPPER
+    assert "NEVER_MATCHES" in _DUMMY_PEPPER
