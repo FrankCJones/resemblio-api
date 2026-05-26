@@ -39,3 +39,20 @@ def test_rotate_old_and_new_work_then_revoke(client: TestClient, session: Sessio
     event_types = {event.event_type for event in session.query(ApiKeyEvent).all()}
     assert {"rotated_out", "rotated_in", "revoked"}.issubset(event_types)
 
+
+def test_update_spend_cap_records_event(client: TestClient, session: Session) -> None:
+    """Spend-cap updates mutate the key and append an audit event."""
+    _user, api_key, plaintext = seed_user(session)
+    response = client.patch(
+        f"/v1/api_keys/{api_key.id}/spend_cap",
+        headers=auth_headers(plaintext),
+        json={"cap_cents": 2000},
+    )
+    assert response.status_code == 200
+    assert response.json()["spend_cap_cents"] == 2000
+    session.expire_all()
+    key = session.get(ApiKey, api_key.id)
+    assert key is not None
+    assert key.spend_cap_cents == 2000
+    event = session.query(ApiKeyEvent).filter(ApiKeyEvent.event_type == "spend_cap_changed").one()
+    assert event.metadata_json == {"old_cap_cents": None, "new_cap_cents": 2000}

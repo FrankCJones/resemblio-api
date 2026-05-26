@@ -19,6 +19,14 @@ from app.rate_limit import rate_limiter
 TOKEN_RE = re.compile(r"^rsmb_(live|test)_[A-Za-z0-9_-]{43}$")
 AUTH_FREE_PATHS = frozenset({"/v1/healthz", "/v1/webhooks/stripe", "/docs", "/redoc", "/openapi.json"})
 
+# Trusted reverse proxies. The API service sits behind Caddy on localhost; only
+# requests whose immediate peer is in this allowlist are permitted to declare a
+# different client IP via X-Forwarded-For. Spoofed forwarded headers from any
+# other source are ignored so audit events in api_key_events cannot be poisoned
+# with attacker-chosen IPs. Keep this list narrow; widen only when an additional
+# proxy is added in front of the service and documented in Resemblio_INFRA.md.
+TRUSTED_PROXY_IPS = frozenset({"127.0.0.1", "::1"})
+
 
 def utcnow() -> datetime:
     """Return a timezone-aware UTC timestamp."""
@@ -26,11 +34,25 @@ def utcnow() -> datetime:
 
 
 def _client_ip(request: Request) -> str | None:
-    """Return the best-effort client IP for audit events."""
+    """Return the best-effort client IP for audit events.
+
+    Honors ``X-Forwarded-For`` only when the immediate peer is a trusted proxy
+    (see ``TRUSTED_PROXY_IPS``). Untrusted peers cannot forge the recorded IP.
+    When trusted, the right-most untrusted entry of the forwarded chain is
+    chosen: the chain is ``client, proxy1, proxy2, ...`` so we walk from the
+    left and skip any leading entries that are themselves trusted-proxy IPs,
+    returning the first non-trusted hop. Falls back to the direct peer when no
+    forwarded header is present or the peer is untrusted.
+    """
+    peer_host = request.client.host if request.client else None
     forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",", 1)[0].strip()
-    return request.client.host if request.client else None
+    if forwarded and peer_host in TRUSTED_PROXY_IPS:
+        hops = [hop.strip() for hop in forwarded.split(",") if hop.strip()]
+        for hop in hops:
+            if hop not in TRUSTED_PROXY_IPS:
+                return hop
+        # Entire chain was trusted proxies; fall through to peer host.
+    return peer_host
 
 
 def _error(status_code: int, code: str, detail: str | None = None) -> JSONResponse:

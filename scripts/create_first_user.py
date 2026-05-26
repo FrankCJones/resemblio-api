@@ -16,10 +16,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.config import get_settings, validate_startup_settings  # noqa: E402
-from app.constants import DEFAULT_API_SCOPE, ONBOARDING_GRANT_CENTS  # noqa: E402
+from app.constants import DEFAULT_API_SCOPE  # noqa: E402
 from app.crypto import generate_api_key, hash_password  # noqa: E402
 from app.db import SessionLocal  # noqa: E402
-from app.models import ApiKey, ApiKeyEvent, CreditLedger, User  # noqa: E402
+from app.models import ApiKey, ApiKeyEvent, User  # noqa: E402
+from app.payments import StripeClient  # noqa: E402
+from app.users import ensure_onboarding_grant, ensure_user_has_stripe_customer  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ def main() -> int:
         raise SystemExit("email is required")
     settings = get_settings()
     validate_startup_settings(settings)
+    stripe_service = StripeClient(settings)
     password = args.password or secrets.token_urlsafe(18)
     with SessionLocal() as session:
         user = session.query(User).filter(User.email == email).first()
@@ -50,15 +53,8 @@ def main() -> int:
             user = User(email=email, password_hash=hash_password(password), status="active")
             session.add(user)
             session.flush()
-            session.add(
-                CreditLedger(
-                    user_id=user.id,
-                    entry_type="onboarding_grant",
-                    amount_cents=ONBOARDING_GRANT_CENTS,
-                    balance_after_cents=ONBOARDING_GRANT_CENTS,
-                    note="S1 dev seed",
-                )
-            )
+        ensure_user_has_stripe_customer(session, user, stripe_service)
+        ensure_onboarding_grant(session, user)
         plaintext, digest, prefix = generate_api_key("live")
         api_key = ApiKey(
             user_id=user.id,

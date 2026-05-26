@@ -8,7 +8,39 @@ from fastapi import FastAPI, Request
 
 from app.auth import AuthMiddleware
 from app.config import get_settings, validate_startup_settings
-from app.routes import account, api_keys, extractions, health
+from app.routes import account, api_keys, credit, extractions, health, webhooks
+
+
+def validate_worker_concurrency() -> None:
+    """Fail startup if the process is configured for multi-worker uvicorn.
+
+    The in-memory rate limiter in ``app.rate_limit`` stores token buckets in a
+    process-local dict, so each uvicorn worker keeps an independent ceiling.
+    Running with N workers silently multiplies the documented per-key rate by
+    N. Until the limiter is migrated to a shared Redis backend, the service
+    MUST run single-worker. This guard reads the two common env vars that
+    spawn extra workers (``WEB_CONCURRENCY`` honored by uvicorn/gunicorn, and
+    ``UVICORN_WORKERS`` used by some deploy scripts) and refuses to start if
+    either is set above 1. Pin ``--workers 1`` in the systemd unit; see
+    ``scripts/resemblio-api.service.example`` for the canonical unit body.
+    """
+    for env_var in ("WEB_CONCURRENCY", "UVICORN_WORKERS"):
+        raw = os.environ.get(env_var)
+        if raw is None or raw.strip() == "":
+            continue
+        try:
+            workers = int(raw)
+        except ValueError as exc:
+            raise RuntimeError(
+                f"{env_var} must be an integer; got {raw!r}"
+            ) from exc
+        if workers > 1:
+            raise RuntimeError(
+                f"{env_var}={workers} is unsafe: the in-memory rate limiter is "
+                "process-local and multi-worker deploys silently multiply the "
+                "effective ceiling. Pin to 1 in the systemd unit or migrate "
+                "rate_limit.py to a Redis-backed store first."
+            )
 
 
 def create_app() -> FastAPI:
@@ -21,7 +53,9 @@ def create_app() -> FastAPI:
     """
     settings = get_settings()
     validate_startup_settings(settings)
+    validate_worker_concurrency()
     logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
+    logging.getLogger(__name__).info("Stripe configured in TEST mode for Resemblio")
     docs_enabled = os.environ.get("RESEMBLIO_DOCS_ENABLED", "false").lower() == "true"
     app = FastAPI(
         title="Resemblio API",
@@ -43,9 +77,10 @@ def create_app() -> FastAPI:
     app.include_router(health.router, prefix="/v1", tags=["health"])
     app.include_router(account.router, prefix="/v1", tags=["account"])
     app.include_router(api_keys.router, prefix="/v1", tags=["api_keys"])
+    app.include_router(credit.router, prefix="/v1", tags=["credit"])
     app.include_router(extractions.router, prefix="/v1", tags=["extractions"])
+    app.include_router(webhooks.router, prefix="/v1", tags=["webhooks"])
     return app
 
 
 app = create_app()
-

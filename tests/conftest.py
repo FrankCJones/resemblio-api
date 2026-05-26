@@ -12,6 +12,8 @@ from sqlalchemy.orm import Session
 
 os.environ.setdefault("RESEMBLIO_KEY_PEPPER", "test-pepper-value-with-thirty-two-chars")
 os.environ.setdefault("RESEMBLIO_DB_URL", "sqlite+pysqlite:///:memory:")
+os.environ.setdefault("STRIPE_RESTRICTED_KEY_RESEMBLIO_TEST", "rk_test_resemblio_dummy")
+os.environ.setdefault("STRIPE_WEBHOOK_SECRET_RESEMBLIO_TEST", "whsec_resemblio_dummy")
 
 from app import db  # noqa: E402
 from app import extractor_bridge as _extractor_bridge  # noqa: E402
@@ -141,7 +143,7 @@ def client(fake_storage: FakeStorage, fake_extractor: Callable[[str], Extraction
 
 def seed_user(session: Session, email: str = "frank@optsus.com", balance: int = ONBOARDING_GRANT_CENTS) -> tuple[User, ApiKey, str]:
     """Create a user, starter key, and optional onboarding grant."""
-    user = User(email=email.lower(), password_hash=hash_password("password"), status="active")
+    user = User(email=email.lower(), password_hash=hash_password("password"), stripe_customer_id="cus_test_seed", status="active")
     session.add(user)
     session.flush()
     plaintext, digest, prefix = generate_api_key("live")
@@ -165,4 +167,3 @@ def seed_user(session: Session, email: str = "frank@optsus.com", balance: int = 
 def auth_headers(plaintext: str) -> dict[str, str]:
     """Build bearer auth headers for tests."""
     return {"Authorization": f"Bearer {plaintext}"}
-

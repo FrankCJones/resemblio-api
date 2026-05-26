@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, Integer, String, Text, func
+from sqlalchemy import BigInteger, CheckConstraint, DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
@@ -56,6 +56,7 @@ class ApiKey(Base):
     revoked_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_from_ip: Mapped[str | None] = mapped_column(InetType, nullable=True)
     grace_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    spend_cap_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     user: Mapped[User] = relationship(back_populates="api_keys")
     events: Mapped[list[ApiKeyEvent]] = relationship(back_populates="api_key")
@@ -136,5 +137,73 @@ class CreditLedger(Base):
     extraction: Mapped[Extraction | None] = relationship(back_populates="ledger_entries")
     api_key: Mapped[ApiKey | None] = relationship(back_populates="ledger_entries")
 
-    __table_args__ = (Index("ix_credit_ledger_user_id_created_at", "user_id", "created_at"),)
+    # The non-negative CHECK on balance_after_cents is the database-level invariant
+    # that prevents concurrent extraction charges from racing past zero. Application
+    # code computes balance_before -> required, but two concurrent requests can both
+    # read balance_before = $5 and both insert a $5 charge unless the DB rejects the
+    # second insert. With the CHECK, the loser's insert raises IntegrityError and
+    # the route retries (recomputing balance) or returns 402 insufficient_credit.
+    __table_args__ = (
+        Index("ix_credit_ledger_user_id_created_at", "user_id", "created_at"),
+        CheckConstraint("balance_after_cents >= 0", name="ck_credit_ledger_balance_non_negative"),
+    )
 
+
+class TopupSession(Base):
+    """Server-recorded Stripe Checkout session for credit top-up.
+
+    The webhook handler refuses to credit any incoming checkout.session.completed
+    event whose session id is not present in this table, which closes the
+    ownership-spoof gap (an attacker cannot forge a webhook that credits another
+    user even if they discover that user's user_id, because the session id will
+    not exist server-side, or will be bound to a different user_id).
+
+    Also tracks status so the webhook can refuse to double-credit a single
+    session if Stripe redelivers after the row has already been marked completed.
+    """
+
+    __tablename__ = "topup_sessions"
+
+    # Stripe Checkout session id (e.g. "cs_test_...") is the natural PK; uniqueness
+    # is enforced by Stripe and gives us idempotency on the session-id dimension
+    # in addition to the event-id dimension covered by stripe_events_seen.
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    user_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("users.id"), nullable=False)
+    amount_cents: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="pending", server_default="pending")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (Index("ix_topup_sessions_user_id", "user_id"),)
+
+
+class StripeEventSeen(Base):
+    """Processed Stripe event id for webhook idempotency.
+
+    Stateful: a row is inserted in ``processing`` state as the first step of
+    handling. The status flips to ``processed`` only after the handler's side
+    effects (credit ledger row, email send) complete. If the handler raises or
+    crashes mid-flight, the row is rolled back so Stripe's redelivery can claim
+    the event id fresh and finish the credit. Without this, marking the event
+    seen up front would let a partial failure permanently strand the customer:
+    redelivery would see the existing row and short-circuit to a duplicate 200
+    while the credit had never landed.
+    """
+
+    __tablename__ = "stripe_events_seen"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    event_id: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="processed", server_default="processed")
+    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    # ``claimed_at`` records when a row last entered the ``processing`` state.
+    # The webhook handler uses it as a lease: a ``processing`` row whose
+    # ``claimed_at`` is older than ``_STALE_PROCESSING_LEASE_SECONDS`` (see
+    # ``app/routes/webhooks.py``) is treated as abandoned and may be re-claimed
+    # by a fresh delivery. Without this, a handler crash that prevents
+    # ``_mark_event_failed`` from committing would strand the row at
+    # ``processing`` forever, and every subsequent redelivery would short-
+    # circuit to the in-flight branch with no credit ever landing.
+    claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, server_default=func.now())
+
+    __table_args__ = (Index("ix_stripe_events_seen_event_id", "event_id", unique=True),)

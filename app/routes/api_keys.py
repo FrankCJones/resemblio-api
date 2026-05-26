@@ -20,6 +20,8 @@ from app.schemas import (
     ApiKeyListItem,
     ApiKeyListResponse,
     ApiKeyRevokeRequest,
+    ApiKeySpendCapRequest,
+    ApiKeySpendCapResponse,
     ApiKeyStatusResponse,
 )
 
@@ -86,6 +88,7 @@ def rotate_api_key(key_id: int, request: Request, session: Session = Depends(get
         label=old_key.label,
         scopes=list(old_key.scopes),
         created_from_ip=_client_ip(request),
+        spend_cap_cents=old_key.spend_cap_cents,
     )
     session.add(new_key)
     session.flush()
@@ -116,3 +119,29 @@ def revoke_api_key(
     session.refresh(api_key)
     return ApiKeyStatusResponse(id=api_key.id, status=api_key.status, key_prefix=api_key.key_prefix, schema_version=SCHEMA_V1)
 
+
+@router.patch("/api_keys/{key_id}/spend_cap", response_model=ApiKeySpendCapResponse)
+def update_spend_cap(
+    key_id: int,
+    payload: ApiKeySpendCapRequest,
+    request: Request,
+    session: Session = Depends(get_db),
+) -> ApiKeySpendCapResponse | JSONResponse:
+    """Set or clear the per-key trailing 30-day spend cap."""
+    user: User = current_user(request)
+    api_key = _owned_key(session, user.id, key_id)
+    if api_key is None:
+        return JSONResponse(status_code=404, content={"error": "not_found"})
+    old_cap = api_key.spend_cap_cents
+    api_key.spend_cap_cents = payload.cap_cents
+    session.add(
+        ApiKeyEvent(
+            api_key_id=api_key.id,
+            event_type="spend_cap_changed",
+            ip=_client_ip(request),
+            metadata_json={"old_cap_cents": old_cap, "new_cap_cents": payload.cap_cents},
+        )
+    )
+    session.commit()
+    session.refresh(api_key)
+    return ApiKeySpendCapResponse(id=api_key.id, spend_cap_cents=api_key.spend_cap_cents, schema_version=SCHEMA_V1)

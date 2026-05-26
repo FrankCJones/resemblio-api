@@ -1,7 +1,20 @@
 """Shared constants for the Resemblio API."""
 
-DEFAULT_EXTRACTION_CENTS = 500
+EXTRACTION_PUBLIC_CENTS = 500
+EXTRACTION_PRIVATE_CENTS = 1000
+DEFAULT_EXTRACTION_CENTS = EXTRACTION_PUBLIC_CENTS
 ONBOARDING_GRANT_CENTS = 1000
+TOPUP_MIN_CENTS = 2000
+# Hard ceiling on a single Checkout top-up. Prevents typo-or-exploit single charges
+# from creating runaway authorized amounts on the user's payment method. Re-tunable.
+TOPUP_MAX_CENTS = 1_000_000
+# Max IntegrityError retries on credit charge insert. The CHECK constraint on
+# credit_ledger.balance_after_cents guards against concurrent double-spend; under
+# contention a loser retries, recomputes balance, and either commits or 402s.
+CHARGE_MAX_RETRIES = 3
+SPEND_CAP_WINDOW_DAYS = 30
+STRIPE_RETRY_DELAYS_SECONDS = (1.0, 4.0, 16.0)
+RESEND_RETRY_DELAYS_SECONDS = (1.0, 4.0, 16.0)
 ROTATION_GRACE_HOURS = 48
 RATE_LIMIT_PER_MIN = 60
 RATE_LIMIT_PER_DAY = 5000
@@ -16,4 +29,3 @@ DOWNLOAD_URL_TTL_SECONDS = 900
 R2_BUCKET_NAME = "resemblio-extractions"
 DEFAULT_API_SCOPE = "extract"
 SCHEMA_V1 = 1
-

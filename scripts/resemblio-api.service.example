@@ -1,0 +1,61 @@
+# Canonical systemd unit for resemblio-api.service
+#
+# Source of truth for the production unit body on resemblio-prod-01. Keep this
+# file in sync with the deployed unit at /etc/systemd/system/resemblio-api.service.
+# Audit reference: projects/OptSus Team/security-audits/2026-05-26-initial.md H4.
+#
+# Why --workers 1 is mandatory:
+#   The FastAPI app's rate limiter (app/rate_limit.py) holds token buckets in a
+#   process-local dict. Each uvicorn worker keeps its own ceiling, so any value
+#   greater than 1 silently multiplies the documented per-key rate by worker
+#   count. app/main.py:validate_worker_concurrency() refuses to start if
+#   WEB_CONCURRENCY or UVICORN_WORKERS is set above 1, as a second line of
+#   defense; the systemd unit body below is the first.
+#
+# If real load arrives, migrate rate_limit.py to a Redis-backed store BEFORE
+# lifting the worker pin. See the audit dispatch table (H4 path 2).
+#
+# Apply changes via:
+#   sudo cp resemblio-api.service.example /etc/systemd/system/resemblio-api.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl restart resemblio-api
+
+[Unit]
+Description=Resemblio API (FastAPI under uvicorn)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=claude-cowork
+Group=claude-cowork
+WorkingDirectory=/opt/resemblio-api/app
+EnvironmentFile=/etc/resemblio-api.env
+# --workers 1 is REQUIRED. See header note. Do not change without first
+# migrating app/rate_limit.py off the in-memory store.
+ExecStart=/opt/resemblio-api/venv/bin/uvicorn app.main:app \
+    --host 127.0.0.1 \
+    --port 8000 \
+    --workers 1 \
+    --proxy-headers \
+    --forwarded-allow-ips 127.0.0.1
+Restart=on-failure
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/resemblio-api
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

@@ -6,14 +6,17 @@ FastAPI service for authenticated extraction, API key lifecycle, credit ledger p
 
 - `app/main.py` - FastAPI app factory, router wiring, auth middleware.
 - `app/config.py` - environment loader. Reads workspace `_credentials/credentials.env` without printing secrets.
-- `app/db.py` and `app/models.py` - SQLAlchemy engine, sessions, and the five S1 tables.
+- `app/db.py` and `app/models.py` - SQLAlchemy engine, sessions, S1 tables, spend caps, and Stripe event idempotency.
 - `app/auth.py` - bearer API key middleware with hash lookup, status checks, 48-hour rotation grace, usage events, and rate limiting.
 - `app/rate_limit.py` - in-memory token buckets for S1. Redis can replace this behind the same check method later.
 - `app/crypto.py` - API key generation, SHA-256 hashing with pepper, display redaction, and Argon2id password hashing.
+- `app/payments.py` - Stripe TEST-mode customer, Checkout, retry, and webhook signature helpers.
+- `app/email.py` - Resend transactional email sender.
+- `app/users.py` - shared user creation helpers for Stripe customer creation and onboarding credit.
 - `app/storage.py` - Cloudflare R2 S3-compatible storage for extraction ZIP bundles.
 - `app/extractor_bridge.py` - thin wrapper around `../extractor/codex_extractor.py`, with API-owned ZIP packaging.
 - `app/routes/` - `/v1` endpoints for health, account, API keys, and extractions.
-- `migrations/versions/0001_initial_schema.py` - Alembic schema migration for users, API keys, key events, extractions, and credit ledger.
+- `migrations/versions/` - Alembic migrations for users, API keys, key events, extractions, credit ledger, spend caps, and Stripe event idempotency.
 - `tests/` - offline pytest suite using SQLite, fake R2, fake extractor, and moto.
 - `scripts/create_first_user.py` - local seed helper for a dev account and starter key.
 
@@ -21,16 +24,18 @@ FastAPI service for authenticated extraction, API key lifecycle, credit ledger p
 
 1. A client authenticates with `Authorization: Bearer rsmb_live_<token>`.
 2. Middleware validates the key format, hashes against `RESEMBLIO_KEY_PEPPER`, checks key status and rotation grace, applies the in-memory rate limit, and attaches the current user and key to `request.state`.
-3. `POST /v1/extractions` checks credit balance, writes a pending extraction, appends an `extraction_charge`, calls the existing Codex extractor, converts the flat `TokenSet` to DTCG JSON, writes `tokens.json` plus `manifest.json` into a ZIP, uploads that ZIP to R2, and marks the extraction `ok`.
+3. `POST /v1/extractions` prices the request at $5 public or $10 private, checks balance and per-key spend cap, writes a pending extraction, appends an `extraction_charge`, calls the existing Codex extractor, converts the flat `TokenSet` to DTCG JSON, writes `tokens.json` plus `manifest.json` into a ZIP, uploads that ZIP to R2, and marks the extraction `ok`.
 4. `GET /v1/extractions/{id}` returns the persisted JSON and a fresh 15-minute signed R2 URL without charging credits.
 5. Failed extraction or storage work marks the extraction failed and appends a refund ledger row.
+6. `POST /v1/credit/topup` creates a Stripe TEST Checkout Session for deposits of $20 or more.
+7. `POST /v1/webhooks/stripe` verifies the Stripe signature, idempotently records event ids, credits completed Checkout top-ups, and sends a Resend receipt email.
 
 ## API Contracts
 
 Auth-free:
 
 - `GET /v1/healthz` returns `{"status":"ok"}`.
-- `POST /v1/webhooks/stripe` returns `202` and only logs body size in S1.
+- `POST /v1/webhooks/stripe` verifies `Stripe-Signature`, handles credit top-ups, and ignores non-top-up events.
 
 Authenticated:
 
@@ -40,9 +45,11 @@ Authenticated:
 - `POST /v1/api_keys`
 - `POST /v1/api_keys/{id}/rotate`
 - `POST /v1/api_keys/{id}/revoke`
+- `PATCH /v1/api_keys/{id}/spend_cap`
 - `GET /v1/api_keys`
 - `GET /v1/account`
 - `GET /v1/credit/balance`
+- `POST /v1/credit/topup`
 
 Extraction JSON and ZIP manifests carry `schema_version`.
 
@@ -59,7 +66,14 @@ Set required env:
 ```powershell
 $env:RESEMBLIO_DB_URL = "postgresql+psycopg://postgres:dev@localhost:5432/resemblio"
 $env:RESEMBLIO_KEY_PEPPER = "<32-plus-character-local-secret>"
+$env:STRIPE_RESTRICTED_KEY_RESEMBLIO_TEST = "rk_test_..."
+$env:STRIPE_WEBHOOK_SECRET_RESEMBLIO_TEST = "whsec_..."
+$env:RESEMBLIO_TOPUP_SUCCESS_URL = "https://resemblio.com/dashboard/credit?topup=success"
+$env:RESEMBLIO_TOPUP_CANCEL_URL = "https://resemblio.com/dashboard/credit?topup=cancel"
+$env:RESEND_API_KEY = "re_..."
 ```
+
+Only Stripe TEST env names are read. Stripe LIVE env names are ignored by the local credentials loader and live-mode key material in a TEST slot fails startup.
 
 Run migrations:
 
