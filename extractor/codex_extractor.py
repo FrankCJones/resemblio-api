@@ -15,7 +15,7 @@ import urllib.parse
 import urllib.request
 from typing import Any, Literal, Mapping, TypedDict, cast
 
-from drl_adapter import (
+from extractor.drl_adapter import (
     REQUIRED_TOKEN_KEYS,
     SCHEMA_VERSION,
     ResemblioExtractor,
