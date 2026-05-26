@@ -29,3 +29,9 @@ DOWNLOAD_URL_TTL_SECONDS = 900
 R2_BUCKET_NAME = "resemblio-extractions"
 DEFAULT_API_SCOPE = "extract"
 SCHEMA_V1 = 1
+# Hard upper bound on the request body for `/v1/webhooks/stripe`. Real Stripe
+# webhook payloads are a few KB; 256 KiB is roughly two orders of magnitude
+# above the largest observed legitimate event and small enough to bound the
+# work a single rejected request can cost the API. Audit finding M-API-1
+# (`projects/OptSus Team/security-audits/2026-05-26-initial.md`).
+STRIPE_WEBHOOK_MAX_BODY_BYTES = 256 * 1024

@@ -29,6 +29,19 @@ jobs:
           /tmp/ci-venv/bin/pip install -q -e ".[test]"
           /tmp/ci-venv/bin/pytest -q
 
+      # Security gate: fail the deploy if any installed dependency has a known
+      # CVE at high severity or above. Companion to the resemblio web npm-audit
+      # gate (`projects/Resemblio/code/web/.github/workflows/deploy.yml`).
+      # Closes audit finding M-DEV-1 (`projects/OptSus Team/security-audits/
+      # 2026-05-26-initial.md`). pip-audit reads the installed environment, so
+      # this step runs AFTER the install above and audits exactly what would
+      # ship. `--strict` causes a non-zero exit if pip-audit cannot resolve a
+      # dependency, preventing silent passes when the package index is flaky.
+      - name: pip-audit (fail on known vulnerabilities)
+        run: |
+          /tmp/ci-venv/bin/pip install -q pip-audit
+          /tmp/ci-venv/bin/pip-audit --strict
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh

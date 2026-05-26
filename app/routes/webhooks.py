@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
 from app.config import get_settings
-from app.constants import SCHEMA_V1
+from app.constants import SCHEMA_V1, STRIPE_WEBHOOK_MAX_BODY_BYTES
 from app.db import get_db
 from app.email import EmailSenderFactory, get_email_sender_factory
 from app.models import CreditLedger, StripeEventSeen, TopupSession, User
@@ -65,7 +65,51 @@ async def stripe_webhook(
     email_sender_factory: EmailSenderFactory = Depends(get_email_sender_factory),
 ) -> JSONResponse:
     """Verify and process Stripe TEST webhook events."""
-    payload = await request.body()
+    # Body-size cap (audit M-API-1). The endpoint is intentionally auth-free
+    # per Stripe's contract, so an unauthenticated caller can flood arbitrary
+    # bodies at it. Stripe's real events are a few KB; reject anything past
+    # ``STRIPE_WEBHOOK_MAX_BODY_BYTES`` before doing any signature work or
+    # JSON parsing. Two layers of defense:
+    #   1. If Content-Length is present and oversized, reject immediately
+    #      without ever reading the body (cheap fast-path; common case for
+    #      any tool that sets the header honestly).
+    #   2. Stream the body and abort once the read crosses the cap. Required
+    #      because a hostile client can omit Content-Length entirely or lie
+    #      about it; only the on-the-wire read reveals the truth.
+    # Both branches return 413 Payload Too Large so a misconfigured upstream
+    # (Caddy size limit, Stripe contract change) is distinguishable from a
+    # signature failure in logs.
+    content_length_header = request.headers.get("content-length")
+    if content_length_header is not None:
+        try:
+            declared_length = int(content_length_header)
+        except ValueError:
+            declared_length = -1
+        if declared_length > STRIPE_WEBHOOK_MAX_BODY_BYTES:
+            logger.warning(
+                "Stripe webhook rejected: declared content-length %s exceeds cap %s",
+                declared_length,
+                STRIPE_WEBHOOK_MAX_BODY_BYTES,
+            )
+            return JSONResponse(
+                status_code=413,
+                content={"error": "payload_too_large", "schema_version": SCHEMA_V1},
+            )
+    body_chunks: list[bytes] = []
+    body_size = 0
+    async for chunk in request.stream():
+        body_size += len(chunk)
+        if body_size > STRIPE_WEBHOOK_MAX_BODY_BYTES:
+            logger.warning(
+                "Stripe webhook rejected: streamed body exceeded cap %s bytes",
+                STRIPE_WEBHOOK_MAX_BODY_BYTES,
+            )
+            return JSONResponse(
+                status_code=413,
+                content={"error": "payload_too_large", "schema_version": SCHEMA_V1},
+            )
+        body_chunks.append(chunk)
+    payload = b"".join(body_chunks)
     settings = get_settings()
     if not stripe_signature:
         logger.warning("Stripe webhook rejected: missing signature")
