@@ -17,7 +17,7 @@ from app.models import ApiKey, ApiKeyEvent, User
 from app.rate_limit import rate_limiter
 
 TOKEN_RE = re.compile(r"^rsmb_(live|test)_[A-Za-z0-9_-]{43}$")
-AUTH_FREE_PATHS = frozenset({"/v1/healthz", "/v1/webhooks/stripe", "/docs", "/redoc", "/openapi.json"})
+AUTH_FREE_PATHS = frozenset({"/healthz", "/v1/healthz", "/v1/webhooks/stripe", "/docs", "/redoc", "/openapi.json"})
 
 # Trusted reverse proxies. The API service sits behind Caddy on localhost; only
 # requests whose immediate peer is in this allowlist are permitted to declare a
