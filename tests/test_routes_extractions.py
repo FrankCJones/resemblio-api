@@ -51,18 +51,46 @@ def test_extractor_failure_refunds_charge(
     _, _, plaintext = seed_user(session)
 
     def fail(_url: str) -> ExtractionBundle:
-        raise ExtractionBridgeError("blocked")
+        # "anthropic failed: ..." classifies to MODEL_ERROR per S15 ADR;
+        # MODEL_ERROR is Resemblio-attributable so credit is refunded.
+        raise ExtractionBridgeError("anthropic failed: timeout")
 
     from app.main import app
 
     app.dependency_overrides[get_extractor] = lambda: fail
     response = client.post("/v1/extractions", headers=auth_headers(plaintext), json={"url": "https://example.com"})
     assert response.status_code == 502
+    body = response.json()
+    assert body["error"] == "extractor_failed"
+    assert body["error_code"] == "model_error"
+    assert body["schema_version"] == 1
     assert _balance(session) == 1000
     extraction = session.query(Extraction).one()
     assert extraction.status == "failed"
     entries = [entry.entry_type for entry in session.query(CreditLedger).order_by(CreditLedger.id).all()]
     assert entries == ["onboarding_grant", "extraction_charge", "refund"]
+
+
+def test_extractor_failure_no_refund_for_user_attributable(
+    client: TestClient,
+    session: Session,
+) -> None:
+    """User-attributable failures (waf_blocked) consume credit; no refund per S15 ADR."""
+    _, _, plaintext = seed_user(session)
+
+    def fail(_url: str) -> ExtractionBundle:
+        raise ExtractionBridgeError("fetch failed: status=403 ua=chrome")
+
+    from app.main import app
+
+    app.dependency_overrides[get_extractor] = lambda: fail
+    response = client.post("/v1/extractions", headers=auth_headers(plaintext), json={"url": "https://example.com"})
+    assert response.status_code == 502
+    body = response.json()
+    assert body["error_code"] == "waf_blocked"
+    # Charge stands; no refund entry.
+    entries = [entry.entry_type for entry in session.query(CreditLedger).order_by(CreditLedger.id).all()]
+    assert entries == ["onboarding_grant", "extraction_charge"]
 
 
 def _balance(session: Session) -> int:

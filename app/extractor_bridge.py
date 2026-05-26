@@ -29,6 +29,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 if TYPE_CHECKING:
     from extractor.drl_adapter import TokenSet  # type-check only; safe at runtime
+    from app.failure_modes import FailureCode  # noqa: F401
 
 ToDtcgJson = Callable[[Any], dict[str, Any]]
 ExtractorLoad = tuple[type[Any], int, type[Any], ToDtcgJson]
@@ -46,7 +47,25 @@ DRL_REQUIRED_MODULES = (
 
 
 class ExtractionBridgeError(RuntimeError):
-    """Extractor failure surfaced as an API boundary error."""
+    """Extractor failure surfaced as an API boundary error.
+
+    Carries the raw extractor message plus a classified `FailureCode` so
+    `POST /v1/extractions` can return a typed `error_code` to clients. The
+    classification is computed at the bridge boundary via prefix-matching of
+    the extractor's stable free-text format (see `app.failure_modes`).
+    """
+
+    def __init__(self, message: str, code: "FailureCode | None" = None) -> None:
+        """Create a bridge error with an optional pre-classified code.
+
+        When `code` is None the message is classified via
+        `classify_extractor_error`; callers that already know the failure mode
+        (e.g. `extract_design_tokens` for the "no tokens" sentinel) may pass it
+        explicitly to bypass re-parsing.
+        """
+        super().__init__(message)
+        from app.failure_modes import FailureCode, classify_extractor_error
+        self.code: FailureCode = code if code is not None else classify_extractor_error(message)
 
 
 def _prepend_sys_path(path: Path) -> None:
@@ -130,9 +149,11 @@ def _load_real_extractor() -> ExtractorLoad:
         from extractor.drl_adapter import SCHEMA_VERSION, TokenSet, to_dtcg_json
         return CodexExtractor, SCHEMA_VERSION, TokenSet, to_dtcg_json
     except ImportError as exc:
+        from app.failure_modes import FailureCode
         raise ExtractionBridgeError(
             f"Extractor unavailable on this host: {exc}. "
-            "DRL vendored corpus missing or broken; see _vendored/drl/README.md."
+            "DRL vendored corpus missing or broken; see _vendored/drl/README.md.",
+            code=FailureCode.INTERNAL_ERROR,
         ) from exc
 
 
@@ -177,7 +198,11 @@ def extract_design_tokens(url: str) -> ExtractionBundle:
     with _without_extractor_db_url():
         token_set, error = CodexExtractor().extract(url)
     if error is not None or token_set is None:
-        raise ExtractionBridgeError(error or "extractor returned no tokens")
+        from app.failure_modes import FailureCode
+        if error is not None:
+            # Bridge classifies the extractor's stable free-text format.
+            raise ExtractionBridgeError(error)
+        raise ExtractionBridgeError("extractor returned no tokens", code=FailureCode.NO_TOKENS_FOUND)
     return bundle_from_token_set(url, token_set)
 
 

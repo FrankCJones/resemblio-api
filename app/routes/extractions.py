@@ -23,6 +23,12 @@ from app.constants import (
 )
 from app.db import get_db
 from app.extractor_bridge import ExtractionBridgeError, ExtractionBundle, extract_design_tokens
+from app.failure_modes import (
+    FailureCode,
+    http_status_for,
+    is_refundable,
+    redact_secrets,
+)
 from app.models import ApiKey, CreditLedger, Extraction, User
 from app.routes.account import credit_balance
 from app.schemas import ExtractionCreateRequest, ExtractionListItem, ExtractionListResponse, ExtractionResponse
@@ -296,17 +302,43 @@ def create_extraction(
         bundle = extractor(url)
         object_key, zip_sha256 = storage.put_extraction_zip(extraction.id, user.id, bundle.zip_bytes)
     except ExtractionBridgeError as exc:
+        # Extractor (or bridge) failed. The bridge has already classified the
+        # free-text error into a FailureCode (S15 ADR). Redact any credential-
+        # shaped substrings before the message touches the HTTP response or DB.
+        code: FailureCode = exc.code
+        safe_log = redact_secrets(str(exc))
         extraction.status = "failed"
-        extraction.error_log = str(exc)
-        _refund(session, user.id, api_key.id, extraction.id, required_cents)
+        extraction.error_log = safe_log
+        if is_refundable(code):
+            _refund(session, user.id, api_key.id, extraction.id, required_cents)
         session.commit()
-        return JSONResponse(status_code=502, content={"error": "extractor_failed", "error_log": str(exc)})
+        return JSONResponse(
+            status_code=http_status_for(code),
+            content={
+                "error": "extractor_failed",
+                "error_code": code.value,
+                "error_log": safe_log,
+                "schema_version": SCHEMA_V1,
+            },
+        )
     except Exception as exc:
+        # Storage upload or anything else past the extractor. Treat as
+        # Resemblio-attributable (PERSIST_ERROR). Refund credit.
+        safe_log = redact_secrets(str(exc))
+        code = FailureCode.PERSIST_ERROR
         extraction.status = "failed"
-        extraction.error_log = str(exc)
+        extraction.error_log = safe_log
         _refund(session, user.id, api_key.id, extraction.id, required_cents)
         session.commit()
-        return JSONResponse(status_code=502, content={"error": "storage_failed", "error_log": str(exc)})
+        return JSONResponse(
+            status_code=http_status_for(code),
+            content={
+                "error": "storage_failed",
+                "error_code": code.value,
+                "error_log": safe_log,
+                "schema_version": SCHEMA_V1,
+            },
+        )
 
     extraction.status = "ok"
     extraction.tokens_json = bundle.tokens_json
