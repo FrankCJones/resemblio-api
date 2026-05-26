@@ -313,6 +313,44 @@ def test_apply_is_idempotent_on_re_run(session: Session, drl_root: Path) -> None
     assert tokens.get("ds-bg") == "#123456"
 
 
+def test_dry_run_does_not_open_session(drl_root: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    """Running ``main`` in dry-run mode must not touch ``app.db.SessionLocal``.
+
+    Frank reported a real-world ConnectionTimeout when running
+    ``python -m scripts.seed_from_drl --limit 5`` from his local machine
+    (which cannot reach prod Postgres at ``127.0.0.1:5432`` on the VPS).
+    This test installs a sentinel that fails loudly if anything in the
+    seeder code path imports ``app.db`` or calls ``SessionLocal()``.
+    """
+
+    def _boom(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("Dry-run must not open a DB session")
+
+    # Patch SessionLocal at its real location so any accidental import
+    # (eager or lazy) inside the dry-run path raises.
+    import app.db as app_db
+
+    monkeypatch.setattr(app_db, "SessionLocal", _boom)
+
+    exit_code = seeder.main(["--drl-root", str(drl_root)])
+    assert exit_code == 0
+
+
+def test_dry_run_prints_what_would_be_seeded(drl_root: Path, caplog: pytest.LogCaptureFixture) -> None:
+    """Dry-run emits per-asset plan lines covering source_id and token count."""
+    with caplog.at_level("INFO", logger=seeder.LOG.name):
+        exit_code = seeder.main(["--drl-root", str(drl_root)])
+    assert exit_code == 0
+    messages = " ".join(record.message for record in caplog.records)
+    assert "acme/alphabets/acme" in messages
+    assert "globex/buttons/globex-button-001" in messages
+    # tokens count for the acme fixture is 3 (ds-bg, ds-text, ds-accent)
+    assert "tokens=3" in messages
+    # tokens count for the globex fixture is 2 (ds-bg, ds-text)
+    assert "tokens=2" in messages
+    assert "DRY RUN" in messages
+
+
 def test_apply_skips_assets_without_tokens(session: Session, drl_root: Path, caplog: pytest.LogCaptureFixture) -> None:
     """Assets whose tokens.css is missing on disk are skipped, not crashed."""
     user_id = _seed_user(session)

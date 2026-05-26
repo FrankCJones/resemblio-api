@@ -64,9 +64,16 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.constants import SCHEMA_V1
-from app.db import SessionLocal
-from app.models import Extraction
 from transformer import STRIPPED_SCHEMA_VERSION, StrippedEntry, brand_strip
+
+# NOTE: ``app.db`` and ``app.models`` are intentionally NOT imported at module
+# scope. Importing ``app.db`` calls ``create_engine`` against the configured
+# Postgres URL eagerly, and even though ``create_engine`` itself does not open
+# a connection, the prior code path then called ``SessionLocal()`` from dry-run
+# and immediately issued a SELECT - which timed out when the script was run
+# from a machine that cannot reach prod Postgres. Dry-run must be safe to run
+# anywhere with zero network. See the lazy imports inside ``find_existing``,
+# ``upsert_extraction``, and ``main`` (apply branch only).
 
 
 LOG = logging.getLogger("seed_from_drl")
@@ -127,6 +134,8 @@ class SeedPlanRow(TypedDict):
     operation: str  # "insert" | "update" | "skip"
     tokens_bytes: int
     zip_bytes: int
+    tokens_count: int
+    r2_key: str
 
 
 @dataclass(frozen=True)
@@ -262,8 +271,14 @@ def build_bundle(stripped: StrippedEntry, tokens: dict[str, str]) -> SeedBundle:
 
 # --- DB UPSERT ---------------------------------------------------------------
 
-def find_existing(session: Session, source_id: str) -> Extraction | None:
-    """Return the existing seed row for ``source_id``, if any."""
+def find_existing(session: Session, source_id: str) -> "Extraction | None":  # noqa: F821 - lazy import
+    """Return the existing seed row for ``source_id``, if any.
+
+    Imports ``app.models.Extraction`` lazily so dry-run code paths that pass
+    ``session=None`` never touch the DB layer or its dependencies.
+    """
+    from app.models import Extraction  # local import: dry-run safety
+
     statement = select(Extraction).where(
         Extraction.seed_source == SEED_SOURCE_DRL_V1,
         Extraction.source_id == source_id,
@@ -277,13 +292,15 @@ def upsert_extraction(
     stripped: StrippedEntry,
     bundle: SeedBundle,
     r2_zip_key: str,
-) -> tuple[Extraction, str]:
+) -> tuple["Extraction", str]:  # noqa: F821 - lazy import
     """Insert a new seed row or update an existing one in place.
 
     Returns the ``(row, operation)`` tuple where ``operation`` is ``"insert"``
     or ``"update"``. The session is flushed but not committed; the caller
     batches commits.
     """
+    from app.models import Extraction  # local import: dry-run safety
+
     existing = find_existing(session, stripped.source_id)
     public_url = f"resemblio://seed/{SEED_SOURCE_DRL_V1}/{stripped.source_id}"
     if existing is None:
@@ -412,6 +429,8 @@ def plan_only(
                 operation=operation,
                 tokens_bytes=len(json.dumps(bundle.tokens_json)),
                 zip_bytes=len(bundle.zip_bytes),
+                tokens_count=len(bundle.tokens_json),
+                r2_key=R2_KEY_TEMPLATE.format(source_id=stripped.source_id),
             )
         )
     return rows
@@ -520,25 +539,32 @@ def main(argv: list[str] | None = None) -> int:
     LOG.info("planning %d DRL asset(s)", len(pairs))
 
     if not args.apply:
-        # Dry-run: still open a session so we can classify insert vs update.
-        with SessionLocal() as session:
-            plan = plan_only(iter(pairs), args.drl_root, session)
-        inserts = sum(1 for row in plan if row["operation"] == "insert")
-        updates = sum(1 for row in plan if row["operation"] == "update")
+        # Dry-run: zero network, zero DB, zero R2. Pass ``session=None`` so
+        # ``plan_only`` classifies every row as ``insert`` without touching
+        # the DB. Every row is logged so an operator running on a machine
+        # that cannot reach prod Postgres can still preview the work.
+        plan = plan_only(iter(pairs), args.drl_root, None)
         total_zip = sum(row["zip_bytes"] for row in plan)
         LOG.info(
-            "DRY RUN: would insert=%d update=%d total_zip_bytes=%d (no writes performed)",
-            inserts,
-            updates,
+            "DRY RUN: would write %d row(s), total_zip_bytes=%d (no DB, no R2, no network)",
+            len(plan),
             total_zip,
         )
-        for row in plan[:10]:
-            LOG.info("plan: %s op=%s zip=%dB", row["source_id"], row["operation"], row["zip_bytes"])
-        if len(plan) > 10:
-            LOG.info("... %d more plan rows omitted", len(plan) - 10)
+        for row in plan:
+            LOG.info(
+                "plan: source_id=%s op=%s tokens=%d zip=%dB r2_key=%s",
+                row["source_id"],
+                row["operation"],
+                row["tokens_count"],
+                row["zip_bytes"],
+                row["r2_key"],
+            )
         return 0
 
+    # Apply path: import the DB layer lazily so dry-run never pays the cost
+    # (or risk) of instantiating an engine against a possibly unreachable DB.
     from app.config import get_settings
+    from app.db import SessionLocal
 
     storage = _R2SeedAdapter(get_settings())
     with SessionLocal() as session:
