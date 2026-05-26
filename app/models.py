@@ -94,7 +94,10 @@ class Extraction(Base):
 
     id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("users.id"), nullable=False)
-    api_key_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("api_keys.id"), nullable=False)
+    # ``api_key_id`` is nullable so the DRL bulk-seed script
+    # (``scripts/seed_from_drl.py``) can write seed rows that are not owned by
+    # an API key. Organic extractions always populate it.
+    api_key_id: Mapped[int | None] = mapped_column(BigIntType, ForeignKey("api_keys.id"), nullable=True)
     url: Mapped[str] = mapped_column(Text, nullable=False)
     url_normalized: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(Text, nullable=False)
@@ -106,6 +109,11 @@ class Extraction(Base):
     extracted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     schema_version: Mapped[int] = mapped_column(Integer, nullable=False)
     credit_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=DEFAULT_EXTRACTION_CENTS, server_default=str(DEFAULT_EXTRACTION_CENTS))
+    # Seed-row provenance pair. NULL on organic rows. ``(seed_source, source_id)``
+    # is the idempotency key for the DRL bulk-seed script under a partial
+    # unique index where ``seed_source IS NOT NULL``.
+    seed_source: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_id: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     user: Mapped[User] = relationship(back_populates="extractions")
     api_key: Mapped[ApiKey] = relationship(back_populates="extractions")

@@ -1,0 +1,558 @@
+"""Bulk-seed the Resemblio ``extractions`` table from the Design Reference Library.
+
+Usage
+-----
+::
+
+    # Dry-run (default): print the plan, write nothing
+    python -m scripts.seed_from_drl
+
+    # Apply: actually write to Postgres + R2
+    python -m scripts.seed_from_drl --apply
+
+    # Bounded: stop after N rows (for smoke tests)
+    python -m scripts.seed_from_drl --apply --limit 25
+
+    # Subset: only one DRL system
+    python -m scripts.seed_from_drl --apply --source-system anthropic
+
+Dependencies
+------------
+- ``RESEMBLIO_DB_URL`` env var (read by ``app.config.get_settings``)
+- ``RESEMBLIO_KEY_PEPPER`` env var (required by the same settings loader; the
+  seed script does not hash keys itself but the app module imports require it)
+- R2 credentials in ``app.config.Settings`` (only consulted in ``--apply``
+  mode; dry-run skips storage entirely)
+- ``projects/Design Reference Library/corpus.json`` reachable on disk via the
+  ``--drl-root`` flag (default: workspace-relative)
+
+Design reference: ``scripts/SEED_FROM_DRL_DESIGN.md``.
+
+This script is written to run unattended; all user-facing output uses
+``logging`` rather than ``print``. Idempotency is anchored on the
+``(seed_source, source_id)`` partial unique index added by migration
+``0007_extractions_seed_source``; re-running with the same arguments is safe
+and produces no duplicate rows.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import logging
+import re
+import sys
+from collections.abc import Iterable, Iterator
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from io import BytesIO
+from pathlib import Path
+from typing import Any, Protocol, TypedDict
+from zipfile import ZIP_DEFLATED, ZipFile
+
+# The seed script lives at ``code/api/scripts/seed_from_drl.py``. Adding the
+# API root to ``sys.path`` lets ``python -m scripts.seed_from_drl`` resolve
+# ``app.*`` and the workspace-level ``transformer`` module.
+_API_ROOT = Path(__file__).resolve().parents[1]
+_RESEMBLIO_CODE_ROOT = _API_ROOT.parent
+for _path in (_API_ROOT, _RESEMBLIO_CODE_ROOT):
+    _path_text = str(_path)
+    if _path_text not in sys.path:
+        sys.path.insert(0, _path_text)
+
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.constants import SCHEMA_V1
+from app.db import SessionLocal
+from app.models import Extraction
+from transformer import STRIPPED_SCHEMA_VERSION, StrippedEntry, brand_strip
+
+
+LOG = logging.getLogger("seed_from_drl")
+
+# --- Named constants (workspace quality floor) -------------------------------
+SEED_SOURCE_DRL_V1 = "drl_v1"
+"""Marker stored in ``extractions.seed_source`` for DRL bulk-seed rows."""
+
+DEFAULT_BATCH_SIZE = 25
+"""Rows per DB transaction. The R2 PUT happens outside the transaction (S3
+has no two-phase commit); on partial failure the next dry-run reconciles."""
+
+DEFAULT_DRL_ROOT = (
+    Path(__file__).resolve().parents[4] / "Design Reference Library"
+)
+"""Workspace-relative default. Override with ``--drl-root``."""
+
+R2_KEY_TEMPLATE = "seed/drl/{source_id}.zip"
+"""Per-asset R2 object key. ``source_id`` contains slashes so the key
+naturally nests under ``seed/drl/<system>/<class>/<slug>.zip``."""
+
+# DRL ``tokens.css`` files declare CSS custom properties under ``:root``.
+# This regex captures ``--name: value`` pairs across line breaks.
+_CSS_VAR_PATTERN = re.compile(r"--([a-zA-Z0-9_-]+)\s*:\s*([^;]+);")
+
+
+class DrlAssetDict(TypedDict, total=False):
+    """One ``assets[*]`` entry inside ``corpus.json``."""
+
+    slug: str
+    cls: str
+    kind: str
+    path: str
+    tokens_path: str
+    tldr: str
+    patterns: list[str]
+    mood: list[str]
+    applicable_to: list[str]
+    tags: list[str]
+    provenance_score: str
+
+
+class DrlSystemDict(TypedDict, total=False):
+    """One ``systems[*]`` entry inside ``corpus.json``."""
+
+    slug: str
+    name: str
+    tier: str
+    category: str
+    asset_count: int
+    assets: list[DrlAssetDict]
+
+
+class SeedPlanRow(TypedDict):
+    """Dry-run plan row. One per DRL asset the seeder would touch."""
+
+    source_id: str
+    operation: str  # "insert" | "update" | "skip"
+    tokens_bytes: int
+    zip_bytes: int
+
+
+@dataclass(frozen=True)
+class SeedBundle:
+    """Per-asset payload ready for DB insert + R2 upload."""
+
+    source_id: str
+    tokens_json: dict[str, Any]
+    dtcg_json: dict[str, Any]
+    zip_bytes: bytes
+    zip_sha256: str
+
+
+class StorageClient(Protocol):
+    """Subset of ``app.storage.R2Storage`` the seeder needs.
+
+    Tests pass an in-memory fake conforming to this protocol; production
+    code passes the real ``R2Storage`` instance.
+    """
+
+    def put_object_at_key(self, key: str, body: bytes, content_type: str) -> None:
+        """Upload ``body`` to the given object ``key``."""
+        ...
+
+
+# --- DRL corpus loading + tokens.css parsing ---------------------------------
+
+def load_corpus(drl_root: Path) -> dict[str, Any]:
+    """Read ``corpus.json`` from the DRL root.
+
+    Raises ``FileNotFoundError`` with a clear message when the path is wrong;
+    that is the seed script's most common operator error.
+    """
+    corpus_path = drl_root / "corpus.json"
+    if not corpus_path.exists():
+        raise FileNotFoundError(
+            f"DRL corpus.json not found at {corpus_path!s}. Pass --drl-root."
+        )
+    with corpus_path.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def iter_assets(corpus: dict[str, Any]) -> Iterator[tuple[DrlSystemDict, DrlAssetDict]]:
+    """Yield every ``(system, asset)`` pair in the DRL corpus."""
+    for system in corpus.get("systems", []) or []:
+        for asset in system.get("assets", []) or []:
+            yield system, asset
+
+
+def parse_tokens_css(css_text: str) -> dict[str, str]:
+    """Extract ``--name: value`` declarations from a DRL ``tokens.css`` blob.
+
+    Returns a flat dict keyed by the declaration name (with the leading
+    ``--`` stripped). Values are stripped of leading and trailing whitespace.
+    Comments and at-rules are ignored. Duplicate names take the last value
+    seen, mirroring CSS cascade behaviour at the same specificity.
+    """
+    tokens: dict[str, str] = {}
+    for match in _CSS_VAR_PATTERN.finditer(css_text):
+        name = match.group(1).strip()
+        value = match.group(2).strip()
+        tokens[name] = value
+    return tokens
+
+
+def load_tokens_for_asset(drl_root: Path, asset: DrlAssetDict) -> dict[str, str]:
+    """Load and parse the ``tokens.css`` file for one asset.
+
+    Returns an empty dict if the asset has no ``tokens_path`` or the file is
+    missing on disk; the caller decides whether that is fatal. The seed
+    script logs and skips such rows by default.
+    """
+    tokens_rel = asset.get("tokens_path")
+    if not tokens_rel:
+        return {}
+    tokens_path = drl_root / tokens_rel
+    if not tokens_path.exists():
+        return {}
+    return parse_tokens_css(tokens_path.read_text(encoding="utf-8"))
+
+
+# --- Bundle assembly (mirrors ``app.extractor_bridge.bundle_from_token_set``) -
+
+def build_bundle(stripped: StrippedEntry, tokens: dict[str, str]) -> SeedBundle:
+    """Construct the per-asset bundle persisted to Postgres + R2.
+
+    Mirrors the structure produced for organic extractions
+    (``app.extractor_bridge.bundle_from_token_set``): a tokens dict, a DTCG
+    JSON envelope, and a ZIP carrying ``tokens.json`` + ``manifest.json``.
+    Seeded rows additionally embed the stripped entry's metadata so the
+    public corpus surfaces the design-behaviour fields (``patterns``,
+    ``mood``, ``applicable_to``, ``tags``) the DRL curated.
+    """
+    tokens_json: dict[str, Any] = dict(tokens)
+    dtcg_json: dict[str, Any] = {
+        "schema_version": SCHEMA_V1,
+        "transformer_schema_version": STRIPPED_SCHEMA_VERSION,
+        "slug": stripped.slug,
+        "class": stripped.cls,
+        "kind": stripped.kind,
+        "tldr": stripped.tldr,
+        "patterns": list(stripped.patterns),
+        "mood": list(stripped.mood),
+        "applicable_to": list(stripped.applicable_to),
+        "tags": list(stripped.tags),
+        "tokens": tokens_json,
+    }
+
+    tokens_bytes = json.dumps(dtcg_json, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    manifest = {
+        "schema_version": SCHEMA_V1,
+        "seed_source": SEED_SOURCE_DRL_V1,
+        "source_id": stripped.source_id,
+        "tier": stripped.tier,
+        "category": stripped.category,
+        "provenance_score": stripped.provenance_score,
+        "extracted_at": datetime.now(timezone.utc).isoformat(),
+        "tokens_sha256": hashlib.sha256(tokens_bytes).hexdigest(),
+    }
+    zip_buffer = BytesIO()
+    with ZipFile(zip_buffer, "w", ZIP_DEFLATED) as zip_file:
+        zip_file.writestr("tokens.json", json.dumps(dtcg_json, indent=2, sort_keys=True))
+        zip_file.writestr("manifest.json", json.dumps(manifest, indent=2, sort_keys=True))
+    zip_bytes = zip_buffer.getvalue()
+    return SeedBundle(
+        source_id=stripped.source_id,
+        tokens_json=tokens_json,
+        dtcg_json=dtcg_json,
+        zip_bytes=zip_bytes,
+        zip_sha256=hashlib.sha256(zip_bytes).hexdigest(),
+    )
+
+
+# --- DB UPSERT ---------------------------------------------------------------
+
+def find_existing(session: Session, source_id: str) -> Extraction | None:
+    """Return the existing seed row for ``source_id``, if any."""
+    statement = select(Extraction).where(
+        Extraction.seed_source == SEED_SOURCE_DRL_V1,
+        Extraction.source_id == source_id,
+    )
+    return session.execute(statement).scalar_one_or_none()
+
+
+def upsert_extraction(
+    session: Session,
+    user_id: int,
+    stripped: StrippedEntry,
+    bundle: SeedBundle,
+    r2_zip_key: str,
+) -> tuple[Extraction, str]:
+    """Insert a new seed row or update an existing one in place.
+
+    Returns the ``(row, operation)`` tuple where ``operation`` is ``"insert"``
+    or ``"update"``. The session is flushed but not committed; the caller
+    batches commits.
+    """
+    existing = find_existing(session, stripped.source_id)
+    public_url = f"resemblio://seed/{SEED_SOURCE_DRL_V1}/{stripped.source_id}"
+    if existing is None:
+        row = Extraction(
+            user_id=user_id,
+            api_key_id=None,
+            url=public_url,
+            url_normalized=public_url,
+            status="ok",
+            tokens_json=bundle.tokens_json,
+            dtcg_json=bundle.dtcg_json,
+            r2_zip_key=r2_zip_key,
+            zip_sha256=bundle.zip_sha256,
+            schema_version=SCHEMA_V1,
+            credit_cents=0,
+            seed_source=SEED_SOURCE_DRL_V1,
+            source_id=stripped.source_id,
+        )
+        session.add(row)
+        session.flush()
+        return row, "insert"
+
+    existing.tokens_json = bundle.tokens_json
+    existing.dtcg_json = bundle.dtcg_json
+    existing.r2_zip_key = r2_zip_key
+    existing.zip_sha256 = bundle.zip_sha256
+    existing.schema_version = SCHEMA_V1
+    session.flush()
+    return existing, "update"
+
+
+# --- Orchestration -----------------------------------------------------------
+
+@dataclass(frozen=True)
+class SeedArgs:
+    """Parsed CLI arguments for the seed script."""
+
+    apply: bool
+    drl_root: Path
+    limit: int | None
+    source_system: str | None
+    seed_user_id: int
+    batch_size: int
+
+
+def parse_args(argv: list[str] | None = None) -> SeedArgs:
+    """Parse argv into a ``SeedArgs``. Dry-run is the default."""
+    parser = argparse.ArgumentParser(description="Bulk-seed DRL into the Resemblio extractions table.")
+    parser.add_argument("--apply", action="store_true", help="Actually write. Default is dry-run.")
+    parser.add_argument("--drl-root", type=Path, default=DEFAULT_DRL_ROOT, help="Path to the DRL folder.")
+    parser.add_argument("--limit", type=int, default=None, help="Stop after N assets (smoke testing).")
+    parser.add_argument(
+        "--source-system",
+        type=str,
+        default=None,
+        help="Only seed assets from this DRL system slug (e.g. 'anthropic').",
+    )
+    parser.add_argument(
+        "--seed-user-id",
+        type=int,
+        default=1,
+        help="User id that owns seed rows. Defaults to 1 (the bootstrap user).",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
+        help=f"Rows per DB transaction (default {DEFAULT_BATCH_SIZE}).",
+    )
+    namespace = parser.parse_args(argv)
+    return SeedArgs(
+        apply=bool(namespace.apply),
+        drl_root=Path(namespace.drl_root).resolve(),
+        limit=namespace.limit,
+        source_system=namespace.source_system,
+        seed_user_id=int(namespace.seed_user_id),
+        batch_size=int(namespace.batch_size),
+    )
+
+
+def filter_assets(
+    pairs: Iterable[tuple[DrlSystemDict, DrlAssetDict]],
+    source_system: str | None,
+    limit: int | None,
+) -> Iterator[tuple[DrlSystemDict, DrlAssetDict]]:
+    """Apply ``--source-system`` and ``--limit`` filters in stream order."""
+    emitted = 0
+    for system, asset in pairs:
+        if source_system and system.get("slug") != source_system:
+            continue
+        yield system, asset
+        emitted += 1
+        if limit is not None and emitted >= limit:
+            return
+
+
+def plan_only(
+    pairs: Iterable[tuple[DrlSystemDict, DrlAssetDict]],
+    drl_root: Path,
+    session: Session | None,
+) -> list[SeedPlanRow]:
+    """Build the dry-run plan. Writes nothing to DB or R2.
+
+    If ``session`` is provided, classifies each row as ``"insert"`` vs
+    ``"update"`` by querying the existing seed-source rows. If ``session``
+    is None, every row is classified as ``"insert"`` (the bootstrap case).
+    """
+    rows: list[SeedPlanRow] = []
+    for system, asset in pairs:
+        try:
+            stripped = brand_strip(system, asset)
+        except ValueError as exc:
+            LOG.warning("skipping malformed DRL row: %s", exc)
+            continue
+        tokens = load_tokens_for_asset(drl_root, asset)
+        if not tokens:
+            LOG.warning("skipping %s: no tokens.css on disk", stripped.source_id)
+            continue
+        bundle = build_bundle(stripped, tokens)
+        operation = "insert"
+        if session is not None and find_existing(session, stripped.source_id) is not None:
+            operation = "update"
+        rows.append(
+            SeedPlanRow(
+                source_id=stripped.source_id,
+                operation=operation,
+                tokens_bytes=len(json.dumps(bundle.tokens_json)),
+                zip_bytes=len(bundle.zip_bytes),
+            )
+        )
+    return rows
+
+
+def apply_seed(
+    pairs: Iterable[tuple[DrlSystemDict, DrlAssetDict]],
+    drl_root: Path,
+    session: Session,
+    storage: StorageClient,
+    seed_user_id: int,
+    batch_size: int,
+) -> dict[str, int]:
+    """Execute the bulk seed against the DB and R2.
+
+    Commits the SQL transaction every ``batch_size`` rows. R2 PUTs run
+    one-per-row inside the loop but outside the SQL transaction; on partial
+    failure the next dry-run reconciles and re-running is safe under the
+    partial unique index.
+
+    Returns a counts dict: ``{"inserted": int, "updated": int, "skipped": int}``.
+    """
+    counts = {"inserted": 0, "updated": 0, "skipped": 0}
+    batch_since_commit = 0
+    for system, asset in pairs:
+        try:
+            stripped = brand_strip(system, asset)
+        except ValueError as exc:
+            LOG.warning("skipping malformed DRL row: %s", exc)
+            counts["skipped"] += 1
+            continue
+        tokens = load_tokens_for_asset(drl_root, asset)
+        if not tokens:
+            LOG.warning("skipping %s: no tokens.css on disk", stripped.source_id)
+            counts["skipped"] += 1
+            continue
+        bundle = build_bundle(stripped, tokens)
+        r2_key = R2_KEY_TEMPLATE.format(source_id=stripped.source_id)
+        storage.put_object_at_key(r2_key, bundle.zip_bytes, "application/zip")
+        _row, operation = upsert_extraction(session, seed_user_id, stripped, bundle, r2_key)
+        counts["inserted" if operation == "insert" else "updated"] += 1
+        batch_since_commit += 1
+        if batch_since_commit >= batch_size:
+            session.commit()
+            batch_since_commit = 0
+            LOG.info("committed batch; running totals: %s", counts)
+    if batch_since_commit:
+        session.commit()
+    return counts
+
+
+# --- Storage adapter (wraps app.storage.R2Storage for the seeder) ------------
+
+class _R2SeedAdapter:
+    """Wrap ``app.storage.R2Storage`` to match ``StorageClient`` shape.
+
+    The production R2 client is keyed by ``(user_id, extraction_id)``; the
+    seeder needs a direct ``put_object_at_key`` so the key derives from the
+    DRL ``source_id`` instead. This adapter delegates the underlying boto
+    call with retry behaviour preserved.
+    """
+
+    def __init__(self, settings: Any) -> None:
+        """Build the underlying R2 client and reuse its retry helper."""
+        from app.storage import R2Storage  # local import: avoids hard dep in tests
+
+        self._inner = R2Storage(settings)
+
+    def put_object_at_key(self, key: str, body: bytes, content_type: str) -> None:
+        """Upload ``body`` to the ``resemblio-extractions`` bucket at ``key``."""
+        self._inner.ensure_bucket()
+        # Reuse the inner client's retry helper for backoff consistency.
+        self._inner._with_retries(  # noqa: SLF001 - private helper reuse is intentional
+            lambda: self._inner.client.put_object(
+                Bucket=self._inner.bucket,
+                Key=key,
+                Body=body,
+                ContentType=content_type,
+            )
+        )
+
+
+def _configure_logging() -> None:
+    """Set a single stderr handler with timestamp + level + message."""
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+    LOG.handlers.clear()
+    LOG.addHandler(handler)
+    LOG.setLevel(logging.INFO)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entry point. Returns a process exit code."""
+    _configure_logging()
+    args = parse_args(argv)
+    LOG.info(
+        "seed_from_drl starting: apply=%s drl_root=%s limit=%s source_system=%s",
+        args.apply,
+        args.drl_root,
+        args.limit,
+        args.source_system,
+    )
+
+    corpus = load_corpus(args.drl_root)
+    pairs = list(filter_assets(iter_assets(corpus), args.source_system, args.limit))
+    LOG.info("planning %d DRL asset(s)", len(pairs))
+
+    if not args.apply:
+        # Dry-run: still open a session so we can classify insert vs update.
+        with SessionLocal() as session:
+            plan = plan_only(iter(pairs), args.drl_root, session)
+        inserts = sum(1 for row in plan if row["operation"] == "insert")
+        updates = sum(1 for row in plan if row["operation"] == "update")
+        total_zip = sum(row["zip_bytes"] for row in plan)
+        LOG.info(
+            "DRY RUN: would insert=%d update=%d total_zip_bytes=%d (no writes performed)",
+            inserts,
+            updates,
+            total_zip,
+        )
+        for row in plan[:10]:
+            LOG.info("plan: %s op=%s zip=%dB", row["source_id"], row["operation"], row["zip_bytes"])
+        if len(plan) > 10:
+            LOG.info("... %d more plan rows omitted", len(plan) - 10)
+        return 0
+
+    from app.config import get_settings
+
+    storage = _R2SeedAdapter(get_settings())
+    with SessionLocal() as session:
+        counts = apply_seed(
+            iter(pairs),
+            args.drl_root,
+            session,
+            storage,
+            args.seed_user_id,
+            args.batch_size,
+        )
+    LOG.info("seed complete: %s", counts)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
