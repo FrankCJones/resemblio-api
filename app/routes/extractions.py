@@ -32,7 +32,8 @@ from app.failure_modes import (
     redact_secrets,
 )
 from app.models import ApiKey, CreditLedger, Extraction, User
-from app.quality_scoring import compute_quality_score
+from app.quality_heuristics import HeuristicPenaltyResult, apply_heuristic_penalties
+from app.quality_scoring import QualityScoreResult, compute_quality_score
 from app.scoring_weights import DEFAULT_THRESHOLD_V1_1_X
 from app.routes.account import credit_balance
 from app.schemas import (
@@ -41,6 +42,7 @@ from app.schemas import (
     ExtractionListResponse,
     ExtractionManifest,
     ExtractionResponse,
+    QualityScoreComponents,
 )
 from app.storage import R2Storage, get_storage
 
@@ -229,6 +231,46 @@ def _manifest_for(
     )
 
 
+def _components_for(extraction: Extraction) -> QualityScoreComponents | None:
+    """Rebuild the quality-score component breakdown for a persisted row.
+
+    Returns None when scoring did not run for this row (seed rows, pre-S20
+    historical rows, failed extractions). The reconstruction is deterministic
+    against persisted ``tokens_json`` and the dimension scores, so cached
+    fetches produce the same diagnostic the original POST returned. We
+    rerun the heuristic instead of persisting the diagnostic string because
+    the diagnostic embeds observed font/color values and recomputing keeps
+    the response identical without storing a denormalized blob.
+    """
+    if extraction.raw_quality_score is None and extraction.quality_score is None:
+        return None
+    # Synthesize a QualityScoreResult-like object for the heuristic. The
+    # heuristic only reads `composite_score` off `base_result`, so a minimal
+    # stand-in is sufficient and avoids a dependency on rebuilding the full
+    # dimension-score arithmetic from persisted state.
+    raw_value = extraction.raw_quality_score
+    if raw_value is None:
+        raw_value = extraction.quality_score or 0.0
+    minimal_base = QualityScoreResult(
+        schema_version="quality_score_v1@row_replay",
+        composite_score=float(raw_value),
+        dimension_scores=dict(extraction.quality_dimension_scores or {}),
+        threshold=DEFAULT_THRESHOLD_V1_1_X,
+        is_low_quality=float(raw_value) < DEFAULT_THRESHOLD_V1_1_X,
+        suggestion="",
+        weights_used={},
+    )
+    penalty = apply_heuristic_penalties(extraction.tokens_json, minimal_base)
+    return QualityScoreComponents(
+        schema_version=penalty.schema_version,
+        raw=extraction.raw_quality_score,
+        penalized=extraction.quality_score,
+        threshold=DEFAULT_THRESHOLD_V1_1_X,
+        penalties_applied=list(penalty.penalties_applied),
+        diagnostic=penalty.diagnostic,
+    )
+
+
 def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionResponse:
     """Convert an extraction row to the public response shape.
 
@@ -278,6 +320,8 @@ def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionRespo
         error_code=error_code,
         quality_score=quality_score,
         quality_dimension_scores=dimension_scores,
+        raw_quality_score=extraction.raw_quality_score,
+        quality_score_components=_components_for(extraction),
         refunded=refunded,
     )
 
@@ -495,23 +539,43 @@ def create_extraction(
     session.commit()
     session.refresh(extraction)
 
-    # S20 output-quality scoring. Runs synchronously on the success path; cost
-    # is <10ms per the ADR. Seeded rows (DRL bulk-seed) skip the gate so we
-    # never refund a hypothetical credit on a row that was never charged. A
-    # scorer exception is caught and logged into `error_log`; the extraction
-    # itself stays at `status="ok"` so a scorer bug cannot invalidate a real
-    # extraction. Provenance: S20 ADR sections 4 + 7 + 8.
+    # S20 output-quality scoring + heuristic penalties. Runs synchronously on
+    # the success path; cost is <10ms per the ADR plus a few microseconds for
+    # the pure-Python heuristic pass. Seeded rows (DRL bulk-seed) skip the
+    # gate so we never refund a hypothetical credit on a row that was never
+    # charged. Scorer or heuristic exceptions are caught and logged into
+    # `error_log`; the extraction itself stays at `status="ok"` so a scorer
+    # bug cannot invalidate a real extraction. Provenance: S20 ADR sections
+    # 4 + 7 + 8, plus heuristic-penalty dispatch 2026-05-31.
+    #
+    # Penalty wiring intent: the raw composite from `compute_quality_score`
+    # measures token RICHNESS but cannot tell that a fully populated palette
+    # is a generic light-mode default or that the fonts are a 100% system
+    # stack (Susann extraction-fidelity finding, same date). The penalty
+    # pass deducts from the composite when default-detection fires; the
+    # PENALIZED score then drives both (a) what we persist as
+    # `quality_score` (customer-facing) and (b) the gate that flips the
+    # status to `low_quality` and triggers the refund. The raw value is
+    # retained in `raw_quality_score` for audit and calibration tracking.
     if extraction.seed_source is None:
         try:
             result = compute_quality_score(extraction.tokens_json)
+            penalty_result = apply_heuristic_penalties(extraction.tokens_json, result)
         except Exception as score_exc:  # noqa: BLE001 - we want any scorer crash to be non-fatal
             extraction.error_log = f"quality scoring failed: {score_exc!r}"
             session.commit()
             session.refresh(extraction)
             return _response_for(extraction, storage)
-        extraction.quality_score = result.composite_score
+        extraction.raw_quality_score = result.composite_score
+        extraction.quality_score = penalty_result.penalized_score
         extraction.quality_dimension_scores = result.dimension_scores
-        if result.is_low_quality:
+        # Threshold gate uses the PENALIZED score so heuristic-penalty hits
+        # (e.g. all-default colors plus system-font stack on the Susann
+        # extraction) correctly fall below `DEFAULT_THRESHOLD_V1_1_X` and
+        # auto-refund. A row whose raw score cleared threshold but whose
+        # penalized score did not is exactly the case the heuristic exists
+        # to catch.
+        if penalty_result.penalized_score < result.threshold:
             extraction.status = "low_quality"
             extraction.low_quality_review_pending = True
             # Idempotent refund. If an upstream code path already refunded

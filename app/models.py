@@ -120,6 +120,13 @@ class Extraction(Base):
     # flag (indexed). ``reviewed_at`` / ``verdict`` / ``reviewer`` close the
     # review loop. See ``app/quality_scoring.py``.
     quality_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # Raw composite from ``compute_quality_score`` BEFORE
+    # ``apply_heuristic_penalties`` runs. ``quality_score`` carries the
+    # penalized value (customer-facing + gate for the refund path);
+    # ``raw_quality_score`` is the audit field that keeps the base scorer
+    # vs heuristic calibration drift observable from row data alone.
+    # Migration 0009. See ``app/quality_heuristics.py``.
+    raw_quality_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     quality_dimension_scores: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
     low_quality_review_pending: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default="false"

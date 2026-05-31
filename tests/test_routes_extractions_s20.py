@@ -222,3 +222,197 @@ def test_low_quality_output_http_status_is_200() -> None:
     """Low-quality classification is HTTP 200 per ADR section 6."""
     from app.failure_modes import http_status_for
     assert http_status_for(FailureCode.LOW_QUALITY_OUTPUT) == 200
+
+
+# ----------------------------------------------------------------------
+# Heuristic-penalty wiring (dispatch 2026-05-31)
+# ----------------------------------------------------------------------
+
+
+# Tokens that score HIGH on the base composite (rich palette, full type
+# scale, multiple spacing slots, two font families with type-pair signal)
+# but use a 100% system-font stack. The system-font penalty alone is 0.30,
+# enough to drop a ~0.7 raw score below the 0.55 threshold. Penalty colors
+# are deliberately NOT the all-defaults palette (we want font penalty in
+# isolation here, not double-stacked with color penalty).
+_SYSTEM_FONT_HIGH_BASE_TOKENS: dict[str, str] = {
+    "bg": "#fefae0",
+    "text": "#283618",
+    "accent": "#bc6c25",
+    "text_muted": "#606c38",
+    "border": "#dda15e",
+    # Both fonts in the system-font set -> SYSTEM_FONT_STACK_PENALTY fires.
+    "font_display": "Georgia, serif",
+    "font_body": "system-ui, sans-serif",
+    "text_sm": "14px",
+    "text_base": "16px",
+    "text_lg": "18px",
+    "text_xl": "24px",
+    "space_1": "4px",
+    "space_2": "8px",
+    "space_3": "12px",
+    "space_4": "16px",
+    "space_5": "24px",
+}
+
+
+# Tokens whose raw composite clears the threshold and whose penalized
+# composite ALSO clears the threshold (no heuristic fires). Brand fonts +
+# brand-color palette + full scales. Used to assert "no penalty -> no
+# refund" so the wiring does not accidentally over-trigger.
+_HIGH_QUALITY_NO_PENALTY_TOKENS: dict[str, str] = {
+    "bg": "#fefae0",
+    "text": "#283618",
+    "accent": "#bc6c25",
+    "text_muted": "#606c38",
+    "border": "#dda15e",
+    "font_display": "Playfair Display, serif",
+    "font_body": "Inter, sans-serif",
+    "text_sm": "14px",
+    "text_base": "16px",
+    "text_lg": "18px",
+    "text_xl": "24px",
+    "space_1": "4px",
+    "space_2": "8px",
+    "space_3": "12px",
+    "space_4": "16px",
+    "space_5": "24px",
+}
+
+
+def test_extractions_persists_penalized_score(
+    client: TestClient,
+    session: Session,
+) -> None:
+    """Penalized score < raw score is persisted as `quality_score` with raw retained."""
+    _, _, plaintext = seed_user(session)
+
+    def system_font_extractor(url: str) -> ExtractionBundle:
+        return bundle_from_token_set(url, _SYSTEM_FONT_HIGH_BASE_TOKENS)
+
+    from app.main import app
+    app.dependency_overrides[get_extractor] = lambda: system_font_extractor
+
+    response = client.post(
+        "/v1/extractions",
+        headers=auth_headers(plaintext),
+        json={"url": "https://example.com"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    # The customer-facing quality_score is the PENALIZED value.
+    assert body["raw_quality_score"] is not None
+    assert body["quality_score"] is not None
+    assert body["quality_score"] < body["raw_quality_score"]
+    # Components surface the penalty that fired.
+    components = body["quality_score_components"]
+    assert components is not None
+    assert "all_system_font_stack" in components["penalties_applied"]
+    assert components["raw"] == body["raw_quality_score"]
+    assert components["penalized"] == body["quality_score"]
+
+    # Persisted row mirrors the response.
+    extraction = session.query(Extraction).one()
+    assert extraction.raw_quality_score is not None
+    assert extraction.quality_score is not None
+    assert extraction.quality_score < extraction.raw_quality_score
+
+
+_BOTH_PENALTIES_HIGH_BASE_TOKENS: dict[str, str] = {
+    # All three brand-signal color slots (bg/text/accent) in the default set
+    # -> COMMON_DEFAULT_COLORS_PENALTY fires (0.30).
+    "bg": "#ffffff",
+    "text": "#1a1a1a",
+    "accent": "#4f46e5",
+    # Non-brand-signal slots stay brand-specific so the base composite still
+    # scores high on palette role coverage.
+    "text_muted": "#606c38",
+    "border": "#dda15e",
+    # Both fonts in the system-font set -> SYSTEM_FONT_STACK_PENALTY fires (0.30).
+    "font_display": "Georgia, serif",
+    "font_body": "system-ui, sans-serif",
+    "text_sm": "14px",
+    "text_base": "16px",
+    "text_lg": "18px",
+    "text_xl": "24px",
+    "space_1": "4px",
+    "space_2": "8px",
+    "space_3": "12px",
+    "space_4": "16px",
+    "space_5": "24px",
+}
+
+
+def test_extractions_triggers_refund_when_penalized_below_threshold(
+    client: TestClient,
+    session: Session,
+) -> None:
+    """An extraction whose raw clears threshold but penalized fails it auto-refunds."""
+    _, _, plaintext = seed_user(session)
+
+    def both_penalties_extractor(url: str) -> ExtractionBundle:
+        return bundle_from_token_set(url, _BOTH_PENALTIES_HIGH_BASE_TOKENS)
+
+    from app.main import app
+    app.dependency_overrides[get_extractor] = lambda: both_penalties_extractor
+
+    response = client.post(
+        "/v1/extractions",
+        headers=auth_headers(plaintext),
+        json={"url": "https://example.com"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    # Raw cleared the threshold; penalty knocked it below; status flipped.
+    assert body["raw_quality_score"] >= 0.55
+    assert body["quality_score"] < 0.55
+    assert body["status"] == "low_quality"
+    assert body["refunded"] is True
+
+    extraction = session.query(Extraction).one()
+    assert extraction.status == "low_quality"
+    assert extraction.low_quality_review_pending is True
+
+    # Ledger: onboarding_grant + extraction_charge + refund.
+    entries = [
+        entry.entry_type
+        for entry in session.query(CreditLedger).order_by(CreditLedger.id).all()
+    ]
+    assert entries == ["onboarding_grant", "extraction_charge", "refund"]
+
+
+def test_extractions_keeps_charge_when_only_raw_above_threshold(
+    client: TestClient,
+    session: Session,
+) -> None:
+    """No heuristic penalty fires -> status stays `ok` and no refund posts."""
+    _, _, plaintext = seed_user(session)
+
+    def brand_font_extractor(url: str) -> ExtractionBundle:
+        return bundle_from_token_set(url, _HIGH_QUALITY_NO_PENALTY_TOKENS)
+
+    from app.main import app
+    app.dependency_overrides[get_extractor] = lambda: brand_font_extractor
+
+    response = client.post(
+        "/v1/extractions",
+        headers=auth_headers(plaintext),
+        json={"url": "https://example.com"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "ok"
+    assert body.get("refunded") in (None, False)
+    # No penalty triggered; raw == penalized.
+    assert body["raw_quality_score"] is not None
+    assert body["quality_score"] == body["raw_quality_score"]
+    components = body["quality_score_components"]
+    assert components is not None
+    assert components["penalties_applied"] == []
+
+    # Customer was charged once with no refund.
+    entries = [
+        entry.entry_type
+        for entry in session.query(CreditLedger).order_by(CreditLedger.id).all()
+    ]
+    assert entries == ["onboarding_grant", "extraction_charge"]

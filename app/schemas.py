@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, Optional, TypedDict
 
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator
 
@@ -46,6 +46,30 @@ class ExtractionManifest(BaseModel):
     download_url: str | None = None
 
 
+class QualityScoreComponents(BaseModel):
+    """Audit breakdown of how ``quality_score`` was computed for one extraction.
+
+    Surfaced on successful extraction responses (both ``ok`` and
+    ``low_quality``) so customers and operators can see the raw composite,
+    each heuristic penalty that fired, the resulting penalized score, and the
+    threshold used to gate the refund path. The route handler builds this
+    from ``QualityScoreResult`` (raw) and ``HeuristicPenaltyResult``
+    (penalized + penalty names + diagnostic).
+
+    Edge case: ``raw`` and ``penalized`` are both null on rows where scoring
+    did not run (seed rows, pre-S20 historical rows). ``penalties_applied``
+    is an empty tuple when no heuristic triggered; ``diagnostic`` is the
+    string ``"no penalties"`` in that case.
+    """
+
+    schema_version: str
+    raw: float | None
+    penalized: float | None
+    threshold: float
+    penalties_applied: list[str]
+    diagnostic: str
+
+
 class ExtractionResponse(BaseModel):
     """Extraction detail returned after creation or cached fetch.
 
@@ -76,6 +100,15 @@ class ExtractionResponse(BaseModel):
     error_code: str | None = None
     quality_score: float | None = None
     quality_dimension_scores: dict[str, float] | None = None
+    # Raw composite from the base scorer BEFORE heuristic penalties. The
+    # customer-facing ``quality_score`` field above carries the penalized
+    # value; ``raw_quality_score`` is the audit field that lets a customer
+    # see the unmodified base score for context. Null on rows where scoring
+    # did not run. Added by the heuristic-penalty wiring dispatch 2026-05-31.
+    raw_quality_score: float | None = None
+    # Per-component breakdown of the quality score: raw, each penalty fired,
+    # penalized result, threshold. Null when scoring did not run.
+    quality_score_components: QualityScoreComponents | None = None
     refunded: bool | None = None
 
 
