@@ -148,6 +148,15 @@ def classify_extractor_error(error: str) -> FailureCode:
     text = error.strip()
     lower = text.lower()
 
+    # Persistence failures are checked FIRST, even as a chained suffix, because
+    # a persist failure is always Resemblio-attributable (refundable). If an
+    # earlier validation step also failed and got chained in front of the
+    # persist failure (e.g. "validation failed: x; postgres insert failed: y"),
+    # the PERSIST_ERROR classification still wins so the caller refunds credit
+    # rather than billing the user for our DB outage. Order matters: this check
+    # must precede the "validation failed:" branch below.
+    if "postgres insert failed:" in lower:
+        return FailureCode.PERSIST_ERROR
     if lower.startswith("invalid url:"):
         return FailureCode.INVALID_URL
     if lower.startswith("unreachable:"):
@@ -170,11 +179,6 @@ def classify_extractor_error(error: str) -> FailureCode:
         return FailureCode.MODEL_ERROR
     if lower.startswith("recon failed:"):
         return FailureCode.NETWORK_ERROR
-    if lower.startswith("postgres insert failed:"):
-        return FailureCode.PERSIST_ERROR
-    if "postgres insert failed:" in lower:
-        # Chained form: "<earlier error>; postgres insert failed: ..."
-        return FailureCode.PERSIST_ERROR
     if lower.startswith("extractor returned no tokens"):
         return FailureCode.NO_TOKENS_FOUND
     if lower.startswith("extractor unavailable on this host"):

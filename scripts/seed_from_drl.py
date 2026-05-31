@@ -80,6 +80,11 @@ from transformer import STRIPPED_SCHEMA_VERSION, StrippedEntry, brand_strip
 
 
 LOG = logging.getLogger("seed_from_drl")
+# Explicit propagation guarantees that records this script emits flow up to
+# the root logger. Pytest's ``caplog`` plugin attaches its capture handler to
+# root; without propagation it would never see the script's INFO/WARNING
+# records and tests asserting on log output would silently fail.
+LOG.propagate = True
 
 # --- Named constants (workspace quality floor) -------------------------------
 SEED_SOURCE_DRL_V1 = "drl_v1"
@@ -517,11 +522,25 @@ class _R2SeedAdapter:
 
 
 def _configure_logging() -> None:
-    """Set a single stderr handler with timestamp + level + message."""
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
-    LOG.handlers.clear()
-    LOG.addHandler(handler)
+    """Attach a stderr handler the first time the script's logger is configured.
+
+    Only adds a handler when ``LOG`` has none, which protects two cases:
+
+    1. Test runs where pytest's ``caplog`` plugin has attached its
+       ``LogCaptureHandler`` to this logger via ``caplog.at_level(..., logger=
+       seeder.LOG.name)``. Clearing handlers would strip pytest's capture and
+       cause every record emitted inside ``main`` to disappear from
+       ``caplog.records``.
+    2. Library callers that already configured logging globally and would not
+       want a duplicate stderr emit.
+
+    The level is always set to INFO so unattended cron / scheduler invocations
+    surface the per-asset plan rows the script intends to log.
+    """
+    if not LOG.handlers:
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+        LOG.addHandler(handler)
     LOG.setLevel(logging.INFO)
 
 
