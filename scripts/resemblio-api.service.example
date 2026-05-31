@@ -33,10 +33,17 @@ WorkingDirectory=/opt/resemblio-api/app
 EnvironmentFile=/etc/resemblio-api.env
 # --workers 1 is REQUIRED. See header note. Do not change without first
 # migrating app/rate_limit.py off the in-memory store.
+# --no-server-header strips the default `Server: uvicorn` response header at
+# the protocol layer. The equivalent FastAPI middleware in app.main runs
+# inside the ASGI chain BEFORE uvicorn writes the Server header on the wire,
+# so application-layer deletion is a no-op in production. CI deploy.yml step
+# "API security header smoke check" asserts the header is absent on
+# https://api.resemblio.com/v1/healthz and gates merges on it.
 ExecStart=/opt/resemblio-api/venv/bin/uvicorn app.main:app \
     --host 127.0.0.1 \
     --port 8000 \
     --workers 1 \
+    --no-server-header \
     --proxy-headers \
     --forwarded-allow-ips 127.0.0.1
 Restart=on-failure

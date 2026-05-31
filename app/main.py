@@ -71,7 +71,17 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def _strip_server_header(request: Request, call_next):  # type: ignore[no-untyped-def]
-        """Remove the default ``Server: uvicorn`` header to avoid leaking stack details."""
+        """Backstop strip of the ``Server`` response header.
+
+        The primary mechanism is uvicorn's ``--no-server-header`` flag in the
+        systemd unit (``scripts/resemblio-api.service.example``). Uvicorn
+        writes the Server header at the HTTP protocol layer AFTER the ASGI
+        middleware chain runs, so deleting it here is a no-op in the
+        production uvicorn stack. This middleware still matters for
+        Starlette ``TestClient`` runs and for any future deployment behind a
+        non-uvicorn ASGI server, where header deletion in middleware does
+        take effect.
+        """
         response = await call_next(request)
         if "server" in response.headers:
             del response.headers["server"]
