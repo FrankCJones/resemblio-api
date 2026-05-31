@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import BigInteger, CheckConstraint, DateTime, ForeignKey, Index, Integer, String, Text, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, Float, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
@@ -114,6 +114,19 @@ class Extraction(Base):
     # unique index where ``seed_source IS NOT NULL``.
     seed_source: Mapped[str | None] = mapped_column(Text, nullable=True)
     source_id: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # S20 output-quality scoring columns. Migration 0008. ``quality_score`` is
+    # the composite 0.0-1.0 score; ``quality_dimension_scores`` is the per-
+    # dimension JSON. ``low_quality_review_pending`` is the operator queue
+    # flag (indexed). ``reviewed_at`` / ``verdict`` / ``reviewer`` close the
+    # review loop. See ``app/quality_scoring.py``.
+    quality_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    quality_dimension_scores: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
+    low_quality_review_pending: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+    low_quality_reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    low_quality_review_verdict: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    low_quality_reviewer: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     user: Mapped[User] = relationship(back_populates="extractions")
     api_key: Mapped[ApiKey] = relationship(back_populates="extractions")
@@ -122,6 +135,7 @@ class Extraction(Base):
     __table_args__ = (
         Index("ix_extractions_user_id_extracted_at", "user_id", "extracted_at"),
         Index("ix_extractions_url_normalized", "url_normalized"),
+        Index("ix_extractions_low_quality_review_pending", "low_quality_review_pending"),
     )
 
 

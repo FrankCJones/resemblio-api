@@ -64,7 +64,7 @@ async def stripe_webhook(
     session: Session = Depends(get_db),
     email_sender_factory: EmailSenderFactory = Depends(get_email_sender_factory),
 ) -> JSONResponse:
-    """Verify and process Stripe TEST webhook events."""
+    """Verify and process Stripe webhook events for the configured mode."""
     # Body-size cap (audit M-API-1). The endpoint is intentionally auth-free
     # per Stripe's contract, so an unauthenticated caller can flood arbitrary
     # bodies at it. Stripe's real events are a few KB; reject anything past

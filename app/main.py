@@ -55,7 +55,11 @@ def create_app() -> FastAPI:
     validate_startup_settings(settings)
     validate_worker_concurrency()
     logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
-    logging.getLogger(__name__).info("Stripe configured in TEST mode for Resemblio")
+    # Operators rely on this single line in `journalctl -u resemblio-api` to
+    # confirm which Stripe mode the running process is actually bound to. Do
+    # not silence it; do not move it before validate_startup_settings (which
+    # is what guarantees the mode/key pair is self-consistent).
+    logging.getLogger(__name__).info("Stripe mode: %s", settings.stripe_mode)
     docs_enabled = os.environ.get("RESEMBLIO_DOCS_ENABLED", "false").lower() == "true"
     app = FastAPI(
         title="Resemblio API",

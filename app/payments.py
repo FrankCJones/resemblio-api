@@ -1,4 +1,10 @@
-"""Stripe TEST-mode helpers for customer, checkout, and webhook work."""
+"""Stripe helpers for customer, checkout, and webhook work.
+
+Mode (TEST vs LIVE) is determined by ``settings.stripe_mode`` and enforced at
+startup by ``app.config.validate_startup_settings``. This module makes the
+same Stripe API calls in either mode; the bound restricted key decides which
+Stripe environment responds.
+"""
 from __future__ import annotations
 
 import hashlib
@@ -43,7 +49,12 @@ class StripeSignatureError(ValueError):
 
 
 class StripeClient:
-    """Small wrapper around the Stripe SDK pinned to Resemblio TEST credentials."""
+    """Small wrapper around the Stripe SDK using the configured restricted key.
+
+    The mode (TEST or LIVE) is determined by ``settings.stripe_mode`` and the
+    matching key value bound to ``STRIPE_RESTRICTED_KEY_RESEMBLIO_TEST`` (alias
+    name is fixed; value carries the mode).
+    """
 
     def __init__(self, settings: Settings) -> None:
         """Store settings without importing Stripe until the first API call."""
@@ -64,14 +75,14 @@ class StripeClient:
         try:
             customer = _with_retries(_call, "customer.create")
         except Exception as exc:  # noqa: BLE001 - Preserve Stripe detail behind a clear signup error.
-            raise RuntimeError("Stripe TEST customer creation failed after retries") from exc
+            raise RuntimeError("Stripe customer creation failed after retries") from exc
         customer_id = getattr(customer, "id", None) or _mapping_value(customer, "id")
         if not customer_id:
             raise RuntimeError("Stripe customer creation did not return an id")
         return str(customer_id)
 
     def create_checkout_session(self, user_id: int, stripe_customer_id: str, amount_cents: int) -> CheckoutSessionResult:
-        """Create a TEST-mode Stripe Checkout session for credit top-up."""
+        """Create a Stripe Checkout session for credit top-up."""
         stripe = _stripe_module()
 
         def _call() -> object:
@@ -107,7 +118,7 @@ class StripeClient:
         try:
             session = _with_retries(_call, "checkout.session.create")
         except Exception as exc:  # noqa: BLE001 - Preserve Stripe detail behind a clear checkout error.
-            raise RuntimeError("Stripe TEST Checkout session creation failed after retries") from exc
+            raise RuntimeError("Stripe Checkout session creation failed after retries") from exc
         session_id = getattr(session, "id", None) or _mapping_value(session, "id")
         session_url = getattr(session, "url", None) or _mapping_value(session, "url")
         if not session_id or not session_url:
@@ -132,7 +143,11 @@ def construct_stripe_event(payload: bytes, signature_header: str, webhook_secret
 
 
 def get_stripe_service() -> StripeGateway:
-    """FastAPI dependency returning the Stripe TEST client."""
+    """FastAPI dependency returning the configured Stripe client.
+
+    Mode (TEST or LIVE) follows ``settings.stripe_mode`` and the bound
+    restricted key. See ``app.config.validate_startup_settings``.
+    """
     return StripeClient(get_settings())
 
 
@@ -155,7 +170,7 @@ def _with_retries(call: Callable[[], T], operation: str) -> T:
             last_error = exc
             if index == len(STRIPE_RETRY_DELAYS_SECONDS) - 1:
                 break
-            logger.warning("Stripe TEST operation failed; retrying operation=%s attempt=%s", operation, index + 1)
+            logger.warning("Stripe operation failed; retrying operation=%s attempt=%s", operation, index + 1)
             time.sleep(delay)
     assert last_error is not None
     raise last_error

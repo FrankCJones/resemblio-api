@@ -62,6 +62,12 @@ class FailureCode(str, Enum):
     PERSIST_ERROR = "persist_error"
     VALIDATION_ERROR = "validation_error"
     INTERNAL_ERROR = "internal_error"
+    # S20: output-quality scoring classifies a structurally valid 200 response
+    # whose composite quality score falls below the threshold as
+    # `low_quality_output`. Resemblio-attributable (extractor produced
+    # qualitatively unusable tokens) and therefore refundable. See
+    # `app/quality_scoring.py` and Resemblio_BUILD_LOG.md S20 ADR.
+    LOW_QUALITY_OUTPUT = "low_quality_output"
 
 
 # HTTP status mapping per S15 ADR (Table: Recommended API error-code contract).
@@ -78,6 +84,10 @@ HTTP_STATUS_BY_CODE: Final[dict[FailureCode, int]] = {
     FailureCode.PERSIST_ERROR: 500,
     FailureCode.VALIDATION_ERROR: 422,
     FailureCode.INTERNAL_ERROR: 500,
+    # S20: low-quality output is surfaced as HTTP 200 because the request was
+    # valid and tokens were produced; the response body is self-deprecating
+    # via `status="low_quality"` and includes the auto-refund pointer.
+    FailureCode.LOW_QUALITY_OUTPUT: 200,
 }
 
 # Per S15 ADR credit-handling rule: Resemblio-attributable failures refund.
@@ -85,6 +95,7 @@ REFUNDABLE_CODES: Final[frozenset[FailureCode]] = frozenset({
     FailureCode.MODEL_ERROR,
     FailureCode.PERSIST_ERROR,
     FailureCode.INTERNAL_ERROR,
+    FailureCode.LOW_QUALITY_OUTPUT,
 })
 
 # Statuses that look like WAF mitigation when seen on the Chrome UA retry.

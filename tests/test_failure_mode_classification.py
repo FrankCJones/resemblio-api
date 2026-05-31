@@ -73,10 +73,19 @@ def test_classify_is_case_insensitive_on_prefix() -> None:
 
 
 def test_http_status_table_covers_every_code() -> None:
-    """HTTP_STATUS_BY_CODE has an entry for every FailureCode value."""
+    """HTTP_STATUS_BY_CODE has an entry for every FailureCode value.
+
+    Most codes are 4xx/5xx. S20's `LOW_QUALITY_OUTPUT` is the documented
+    exception at 200 per ADR section 6 (request was valid; response is
+    self-deprecating with auto-refund).
+    """
     for code in FailureCode:
         assert code in HTTP_STATUS_BY_CODE
-        assert 400 <= HTTP_STATUS_BY_CODE[code] <= 599
+        status = HTTP_STATUS_BY_CODE[code]
+        if code is FailureCode.LOW_QUALITY_OUTPUT:
+            assert status == 200
+        else:
+            assert 400 <= status <= 599
 
 
 @pytest.mark.parametrize(
@@ -128,9 +137,20 @@ def test_is_refundable_false_for_user_attributable(code: FailureCode) -> None:
 
 
 def test_refundable_set_matches_adr() -> None:
-    """Exactly the three documented codes are refundable."""
+    """Exactly the documented Resemblio-attributable codes are refundable.
+
+    S15 ADR named MODEL_ERROR + PERSIST_ERROR + INTERNAL_ERROR. S20 ADR
+    (Resemblio_BUILD_LOG.md, 2026-05-26) added LOW_QUALITY_OUTPUT as a fourth
+    Resemblio-attributable code; the customer gave us a valid URL and we
+    delivered qualitatively unusable tokens, so the credit refunds.
+    """
     assert REFUNDABLE_CODES == frozenset(
-        {FailureCode.MODEL_ERROR, FailureCode.PERSIST_ERROR, FailureCode.INTERNAL_ERROR}
+        {
+            FailureCode.MODEL_ERROR,
+            FailureCode.PERSIST_ERROR,
+            FailureCode.INTERNAL_ERROR,
+            FailureCode.LOW_QUALITY_OUTPUT,
+        }
     )
 
 

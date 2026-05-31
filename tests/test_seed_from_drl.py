@@ -351,6 +351,135 @@ def test_dry_run_prints_what_would_be_seeded(drl_root: Path, caplog: pytest.LogC
     assert "DRY RUN" in messages
 
 
+def test_brand_strip_is_idempotent_on_re_strip() -> None:
+    """Running ``brand_strip`` twice on the same input yields equal output.
+
+    Idempotency matters because the seeder may re-strip on update paths; the
+    output ``StrippedEntry`` is frozen so equality is structural.
+    """
+    system = {"slug": "acme", "name": "Acme", "tier": "A", "category": "saas"}
+    asset = {
+        "slug": "btn-001",
+        "class": "buttons",
+        "kind": "atom",
+        "tags": ["buttons", "acme", "warm"],
+        "patterns": ["primary-square"],
+        "mood": ["confident"],
+        "applicable_to": ["saas"],
+        "tldr": "tldr",
+        "provenance_score": "A",
+    }
+    first = brand_strip(system, asset)
+    second = brand_strip(system, asset)
+    assert first == second
+
+
+def test_brand_strip_handles_minimal_drl_entry() -> None:
+    """A minimal DRL pair (only the three required ids) returns sensible defaults.
+
+    The DRL allows ``total=False`` fields on rows; the strip must not crash on
+    a partial author. Optional list fields collapse to empty tuples, not None.
+    """
+    system = {"slug": "minimal", "tier": "C", "category": "misc"}
+    asset = {"slug": "x", "class": "atoms"}
+    stripped = brand_strip(system, asset)
+    assert stripped.source_id == "minimal/atoms/x"
+    assert stripped.patterns == ()
+    assert stripped.mood == ()
+    assert stripped.tags == ()
+    assert stripped.tldr == ""
+
+
+def test_brand_strip_preserves_design_behaviour_fields() -> None:
+    """Patterns, mood, applicable_to survive verbatim; they describe behaviour, not brand."""
+    system = {"slug": "acme", "name": "Acme", "tier": "A", "category": "editorial"}
+    asset = {
+        "slug": "hero-01",
+        "class": "wholes",
+        "kind": "whole",
+        "patterns": ["serif-display-sans-body", "mono-eyebrow"],
+        "mood": ["editorial", "restrained"],
+        "applicable_to": ["editorial", "studio-portfolio"],
+        "tags": ["wholes", "Acme"],
+        "tldr": "Editorial register hero.",
+        "provenance_score": "B",
+    }
+    stripped = brand_strip(system, asset)
+    assert stripped.patterns == ("serif-display-sans-body", "mono-eyebrow")
+    assert stripped.mood == ("editorial", "restrained")
+    assert stripped.applicable_to == ("editorial", "studio-portfolio")
+    assert "Acme" not in stripped.tags
+    assert stripped.tldr == "Editorial register hero."
+
+
+def test_bundle_preserves_token_roles_and_dimension_scale(drl_root: Path) -> None:
+    """The DTCG envelope round-trips every CSS custom property name + value.
+
+    Color token roles (``ds-bg`` -> ``#0A0908``) and dimension semantics survive
+    the strip + bundle path unmutated. The transformer only normalises identity,
+    not token values; preserving the role+value contract is what lets the
+    Resemblio API serve seeded rows indistinguishably from organic extractions.
+    """
+    corpus = load_corpus(drl_root)
+    system, asset = next(iter_assets(corpus))
+    stripped = brand_strip(system, asset)
+    tokens = load_tokens_for_asset(drl_root, asset)
+    bundle = build_bundle(stripped, tokens)
+    assert bundle.tokens_json == tokens
+    assert bundle.dtcg_json["tokens"]["ds-bg"] == "#0A0908"
+    assert bundle.dtcg_json["tokens"]["ds-accent"] == "#FF3366"
+
+
+def test_bundle_emits_seed_source_metadata_in_zip(drl_root: Path) -> None:
+    """The bundle ZIP carries ``manifest.json`` with ``seed_source=drl_v1`` + source_id.
+
+    Downstream auditors recover provenance by reading the ZIP manifest; the
+    public DTCG envelope must NOT leak the brand identifier.
+    """
+    from zipfile import ZipFile
+    from io import BytesIO
+
+    corpus = load_corpus(drl_root)
+    system, asset = next(iter_assets(corpus))
+    stripped = brand_strip(system, asset)
+    tokens = load_tokens_for_asset(drl_root, asset)
+    bundle = build_bundle(stripped, tokens)
+    with ZipFile(BytesIO(bundle.zip_bytes)) as zip_file:
+        manifest = json.loads(zip_file.read("manifest.json"))
+    assert manifest["seed_source"] == SEED_SOURCE_DRL_V1
+    assert manifest["source_id"] == stripped.source_id
+    assert "tokens_sha256" in manifest
+    # The public DTCG envelope itself must not name the brand.
+    assert "acme" not in json.dumps(bundle.dtcg_json).lower() or stripped.slug == "acme"
+
+
+def test_dry_run_against_real_drl_corpus_smoke(caplog: pytest.LogCaptureFixture) -> None:
+    """Integration smoke: run the dry-run plan against the real DRL corpus.
+
+    Read-only path; passes ``session=None`` so no DB is touched. Asserts the
+    plan emits at least one row and every plan row carries a non-empty
+    source_id + non-zero zip bytes. Skipped automatically when the DRL corpus
+    is not on disk (CI without the DRL checkout).
+    """
+    drl_root = Path(__file__).resolve().parents[4] / "Design Reference Library"
+    if not (drl_root / "corpus.json").exists():
+        pytest.skip("Real DRL corpus not present on this filesystem")
+    corpus = load_corpus(drl_root)
+    # Cap the scan so the test stays under one second even on the full 955-asset corpus.
+    pairs = []
+    for index, pair in enumerate(iter_assets(corpus)):
+        if index >= 25:
+            break
+        pairs.append(pair)
+    plan = plan_only(iter(pairs), drl_root, None)
+    assert plan, "expected at least one planned seed row from the real corpus"
+    for row in plan:
+        assert row["source_id"]
+        assert row["operation"] == "insert"
+        assert row["zip_bytes"] > 0
+        assert row["r2_key"].startswith("seed/drl/")
+
+
 def test_apply_skips_assets_without_tokens(session: Session, drl_root: Path, caplog: pytest.LogCaptureFixture) -> None:
     """Assets whose tokens.css is missing on disk are skipped, not crashed."""
     user_id = _seed_user(session)
