@@ -40,7 +40,12 @@ jobs:
       - name: pip-audit (fail on known vulnerabilities)
         run: |
           /tmp/ci-venv/bin/pip install -q pip-audit
-          /tmp/ci-venv/bin/pip-audit --strict
+          # --skip-editable: pip-audit --strict would otherwise fail because
+          # `resemblio-api` (0.1.0, installed via `pip install -e .`) is not
+          # on PyPI and pip-audit treats unresolvable packages as audit
+          # failures. We audit only third-party deps; our own code is
+          # reviewed in CI sanity tests above.
+          /tmp/ci-venv/bin/pip-audit --strict --skip-editable
 
       - name: Configure SSH
         run: |
