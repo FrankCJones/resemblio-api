@@ -68,6 +68,21 @@ class FakeStorage:
         """Return a deterministic fake signed URL."""
         return f"https://r2.test/{object_key}?expires={expires_in}"
 
+    @staticmethod
+    def tokens_object_key(extraction_id: int, user_id: int) -> str:
+        """Mirror the production storage key convention for tokens.json."""
+        return f"tokens/{user_id}/{extraction_id}.json"
+
+    def put_extraction_tokens(self, extraction_id: int, user_id: int, tokens_bytes: bytes) -> str:
+        """Store tokens.json bytes under the canonical key."""
+        key = self.tokens_object_key(extraction_id, user_id)
+        self.objects[key] = tokens_bytes
+        return key
+
+    def sign_tokens_url(self, object_key: str, expires_in: int = 86_400) -> str:
+        """Return a deterministic fake signed URL for tokens.json."""
+        return f"https://r2.test/{object_key}?expires={expires_in}"
+
 
 class _FakeBridgeExtractor:
     """Minimal extractor stand-in used when the real DRL extractor is unavailable."""

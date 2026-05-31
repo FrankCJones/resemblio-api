@@ -20,8 +20,41 @@ class ExtractionCreateRequest(BaseModel):
     private: bool = False
 
 
+class ExtractionManifest(BaseModel):
+    """Top-level extraction envelope, additive in `schema_version=2` (v1.1 brief Section 3).
+
+    The manifest is the canonical pointer record a client persists; the inline
+    `tokens` + `dtcg` payload on the parent response is a convenience for
+    one-shot integrations that don't want a second round-trip. Field set is
+    intentionally narrow: anything that belongs in storage (the actual token
+    payload, the ZIP bytes) is exposed via signed URLs, not embedded.
+
+    Edge case: `tokens_url` and `download_url` are presigned and TTL-bounded
+    (24h and 15 min respectively per `app.constants`). Clients caching the
+    manifest beyond those windows must re-fetch the parent extraction to
+    obtain fresh URLs. `id`, `source_url`, `created_at_utc`, and
+    `schema_version` are stable for the life of the row.
+    """
+
+    id: int
+    status: str
+    source_url: str
+    created_at_utc: datetime
+    schema_version: int
+    quality_score: float | None = None
+    tokens_url: str | None = None
+    download_url: str | None = None
+
+
 class ExtractionResponse(BaseModel):
-    """Extraction detail returned after creation or cached fetch."""
+    """Extraction detail returned after creation or cached fetch.
+
+    `schema_version` semantics:
+      - `1` was the v1.1 S1 shape (tokens inline, ZIP via `download_url`).
+      - `2` is the v1.1 R2-dispatch shape: additive `manifest` envelope and
+        signed `tokens_url`. Old fields stay populated; v1 clients keep
+        working unchanged. Bump rationale: v1.1 mission brief Section 3.
+    """
 
     id: int
     status: str
@@ -29,7 +62,21 @@ class ExtractionResponse(BaseModel):
     dtcg: dict[str, Any] | None
     download_url: str | None
     schema_version: int
-    error_log: str | None = None
+    # v1.1 additive fields (schema_version=2). `tokens_url` is null when the
+    # tokens.json object has not been (or could not be) uploaded for this row
+    # (e.g. pre-v1.1 rows seeded before the upload path landed; storage write
+    # failure on POST is reported via `error_log` and `tokens_url` stays null).
+    # `manifest` is the canonical envelope per the v1.1 mission brief.
+    tokens_url: str | None = None
+    manifest: ExtractionManifest | None = None
+    error_log: str | Any | None = None
+    # S20 additive fields. Present on `status="low_quality"` responses; null
+    # on `status="ok"` and on failure responses (those carry a string
+    # `error_log` and are returned via JSONResponse in the route handler).
+    error_code: str | None = None
+    quality_score: float | None = None
+    quality_dimension_scores: dict[str, float] | None = None
+    refunded: bool | None = None
 
 
 class ExtractionListItem(BaseModel):

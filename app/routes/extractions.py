@@ -1,9 +1,10 @@
 """Extraction creation and retrieval routes."""
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from datetime import timedelta
-from typing import Protocol
+from typing import Any, Protocol
 
 import threading
 
@@ -19,6 +20,7 @@ from app.constants import (
     EXTRACTION_PRIVATE_CENTS,
     EXTRACTION_PUBLIC_CENTS,
     SCHEMA_V1,
+    SCHEMA_V1_1,
     SPEND_CAP_WINDOW_DAYS,
 )
 from app.db import get_db
@@ -30,8 +32,16 @@ from app.failure_modes import (
     redact_secrets,
 )
 from app.models import ApiKey, CreditLedger, Extraction, User
+from app.quality_scoring import compute_quality_score
+from app.scoring_weights import DEFAULT_THRESHOLD_V1_1_X
 from app.routes.account import credit_balance
-from app.schemas import ExtractionCreateRequest, ExtractionListItem, ExtractionListResponse, ExtractionResponse
+from app.schemas import (
+    ExtractionCreateRequest,
+    ExtractionListItem,
+    ExtractionListResponse,
+    ExtractionManifest,
+    ExtractionResponse,
+)
 from app.storage import R2Storage, get_storage
 
 router = APIRouter()
@@ -139,8 +149,30 @@ def _charge(session: Session, user_id: int, api_key_id: int, extraction_id: int,
     )
 
 
-def _refund(session: Session, user_id: int, api_key_id: int, extraction_id: int, amount_cents: int) -> None:
-    """Append a refund after extractor or storage failure."""
+def _refund(
+    session: Session,
+    user_id: int,
+    api_key_id: int | None,
+    extraction_id: int,
+    amount_cents: int,
+    note: str = "Extraction failed",
+) -> bool:
+    """Append a refund row for one extraction; idempotent on extraction_id.
+
+    Returns True if a new refund row was inserted, False if an existing refund
+    for this extraction already exists (no-op, idempotent short-circuit per
+    S20 ADR section 7). The idempotency guarantee matters because S20 wires a
+    second refund pathway (quality-scoring) and we must not double-credit a
+    customer whose extraction touches both paths under any race.
+    """
+    existing = session.execute(
+        select(CreditLedger.id).where(
+            CreditLedger.extraction_id == extraction_id,
+            CreditLedger.entry_type == "refund",
+        )
+    ).scalar_one_or_none()
+    if existing is not None:
+        return False
     balance_after = credit_balance(session, user_id) + amount_cents
     session.add(
         CreditLedger(
@@ -150,23 +182,124 @@ def _refund(session: Session, user_id: int, api_key_id: int, extraction_id: int,
             balance_after_cents=balance_after,
             extraction_id=extraction_id,
             api_key_id=api_key_id,
-            note="Extraction failed",
+            note=note,
         )
+    )
+    return True
+
+
+def _tokens_url_for(extraction: Extraction, storage: R2Storage) -> str | None:
+    """Mint a signed tokens.json URL for an extraction row, if uploadable.
+
+    Returns None when the row has no `tokens_json` payload (failed or pending
+    extractions) so callers do not leak signed URLs to objects that may not
+    exist in R2. For rows persisted before the v1.1 tokens-upload path
+    landed, the route handler will not have written a tokens.json object; the
+    presigned URL would 404 if used. We tolerate this on the read path
+    because pre-v1.1 clients already consume `tokens` inline; the signed URL
+    is an additive convenience for v1.1+ integrators who write fresh rows.
+    """
+    if extraction.r2_zip_key is None:
+        return None
+    return storage.sign_tokens_url(storage.tokens_object_key(extraction.id, extraction.user_id))
+
+
+def _manifest_for(
+    extraction: Extraction,
+    schema_version: int,
+    tokens_url: str | None,
+    download_url: str | None,
+) -> ExtractionManifest:
+    """Build the v1.1 manifest envelope from a persisted extraction row.
+
+    The manifest is derived purely from existing columns plus the two
+    request-scoped signed URLs; nothing about it requires a schema migration.
+    `schema_version` echoes the parent response so a client persisting only
+    the manifest still knows the contract it was minted against.
+    """
+    return ExtractionManifest(
+        id=extraction.id,
+        status=extraction.status,
+        source_url=extraction.url,
+        created_at_utc=extraction.extracted_at,
+        schema_version=schema_version,
+        quality_score=extraction.quality_score,
+        tokens_url=tokens_url,
+        download_url=download_url,
     )
 
 
 def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionResponse:
-    """Convert an extraction row to the public response shape."""
+    """Convert an extraction row to the public response shape.
+
+    Includes S20 quality-scoring fields when the row has been scored. For
+    `status="low_quality"` rows, `refunded=True` is surfaced so the customer
+    sees the credit restoration without polling the ledger.
+
+    v1.1 (R2 dispatch) additions: every successful response now carries a
+    top-level `manifest` envelope plus a signed `tokens_url`. The
+    `schema_version` on the response is bumped to `SCHEMA_V1_1` regardless of
+    the row's own `schema_version` column (which tracks the extractor output
+    contract, not the API response contract). Old fields stay populated.
+    """
     download_url = storage.sign_download_url(extraction.r2_zip_key) if extraction.r2_zip_key else None
+    tokens_url = _tokens_url_for(extraction, storage)
+    manifest = _manifest_for(extraction, SCHEMA_V1_1, tokens_url, download_url)
+    refunded: bool | None = None
+    error_code: str | None = None
+    error_log_field: Any = extraction.error_log
+    quality_score = extraction.quality_score
+    dimension_scores = extraction.quality_dimension_scores
+    if extraction.status == "low_quality":
+        from app.failure_modes import FailureCode  # local import: avoid cycle
+        error_code = FailureCode.LOW_QUALITY_OUTPUT.value
+        refunded = True
+        # Inline the structured score payload as the error_log so a single
+        # field carries the full S20 contract (per ADR section 6 example).
+        error_log_field = {
+            "schema_version": "quality_score_v1@1.0",
+            "score": quality_score,
+            "threshold": DEFAULT_THRESHOLD_V1_1_X,
+            "dimension_scores": dimension_scores or {},
+            "suggestion": _suggestion_string_from_row(dimension_scores),
+        }
     return ExtractionResponse(
         id=extraction.id,
         status=extraction.status,
         tokens=extraction.tokens_json,
         dtcg=extraction.dtcg_json,
         download_url=download_url,
-        schema_version=extraction.schema_version,
-        error_log=extraction.error_log,
+        # Response-shape contract version, not the extractor-output version.
+        # See `ExtractionResponse` docstring for the v1 -> v1.1 bump rationale.
+        schema_version=SCHEMA_V1_1,
+        tokens_url=tokens_url,
+        manifest=manifest,
+        error_log=error_log_field,
+        error_code=error_code,
+        quality_score=quality_score,
+        quality_dimension_scores=dimension_scores,
+        refunded=refunded,
     )
+
+
+def _suggestion_string_from_row(dimension_scores: dict[str, float] | None) -> str:
+    """Pick the suggestion string for a stored dimension-scores dict.
+
+    Mirrors `quality_scoring._suggestion_for` but reads from a possibly-JSON-
+    deserialized dict (so values can be floats or ints). Used by `_response_for`
+    when serving a cached low-quality row.
+    """
+    if not dimension_scores:
+        return ""
+    from app.quality_scoring import _DIMENSION_SCORERS  # local import: avoid cycle at module load
+    from app.scoring_weights import SUGGESTIONS_BY_DIMENSION
+
+    floats = {k: float(v) for k, v in dimension_scores.items()}
+    min_score = min(floats.values())
+    for name in _DIMENSION_SCORERS:
+        if name in floats and floats[name] == min_score:
+            return SUGGESTIONS_BY_DIMENSION.get(name, "")
+    return ""
 
 
 @router.post("/extractions", response_model=ExtractionResponse)
@@ -301,6 +434,18 @@ def create_extraction(
     try:
         bundle = extractor(url)
         object_key, zip_sha256 = storage.put_extraction_zip(extraction.id, user.id, bundle.zip_bytes)
+        # Upload tokens.json as a sibling R2 object so the v1.1 `tokens_url`
+        # field on the response can sign a stable, browser-fetchable URL.
+        # Failure of THIS upload is non-fatal: the ZIP already carries the
+        # canonical bytes and `tokens` is also inline in the response. We
+        # log via `error_log` (additive; does not flip status) and let the
+        # signed URL 404 on the client. The alternative (refund and fail)
+        # would punish customers for a non-critical convenience write.
+        tokens_bytes = json.dumps(bundle.tokens_json, sort_keys=True).encode("utf-8")
+        try:
+            storage.put_extraction_tokens(extraction.id, user.id, tokens_bytes)
+        except Exception as tokens_exc:  # noqa: BLE001 - convenience write; do not refund
+            extraction.error_log = f"tokens.json upload failed: {tokens_exc!r}"
     except ExtractionBridgeError as exc:
         # Extractor (or bridge) failed. The bridge has already classified the
         # free-text error into a FailureCode (S15 ADR). Redact any credential-
@@ -349,6 +494,40 @@ def create_extraction(
     extraction.schema_version = bundle.schema_version
     session.commit()
     session.refresh(extraction)
+
+    # S20 output-quality scoring. Runs synchronously on the success path; cost
+    # is <10ms per the ADR. Seeded rows (DRL bulk-seed) skip the gate so we
+    # never refund a hypothetical credit on a row that was never charged. A
+    # scorer exception is caught and logged into `error_log`; the extraction
+    # itself stays at `status="ok"` so a scorer bug cannot invalidate a real
+    # extraction. Provenance: S20 ADR sections 4 + 7 + 8.
+    if extraction.seed_source is None:
+        try:
+            result = compute_quality_score(extraction.tokens_json)
+        except Exception as score_exc:  # noqa: BLE001 - we want any scorer crash to be non-fatal
+            extraction.error_log = f"quality scoring failed: {score_exc!r}"
+            session.commit()
+            session.refresh(extraction)
+            return _response_for(extraction, storage)
+        extraction.quality_score = result.composite_score
+        extraction.quality_dimension_scores = result.dimension_scores
+        if result.is_low_quality:
+            extraction.status = "low_quality"
+            extraction.low_quality_review_pending = True
+            # Idempotent refund. If an upstream code path already refunded
+            # this extraction (cannot happen on the canonical success branch
+            # but defended against here per ADR section 7), the helper is a
+            # no-op and the customer is not double-credited.
+            _refund(
+                session,
+                user.id,
+                api_key.id,
+                extraction.id,
+                required_cents,
+                note="Low-quality output auto-refund (S20)",
+            )
+        session.commit()
+        session.refresh(extraction)
     return _response_for(extraction, storage)
 
 

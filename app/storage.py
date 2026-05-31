@@ -11,7 +11,7 @@ from botocore.client import BaseClient
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.config import Settings, get_settings
-from app.constants import DOWNLOAD_URL_TTL_SECONDS
+from app.constants import DOWNLOAD_URL_TTL_SECONDS, TOKENS_URL_TTL_SECONDS
 
 T = TypeVar("T")
 R2_BACKOFF_SECONDS = (0.25, 0.75, 1.5)
@@ -63,8 +63,57 @@ class R2Storage:
         response = self._with_retries(lambda: self.client.get_object(Bucket=self.bucket, Key=object_key))
         return response["Body"].read()
 
+    @staticmethod
+    def tokens_object_key(extraction_id: int, user_id: int) -> str:
+        """Return the canonical R2 object key for an extraction's tokens.json.
+
+        Kept separate from the ZIP key so the two assets can be signed,
+        served, or rotated independently. Naming mirrors `put_extraction_zip`
+        for operator readability when browsing the bucket.
+        """
+        return f"tokens/{user_id}/{extraction_id}.json"
+
+    def put_extraction_tokens(self, extraction_id: int, user_id: int, tokens_bytes: bytes) -> str:
+        """Upload a tokens.json payload and return its object key.
+
+        Edge case: bucket-existence check is shared with `put_extraction_zip`
+        via `ensure_bucket`; callers that already invoked `put_extraction_zip`
+        on the same request still pay one extra HEAD here. Acceptable for v1.1
+        scale; revisit if extraction throughput crosses the point where the
+        extra HEAD per write becomes meaningful.
+        """
+        self.ensure_bucket()
+        object_key = self.tokens_object_key(extraction_id, user_id)
+        self._with_retries(
+            lambda: self.client.put_object(
+                Bucket=self.bucket,
+                Key=object_key,
+                Body=tokens_bytes,
+                ContentType="application/json",
+            )
+        )
+        return object_key
+
     def sign_download_url(self, object_key: str, expires_in: int = DOWNLOAD_URL_TTL_SECONDS) -> str:
         """Return a short-lived presigned URL for a ZIP bundle."""
+        return str(
+            self._with_retries(
+                lambda: self.client.generate_presigned_url(
+                    "get_object",
+                    Params={"Bucket": self.bucket, "Key": object_key},
+                    ExpiresIn=expires_in,
+                )
+            )
+        )
+
+    def sign_tokens_url(self, object_key: str, expires_in: int = TOKENS_URL_TTL_SECONDS) -> str:
+        """Return a presigned URL for a tokens.json object.
+
+        Distinct from `sign_download_url` only in the default TTL (24h vs
+        15 min). Customers wire `tokens_url` into preview pipelines that
+        re-fetch over hours; the ZIP `download_url` is one-shot UX. Both
+        share the same V4 signing path.
+        """
         return str(
             self._with_retries(
                 lambda: self.client.generate_presigned_url(

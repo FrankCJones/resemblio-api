@@ -26,9 +26,20 @@ API_KEY_PREFIX_HEAD = 8
 API_KEY_PREFIX_TAIL = 4
 MIN_KEY_PEPPER_CHARS = 32
 DOWNLOAD_URL_TTL_SECONDS = 900
+# Tokens-JSON presigned URL TTL. Longer than the ZIP TTL (15 min) because
+# customers integrating the API typically fetch the tokens payload to render
+# a preview, then re-fetch over the next few hours while wiring it into
+# their pipeline. 24h is the v1.1 brief target. R2/S3 presigned URLs cap at
+# 7 days with V4 signing, so 24h is well within the safe range.
+TOKENS_URL_TTL_SECONDS = 24 * 60 * 60
 R2_BUCKET_NAME = "resemblio-extractions"
 DEFAULT_API_SCOPE = "extract"
 SCHEMA_V1 = 1
+# v1.1 response-shape bump. The bump signals additive fields: top-level
+# `manifest` envelope and the signed `tokens_url`. Old fields stay populated;
+# clients pinned to v1 continue to work. Provenance: v1.1 mission brief Section 3
+# and R2 dispatch in `projects/OptSus Team/drafts/2026-05-28-resemblio-next-steps.md`.
+SCHEMA_V1_1 = 2
 # Hard upper bound on the request body for `/v1/webhooks/stripe`. Real Stripe
 # webhook payloads are a few KB; 256 KiB is roughly two orders of magnitude
 # above the largest observed legitimate event and small enough to bound the
