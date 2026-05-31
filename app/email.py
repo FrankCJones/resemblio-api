@@ -7,10 +7,29 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
-from typing import Protocol, TypeVar
+from typing import Protocol, TypedDict, TypeVar
 
 from app.config import Settings, get_settings
-from app.constants import RESEND_RETRY_DELAYS_SECONDS
+from app.constants import (
+    AUTO_REFUND_EMAIL_BODY_TEMPLATE,
+    AUTO_REFUND_EMAIL_SUBJECT,
+    AUTO_REFUND_SUPPORT_EMAIL,
+    RESEND_RETRY_DELAYS_SECONDS,
+)
+
+
+class AutoRefundEmailPayload(TypedDict):
+    """Shape of the rendered low-quality auto-refund email payload.
+
+    Mirrors the JSON body posted to Resend's /emails endpoint. Kept as a
+    TypedDict (not a dataclass) so the dict can be passed straight to
+    ``json.dumps`` without an intermediate conversion step.
+    """
+
+    from_: str
+    to: list[str]
+    subject: str
+    text: str
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -21,6 +40,15 @@ class EmailSender(Protocol):
 
     def send_topup_cleared(self, to_email: str, amount_cents: int, balance_cents: int) -> None:
         """Send a credit top-up cleared email."""
+        ...
+
+    def send_low_quality_auto_refund(
+        self,
+        to_email: str,
+        amount_cents: int,
+        source_url: str,
+    ) -> None:
+        """Send the S20 R4 auto-refund-on-low-quality customer notification."""
         ...
 
 
@@ -67,6 +95,54 @@ class ResendEmailSender:
                     raise RuntimeError(f"Resend returned status {status}")
 
         _with_retries(_call, "topup_cleared")
+
+    def send_low_quality_auto_refund(
+        self,
+        to_email: str,
+        amount_cents: int,
+        source_url: str,
+    ) -> None:
+        """Send the S20 R4 auto-refund notification through Resend.
+
+        Edge case: the route handler is responsible for catching any exception
+        this method raises and recording ``email_status="failed"`` on the
+        audit row. The refund itself must not be blocked by an email send
+        failure (Resend outage cannot strand a customer's credit).
+        """
+        amount = _format_usd(amount_cents)
+        text = AUTO_REFUND_EMAIL_BODY_TEMPLATE.format(
+            source_url=source_url,
+            amount=amount,
+            support_email=AUTO_REFUND_SUPPORT_EMAIL,
+        )
+        payload: AutoRefundEmailPayload = {
+            "from_": self._from_email,
+            "to": [to_email],
+            "subject": AUTO_REFUND_EMAIL_SUBJECT,
+            "text": text,
+        }
+        # Resend's API uses ``from`` not ``from_``; we keep the TypedDict key
+        # as ``from_`` because ``from`` is a Python keyword, then rewrite at
+        # the boundary.
+        wire = {"from": payload["from_"], "to": payload["to"], "subject": payload["subject"], "text": payload["text"]}
+        body = json.dumps(wire).encode("utf-8")
+
+        def _call() -> None:
+            request = urllib.request.Request(
+                "https://api.resend.com/emails",
+                data=body,
+                headers={
+                    "Authorization": f"Bearer {self._api_key}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=10) as response:
+                status = response.getcode()
+                if status >= 400:
+                    raise RuntimeError(f"Resend returned status {status}")
+
+        _with_retries(_call, "low_quality_auto_refund")
 
 
 def get_email_sender() -> EmailSender:

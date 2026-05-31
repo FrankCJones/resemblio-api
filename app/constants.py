@@ -46,3 +46,23 @@ SCHEMA_V1_1 = 2
 # work a single rejected request can cost the API. Audit finding M-API-1
 # (`projects/OptSus Team/security-audits/2026-05-26-initial.md`).
 STRIPE_WEBHOOK_MAX_BODY_BYTES = 256 * 1024
+
+# S20 R4 auto-refund customer-comms constants. The support email is the
+# canonical address customers reply to for manual review; matches the address
+# in the v1 brand pages and the resemblio.com MX records. The subject and body
+# template live next to it so a copy review (Frank) is a one-file diff.
+AUTO_REFUND_SUPPORT_EMAIL = "hello@resemblio.com"
+AUTO_REFUND_EMAIL_SUBJECT = "Your Resemblio extraction was auto-refunded"
+# Format args: amount (USD string, e.g. "$5.00"), source_url, support_email.
+# Plain text body; no HTML rendering on Resend for this transactional message.
+# Kept short on purpose; longer copy invites the customer to skim past the
+# refund confirmation, which is the line that matters.
+AUTO_REFUND_EMAIL_BODY_TEMPLATE = (
+    "Your extraction of {source_url} returned generic placeholders our "
+    "quality-scoring system flagged as low confidence. We've credited your "
+    "account back {amount}. Try a different URL or contact us at "
+    "{support_email} if you'd like manual review."
+)
+# Audit row schema version. Bumped (with a migration) when the audit-row
+# shape changes in a way downstream consumers must notice.
+AUTO_REFUND_AUDIT_SCHEMA_VERSION = "auto_refund_audit_v1"

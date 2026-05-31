@@ -178,6 +178,44 @@ class CreditLedger(Base):
     )
 
 
+class AutoRefundAuditEvent(Base):
+    """Append-only record of an S20 auto-refund event with email-send status.
+
+    Separate from ``credit_ledger`` because credit_ledger is a financial record
+    and this table is a customer-communication and operational-audit record.
+    Mixing email-send status into credit_ledger would muddy the financial
+    audit. See migration 0010 for the full rationale.
+
+    Idempotency: ``extraction_id`` is unique. The route handler is expected to
+    treat a duplicate-key insert as a no-op (the credit-ledger refund row is
+    the primary financial idempotency gate; this table is the secondary
+    customer-comms gate).
+    """
+
+    __tablename__ = "auto_refund_audit_events"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    schema_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    extraction_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("extractions.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("users.id"), nullable=False)
+    refund_amount_cents: Mapped[int] = mapped_column(Integer, nullable=False)
+    penalized_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    raw_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    threshold: Mapped[float] = mapped_column(Float, nullable=False)
+    penalties_applied: Mapped[list[str] | None] = mapped_column(JsonType, nullable=True)
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    # Plain-text vocabulary: "sent" | "failed" | "skipped_no_sender". A DBA
+    # can read the table directly without decoding constants.
+    email_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    email_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+    __table_args__ = (
+        Index("ix_auto_refund_audit_events_extraction_id", "extraction_id", unique=True),
+        Index("ix_auto_refund_audit_events_created_at", "created_at"),
+    )
+
+
 class TopupSession(Base):
     """Server-recorded Stripe Checkout session for credit top-up.
 

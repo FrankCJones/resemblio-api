@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Callable
 from datetime import timedelta
 from typing import Any, Protocol
@@ -16,6 +17,7 @@ from starlette.responses import JSONResponse
 
 from app.auth import current_api_key, current_user, utcnow
 from app.constants import (
+    AUTO_REFUND_AUDIT_SCHEMA_VERSION,
     CHARGE_MAX_RETRIES,
     EXTRACTION_PRIVATE_CENTS,
     EXTRACTION_PUBLIC_CENTS,
@@ -24,6 +26,7 @@ from app.constants import (
     SPEND_CAP_WINDOW_DAYS,
 )
 from app.db import get_db
+from app.email import EmailSender, EmailSenderFactory, get_email_sender_factory
 from app.extractor_bridge import ExtractionBridgeError, ExtractionBundle, extract_design_tokens
 from app.failure_modes import (
     FailureCode,
@@ -31,7 +34,7 @@ from app.failure_modes import (
     is_refundable,
     redact_secrets,
 )
-from app.models import ApiKey, CreditLedger, Extraction, User
+from app.models import ApiKey, AutoRefundAuditEvent, CreditLedger, Extraction, User
 from app.quality_heuristics import HeuristicPenaltyResult, apply_heuristic_penalties
 from app.quality_scoring import QualityScoreResult, compute_quality_score
 from app.scoring_weights import DEFAULT_THRESHOLD_V1_1_X
@@ -45,6 +48,8 @@ from app.schemas import (
     QualityScoreComponents,
 )
 from app.storage import R2Storage, get_storage
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -188,6 +193,88 @@ def _refund(
         )
     )
     return True
+
+
+def _record_auto_refund_audit_and_notify(
+    session: Session,
+    extraction: Extraction,
+    user: User,
+    refund_amount_cents: int,
+    penalty_result: HeuristicPenaltyResult,
+    base_threshold: float,
+    email_sender_factory: EmailSenderFactory | None,
+) -> None:
+    """Persist an auto-refund audit row and send the customer notification.
+
+    Intent: the caller has just performed a successful auto-refund via
+    ``_refund(...)`` (return value True). This helper records the
+    customer-comms side of the event: a row in ``auto_refund_audit_events``
+    plus a transactional email through Resend.
+
+    Idempotency: the audit table has a UNIQUE constraint on ``extraction_id``.
+    A duplicate INSERT raises IntegrityError inside the SAVEPOINT and only
+    the audit row rolls back; the surrounding transaction (extraction-row
+    update + refund-ledger insert) commits normally. The primary
+    customer-comms guard against double-emailing lives in the caller (the
+    ``refunded_now`` gate around this helper); this table's UNIQUE
+    constraint is the second-line defense against the audit row itself.
+
+    Edge case: email failures DO NOT block the refund. A Resend outage that
+    raises during ``send_low_quality_auto_refund`` is caught, logged, and
+    persisted as ``email_status="failed"`` on the audit row. The refund is
+    already in the ledger before this function runs.
+    """
+    email_status = "skipped_no_sender"
+    email_error: str | None = None
+
+    if email_sender_factory is not None:
+        try:
+            sender: EmailSender = email_sender_factory()
+            sender.send_low_quality_auto_refund(
+                user.email,
+                refund_amount_cents,
+                extraction.url,
+            )
+            email_status = "sent"
+        except Exception as send_exc:  # noqa: BLE001 - email is best-effort; never block refund
+            email_status = "failed"
+            email_error = repr(send_exc)
+            logger.warning(
+                "auto-refund email send failed extraction_id=%s error=%s",
+                extraction.id,
+                email_error,
+            )
+
+    audit = AutoRefundAuditEvent(
+        schema_version=AUTO_REFUND_AUDIT_SCHEMA_VERSION,
+        extraction_id=extraction.id,
+        user_id=user.id,
+        refund_amount_cents=refund_amount_cents,
+        penalized_score=penalty_result.penalized_score,
+        raw_score=penalty_result.original_score,
+        threshold=base_threshold,
+        penalties_applied=list(penalty_result.penalties_applied),
+        source_url=extraction.url,
+        email_status=email_status,
+        email_error=email_error,
+    )
+    # SAVEPOINT-scoped insert. A UNIQUE-violation on (extraction_id) must
+    # ONLY roll back the audit insert, not the surrounding transaction (which
+    # also carries the extraction-row update and the refund-ledger insert
+    # from _refund). Without `begin_nested`, a top-level rollback here would
+    # discard the refund itself; with it, only this insert rolls back and
+    # the surrounding work continues to commit downstream.
+    try:
+        with session.begin_nested():
+            session.add(audit)
+    except IntegrityError:
+        # Duplicate audit row for the same extraction_id. The financial
+        # refund has already landed via _refund; the duplicate audit attempt
+        # is the no-op the unique constraint enforces.
+        logger.info(
+            "auto-refund audit duplicate skipped extraction_id=%s",
+            extraction.id,
+        )
 
 
 def _tokens_url_for(extraction: Extraction, storage: R2Storage) -> str | None:
@@ -353,6 +440,7 @@ def create_extraction(
     session: Session = Depends(get_db),
     storage: R2Storage = Depends(get_storage),
     extractor: ExtractorCallable = Depends(get_extractor),
+    email_sender_factory: EmailSenderFactory = Depends(get_email_sender_factory),
 ) -> ExtractionResponse | JSONResponse:
     """Create a charged extraction, persist it, and upload the ZIP bundle."""
     user: User = current_user(request)
@@ -582,7 +670,7 @@ def create_extraction(
             # this extraction (cannot happen on the canonical success branch
             # but defended against here per ADR section 7), the helper is a
             # no-op and the customer is not double-credited.
-            _refund(
+            refunded_now = _refund(
                 session,
                 user.id,
                 api_key.id,
@@ -590,6 +678,22 @@ def create_extraction(
                 required_cents,
                 note="Low-quality output auto-refund (S20)",
             )
+            # R4 customer-comms: only fire the audit + email when this call
+            # was the one that actually inserted the refund row. A retried or
+            # duplicate path that finds an existing refund (refunded_now=False)
+            # must not send a second email to the customer. The audit table's
+            # UNIQUE(extraction_id) constraint is the second-line defense for
+            # the same invariant.
+            if refunded_now:
+                _record_auto_refund_audit_and_notify(
+                    session=session,
+                    extraction=extraction,
+                    user=user,
+                    refund_amount_cents=required_cents,
+                    penalty_result=penalty_result,
+                    base_threshold=result.threshold,
+                    email_sender_factory=email_sender_factory,
+                )
         session.commit()
         session.refresh(extraction)
     return _response_for(extraction, storage)
