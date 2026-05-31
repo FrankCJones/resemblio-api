@@ -52,13 +52,16 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 # The seed script lives at ``code/api/scripts/seed_from_drl.py``. Adding the
 # API root to ``sys.path`` lets ``python -m scripts.seed_from_drl`` resolve
-# ``app.*`` and the workspace-level ``transformer`` module.
+# ``app.*`` and the vendored top-level ``transformer`` package. ``transformer``
+# was vendored into the API repo on 2026-05-31 so CI (which checks out only
+# this repo) can import it without a sibling checkout. The upstream copy at
+# ``projects/Resemblio/code/transformer/`` remains the source of truth; sync
+# convention is documented in ``projects/Resemblio/Resemblio_INFRA.md`` under
+# "Vendored transformer package".
 _API_ROOT = Path(__file__).resolve().parents[1]
-_RESEMBLIO_CODE_ROOT = _API_ROOT.parent
-for _path in (_API_ROOT, _RESEMBLIO_CODE_ROOT):
-    _path_text = str(_path)
-    if _path_text not in sys.path:
-        sys.path.insert(0, _path_text)
+_path_text = str(_API_ROOT)
+if _path_text not in sys.path:
+    sys.path.insert(0, _path_text)
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session

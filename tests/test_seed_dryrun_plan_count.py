@@ -8,14 +8,12 @@ Run with:
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
 
-_CODE_ROOT = Path(__file__).resolve().parents[2]
-if str(_CODE_ROOT) not in sys.path:
-    sys.path.insert(0, str(_CODE_ROOT))
+# ``scripts.seed_from_drl`` resolves via pytest's ``pythonpath = ["."]`` in
+# pyproject.toml; ``transformer`` is vendored at ``code/api/transformer/``.
 
 from scripts.seed_from_drl import iter_assets, load_corpus, plan_only
 

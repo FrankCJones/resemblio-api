@@ -15,7 +15,6 @@ Synthetic DRL fixtures only; the real DRL corpus is never read.
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -23,12 +22,10 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-# The ``transformer`` package lives at ``code/transformer/`` (workspace-level),
-# one directory above the API root. Tests run from ``code/api/`` so we
-# explicitly extend ``sys.path`` before importing it.
-_CODE_ROOT = Path(__file__).resolve().parents[2]
-if str(_CODE_ROOT) not in sys.path:
-    sys.path.insert(0, str(_CODE_ROOT))
+# ``transformer`` is vendored into the API repo at ``code/api/transformer/``
+# (see ``transformer/README.md``) so CI can import it without a sibling
+# ``code/transformer/`` checkout. The pytest ``pythonpath = ["."]`` setting
+# in ``pyproject.toml`` makes the import resolve without sys.path edits.
 
 from app.models import Extraction
 from scripts import seed_from_drl as seeder
