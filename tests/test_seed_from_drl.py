@@ -15,6 +15,7 @@ Synthetic DRL fixtures only; the real DRL corpus is never read.
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -334,12 +335,23 @@ def test_dry_run_does_not_open_session(drl_root: Path, monkeypatch: pytest.Monke
 
 
 def test_dry_run_prints_what_would_be_seeded(drl_root: Path, caplog: pytest.LogCaptureFixture) -> None:
-    """Dry-run emits per-asset plan lines covering source_id and token count."""
-    with caplog.at_level("INFO", logger=seeder.LOG.name):
-        exit_code = seeder.main(["--drl-root", str(drl_root)])
+    """Dry-run emits per-asset plan lines covering source_id and token count.
+
+    Belt-and-braces caplog setup: explicitly enable propagation, set the named
+    logger level, and set caplog level on BOTH the named logger and root. This
+    survives pytest-caplog plugin version drift and any test ordering that
+    might mutate logger state before this test runs.
+    """
+    seeder.LOG.propagate = True
+    seeder.LOG.setLevel(logging.INFO)
+    caplog.set_level("INFO", logger=seeder.LOG.name)
+    caplog.set_level("INFO")  # also root logger; some pytest versions attach here
+    exit_code = seeder.main(["--drl-root", str(drl_root)])
     assert exit_code == 0
     messages = " ".join(record.message for record in caplog.records)
-    assert "acme/alphabets/acme" in messages
+    assert "acme/alphabets/acme" in messages, (
+        f"caplog empty or missing source_id; records={list(caplog.records)} text={caplog.text!r}"
+    )
     assert "globex/buttons/globex-button-001" in messages
     # tokens count for the acme fixture is 3 (ds-bg, ds-text, ds-accent)
     assert "tokens=3" in messages
@@ -478,21 +490,32 @@ def test_dry_run_against_real_drl_corpus_smoke(caplog: pytest.LogCaptureFixture)
 
 
 def test_apply_skips_assets_without_tokens(session: Session, drl_root: Path, caplog: pytest.LogCaptureFixture) -> None:
-    """Assets whose tokens.css is missing on disk are skipped, not crashed."""
+    """Assets whose tokens.css is missing on disk are skipped, not crashed.
+
+    Belt-and-braces caplog setup: explicitly enable propagation, set the named
+    logger level, and set caplog level on BOTH the named logger and root. This
+    survives pytest-caplog plugin version drift and any test ordering that
+    might mutate logger state before this test runs.
+    """
+    seeder.LOG.propagate = True
+    seeder.LOG.setLevel(logging.WARNING)
+    caplog.set_level("WARNING", logger=seeder.LOG.name)
+    caplog.set_level("WARNING")  # also root logger; some pytest versions attach here
     user_id = _seed_user(session)
     session.commit()
     # Remove one tokens.css so that asset is skipped.
     (drl_root / "assets" / "alphabets" / "acme" / "tokens.css").unlink()
 
     storage = _FakeStorage()
-    with caplog.at_level("WARNING", logger=seeder.LOG.name):
-        counts = apply_seed(
-            iter_assets(load_corpus(drl_root)),
-            drl_root,
-            session,
-            storage,
-            seed_user_id=user_id,
-            batch_size=DEFAULT_BATCH_SIZE,
-        )
+    counts = apply_seed(
+        iter_assets(load_corpus(drl_root)),
+        drl_root,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+    )
     assert counts == {"inserted": 1, "updated": 0, "skipped": 1}
-    assert any("no tokens.css" in record.message for record in caplog.records)
+    assert any("no tokens.css" in record.message for record in caplog.records), (
+        f"caplog empty or missing warning; records={list(caplog.records)} text={caplog.text!r}"
+    )
