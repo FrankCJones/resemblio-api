@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request
 
 from app.auth import AuthMiddleware
 from app.config import get_settings, validate_startup_settings
-from app.routes import account, api_keys, credit, extractions, health, webhooks
+from app.routes import account, api_keys, credit, extractions, health, internal_auth, webhooks
 
 
 def validate_worker_concurrency() -> None:
@@ -94,6 +94,7 @@ def create_app() -> FastAPI:
     app.include_router(credit.router, prefix="/v1", tags=["credit"])
     app.include_router(extractions.router, prefix="/v1", tags=["extractions"])
     app.include_router(webhooks.router, prefix="/v1", tags=["webhooks"])
+    app.include_router(internal_auth.router, prefix="/v1", tags=["internal_auth"])
     return app
 
 

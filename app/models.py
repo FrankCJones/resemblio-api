@@ -62,6 +62,16 @@ class ApiKey(Base):
     created_from_ip: Mapped[str | None] = mapped_column(InetType, nullable=True)
     grace_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     spend_cap_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # ``kind`` classifies how the key is used. ``'user'`` keys are minted by
+    # the user from the dashboard and shown in the visible-keys list. The BFF
+    # key minted at signup is ``'internal_bff'``: it powers the Next.js web
+    # app's server-side proxy and is never displayed to the user.
+    # ``'service'`` is reserved for internal automation. Migration 0013.
+    kind: Mapped[str] = mapped_column(Text, nullable=False, default="user", server_default="user")
+    # Whether this key appears in the dashboard "your API keys" list. Derived
+    # from ``kind`` at insert time but stored separately so a service key can
+    # be flipped invisible without rewriting its audit ``kind``. Migration 0013.
+    is_visible_to_user: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
 
     user: Mapped[User] = relationship(back_populates="api_keys")
     events: Mapped[list[ApiKeyEvent]] = relationship(back_populates="api_key")
@@ -279,3 +289,57 @@ class StripeEventSeen(Base):
     claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, server_default=func.now())
 
     __table_args__ = (Index("ix_stripe_events_seen_event_id", "event_id", unique=True),)
+
+
+class MagicLinkToken(Base):
+    """Single-use, time-limited token for passwordless signup/login.
+
+    The plaintext token is never persisted; only the SHA-256 ``token_hash``
+    is. ``email`` is the lookup key because the user row may not yet exist
+    at the moment the link is requested (anti-enumeration semantics in the
+    request endpoint). Single-use is enforced by flipping ``consumed_at``
+    from NULL to a UTC timestamp at redemption time; once set, the row is
+    rejected for any subsequent redemption attempt. Migration 0012.
+    """
+
+    __tablename__ = "magic_link_tokens"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+    token_hash: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    ip: Mapped[str | None] = mapped_column(Text, nullable=True)
+    user_agent: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    __table_args__ = (
+        Index("ix_magic_link_tokens_email", "email"),
+        Index("ix_magic_link_tokens_token_hash", "token_hash", unique=True),
+    )
+
+
+class WebSessionKey(Base):
+    """Maps a user to the ApiKey row currently acting as their BFF session key.
+
+    Exactly one active BFF key per user (UNIQUE on ``api_key_id``). On a new
+    login, the existing BFF key (if any) is revoked and a fresh ApiKey row
+    of ``kind='internal_bff'`` is minted; the corresponding row here is
+    replaced and ``rotated_at`` on the predecessor is set for audit. The
+    plaintext key value is NEVER stored in this table; the row only points
+    at the api_keys row whose ``key_hash`` already exists, which means a
+    leak of this table alone cannot grant API access. Migration 0013.
+    """
+
+    __tablename__ = "web_session_keys"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("users.id"), nullable=False)
+    api_key_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("api_keys.id"), nullable=False, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    rotated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (
+        Index("ix_web_session_keys_user_id", "user_id"),
+        Index("ix_web_session_keys_api_key_id", "api_key_id", unique=True),
+    )

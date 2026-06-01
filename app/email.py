@@ -14,6 +14,9 @@ from app.constants import (
     AUTO_REFUND_EMAIL_BODY_TEMPLATE,
     AUTO_REFUND_EMAIL_SUBJECT,
     AUTO_REFUND_SUPPORT_EMAIL,
+    MAGIC_LINK_EMAIL_BODY_TEMPLATE,
+    MAGIC_LINK_EMAIL_SUBJECT,
+    MAGIC_LINK_EXPIRY_MINUTES,
     RESEND_RETRY_DELAYS_SECONDS,
 )
 
@@ -49,6 +52,10 @@ class EmailSender(Protocol):
         source_url: str,
     ) -> None:
         """Send the S20 R4 auto-refund-on-low-quality customer notification."""
+        ...
+
+    def send_magic_link(self, to_email: str, link: str) -> None:
+        """Send the passwordless sign-in magic link to ``to_email``."""
         ...
 
 
@@ -143,6 +150,41 @@ class ResendEmailSender:
                     raise RuntimeError(f"Resend returned status {status}")
 
         _with_retries(_call, "low_quality_auto_refund")
+
+    def send_magic_link(self, to_email: str, link: str) -> None:
+        """Send a passwordless sign-in magic link through Resend.
+
+        The link is the fully-formed click target the recipient lands on;
+        the API does NOT log it (the link IS the credential). Retries use
+        the same exponential-backoff helper as other Resend calls.
+        """
+        text = MAGIC_LINK_EMAIL_BODY_TEMPLATE.format(
+            link=link, minutes=MAGIC_LINK_EXPIRY_MINUTES
+        )
+        payload = {
+            "from": self._from_email,
+            "to": [to_email],
+            "subject": MAGIC_LINK_EMAIL_SUBJECT,
+            "text": text,
+        }
+        body = json.dumps(payload).encode("utf-8")
+
+        def _call() -> None:
+            request = urllib.request.Request(
+                "https://api.resend.com/emails",
+                data=body,
+                headers={
+                    "Authorization": f"Bearer {self._api_key}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=10) as response:
+                status = response.getcode()
+                if status >= 400:
+                    raise RuntimeError(f"Resend returned status {status}")
+
+        _with_retries(_call, "magic_link")
 
 
 def get_email_sender() -> EmailSender:

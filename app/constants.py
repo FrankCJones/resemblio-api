@@ -66,3 +66,38 @@ AUTO_REFUND_EMAIL_BODY_TEMPLATE = (
 # Audit row schema version. Bumped (with a migration) when the audit-row
 # shape changes in a way downstream consumers must notice.
 AUTO_REFUND_AUDIT_SCHEMA_VERSION = "auto_refund_audit_v1"
+
+# S3 internal-auth (magic link + BFF session) constants. The magic-link
+# token is 32 random bytes URL-safe-base64 encoded; we never persist the
+# plaintext, only its SHA-256 hash. Expiry is short (15 minutes) so a
+# leaked-link window is bounded. The session-key rotation cadence is
+# advisory only for now (the BFF key revokes-and-mints on every login
+# regardless of age); 30 days is the upper bound a single BFF key can
+# live before a forced rotation on next login.
+MAGIC_LINK_TOKEN_BYTES = 32
+MAGIC_LINK_EXPIRY_MINUTES = 15
+BFF_SESSION_MAX_AGE_DAYS = 30
+# Magic-link email copy lives next to the constant so a copy review is a
+# one-file diff. The link URL is supplied by the caller (the web BFF
+# knows its own origin); the API only assembles the body text.
+MAGIC_LINK_EMAIL_SUBJECT = "Your Resemblio sign-in link"
+MAGIC_LINK_EMAIL_BODY_TEMPLATE = (
+    "Click to finish signing in to Resemblio:\n\n"
+    "{link}\n\n"
+    "This link expires in {minutes} minutes and can only be used once. "
+    "If you did not request this, you can ignore this email."
+)
+# How many of the leading characters of a BFF api-key plaintext are safe
+# to log. The full plaintext is never logged; only this prefix appears in
+# operational log lines so an operator can trace a session without the
+# log line itself becoming a credential.
+BFF_KEY_LOG_PREFIX_CHARS = 8
+# ApiKey.kind vocabulary. Treat as a closed set; new values require a
+# migration plus a code-side switch update.
+API_KEY_KIND_USER = "user"
+API_KEY_KIND_INTERNAL_BFF = "internal_bff"
+API_KEY_KIND_SERVICE = "service"
+# schema_version literal for downstream consumers of magic-link / session
+# rows. Bumped together with the migrations if the row shape changes.
+MAGIC_LINK_SCHEMA_VERSION = "magic_link_tokens_v1"
+WEB_SESSION_SCHEMA_VERSION = "web_session_keys_v1"

@@ -17,7 +17,24 @@ from app.models import ApiKey, ApiKeyEvent, User
 from app.rate_limit import rate_limiter
 
 TOKEN_RE = re.compile(r"^rsmb_(live|test)_[A-Za-z0-9_-]{43}$")
-AUTH_FREE_PATHS = frozenset({"/healthz", "/v1/healthz", "/readyz", "/v1/readyz", "/v1/webhooks/stripe", "/docs", "/redoc", "/openapi.json"})
+AUTH_FREE_PATHS = frozenset({
+    "/healthz",
+    "/v1/healthz",
+    "/readyz",
+    "/v1/readyz",
+    "/v1/webhooks/stripe",
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+    # Internal BFF auth surface. These routes are gated by a separate shared-
+    # secret middleware (see ``app/routes/internal_auth.py``) rather than the
+    # Bearer-token AuthMiddleware, because the requesting actor is the Next.js
+    # web process not an end-user holding an API key.
+    "/v1/internal/auth/request_magic_link",
+    "/v1/internal/auth/redeem_magic_link",
+    "/v1/internal/auth/whoami",
+    "/v1/internal/auth/logout",
+})
 
 # Constant-shape pepper used when the operator has not configured an old pepper
 # (i.e. no rotation is in flight). The lookup still hashes the presented token

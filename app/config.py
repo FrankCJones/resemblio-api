@@ -71,6 +71,17 @@ class Settings(BaseSettings):
     # than silently accepting them). The env var alias intentionally has no
     # "_TEST"/"_LIVE" suffix; the *value* names the mode.
     stripe_mode: Literal["test", "live"] = Field("test", alias="RESEMBLIO_STRIPE_MODE")
+    # Shared secret that gates the ``/v1/internal/auth/*`` surface. Only the
+    # Next.js BFF (running on the same host) is expected to know this value.
+    # Optional at boot for test/dev convenience; the internal-auth routes
+    # themselves return 503 if it is unset in production, so a misconfigured
+    # prod deploy fails closed rather than open.
+    internal_auth_secret: str | None = Field(None, alias="RESEMBLIO_INTERNAL_AUTH_SECRET")
+    # Base URL the BFF will use to construct the magic-link click target.
+    # The API only assembles ``{base}/auth/verify?token=...`` style URLs if
+    # the caller does not supply a fully-formed link. Defaults to the prod
+    # web app origin.
+    web_app_base_url: str = Field("https://resemblio.com", alias="RESEMBLIO_WEB_APP_BASE_URL")
 
     model_config = SettingsConfigDict(populate_by_name=True, extra="ignore")
 
