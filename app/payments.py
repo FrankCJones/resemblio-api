@@ -48,6 +48,25 @@ class StripeSignatureError(ValueError):
     """Raised when a Stripe webhook signature cannot be verified."""
 
 
+class StripeCustomerModeError(RuntimeError):
+    """Raised when a stored customer id does not exist in the bound Stripe mode.
+
+    Stripe customer objects (``cus_xxx``) are bound to the mode (TEST or LIVE)
+    in which they were created. A user record that was minted while the API
+    ran in TEST mode carries a TEST customer id; after a LIVE cutover the
+    LIVE Stripe API returns ``No such customer`` for that id and the SDK
+    raises ``InvalidRequestError``. Without this typed wrapper the failure
+    surfaces as an opaque 500 (see 2026-06-01 17:53 UTC LIVE cutover
+    rollback incident, ``projects/Resemblio/Resemblio_BUILD_LOG.md``).
+
+    Catching that specific Stripe error here and re-raising as a typed
+    exception lets the route handler classify it and return a 409 with a
+    clear ``customer_mode_mismatch`` error code instead of a 500. The
+    operator response is to run
+    ``tools/resemblio_customer_reconcile.sh <mode> --apply``.
+    """
+
+
 class StripeClient:
     """Small wrapper around the Stripe SDK using the configured restricted key.
 
@@ -118,6 +137,18 @@ class StripeClient:
         try:
             session = _with_retries(_call, "checkout.session.create")
         except Exception as exc:  # noqa: BLE001 - Preserve Stripe detail behind a clear checkout error.
+            # Stripe's SDK raises ``InvalidRequestError`` for a missing
+            # customer object; surface as ``StripeCustomerModeError`` so the
+            # route handler can return a 409 ``customer_mode_mismatch``
+            # instead of an opaque 500. Detection is by error message
+            # substring because the SDK type is imported lazily inside
+            # ``_stripe_module``. See class docstring for the incident
+            # context.
+            if _looks_like_no_such_customer(exc):
+                raise StripeCustomerModeError(
+                    f"Stripe customer {stripe_customer_id!r} not found in the bound mode; "
+                    "run tools/resemblio_customer_reconcile.sh to reconcile."
+                ) from exc
             raise RuntimeError("Stripe Checkout session creation failed after retries") from exc
         session_id = getattr(session, "id", None) or _mapping_value(session, "id")
         session_url = getattr(session, "url", None) or _mapping_value(session, "url")
@@ -149,6 +180,19 @@ def get_stripe_service() -> StripeGateway:
     restricted key. See ``app.config.validate_startup_settings``.
     """
     return StripeClient(get_settings())
+
+
+def _looks_like_no_such_customer(exc: BaseException) -> bool:
+    """Return True if ``exc`` matches Stripe's "No such customer" pattern.
+
+    Stripe raises ``stripe.error.InvalidRequestError`` with a message of the
+    form ``No such customer: 'cus_xxx'`` when the bound mode's account does
+    not have that customer object. Detection is by substring rather than
+    isinstance so this module does not have to import the Stripe SDK at
+    module load (the SDK is imported lazily by ``_stripe_module``).
+    """
+    message = str(exc) or ""
+    return "no such customer" in message.lower()
 
 
 def _stripe_module() -> object:

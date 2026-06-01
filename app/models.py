@@ -26,6 +26,11 @@ class User(Base):
     email: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
     stripe_customer_id: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Retained TEST-mode customer id, populated by the customer-reconciliation
+    # helper when a user's primary ``stripe_customer_id`` is rewritten from a
+    # TEST value to a LIVE value during a Stripe mode cutover. Forensic-only;
+    # the application never reads this field at runtime. Migration 0011.
+    stripe_customer_id_test: Mapped[str | None] = mapped_column(String(64), nullable=True)
     status: Mapped[str] = mapped_column(Text, nullable=False, default="active", server_default="active")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
