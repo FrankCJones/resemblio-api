@@ -93,6 +93,49 @@ def test_extractor_failure_no_refund_for_user_attributable(
     assert entries == ["onboarding_grant", "extraction_charge"]
 
 
+def test_list_extractions_advertises_schema_v1_1_on_wrapper_and_items(
+    client: TestClient,
+    session: Session,
+) -> None:
+    """List endpoint response-contract version is SCHEMA_V1_1 on wrapper + each item.
+
+    Regression guard for the 2026-06-01 list-endpoint shape fix: clients that
+    switch on `schema_version` for the list response shape must see v1.1 (=2)
+    on both the wrapper and every per-item row, matching the detail endpoint's
+    response-contract version. The row's extractor `schema_version` column is
+    a separate concern and is not surfaced on list items.
+    """
+    _, _, plaintext = seed_user(session)
+    client.post("/v1/extractions", headers=auth_headers(plaintext), json={"url": "https://example.com/a"})
+    client.post("/v1/extractions", headers=auth_headers(plaintext), json={"url": "https://example.com/b"})
+    listed = client.get("/v1/extractions", headers=auth_headers(plaintext)).json()
+    assert listed["schema_version"] == 2
+    assert len(listed["items"]) == 2
+    for item in listed["items"]:
+        assert item["schema_version"] == 2
+        # List items stay narrow: full envelope is detail-only.
+        assert set(item.keys()) == {"id", "url", "status", "extracted_at", "schema_version"}
+
+
+def test_detail_endpoint_still_returns_full_envelope_with_schema_v1_1(
+    client: TestClient,
+    session: Session,
+) -> None:
+    """Regression guard: detail endpoint shape (schema_version=2 + manifest + tokens_url) unchanged."""
+    _, _, plaintext = seed_user(session)
+    created = client.post("/v1/extractions", headers=auth_headers(plaintext), json={"url": "https://example.com"})
+    assert created.status_code == 200
+    extraction = session.query(Extraction).one()
+    fetched = client.get(f"/v1/extractions/{extraction.id}", headers=auth_headers(plaintext))
+    assert fetched.status_code == 200
+    body = fetched.json()
+    assert body["schema_version"] == 2
+    assert body["tokens_url"] is not None
+    assert isinstance(body["manifest"], dict)
+    assert body["manifest"]["schema_version"] == 2
+    assert body["download_url"] is not None
+
+
 def _balance(session: Session) -> int:
     """Return the current seeded user's balance."""
     return sum(entry.amount_cents for entry in session.query(CreditLedger).all())

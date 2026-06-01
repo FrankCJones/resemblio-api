@@ -712,7 +712,24 @@ def list_extractions(
     if before is not None:
         stmt = select(Extraction).where(Extraction.user_id == user.id, Extraction.id < before).order_by(Extraction.id.desc()).limit(limit)
     rows = session.execute(stmt).scalars().all()
-    return ExtractionListResponse(items=[ExtractionListItem.model_validate(row) for row in rows], schema_version=SCHEMA_V1)
+    # Response-shape contract version, not the extractor-output version.
+    # Per v1.1 brief: list endpoint must advertise schema_version=SCHEMA_V1_1
+    # on both the wrapper and each per-item row so clients can switch on a
+    # single version field. The canonical full envelope (manifest, signed
+    # tokens_url, download_url) lives on the DETAIL endpoint by design:
+    # list items stay narrow (id/url/status/extracted_at/schema_version) so
+    # browse requests do not pay the cost of minting N signed R2 URLs.
+    items = [
+        ExtractionListItem(
+            id=row.id,
+            url=row.url,
+            status=row.status,
+            extracted_at=row.extracted_at,
+            schema_version=SCHEMA_V1_1,
+        )
+        for row in rows
+    ]
+    return ExtractionListResponse(items=items, schema_version=SCHEMA_V1_1)
 
 
 @router.get("/extractions/{extraction_id}", response_model=ExtractionResponse)
