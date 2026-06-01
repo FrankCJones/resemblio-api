@@ -57,19 +57,94 @@ jobs:
           echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
+      # Capture the alembic head revision recorded in the repo so we can assert
+      # parity against prod's `alembic current` after the deploy. Locked
+      # 2026-06-01 after the silent-skip incident: migrations 0009/0010/0011
+      # were authored and "deployed" but Postgres was still at 0008. Root
+      # cause hypothesis: an alembic upgrade step that errored silently or
+      # was absent from a prior workflow revision still let the deploy report
+      # green because no parity assertion existed. This step makes the
+      # repo-head explicit BEFORE the deploy so we can compare after.
+      - name: Capture local alembic head
+        id: alembic_local_head
+        run: |
+          set -euo pipefail
+          /tmp/ci-venv/bin/alembic -c alembic.ini heads --resolve-dependencies > /tmp/alembic_heads.txt
+          # `alembic heads` prints lines like "<rev> (head)" - extract just the rev id.
+          LOCAL_HEAD=$(awk '{print $1}' /tmp/alembic_heads.txt | head -n1)
+          if [ -z "$LOCAL_HEAD" ]; then
+            echo "FATAL: could not determine local alembic head from alembic.ini" >&2
+            cat /tmp/alembic_heads.txt >&2
+            exit 1
+          fi
+          echo "local_head=$LOCAL_HEAD" >> "$GITHUB_OUTPUT"
+          echo "Local alembic head (repo): $LOCAL_HEAD"
+
       - name: Deploy on resemblio-prod-01
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          LOCAL_ALEMBIC_HEAD: ${{ steps.alembic_local_head.outputs.local_head }}
         run: |
-          ssh "$DEPLOY_USER@$DEPLOY_HOST" bash -s << 'REMOTE'
+          ssh -o SendEnv=LOCAL_ALEMBIC_HEAD "$DEPLOY_USER@$DEPLOY_HOST" \
+            LOCAL_ALEMBIC_HEAD="$LOCAL_ALEMBIC_HEAD" bash -s << 'REMOTE'
+          # set -e halts on any non-zero exit; -u catches unset vars; -o pipefail
+          # surfaces errors mid-pipeline. Critical for the alembic step: prior
+          # to 2026-06-01 a silent migration skip could pass under a looser
+          # shell mode. Do not soften these flags.
           set -euo pipefail
+
           cd /opt/resemblio-api/app
           git fetch --quiet origin main
           git reset --hard origin/main
           /opt/resemblio-api/venv/bin/pip install -q --upgrade pip
           /opt/resemblio-api/venv/bin/pip install -q -e .
-          /opt/resemblio-api/venv/bin/alembic upgrade head
+
+          # Load RESEMBLIO_DB_URL from the production env file. Required so
+          # alembic talks to the right database without inheriting whatever
+          # may or may not be in the SSH session's environment.
+          set -a
+          # shellcheck disable=SC1091
+          . /opt/resemblio-api/.env
+          set +a
+
+          # Pre-upgrade probe: log current prod revision and repo head BEFORE
+          # mutating. If they already match, alembic upgrade is a no-op; if
+          # they differ, we log the gap loudly so the deploy log shows what
+          # migrations are about to run. This is the diagnostic that would
+          # have surfaced the 0008 vs 0011 gap on the day it opened.
+          PROD_CURRENT=$(/opt/resemblio-api/venv/bin/alembic -c alembic.ini current 2>/dev/null \
+            | awk '{print $1}' | head -n1 || true)
+          echo "ALEMBIC PRE-UPGRADE: prod current = '${PROD_CURRENT:-<none>}', repo head = '${LOCAL_ALEMBIC_HEAD}'"
+          if [ "${PROD_CURRENT:-}" != "${LOCAL_ALEMBIC_HEAD}" ]; then
+            echo "ALEMBIC GAP DETECTED: prod is behind repo head; running upgrade."
+          else
+            echo "ALEMBIC: prod already at repo head; upgrade will be a no-op."
+          fi
+
+          # Run the upgrade. `set -e` halts the script on non-zero exit, which
+          # halts this SSH heredoc, which fails the GitHub Actions step, which
+          # halts the deploy. Do not wrap this in `|| true` or any retry that
+          # masks failure - a failed migration MUST block the service restart.
+          /opt/resemblio-api/venv/bin/alembic -c alembic.ini upgrade head
+
+          # Post-upgrade parity assertion: prod current MUST equal repo head.
+          # This catches the failure mode where alembic exits 0 but did not
+          # actually advance (e.g. multiple heads with unresolved dependencies,
+          # or a partial branch upgrade). If they disagree, fail the deploy
+          # BEFORE restarting the service - a service running against a stale
+          # schema is worse than a service that didn't restart.
+          POST_CURRENT=$(/opt/resemblio-api/venv/bin/alembic -c alembic.ini current 2>/dev/null \
+            | awk '{print $1}' | head -n1 || true)
+          if [ "${POST_CURRENT:-}" != "${LOCAL_ALEMBIC_HEAD}" ]; then
+            echo "FATAL: alembic upgrade did not bring prod to repo head."
+            echo "  prod current after upgrade: '${POST_CURRENT:-<none>}'"
+            echo "  repo head:                  '${LOCAL_ALEMBIC_HEAD}'"
+            echo "Aborting deploy; service NOT restarted."
+            exit 1
+          fi
+          echo "ALEMBIC POST-UPGRADE: prod at ${POST_CURRENT} (matches repo head)."
+
           sudo systemctl restart resemblio-api
           sleep 2
           systemctl is-active resemblio-api
