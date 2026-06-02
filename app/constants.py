@@ -225,3 +225,48 @@ PENALTY_ACCENT_DIVERSITY: float = 0.15
 # as PENALTY_ACCENT_DIVERSITY: standalone informative; stackable.
 PENALTY_DISPLAY_EQUALS_BODY: float = 0.15
 
+
+# Library indexer (mission Phase 4). Constants here are read by both the
+# worker (``app/library_indexer.py``) and the migration-aware ORM models
+# (``LibraryIndexJob``). Centralized so changing a value never requires
+# touching the worker and the model in lockstep.
+LIBRARY_INDEX_BATCH_SIZE: int = 10
+"""Maximum number of pending jobs the worker drains per CLI tick."""
+
+LIBRARY_INDEX_MAX_ATTEMPTS: int = 3
+"""Retry budget per job before the row is parked at ``status='failed'``."""
+
+LIBRARY_INDEX_QUALITY_THRESHOLD: float = 0.7
+"""Quality-gate floor (mission D2). Below this, pages are not generated."""
+
+LIBRARY_PAGE_METADATA_SCHEMA_VERSION: int = 1
+"""Schema-version tag stamped onto every ``library_pages.metadata_json``."""
+
+
+# DRL bootstrap orchestration (mission Phase 8). The DRL ships TWO data
+# surfaces: ``corpus.json`` at the DRL root (41 systems, 955 component-level
+# assets - the seed_from_drl source) and ``_extractions/<brand>/`` directories
+# (24 brands actually pre-composed into per-category renders). The
+# orchestrator anchors brand discovery on ``_extractions/`` because that is
+# the set the indexer can immediately compose into library pages; corpus
+# systems without an ``_extractions/`` row require a separate compose pass.
+DRL_EXTRACTIONS_DIRNAME = "_extractions"
+"""Subdirectory of the DRL root that contains per-brand pre-composed renders."""
+
+DRL_BOOTSTRAP_REPORT_SCHEMA_VERSION = 1
+"""Schema version stamped onto the verify harness Markdown report."""
+
+DRL_BOOTSTRAP_EXPECTED_PAGES_PER_BRAND = 10
+"""Heuristic floor for per-brand library_pages once the Phase 4 indexer
+drains the queue. Matches the typical ``compose_report.composed`` length
+observed in ``_extractions/<brand>/compose_report.json`` (alphabet, library,
+hero, navigation, footer, feature-grid, article-layout, marketing-page,
+about-page, article-page). Verify harness warns rather than fails on
+brands that fall under this floor; the indexer may legitimately skip
+categories the brand's extraction lacks."""
+
+DRL_BOOTSTRAP_MIN_EXPECTED_BRANDS = 19
+"""Mission target floor: '19+ pre-extracted brands'. Verify harness exits
+non-zero when the asset_versions DRL-tagged count corresponds to fewer
+than this many distinct brand slugs."""
+
