@@ -131,6 +131,38 @@ class ExtractionListResponse(BaseModel):
     schema_version: int
 
 
+class ConvertRenderedArtifacts(BaseModel):
+    """Optional render artifacts emitted alongside a converter payload.
+
+    Only the shadcn converter currently populates this block; figma returns
+    no rendered artifacts (the FigmaVariablesPayload IS the importable
+    artifact). Kept as a dedicated model so the response shape is stable
+    when future converters add their own render outputs.
+    """
+
+    globals_css: str | None = None
+    tailwind_config_excerpt: str | None = None
+
+
+class ConvertResponse(BaseModel):
+    """Public response shape for ``POST /v1/convert/<target>/{extraction_id}``.
+
+    ``payload`` carries the converter-specific dict (shadcn theme or figma
+    variables payload, dumped via ``model_dump(by_alias=True)``). ``rendered``
+    is omitted when the target produces no render artifacts (figma).
+
+    Conversion is FREE in v1: the extraction was already paid for at creation
+    time and conversion is value-add on top, per the pricing ladder in
+    ``projects/Resemblio/CLAUDE.md``. No ledger debit is appended.
+    """
+
+    schema_version: int
+    extraction_id: int
+    target: str
+    payload: dict[str, Any]
+    rendered: ConvertRenderedArtifacts | None = None
+
+
 class ApiKeyCreateRequest(BaseModel):
     """Request body for creating an API key."""
 

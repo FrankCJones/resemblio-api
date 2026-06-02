@@ -177,3 +177,15 @@ IDEMPOTENCY_KEY_PATTERN = _re.compile(r"^[A-Za-z0-9._-]+$")
 # Stripe-LIVE smoke succeeds; see the 2026-06-02 Wave 2c handoff for the
 # seven-step flip sequence.
 BILLING_UI_FLAG_ENV_VAR = "RESEMBLIO_BILLING_UI_ENABLED"
+
+# Converter target identifiers exposed via the public conversion endpoints
+# (``POST /v1/convert/<target>/{extraction_id}``). Treated as a closed set;
+# adding a new converter requires adding both the constant and the route.
+CONVERT_TARGET_SHADCN = "shadcn"
+CONVERT_TARGET_FIGMA = "figma"
+# Response-shape schema version for the conversion endpoints. Bumped
+# independently of the extraction response contract; v2 is the first publicly
+# documented shape (matches the v1.1 envelope semantics: a `schema_version`
+# field plus a `payload` block plus optional `rendered` artifacts).
+CONVERT_RESPONSE_SCHEMA_VERSION = 2
+
