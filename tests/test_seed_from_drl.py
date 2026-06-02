@@ -28,10 +28,12 @@ from sqlalchemy.orm import Session
 # ``code/transformer/`` checkout. The pytest ``pythonpath = ["."]`` setting
 # in ``pyproject.toml`` makes the import resolve without sys.path edits.
 
-from app.models import Extraction
+from app.models import AssetVersion, Extraction
 from scripts import seed_from_drl as seeder
 from scripts.seed_from_drl import (
     DEFAULT_BATCH_SIZE,
+    DRL_BOOTSTRAP_USER_ID,
+    DRL_VERSION_LABEL_PREFIX,
     SEED_SOURCE_DRL_V1,
     apply_seed,
     build_bundle,
@@ -534,4 +536,142 @@ def test_apply_skips_assets_without_tokens(session: Session, drl_root: Path, cap
     assert counts == {"inserted": 1, "updated": 0, "skipped": 1}
     assert any("no tokens.css" in record.message for record in caplog.records), (
         f"caplog empty or missing warning; records={list(caplog.records)} text={caplog.text!r}"
+    )
+
+
+# --- Library v1.1 indexer audit-shape tests ----------------------------------
+#
+# These tests pin the contract the library indexer (mission Phase 4) depends
+# on. The indexer queries ``asset_versions WHERE is_public=true`` and groups
+# bootstrap rows by their ``version_label`` prefix. If any of these fields
+# drift the indexer will silently skip the bootstrap corpus.
+
+_DRL_CAPTURED_DATE = "2026-05-21"
+"""Matches ``corpus.json:generated`` in the real DRL on disk; the synthetic
+fixture above sets this same value so seed-row labels stay readable."""
+
+
+def _apply_with_captured(
+    session: Session, drl_root: Path, user_id: int, captured: str = _DRL_CAPTURED_DATE
+) -> _FakeStorage:
+    """Run ``apply_seed`` with a known captured-date for assertion clarity."""
+    storage = _FakeStorage()
+    apply_seed(
+        iter_assets(load_corpus(drl_root)),
+        drl_root,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+        captured_date=captured,
+    )
+    return storage
+
+
+def test_seed_writes_asset_versions_row(session: Session, drl_root: Path) -> None:
+    """Each seeded extraction links to a freshly written ``asset_versions`` row.
+
+    Verifies the post-``ac31f95`` library refactor end-to-end on the DRL seed
+    path: the extraction's ``asset_version_id`` is populated, the joined row
+    carries the same DTCG payload, and the dedup ``content_hash`` is non-empty.
+    """
+    user_id = _seed_user(session)
+    session.commit()
+    _apply_with_captured(session, drl_root, user_id)
+
+    extractions = session.execute(select(Extraction).order_by(Extraction.id)).scalars().all()
+    assert len(extractions) == 2
+    for row in extractions:
+        assert row.asset_version_id is not None, "every seed row must link to an asset_version"
+        av = session.get(AssetVersion, row.asset_version_id)
+        assert av is not None
+        assert av.dtcg_json == row.dtcg_json
+        assert len(av.content_hash) == 64
+
+
+def test_seed_marks_drl_entries_as_public(session: Session, drl_root: Path) -> None:
+    """DRL-seeded asset_versions land with ``is_public=True``.
+
+    The library v1.1 indexer only generates public pages for ``is_public=True``
+    rows. Without this, the bootstrap corpus would silently fail to populate
+    the library on first indexer run.
+    """
+    user_id = _seed_user(session)
+    session.commit()
+    _apply_with_captured(session, drl_root, user_id)
+
+    av_rows = session.execute(select(AssetVersion)).scalars().all()
+    assert av_rows, "expected asset_versions rows after seed"
+    assert all(av.is_public is True for av in av_rows), (
+        f"DRL-seeded asset_versions must be public; got {[av.is_public for av in av_rows]}"
+    )
+
+
+def test_seed_sets_version_label_from_captured_date(
+    session: Session, drl_root: Path
+) -> None:
+    """``version_label`` reads ``DRL bootstrap <captured-date>``.
+
+    Sourced from ``corpus.json:generated`` in production; the test passes the
+    same value explicitly via ``captured_date=`` so the assertion is precise.
+    """
+    user_id = _seed_user(session)
+    session.commit()
+    _apply_with_captured(session, drl_root, user_id, captured=_DRL_CAPTURED_DATE)
+
+    av_rows = session.execute(select(AssetVersion)).scalars().all()
+    expected = f"{DRL_VERSION_LABEL_PREFIX} {_DRL_CAPTURED_DATE}"
+    assert av_rows
+    for av in av_rows:
+        assert av.version_label == expected, (
+            f"expected label {expected!r}, got {av.version_label!r}"
+        )
+
+
+def test_seed_sets_first_extracted_by_user_id_null_or_synthetic(
+    session: Session, drl_root: Path
+) -> None:
+    """``asset_versions.first_extracted_by_user_id`` is NULL on DRL bootstrap rows.
+
+    The audit-trail rule: bootstrap rows are not attributed to the
+    ``--seed-user-id`` operator so the library indexer + downstream auditors
+    can cleanly distinguish bootstrap content from organic user extractions.
+    The owning ``extractions`` row keeps its NOT-NULL FK to the seed user.
+    """
+    user_id = _seed_user(session)
+    session.commit()
+    _apply_with_captured(session, drl_root, user_id)
+
+    av_rows = session.execute(select(AssetVersion)).scalars().all()
+    assert av_rows
+    assert all(av.first_extracted_by_user_id == DRL_BOOTSTRAP_USER_ID for av in av_rows)
+    assert DRL_BOOTSTRAP_USER_ID is None, (
+        "constant is documented as NULL; flipping to a synthetic id is a contract change"
+    )
+
+    # The extraction row, by contrast, MUST attribute to the seed user (the
+    # FK is NOT NULL on extractions.user_id).
+    extractions = session.execute(select(Extraction)).scalars().all()
+    assert all(ex.user_id == user_id for ex in extractions)
+
+
+def test_seed_is_idempotent_on_asset_versions(session: Session, drl_root: Path) -> None:
+    """Re-running ``apply_seed`` does not duplicate ``asset_versions`` rows.
+
+    Dedup is keyed on ``(url, content_hash)``; when the seed runs twice with
+    unchanged DRL content, the second run reuses every existing asset_versions
+    row and the row count stays flat.
+    """
+    user_id = _seed_user(session)
+    session.commit()
+
+    _apply_with_captured(session, drl_root, user_id)
+    first_av_count = session.execute(select(AssetVersion)).scalars().all()
+    first_count = len(first_av_count)
+    assert first_count == 2
+
+    _apply_with_captured(session, drl_root, user_id)
+    second_av_count = session.execute(select(AssetVersion)).scalars().all()
+    assert len(second_av_count) == first_count, (
+        f"re-run duplicated asset_versions: {first_count} -> {len(second_av_count)}"
     )

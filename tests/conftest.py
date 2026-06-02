@@ -35,8 +35,16 @@ TOKEN_SET: dict[str, str] = {
     "text": "#111111",
     "text_muted": "#555555",
     "accent": "#ff3366",
+    # Display and body intentionally use distinct primary families. The
+    # 2026-05-31 `display_equals_body` heuristic penalty (per the Susann
+    # extraction-fidelity finding) would otherwise drop the fixture's
+    # composite score below threshold and flip the route status to
+    # `low_quality`, breaking `test_post_extractions_response_shape_unchanged`
+    # which asserts the `ok` success-path response shape. The fixture
+    # represents a healthy extraction; pairing distinct families is the
+    # accurate signal here.
     "font_body": "Inter, sans-serif",
-    "font_display": "Inter, sans-serif",
+    "font_display": "Playfair Display, serif",
     "space_1": "4px",
     "space_2": "8px",
     "radius_sm": "4px",

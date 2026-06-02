@@ -60,16 +60,35 @@ def insert_or_reuse_asset_version(
     first_extracted_by_user_id: int | None,
     manifest_schema_version: int,
     raw_assets_url: str | None = None,
+    is_public: bool = False,
+    version_label: str | None = None,
 ) -> "AssetVersion":
     """Return the ``AssetVersion`` that owns ``(url, hash(dtcg))``.
 
     Inserts a new row when no row exists for that ``(url, content_hash)``;
     otherwise returns the existing row unchanged (no audit fields rewritten
-    -- the first writer wins on ``first_extracted_by_user_id``).
+    -- the first writer wins on ``first_extracted_by_user_id``,
+    ``is_public``, and ``version_label``).
 
     The caller is responsible for committing the surrounding transaction;
     this helper flushes so the returned ``AssetVersion`` has a stable
     primary key but does not commit.
+
+    Parameters
+    ----------
+    is_public
+        Tier-aware public-corpus visibility flag. Defaults to False to match
+        the organic extraction-creation path (v1.1 keeps every organic row
+        private until v1.2 moderation tooling exists). The DRL bulk-seed
+        path overrides this to True so the library indexer can pick up the
+        bootstrap corpus on its first run. See migration 0015 contract for
+        the partial index that powers public-browse queries.
+    version_label
+        Human label for the snapshot (e.g. ``"DRL bootstrap 2026-05-21"``).
+        NULL for organic rows; the DRL seed populates this from each
+        ``_extractions/<system>/extraction.json:captured`` date so the
+        library timeline view can sort + group bootstrap rows distinctly
+        from organic re-extractions.
 
     Edge case: a concurrent writer racing on the same ``(url, content_hash)``
     pair will either lose the insert and pick up the winner's row on a
@@ -97,8 +116,8 @@ def insert_or_reuse_asset_version(
         raw_assets_url=raw_assets_url,
         manifest_schema_version=manifest_schema_version,
         first_extracted_by_user_id=first_extracted_by_user_id,
-        is_public=False,
-        version_label=None,
+        is_public=is_public,
+        version_label=version_label,
     )
     session.add(row)
     session.flush()

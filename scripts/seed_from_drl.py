@@ -90,6 +90,21 @@ LOG.propagate = True
 SEED_SOURCE_DRL_V1 = "drl_v1"
 """Marker stored in ``extractions.seed_source`` for DRL bulk-seed rows."""
 
+DRL_BOOTSTRAP_USER_ID: int | None = None
+"""Audit-field value written to ``asset_versions.first_extracted_by_user_id``
+for DRL bootstrap rows. NULL signals "not an organic user extraction" so the
+library indexer + downstream audit queries can cleanly separate the
+bootstrap corpus from real per-user activity. The ``extractions`` row keeps
+its FK to a real user (``--seed-user-id``, default 1) because that column is
+NOT NULL; the audit-trail distinction lives on the asset_versions side."""
+
+DRL_VERSION_LABEL_PREFIX = "DRL bootstrap"
+"""Prefix for ``asset_versions.version_label`` on DRL-seeded rows. The full
+label is ``"{prefix} {captured_date}"`` where ``captured_date`` is the
+top-level ``corpus.json:generated`` field (ISO date, e.g. ``2026-05-21``).
+Format: ``"DRL bootstrap 2026-05-21"``. Library timeline views group on the
+prefix; downstream sort uses the trailing date."""
+
 DEFAULT_BATCH_SIZE = 25
 """Rows per DB transaction. The R2 PUT happens outside the transaction (S3
 has no two-phase commit); on partial failure the next dry-run reconciles."""
@@ -300,12 +315,22 @@ def upsert_extraction(
     stripped: StrippedEntry,
     bundle: SeedBundle,
     r2_zip_key: str,
+    captured_date: str,
 ) -> tuple["Extraction", str]:  # noqa: F821 - lazy import
     """Insert a new seed row or update an existing one in place.
 
     Returns the ``(row, operation)`` tuple where ``operation`` is ``"insert"``
     or ``"update"``. The session is flushed but not committed; the caller
     batches commits.
+
+    The ``asset_versions`` row carries the DRL bootstrap audit shape:
+
+    - ``is_public=True`` so the library indexer (mission Phase 4) picks
+      bootstrap entries up on its first run without a moderation step.
+    - ``version_label="DRL bootstrap {captured_date}"`` so the timeline
+      view distinguishes the corpus bootstrap from organic re-extractions.
+    - ``first_extracted_by_user_id=None`` so the audit trail does not
+      attribute the bootstrap corpus to the ``--seed-user-id`` operator.
     """
     from app.asset_versions import insert_or_reuse_asset_version
     from app.models import Extraction  # local import: dry-run safety
@@ -316,8 +341,10 @@ def upsert_extraction(
         session,
         url=public_url,
         dtcg=bundle.dtcg_json,
-        first_extracted_by_user_id=user_id,
+        first_extracted_by_user_id=DRL_BOOTSTRAP_USER_ID,
         manifest_schema_version=SCHEMA_V1,
+        is_public=True,
+        version_label=f"{DRL_VERSION_LABEL_PREFIX} {captured_date}",
     )
     if existing is None:
         row = Extraction(
@@ -454,6 +481,12 @@ def plan_only(
     return rows
 
 
+DEFAULT_CAPTURED_DATE = "unknown"
+"""Fallback ``captured_date`` value when ``corpus.json`` lacks a ``generated``
+field. Real DRL corpora always have one; the fallback exists so tests with
+truncated synthetic corpora do not crash."""
+
+
 def apply_seed(
     pairs: Iterable[tuple[DrlSystemDict, DrlAssetDict]],
     drl_root: Path,
@@ -461,6 +494,7 @@ def apply_seed(
     storage: StorageClient,
     seed_user_id: int,
     batch_size: int,
+    captured_date: str = DEFAULT_CAPTURED_DATE,
 ) -> dict[str, int]:
     """Execute the bulk seed against the DB and R2.
 
@@ -488,7 +522,9 @@ def apply_seed(
         bundle = build_bundle(stripped, tokens)
         r2_key = R2_KEY_TEMPLATE.format(source_id=stripped.source_id)
         storage.put_object_at_key(r2_key, bundle.zip_bytes, "application/zip")
-        _row, operation = upsert_extraction(session, seed_user_id, stripped, bundle, r2_key)
+        _row, operation = upsert_extraction(
+            session, seed_user_id, stripped, bundle, r2_key, captured_date
+        )
         counts["inserted" if operation == "insert" else "updated"] += 1
         batch_since_commit += 1
         if batch_since_commit >= batch_size:
@@ -567,8 +603,9 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     corpus = load_corpus(args.drl_root)
+    captured_date = str(corpus.get("generated") or DEFAULT_CAPTURED_DATE)
     pairs = list(filter_assets(iter_assets(corpus), args.source_system, args.limit))
-    LOG.info("planning %d DRL asset(s)", len(pairs))
+    LOG.info("planning %d DRL asset(s) (captured=%s)", len(pairs), captured_date)
 
     if not args.apply:
         # Dry-run: zero network, zero DB, zero R2. Pass ``session=None`` so
@@ -607,6 +644,7 @@ def main(argv: list[str] | None = None) -> int:
             storage,
             args.seed_user_id,
             args.batch_size,
+            captured_date=captured_date,
         )
     LOG.info("seed complete: %s", counts)
     return 0
