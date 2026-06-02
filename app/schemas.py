@@ -148,7 +148,14 @@ class ApiKeyCreatedResponse(BaseModel):
 
 
 class ApiKeyListItem(BaseModel):
-    """Display-safe API key metadata."""
+    """Display-safe API key metadata.
+
+    The ``key_prefix`` is the first 8 chars of the plaintext key minted at
+    creation; suffix is irrecoverable (only ``key_hash`` is stored). The
+    dashboard renders this as ``{key_prefix}***`` so the user can recognize
+    a key they previously saved without exposing the full secret. Pluggable
+    in the schema; the rendering convention lives in the web layer.
+    """
 
     id: int
     key_prefix: str
@@ -163,6 +170,29 @@ class ApiKeyListItem(BaseModel):
     spend_cap_cents: int | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ApiKeyAuditEvent(BaseModel):
+    """One ``api_key_events`` row in the dashboard audit drawer.
+
+    ``metadata`` is the JSON column persisted as ``metadata_json``; renamed
+    here because ``metadata`` is the field the customer sees. Free-form
+    by design (keys vary by event_type); the dashboard renders the JSON
+    blob verbatim.
+    """
+
+    id: int
+    event_type: str
+    occurred_at: datetime
+    ip: str | None
+    metadata: dict[str, Any] | None
+
+
+class ApiKeyAuditResponse(BaseModel):
+    """Cursor-paginated audit-event response for a single key."""
+
+    items: list[ApiKeyAuditEvent]
+    schema_version: int
 
 
 class ApiKeyListResponse(BaseModel):
