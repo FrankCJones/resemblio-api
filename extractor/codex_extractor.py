@@ -15,6 +15,12 @@ import urllib.parse
 import urllib.request
 from typing import Any, Literal, Mapping, TypedDict, cast
 
+from extractor.computed_styles import (
+    ComputedStyleReport,
+    capture_computed_styles,
+    empty_report as empty_computed_report,
+    render_for_prompt as render_computed_styles_for_prompt,
+)
 from extractor.drl_adapter import (
     REQUIRED_TOKEN_KEYS,
     SCHEMA_VERSION,
@@ -26,6 +32,11 @@ from extractor.drl_adapter import (
     to_dtcg_json,
     to_postgres_row,
     validate_token_set,
+)
+from extractor.font_link_parser import (
+    LoadedFonts,
+    parse_loaded_fonts,
+    render_for_prompt as render_loaded_fonts_for_prompt,
 )
 
 MODEL_ID = "claude-sonnet-4-6"
@@ -54,14 +65,16 @@ Optional keys, include only when you can fill them confidently:
 
 Rules:
 - Every value must be a non-empty string.
-- Prefer values you can verify from the HTML or inline CSS over guesses.
-- Use plausible defaults only when a required slot is unspecified by the source.
+- Prefer the GROUND-TRUTH SIGNALS sections (computed styles, detected web fonts) over the raw HTML when they conflict. Those values come from a real browser; the raw HTML may reference CSS custom properties (var(--x)) that you cannot resolve by hand.
+- For font_body and font_display, only use family names that appear in the detected-web-fonts block or in literal `font-family:` declarations in the source. Do not invent fallbacks (no Georgia, Times New Roman, Arial unless they are literally present).
+- For color slots, prefer the rgb()/hex values from computed styles. The raw CSS may contain var() indirection that is resolved only at render time.
+- Use plausible defaults only when a required slot is unspecified by ALL signals.
 - Use CSS-ready strings: hex/rgb/hsl colors, CSS font-family stacks, px/rem/em sizes, numeric line heights, box-shadow strings, ms durations, and cubic-bezier values.
 - Do not emit null, arrays, nested objects, comments, markdown outside the fenced JSON block, or unknown keys.
 
 Source URL: {url}
 
-Homepage HTML and inline CSS:
+{signals_block}Homepage HTML and inline CSS:
 ```html
 {html}
 ```"""
@@ -122,8 +135,22 @@ class CodexExtractor(ResemblioExtractor):
         if fetch_status < 200 or fetch_status >= 300 or not body:
             return None, f"fetch failed: status={fetch_status} ua={used_ua}"
 
+        decoded_html = body.decode("utf-8", errors="replace")
+        loaded_fonts = parse_loaded_fonts(decoded_html)
+        if os.environ.get("RESEMBLIO_DISABLE_BROWSER_PASS") == "1":
+            computed_styles: ComputedStyleReport = empty_computed_report("skipped", "disabled by env")
+        else:
+            computed_styles = capture_computed_styles(html=decoded_html)
+
         try:
-            reply = self._dispatch_anthropic(build_prompt(cast(str, normalized_url), html_context(body)))
+            reply = self._dispatch_anthropic(
+                build_prompt(
+                    cast(str, normalized_url),
+                    html_context(body),
+                    loaded_fonts=loaded_fonts,
+                    computed_styles=computed_styles,
+                )
+            )
             tokens = coerce_token_set(extract_json_object(reply))
             validate_token_set(tokens)
         except ValueError as exc:
@@ -209,13 +236,38 @@ def html_context(body: bytes) -> str:
     return text[:head] + "\n<!-- resemblio-truncated -->\n" + text[-(MAX_HTML_CHARS - head):]
 
 
-def build_prompt(url: str, html: str) -> str:
-    """Build the single extraction prompt sent to Sonnet."""
+def build_prompt(
+    url: str,
+    html: str,
+    loaded_fonts: LoadedFonts | None = None,
+    computed_styles: ComputedStyleReport | None = None,
+) -> str:
+    """Build the single extraction prompt sent to Sonnet.
+
+    `loaded_fonts` and `computed_styles` are the structured pre-LLM
+    signals produced by `parse_loaded_fonts` (Phase A) and
+    `capture_computed_styles` (Phase B). When either is None or empty
+    the prompt simply omits that block, leaving the LLM to reason from
+    the raw HTML the way it always has.
+    """
+    signals_chunks: list[str] = []
+    if computed_styles is not None:
+        rendered = render_computed_styles_for_prompt(computed_styles)
+        if rendered:
+            signals_chunks.append(rendered)
+    if loaded_fonts is not None:
+        rendered = render_loaded_fonts_for_prompt(loaded_fonts)
+        if rendered:
+            signals_chunks.append(rendered)
+    signals_block = "\n\n".join(signals_chunks)
+    if signals_block:
+        signals_block = signals_block + "\n\n"
     return PROMPT_TEMPLATE.format(
         url=url,
         html=html,
         required_keys_json=json.dumps(list(REQUIRED_TOKEN_KEYS), indent=2),
         optional_keys_json=json.dumps(list(OPTIONAL_TOKEN_KEYS), indent=2),
+        signals_block=signals_block,
     )
 
 
