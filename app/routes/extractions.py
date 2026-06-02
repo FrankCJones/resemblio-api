@@ -43,6 +43,7 @@ from app.failure_modes import (
     is_refundable,
     redact_secrets,
 )
+from app.asset_versions import insert_or_reuse_asset_version
 from app.models import ApiKey, AutoRefundAuditEvent, CreditLedger, Extraction, User
 from app.quality_heuristics import HeuristicPenaltyResult, apply_heuristic_penalties
 from app.quality_scoring import QualityScoreResult, compute_quality_score
@@ -383,6 +384,11 @@ def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionRespo
     download_url = storage.sign_download_url(extraction.r2_zip_key) if extraction.r2_zip_key else None
     tokens_url = _tokens_url_for(extraction, storage)
     manifest = _manifest_for(extraction, SCHEMA_V1_1, tokens_url, download_url)
+    # Library-refactor read path: prefer the joined asset_versions payload,
+    # fall back to the denormalized column for pre-0017 rows. See
+    # ``app/asset_versions.py:dtcg_for_extraction`` for the contract.
+    from app.asset_versions import dtcg_for_extraction
+    dtcg_payload = dtcg_for_extraction(extraction)
     refunded: bool | None = None
     error_code: str | None = None
     error_log_field: Any = extraction.error_log
@@ -405,7 +411,7 @@ def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionRespo
         id=extraction.id,
         status=extraction.status,
         tokens=extraction.tokens_json,
-        dtcg=extraction.dtcg_json,
+        dtcg=dtcg_payload,
         download_url=download_url,
         # Response-shape contract version, not the extractor-output version.
         # See `ExtractionResponse` docstring for the v1 -> v1.1 bump rationale.
@@ -706,7 +712,20 @@ def _create_extraction_inner(
 
     extraction.status = "ok"
     extraction.tokens_json = bundle.tokens_json
+    # Dual-write the DTCG payload during the library-refactor transition:
+    # the denormalized ``extractions.dtcg_json`` column (kept until migration
+    # 0018 ships) and the normalized ``asset_versions.dtcg_json`` row. The
+    # asset_version row is the canonical post-0018 read source; we attach the
+    # FK now so post-0018 reads return identical bytes.
     extraction.dtcg_json = bundle.dtcg_json
+    asset_version = insert_or_reuse_asset_version(
+        session,
+        url=url,
+        dtcg=bundle.dtcg_json,
+        first_extracted_by_user_id=user.id,
+        manifest_schema_version=int(bundle.schema_version),
+    )
+    extraction.asset_version_id = asset_version.id
     extraction.r2_zip_key = object_key
     extraction.zip_sha256 = zip_sha256
     extraction.extracted_at = bundle.extracted_at

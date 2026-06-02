@@ -29,6 +29,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
+from app.asset_versions import dtcg_for_extraction
 from app.auth import current_user
 from app.constants import (
     CONVERT_RESPONSE_SCHEMA_VERSION,
@@ -122,10 +123,11 @@ def convert_shadcn(
     extraction = _load_owned_extraction(session, user.id, extraction_id)
     if extraction is None:
         return _not_found_response()
-    if extraction.dtcg_json is None:
+    dtcg = dtcg_for_extraction(extraction)
+    if dtcg is None:
         return _missing_dtcg_response(extraction_id)
 
-    theme = dtcg_to_shadcn(extraction.dtcg_json, source_url=extraction.url)
+    theme = dtcg_to_shadcn(dtcg, source_url=extraction.url)
     payload: dict[str, Any] = theme.model_dump(by_alias=True)
     rendered = ConvertRenderedArtifacts(
         globals_css=render_globals_css(theme),
@@ -168,11 +170,12 @@ def convert_figma(
     extraction = _load_owned_extraction(session, user.id, extraction_id)
     if extraction is None:
         return _not_found_response()
-    if extraction.dtcg_json is None:
+    dtcg = dtcg_for_extraction(extraction)
+    if dtcg is None:
         return _missing_dtcg_response(extraction_id)
 
     figma_payload = dtcg_to_figma_variables(
-        extraction.dtcg_json, source_url=extraction.url
+        dtcg, source_url=extraction.url
     )
     payload: dict[str, Any] = figma_payload.model_dump(by_alias=True)
     return ConvertResponse(

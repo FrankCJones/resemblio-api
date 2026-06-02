@@ -307,10 +307,18 @@ def upsert_extraction(
     or ``"update"``. The session is flushed but not committed; the caller
     batches commits.
     """
+    from app.asset_versions import insert_or_reuse_asset_version
     from app.models import Extraction  # local import: dry-run safety
 
     existing = find_existing(session, stripped.source_id)
     public_url = f"resemblio://seed/{SEED_SOURCE_DRL_V1}/{stripped.source_id}"
+    asset_version = insert_or_reuse_asset_version(
+        session,
+        url=public_url,
+        dtcg=bundle.dtcg_json,
+        first_extracted_by_user_id=user_id,
+        manifest_schema_version=SCHEMA_V1,
+    )
     if existing is None:
         row = Extraction(
             user_id=user_id,
@@ -320,6 +328,7 @@ def upsert_extraction(
             status="ok",
             tokens_json=bundle.tokens_json,
             dtcg_json=bundle.dtcg_json,
+            asset_version_id=asset_version.id,
             r2_zip_key=r2_zip_key,
             zip_sha256=bundle.zip_sha256,
             schema_version=SCHEMA_V1,
@@ -333,6 +342,7 @@ def upsert_extraction(
 
     existing.tokens_json = bundle.tokens_json
     existing.dtcg_json = bundle.dtcg_json
+    existing.asset_version_id = asset_version.id
     existing.r2_zip_key = r2_zip_key
     existing.zip_sha256 = bundle.zip_sha256
     existing.schema_version = SCHEMA_V1

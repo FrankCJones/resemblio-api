@@ -117,6 +117,14 @@ class Extraction(Base):
     url_normalized: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(Text, nullable=False)
     tokens_json: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
+    # Denormalized DTCG snapshot. Library refactor (migrations 0015-0018) moves
+    # the canonical copy of this payload onto ``asset_versions.dtcg_json``.
+    # During the transition (after 0017 backfill ships, before 0018 drop ships)
+    # this column is dual-written by the extraction-creation path; readers go
+    # through ``extraction.asset_version.dtcg_json`` via the helper in
+    # ``app/asset_versions.py`` so the eventual column drop is a single-file
+    # delete here. Migration 0018 removes the column; the ORM mapping must be
+    # deleted in the same commit that runs 0018 on prod.
     dtcg_json: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
     r2_zip_key: Mapped[str | None] = mapped_column(Text, nullable=True)
     zip_sha256: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -149,15 +157,86 @@ class Extraction(Base):
     low_quality_reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     low_quality_review_verdict: Mapped[str | None] = mapped_column(String(32), nullable=True)
     low_quality_reviewer: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Library FK (migration 0016). Nullable: organic rows post-0016 set this
+    # value at creation time; historical rows are backfilled in 0017; seed
+    # rows older than 0017 stay NULL (no DTCG payload to hash).
+    asset_version_id: Mapped[int | None] = mapped_column(
+        BigIntType, ForeignKey("asset_versions.id"), nullable=True
+    )
 
     user: Mapped[User] = relationship(back_populates="extractions")
     api_key: Mapped[ApiKey] = relationship(back_populates="extractions")
     ledger_entries: Mapped[list[CreditLedger]] = relationship(back_populates="extraction")
+    asset_version: Mapped["AssetVersion | None"] = relationship(back_populates="extractions")
 
     __table_args__ = (
         Index("ix_extractions_user_id_extracted_at", "user_id", "extracted_at"),
         Index("ix_extractions_url_normalized", "url_normalized"),
         Index("ix_extractions_low_quality_review_pending", "low_quality_review_pending"),
+        Index("ix_extractions_asset_version_id", "asset_version_id"),
+    )
+
+
+class AssetVersion(Base):
+    """Deduplicated DTCG snapshot of one URL at one moment in time.
+
+    The library refactor (migrations 0015-0018, see brain-dump library
+    architecture) decouples the per-extraction billing/audit row from the
+    per-URL content snapshot. Many ``extractions`` rows for the same URL
+    that produce identical DTCG output collapse to a single
+    ``asset_versions`` row via the ``(url, content_hash)`` dedup key.
+
+    Identity contract
+    -----------------
+    ``content_hash`` is the SHA-256 of the canonical-JSON serialization of
+    ``dtcg_json`` (sort_keys=True, separators=(",", ":"),
+    ensure_ascii=False). See ``app/asset_versions.py:canonicalize_dtcg``;
+    callers must hash via that helper so the value matches across the
+    extraction-creation path, the backfill migration (0017), and any
+    future library-hit lookup.
+
+    Public-corpus visibility
+    ------------------------
+    ``is_public`` is FALSE for every row written in v1.1. The v1.2
+    moderation tooling flips selected rows TRUE; the partial index
+    ``ix_asset_versions_is_public_fetched_at`` makes the public-browse
+    query cheap once that flag flips on.
+    """
+
+    __tablename__ = "asset_versions"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    url: Mapped[str] = mapped_column(Text, nullable=False)
+    content_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    dtcg_json: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False)
+    # Future-use slot for a per-snapshot ZIP pointer that may diverge from
+    # the per-extraction ``extractions.r2_zip_key``. Stays NULL in v1.1.
+    raw_assets_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    manifest_schema_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=2, server_default="2"
+    )
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    # Audit-only; the runtime read path does not enforce ownership against
+    # this field. Nullable for transformer-seeded or system-generated rows.
+    first_extracted_by_user_id: Mapped[int | None] = mapped_column(
+        BigIntType, ForeignKey("users.id"), nullable=True
+    )
+    is_public: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+    version_label: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    extractions: Mapped[list[Extraction]] = relationship(back_populates="asset_version")
+
+    __table_args__ = (
+        Index("ix_asset_versions_url_fetched_at", "url", "fetched_at"),
+        Index("ix_asset_versions_content_hash", "content_hash"),
+        Index("ix_asset_versions_is_public_fetched_at", "is_public", "fetched_at"),
     )
 
 

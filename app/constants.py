@@ -189,3 +189,14 @@ CONVERT_TARGET_FIGMA = "figma"
 # field plus a `payload` block plus optional `rendered` artifacts).
 CONVERT_RESPONSE_SCHEMA_VERSION = 2
 
+# Asset-versions library schema (migrations 0015-0018). Each ``asset_versions``
+# row is the deduplicated DTCG snapshot of one URL at one moment in time; a
+# successful extraction points at exactly one row via
+# ``extractions.asset_version_id``. Dedup key is ``(url, content_hash)`` where
+# ``content_hash`` is the SHA-256 of the canonical-JSON serialization of the
+# DTCG payload (see ``app/asset_versions.py``). Public corpus visibility is
+# the ``is_public`` flag; defaults to False in v1.1 and is intended to flip on
+# in v1.2 once moderation tooling exists.
+ASSET_VERSION_MANIFEST_SCHEMA_DEFAULT = 2
+ASSET_VERSIONS_SEED_SOURCE_LABEL = "drl_v1"
+
