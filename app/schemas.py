@@ -274,6 +274,36 @@ class CreditTopupResponse(BaseModel):
     schema_version: int
 
 
+class InternalCheckoutSessionRequest(BaseModel):
+    """S3b Wave 2c body for ``POST /v1/internal/billing/create_checkout_session``.
+
+    Called by the Next.js BFF on the user's behalf. ``user_id`` identifies
+    the user whose reconciled Stripe customer id is used for the Checkout
+    session; ``amount_cents`` must match one of the bundle tiers in
+    ``TOPUP_BUNDLE_ACCEPTED_PAID_CENTS`` (closed set; off-list values 400).
+
+    Edge case: the route also accepts optional ``success_url`` and
+    ``cancel_url`` overrides so the BFF can include the Stripe-templated
+    ``{CHECKOUT_SESSION_ID}`` placeholder in the return URLs. Both URLs are
+    pass-through to Stripe; the StripeClient ignores them on this path and
+    falls back to its configured defaults (the override is wired but not
+    yet plumbed through the gateway protocol; deferred to a follow-on).
+    """
+
+    user_id: int
+    amount_cents: int
+    success_url: str | None = None
+    cancel_url: str | None = None
+
+
+class InternalCheckoutSessionResponse(BaseModel):
+    """S3b Wave 2c response from the internal billing surface."""
+
+    checkout_url: str
+    session_id: str
+    schema_version: int
+
+
 class StripeCheckoutMetadata(BaseModel):
     """Metadata expected on Checkout sessions created for credit top-ups."""
 

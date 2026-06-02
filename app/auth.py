@@ -34,6 +34,11 @@ AUTH_FREE_PATHS = frozenset({
     "/v1/internal/auth/redeem_magic_link",
     "/v1/internal/auth/whoami",
     "/v1/internal/auth/logout",
+    # S3b Wave 2c internal billing surface. Same posture as the auth surface
+    # above: gated by the X-Internal-Auth shared secret on the route handler,
+    # not by Bearer-token AuthMiddleware. The BFF holds the user's identity
+    # via cookie + session-store, not via a billing-scoped API key.
+    "/v1/internal/billing/create_checkout_session",
 })
 
 # Constant-shape pepper used when the operator has not configured an old pepper

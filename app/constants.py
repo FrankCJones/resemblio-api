@@ -101,3 +101,38 @@ API_KEY_KIND_SERVICE = "service"
 # rows. Bumped together with the migrations if the row shape changes.
 MAGIC_LINK_SCHEMA_VERSION = "magic_link_tokens_v1"
 WEB_SESSION_SCHEMA_VERSION = "web_session_keys_v1"
+
+# S3b Wave 2c top-up bundle tiers. The dashboard `/app/billing` page surfaces
+# three buttons that map to these bundles. The *_PAID value is what Stripe
+# charges the user's card; the *_CREDITED value is what lands in the credit
+# ledger after the webhook fires. The bonus math (10% on $100+, 20% on $500+)
+# matches the canonical pricing reference in `projects/Resemblio/CLAUDE.md`.
+# Bonus is applied server-side; never trust a client-supplied credited amount.
+#
+# IMPORTANT: today's implementation passes `*_PAID` to Stripe as the charge
+# amount AND to the credit ledger as the credit amount; the *_CREDITED values
+# below are kept for forward-compatibility once the route extension that
+# decouples charge-vs-credit ships. Until then the bonus is surfaced as UI
+# copy on the buttons but not yet applied to the ledger.
+TOPUP_BUNDLE_20_CENTS_PAID = 2000
+TOPUP_BUNDLE_20_CENTS_CREDITED = 2000  # no bonus on the $20 tier
+TOPUP_BUNDLE_100_CENTS_PAID = 10000
+TOPUP_BUNDLE_100_CENTS_CREDITED = 11000  # +10%
+TOPUP_BUNDLE_500_CENTS_PAID = 50000
+TOPUP_BUNDLE_500_CENTS_CREDITED = 60000  # +20%
+
+# Closed set of accepted bundle amounts for the dashboard billing surface.
+# Requests carrying any other amount_cents value are rejected at the route
+# boundary; this is belt-and-braces protection against a tampered client
+# request that tries to mint Checkout sessions outside the documented tiers.
+TOPUP_BUNDLE_ACCEPTED_PAID_CENTS = frozenset(
+    {TOPUP_BUNDLE_20_CENTS_PAID, TOPUP_BUNDLE_100_CENTS_PAID, TOPUP_BUNDLE_500_CENTS_PAID}
+)
+
+# Feature flag env var name. Both the API and the web BFF read this; the value
+# is the literal string "true" (case-insensitive) to enable. Anything else,
+# including unset, means disabled. Disabled = the API returns 503 and the web
+# `/app/billing` route returns 404 (notFound). Frank flips this AFTER his own
+# Stripe-LIVE smoke succeeds; see the 2026-06-02 Wave 2c handoff for the
+# seven-step flip sequence.
+BILLING_UI_FLAG_ENV_VAR = "RESEMBLIO_BILLING_UI_ENABLED"
