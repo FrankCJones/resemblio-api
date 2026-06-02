@@ -301,6 +301,116 @@ def test_logout_revokes_bff_key(
     assert session.query(WebSessionKey).count() == 0
 
 
+def test_concurrent_redeem_only_mints_once(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
+    """Two parallel redemptions of the same token mint exactly one BFF key.
+
+    Race history: the pre-dispatch handler did a check-then-set on
+    ``MagicLinkToken.consumed_at`` (read NULL, branch, then assign on
+    the in-memory row, finally COMMIT). Two callers could both observe
+    NULL on read; both reached the mint section; both committed a fresh
+    ApiKey row. The result was two active BFF keys for the same magic
+    link, defeating the "single-use" guarantee on the linked email.
+
+    Fix shape: conditional UPDATE with a ``consumed_at IS NULL`` guard
+    plus a Postgres-only ``SELECT ... FOR UPDATE`` row lock. The losing
+    caller's UPDATE matches zero rows and the handler returns 400
+    ``token_consumed`` without minting.
+
+    Test shape: file-backed SQLite (per-thread connections) + thread
+    barrier mirrors ``test_concurrency.py``. SQLite serializes writes
+    at the database level, so the rowcount-driven guard is what we
+    exercise; the Postgres ``FOR UPDATE`` branch is dialect-only and
+    not exercisable from this fixture (the parent dispatch carries the
+    handoff brief that documents this).
+    """
+    import threading
+    import time
+    from collections.abc import Generator
+
+    from app import db as app_db
+    from app.config import reset_settings_cache
+    from app.rate_limit import reset_rate_limiter
+
+    db_path = tmp_path / "magic_link_race.sqlite"
+    monkeypatch.setenv("RESEMBLIO_DB_URL", f"sqlite+pysqlite:///{db_path}")
+    monkeypatch.setenv("RESEMBLIO_KEY_PEPPER", "test-pepper-value-with-thirty-two-chars")
+    monkeypatch.setenv("RESEMBLIO_INTERNAL_AUTH_SECRET", INTERNAL_SECRET)
+    reset_settings_cache()
+    app_db.reset_engine(f"sqlite+pysqlite:///{db_path}")
+    from app.db import Base  # local import; the engine reset must happen first
+
+    Base.metadata.create_all(bind=app_db.engine)
+    reset_rate_limiter()
+
+    sender = _FakeEmailSender()
+    app.dependency_overrides[get_email_sender] = lambda: sender
+
+    try:
+        with TestClient(app) as race_client:
+            # Mint one token via the standard request flow.
+            request_resp = race_client.post(
+                "/v1/internal/auth/request_magic_link",
+                headers=_internal_headers(),
+                json={"email": "race@example.com"},
+            )
+            assert request_resp.status_code == 200
+            token = _extract_token_from_link(sender.sent[-1]["link"])
+
+            results: list[int] = []
+            results_lock = threading.Lock()
+            barrier = threading.Barrier(2)
+
+            def _redeem() -> None:
+                barrier.wait()
+                # Tiny stagger widens the window between the SELECT and
+                # the UPDATE so the conditional-rowcount guard is the
+                # mechanism under test, not a coincidental serialization.
+                time.sleep(0.005)
+                response = race_client.post(
+                    "/v1/internal/auth/redeem_magic_link",
+                    headers=_internal_headers(),
+                    json={"token": token},
+                )
+                with results_lock:
+                    results.append(response.status_code)
+
+            threads = [threading.Thread(target=_redeem) for _ in range(2)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join(timeout=20)
+                assert not thread.is_alive(), "Magic-link race thread hung"
+
+            assert len(results) == 2
+            success_count = sum(1 for status in results if status == 200)
+            rejection_count = sum(1 for status in results if status == 400)
+            assert success_count == 1, f"Expected exactly one success, got {results}"
+            assert rejection_count == 1, f"Expected exactly one 400, got {results}"
+
+            with app_db.SessionLocal() as verify:
+                # Exactly one active BFF key minted.
+                keys = (
+                    verify.query(ApiKey)
+                    .filter(ApiKey.kind == API_KEY_KIND_INTERNAL_BFF)
+                    .filter(ApiKey.status == "active")
+                    .all()
+                )
+                assert len(keys) == 1, (
+                    f"Expected exactly one active BFF key, got {len(keys)}"
+                )
+                # Exactly one user row, exactly one session row.
+                assert verify.query(User).filter(User.email == "race@example.com").count() == 1
+                assert verify.query(WebSessionKey).count() == 1
+    finally:
+        app.dependency_overrides.pop(get_email_sender, None)
+        Base.metadata.drop_all(bind=app_db.engine)
+        app_db.reset_engine("sqlite+pysqlite:///:memory:")
+        Base.metadata.create_all(bind=app_db.engine)
+        reset_settings_cache()
+
+
 def test_whoami_returns_credit_balance(
     client: TestClient, session: Session, fake_email_sender: _FakeEmailSender
 ) -> None:

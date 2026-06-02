@@ -40,7 +40,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Header
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
@@ -298,9 +298,38 @@ def redeem_magic_link(
         return _error(401, "internal_auth_invalid")
 
     token_hash = _hash_token(payload.token)
-    row = session.execute(
-        select(MagicLinkToken).where(MagicLinkToken.token_hash == token_hash)
-    ).scalar_one_or_none()
+    # Race-safe consume. Two concurrent redemptions of the same token must not
+    # both pass the ``consumed_at IS NULL`` guard. The defenses combine:
+    #
+    #   1. On Postgres: an explicit ``SELECT ... FOR UPDATE`` on the token row
+    #      takes a row-level write lock for the duration of the transaction.
+    #      The second redemption blocks until the first commits, then sees the
+    #      now-non-null ``consumed_at`` and returns 400 ``token_consumed``.
+    #
+    #   2. On any dialect (including SQLite where ``FOR UPDATE`` is a silent
+    #      no-op): the consume is a conditional UPDATE with a
+    #      ``consumed_at IS NULL`` guard in the WHERE clause. The driver's
+    #      reported ``rowcount`` tells us whether THIS call was the one that
+    #      flipped the column. ``rowcount == 0`` means a peer redemption won
+    #      the race; we return 400 ``token_consumed`` without minting a key.
+    #
+    # The check-then-set pattern that existed before this dispatch (read
+    # ``consumed_at``, branch on it, then assign) is vulnerable to two callers
+    # both reading NULL before either writes. The rowcount-driven conditional
+    # UPDATE collapses the read and the write into one statement the DB
+    # serializes, which closes the window even on SQLite where the in-flight
+    # ``FOR UPDATE`` does nothing.
+    dialect_name = session.bind.dialect.name if session.bind is not None else ""
+    if dialect_name == "postgresql":
+        row = session.execute(
+            select(MagicLinkToken)
+            .where(MagicLinkToken.token_hash == token_hash)
+            .with_for_update()
+        ).scalar_one_or_none()
+    else:
+        row = session.execute(
+            select(MagicLinkToken).where(MagicLinkToken.token_hash == token_hash)
+        ).scalar_one_or_none()
     if row is None:
         return _error(400, "token_invalid")
     if row.consumed_at is not None:
@@ -311,9 +340,27 @@ def redeem_magic_link(
     if expiry < utcnow():
         return _error(400, "token_expired")
 
-    # Consume the token first; if anything below this point fails the
-    # commit at the end is the single transactional boundary.
-    row.consumed_at = utcnow()
+    # Atomic consume: only one concurrent caller can satisfy
+    # ``consumed_at IS NULL``. The losing caller's UPDATE matches zero rows
+    # because the column has already been written; ``result.rowcount == 0``
+    # is the signal to bail with the same 400 error code the second read
+    # would have produced (had we kept the racy check-then-set pattern).
+    now_ts = utcnow()
+    result = session.execute(
+        update(MagicLinkToken)
+        .where(MagicLinkToken.id == row.id)
+        .where(MagicLinkToken.consumed_at.is_(None))
+        .values(consumed_at=now_ts)
+    )
+    if result.rowcount == 0:
+        # Peer redemption committed between our SELECT and our UPDATE.
+        # No key minted, no side effects landed; safe to roll back any
+        # implicit transaction state and surface the consumed error.
+        session.rollback()
+        return _error(400, "token_consumed")
+    # Mirror the persisted state on the loaded row so downstream reads
+    # (audit log line at the end of this handler) see consistent values.
+    row.consumed_at = now_ts
 
     user = session.execute(select(User).where(User.email == row.email.lower())).scalar_one_or_none()
     is_new_user = user is None
