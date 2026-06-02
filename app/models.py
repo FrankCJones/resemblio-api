@@ -117,15 +117,11 @@ class Extraction(Base):
     url_normalized: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(Text, nullable=False)
     tokens_json: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
-    # Denormalized DTCG snapshot. Library refactor (migrations 0015-0018) moves
-    # the canonical copy of this payload onto ``asset_versions.dtcg_json``.
-    # During the transition (after 0017 backfill ships, before 0018 drop ships)
-    # this column is dual-written by the extraction-creation path; readers go
-    # through ``extraction.asset_version.dtcg_json`` via the helper in
-    # ``app/asset_versions.py`` so the eventual column drop is a single-file
-    # delete here. Migration 0018 removes the column; the ORM mapping must be
-    # deleted in the same commit that runs 0018 on prod.
-    dtcg_json: Mapped[dict[str, Any] | None] = mapped_column(JsonType, nullable=True)
+    # The DTCG snapshot for this extraction lives on the joined
+    # ``asset_versions`` row (FK below). Migration 0018 dropped the legacy
+    # denormalized ``extractions.dtcg_json`` column; the ORM mapping was
+    # removed in the same commit. Read via
+    # ``app/asset_versions.py:dtcg_for_extraction``.
     r2_zip_key: Mapped[str | None] = mapped_column(Text, nullable=True)
     zip_sha256: Mapped[str | None] = mapped_column(Text, nullable=True)
     error_log: Mapped[str | None] = mapped_column(Text, nullable=True)

@@ -713,12 +713,8 @@ def _create_extraction_inner(
 
     extraction.status = "ok"
     extraction.tokens_json = bundle.tokens_json
-    # Dual-write the DTCG payload during the library-refactor transition:
-    # the denormalized ``extractions.dtcg_json`` column (kept until migration
-    # 0018 ships) and the normalized ``asset_versions.dtcg_json`` row. The
-    # asset_version row is the canonical post-0018 read source; we attach the
-    # FK now so post-0018 reads return identical bytes.
-    extraction.dtcg_json = bundle.dtcg_json
+    # The DTCG payload lives on ``asset_versions.dtcg_json`` (canonical
+    # post-0018). Attach the FK so reads via ``dtcg_for_extraction`` resolve.
     asset_version = insert_or_reuse_asset_version(
         session,
         url=url,

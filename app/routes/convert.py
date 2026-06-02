@@ -80,10 +80,11 @@ def _not_found_response() -> JSONResponse:
 def _missing_dtcg_response(extraction_id: int) -> JSONResponse:
     """409 returned when the row exists but has no persisted DTCG manifest.
 
-    Failed or pending extractions have a null ``dtcg_json`` column. Returning
-    a 409 (not 404) signals to the client that the resource exists but is
-    not yet in a convertible state, which is actionable: the right retry is
-    "wait for status=ok", not "stop polling".
+    Failed or pending extractions have no joined ``asset_versions`` row
+    (so ``dtcg_for_extraction`` returns None). Returning a 409 (not 404)
+    signals to the client that the resource exists but is not yet in a
+    convertible state, which is actionable: the right retry is "wait for
+    status=ok", not "stop polling".
     """
     return JSONResponse(
         status_code=409,

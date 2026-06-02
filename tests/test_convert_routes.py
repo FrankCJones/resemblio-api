@@ -40,10 +40,20 @@ def _seed_extraction_with_dtcg(
 ) -> Extraction:
     """Insert an ``ok``-status extraction row carrying a DTCG manifest.
 
-    The convert routes only need ``user_id`` + ``dtcg_json`` on the row;
-    every other column is bypassed by these endpoints, so we set the
-    bare-minimum fields the model column NOT NULL constraints require.
+    Post-0018 the DTCG payload lives on the joined ``asset_versions`` row,
+    so we insert one and attach the FK; the convert routes read via
+    ``dtcg_for_extraction``.
     """
+    from app.asset_versions import insert_or_reuse_asset_version
+
+    payload = dtcg if dtcg is not None else SAMPLE_DTCG
+    asset_version = insert_or_reuse_asset_version(
+        session,
+        url="https://example.com",
+        dtcg=payload,
+        first_extracted_by_user_id=user_id,
+        manifest_schema_version=1,
+    )
     extraction = Extraction(
         user_id=user_id,
         url="https://example.com",
@@ -51,7 +61,7 @@ def _seed_extraction_with_dtcg(
         status="ok",
         schema_version=1,
         credit_cents=500,
-        dtcg_json=dtcg if dtcg is not None else SAMPLE_DTCG,
+        asset_version_id=asset_version.id,
     )
     session.add(extraction)
     session.commit()

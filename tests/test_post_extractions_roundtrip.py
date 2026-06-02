@@ -54,7 +54,7 @@ def test_post_extractions_roundtrip_live(
     extraction = session.query(Extraction).one()
     assert extraction.status == "ok"
     assert extraction.tokens_json
-    assert extraction.dtcg_json
+    assert extraction.asset_version_id is not None
     assert extraction.r2_zip_key
 
 

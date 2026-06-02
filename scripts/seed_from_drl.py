@@ -355,7 +355,6 @@ def upsert_extraction(
             url_normalized=public_url,
             status="ok",
             tokens_json=bundle.tokens_json,
-            dtcg_json=bundle.dtcg_json,
             asset_version_id=asset_version.id,
             r2_zip_key=r2_zip_key,
             zip_sha256=bundle.zip_sha256,
@@ -381,7 +380,6 @@ def upsert_extraction(
         return row, "insert"
 
     existing.tokens_json = bundle.tokens_json
-    existing.dtcg_json = bundle.dtcg_json
     existing.asset_version_id = asset_version.id
     existing.r2_zip_key = r2_zip_key
     existing.zip_sha256 = bundle.zip_sha256

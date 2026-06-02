@@ -111,7 +111,6 @@ def _attach_scored_extraction(
         url_normalized=asset_version.url,
         status="ok",
         tokens_json=asset_version.dtcg_json["tokens"],
-        dtcg_json=asset_version.dtcg_json,
         asset_version_id=asset_version.id,
         schema_version=SCHEMA_V1,
         credit_cents=0,

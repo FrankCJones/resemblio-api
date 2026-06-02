@@ -126,8 +126,8 @@ def test_asset_version_defaults_is_public_false(session: Session) -> None:
     assert row.is_public is False
 
 
-def test_dtcg_for_extraction_prefers_joined_row(session: Session) -> None:
-    """The read helper returns the asset_versions payload when joined."""
+def test_dtcg_for_extraction_returns_joined_payload(session: Session) -> None:
+    """The read helper returns the joined asset_versions payload."""
     user, _, _ = seed_user(session, email="join@resemblio.test")
     asset = insert_or_reuse_asset_version(
         session,
@@ -143,9 +143,6 @@ def test_dtcg_for_extraction_prefers_joined_row(session: Session) -> None:
         status="ok",
         schema_version=1,
         credit_cents=500,
-        # Legacy column deliberately set to a DIFFERENT payload to prove the
-        # helper prefers the asset_versions row over the denormalized copy.
-        dtcg_json={"stale": True},
         asset_version_id=asset.id,
     )
     session.add(extraction)
@@ -154,8 +151,8 @@ def test_dtcg_for_extraction_prefers_joined_row(session: Session) -> None:
     assert dtcg_for_extraction(extraction) == SAMPLE_DTCG
 
 
-def test_dtcg_for_extraction_falls_back_to_legacy_column(session: Session) -> None:
-    """Pre-0017 rows (no asset_version FK) resolve via the denormalized column."""
+def test_dtcg_for_extraction_returns_none_when_unlinked(session: Session) -> None:
+    """Rows with no asset_version FK (failed or unbackfilled) resolve to None."""
     user, _, _ = seed_user(session, email="legacy@resemblio.test")
     extraction = Extraction(
         user_id=user.id,
@@ -164,13 +161,12 @@ def test_dtcg_for_extraction_falls_back_to_legacy_column(session: Session) -> No
         status="ok",
         schema_version=1,
         credit_cents=500,
-        dtcg_json=SAMPLE_DTCG,
         asset_version_id=None,
     )
     session.add(extraction)
     session.commit()
     session.refresh(extraction)
-    assert dtcg_for_extraction(extraction) == SAMPLE_DTCG
+    assert dtcg_for_extraction(extraction) is None
 
 
 def test_post_extractions_creates_asset_version_row(client: TestClient, session: Session) -> None:
@@ -190,8 +186,6 @@ def test_post_extractions_creates_asset_version_row(client: TestClient, session:
     ).scalar_one()
     # The stored content_hash matches the canonical hash of the persisted DTCG.
     assert asset.content_hash == content_hash_for(asset.dtcg_json)
-    # Dual-write contract during the transition window: legacy column also set.
-    assert extraction.dtcg_json == asset.dtcg_json
 
 
 def test_post_extractions_response_shape_unchanged(client: TestClient, session: Session) -> None:

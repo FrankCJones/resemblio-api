@@ -12,11 +12,12 @@ Single source of truth for two operations any caller needs:
    (insert a fresh row if none exists for ``(url, content_hash)``, otherwise
    reuse the existing one). Idempotent.
 
-3. ``dtcg_for_extraction`` -- read-path adapter. Prefers the joined
-   ``asset_version.dtcg_json`` over the legacy denormalized
-   ``extractions.dtcg_json``. The migration sequence (0015 -> 0016 -> 0017 ->
-   0018) dual-writes both columns on the extraction-creation path until 0018
-   ships, so this helper transparently handles both states.
+3. ``dtcg_for_extraction`` -- read-path adapter. Returns the joined
+   ``asset_version.dtcg_json`` payload, or None when the extraction has no
+   asset_version FK (failed or pre-0017 unbackfilled rows). Migration 0018
+   dropped the legacy ``extractions.dtcg_json`` column; the helper is kept
+   as the single read entry point so callers do not depend on the relation
+   shape directly.
 """
 from __future__ import annotations
 
@@ -125,16 +126,15 @@ def insert_or_reuse_asset_version(
 
 
 def dtcg_for_extraction(extraction: "Extraction") -> dict[str, Any] | None:
-    """Return the DTCG payload for an extraction, joined-row first.
+    """Return the DTCG payload for an extraction from the joined asset_versions row.
 
-    Prefers ``extraction.asset_version.dtcg_json`` (post-0017 backfill).
-    Falls back to the legacy ``extraction.dtcg_json`` denormalized column so
-    pre-0017 rows still resolve correctly during the dual-write window.
-
-    After 0018 ships (extractions.dtcg_json dropped), the fallback branch
-    becomes dead code and the helper short-circuits to the joined value.
+    Returns ``None`` when the extraction has no ``asset_version_id``
+    (failed extractions, or historical rows that pre-date the 0017 backfill
+    and never had a DTCG payload to migrate). Migration 0018 dropped the
+    legacy denormalized ``extractions.dtcg_json`` column; this helper is the
+    single read entry point so callers do not depend on the relation shape.
     """
     av = extraction.asset_version
-    if av is not None and av.dtcg_json is not None:
+    if av is not None:
         return av.dtcg_json
-    return extraction.dtcg_json
+    return None
