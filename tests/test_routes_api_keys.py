@@ -159,6 +159,51 @@ def test_audit_returns_events_newest_first_and_paginates(client: TestClient, ses
         assert item["id"] < smallest
 
 
+def test_audit_endpoint_handles_ipaddress_row_value(client: TestClient, session: Session) -> None:
+    """Regression: route must handle ``IPv4Address`` row values that Postgres INET returns.
+
+    Production hit a 500 because ``ApiKeyAuditEvent.ip: str | None`` rejected
+    the ``IPv4Address`` returned by the INET column. SQLite returns a plain
+    string and masked the bug. To exercise the failure path the route
+    construction takes, we monkeypatch ``ApiKeyEvent.ip`` so the route sees an
+    ``IPv4Address`` for the audit row exactly as it would on Postgres. Without
+    the route's ``str(row.ip)`` guard this test reproduces the 500.
+    """
+    from ipaddress import IPv4Address
+
+    _user, api_key, plaintext = seed_user(session)
+    event = ApiKeyEvent(
+        api_key_id=api_key.id,
+        event_type="used",
+        ip="45.86.210.121",
+        metadata_json={"path": "/v1/account"},
+    )
+    session.add(event)
+    session.commit()
+    target_event_id = event.id
+
+    # Promote the loaded row's ``ip`` string to an ``IPv4Address`` after the
+    # ORM hydrates it, mirroring how postgresql.INET deserializes the column.
+    from sqlalchemy import event as sa_event
+
+    def _promote_ip(target, _context):  # type: ignore[no-untyped-def]
+        if target.id == target_event_id and isinstance(target.ip, str):
+            target.ip = IPv4Address(target.ip)
+
+    sa_event.listen(ApiKeyEvent, "load", _promote_ip)
+    # Drop the cached instance so the next query re-hydrates and fires `load`.
+    session.expire_all()
+    try:
+        response = client.get(f"/v1/api_keys/{api_key.id}/audit", headers=auth_headers(plaintext))
+    finally:
+        sa_event.remove(ApiKeyEvent, "load", _promote_ip)
+
+    assert response.status_code == 200
+    body = response.json()
+    ips = [item["ip"] for item in body["items"] if item["ip"] is not None]
+    assert "45.86.210.121" in ips
+
+
 def test_create_records_kind_user_visible(client: TestClient, session: Session) -> None:
     """Newly minted keys via /v1/api_keys carry kind='user' and is_visible_to_user."""
     _user, _key, plaintext = seed_user(session)

@@ -234,12 +234,17 @@ def get_api_key_audit(
         stmt = stmt.where(ApiKeyEvent.id < before)
     stmt = stmt.order_by(ApiKeyEvent.id.desc()).limit(limit)
     rows = session.execute(stmt).scalars().all()
+    # Postgres INET columns deserialize to ``ipaddress.IPv4Address`` /
+    # ``IPv6Address``; the Pydantic schema field is ``str | None`` and rejects
+    # those under strict mode. Stringify here rather than widening the schema
+    # so the OpenAPI shape stays a plain string and JSON consumers see no
+    # change. (SQLite-backed tests stored TEXT and masked the regression.)
     items = [
         ApiKeyAuditEvent(
             id=row.id,
             event_type=row.event_type,
             occurred_at=row.occurred_at,
-            ip=row.ip,
+            ip=str(row.ip) if row.ip is not None else None,
             metadata=row.metadata_json,
         )
         for row in rows
