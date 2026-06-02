@@ -56,7 +56,6 @@ from __future__ import annotations
 
 import logging
 import re
-import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -79,41 +78,13 @@ from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 logger = logging.getLogger("resemblio.library_indexer")
 
 
-# Ensure the DRL ``_scripts`` package is importable. The seed script
-# (``scripts/seed_from_drl.py``) uses the same workspace-relative resolution;
-# we mirror it here so the indexer composes from the same templates the seed
-# corpus was authored against. On a deployed box ``DRL_SCRIPTS_PATH`` can be
-# overridden via env (deferred; v1.1 ships with the workspace path baked in
-# at module load).
-# ``app/library_indexer.py`` -> parents[0]=app, [1]=code/api, [2]=code,
-# [3]=Resemblio, [4]=projects. The DRL repo sits at
-# ``projects/Design Reference Library``. The ``_scripts`` package inside DRL
-# is what we import from; adding the DRL ROOT (not _scripts/) to sys.path
-# lets ``from _scripts.compose import ...`` resolve cleanly.
-_API_FILE = Path(__file__).resolve()
-_PROJECTS_ROOT = _API_FILE.parents[4]
-_DRL_ROOT = _PROJECTS_ROOT / "Design Reference Library"
-if _DRL_ROOT.exists() and str(_DRL_ROOT) not in sys.path:
-    sys.path.insert(0, str(_DRL_ROOT))
-
-# The API's ``extractor_bridge`` imports the vendored ``_scripts`` package
-# (``_vendored/drl/drl/_scripts``) at module load. That cached package object
-# does NOT carry ``templates.py``, ``compose.py``, or ``slate.py`` — those
-# DRL modules live only in the workspace DRL tree. If we leave the cached
-# ``sys.modules['_scripts']`` untouched, ``from _scripts.templates import X``
-# below resolves against the vendored package and raises
-# ``ModuleNotFoundError``. Extending the cached package's ``__path__`` with
-# the workspace ``_scripts/`` directory lets Python's import machinery find
-# the missing submodules without disturbing the vendored modules already
-# loaded under the same parent. No-op if the vendored package was never
-# loaded (workspace-only test runs).
-_WORKSPACE_SCRIPTS_DIR = _DRL_ROOT / "_scripts"
-if _WORKSPACE_SCRIPTS_DIR.exists():
-    _scripts_pkg = sys.modules.get("_scripts")
-    if _scripts_pkg is not None and hasattr(_scripts_pkg, "__path__"):
-        _workspace_scripts_text = str(_WORKSPACE_SCRIPTS_DIR)
-        if _workspace_scripts_text not in list(_scripts_pkg.__path__):
-            _scripts_pkg.__path__.append(_workspace_scripts_text)
+# The DRL ``_scripts`` package (templates, compose, slate, extraction) is
+# vendored under ``_vendored/drl/drl/_scripts`` and loaded by
+# ``app.extractor_bridge`` at import time. All submodules the indexer needs
+# (``templates``, ``compose``, ``slate``) now live in that vendored tree, so
+# no sys.path or ``__path__`` patching is required here. CI checks out only
+# the resemblio-api repo and must resolve these imports against the vendored
+# tree alone; do not reintroduce workspace-relative lookups.
 
 
 # ----------------------------------------------------------------------
