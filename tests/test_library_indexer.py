@@ -32,6 +32,8 @@ from app.constants import (
     SCHEMA_V1,
 )
 from app.library_indexer import (
+    _compose_one_page,
+    _tokens_to_inline_css,
     derive_brand_slug,
     drain_pending,
     enqueue_for_asset_version,
@@ -150,6 +152,76 @@ def test_tokens_for_compose_handles_nested_and_flat_shapes() -> None:
     assert tokens_for_compose(nested) == {"bg": "#fff", "accent": "#f00"}
     # The flat shape drops non-string/number values (patterns list filtered out).
     assert tokens_for_compose(flat) == {"bg": "#fff", "accent": "#f00"}
+
+
+# ----------------------------------------------------------------------
+# Compose output shape (Bug 2a + 2b regression coverage)
+# ----------------------------------------------------------------------
+
+
+def test_compose_one_page_emits_body_fragment_with_real_tokens() -> None:
+    """Composed rendered_html is a body fragment carrying the brand's real tokens.
+
+    Regression for Bug 2 (2026-06-02): the indexer was producing full
+    ``<!doctype html>...`` documents with un-interpolated Lorem placeholder
+    text and no live token values. After the fix, output is:
+
+    - an ``<article>`` body fragment (no doctype, no nested ``<html>``)
+    - inlined ``:root { --ds-*: ... }`` carrying every passed brand token
+      so DRL template ``var(--ds-*)`` references resolve at paint time
+    - safe to inject into a Next.js page without breaking the parent DOM
+    """
+    rendered = _compose_one_page(
+        "navigation",
+        brand_slug="aeon",
+        tokens=_HEALTHY_TOKENS,
+    )
+    # (a) NO Lorem-ipsum placeholder text leaks into user-facing copy.
+    lowered = rendered.lower()
+    assert "lorem ipsum" not in lowered
+    assert "consectetur adipiscing" not in lowered
+    # (b) NO doctype / nested html document
+    assert "<!doctype" not in lowered
+    assert "<html" not in lowered
+    assert "<head>" not in lowered
+    # The fragment IS an article wrapper the web mapper expects.
+    assert rendered.startswith('<article class="rs-library-page"')
+    # (c) every brand token value reaches the page text.
+    for token_value in _HEALTHY_TOKENS.values():
+        assert token_value in rendered, f"missing token value {token_value!r}"
+    # Custom-property names use the DRL --ds-* convention with dashes.
+    assert "--ds-bg:" in rendered
+    assert "--ds-font-display:" in rendered
+
+
+def test_compose_one_page_article_layout_strips_lorem() -> None:
+    """The article-layout class (visible regression on aeon) no longer leaks Lorem."""
+    rendered = _compose_one_page(
+        "article-layout",
+        brand_slug="aeon",
+        tokens=_HEALTHY_TOKENS,
+    )
+    lowered = rendered.lower()
+    assert "lorem ipsum" not in lowered
+    assert "consectetur adipiscing" not in lowered
+    assert "<!doctype" not in lowered
+    # Brand-aware title slot uses the brand name, not Lorem.
+    assert "Aeon" in rendered
+
+
+def test_tokens_to_inline_css_emits_ds_custom_properties() -> None:
+    """Underscore token names map to dashed --ds-* custom properties, sorted."""
+    css = _tokens_to_inline_css({"bg": "#000", "font_display": "Inter"})
+    assert ":root {" in css
+    assert "--ds-bg: #000;" in css
+    assert "--ds-font-display: Inter;" in css
+    # Sorted: bg before font_display
+    assert css.index("--ds-bg") < css.index("--ds-font-display")
+
+
+def test_tokens_to_inline_css_empty_tokens_yields_empty_root() -> None:
+    """An empty token dict produces a valid (empty) :root block, not an error."""
+    assert _tokens_to_inline_css({}) == ":root {}"
 
 
 # ----------------------------------------------------------------------

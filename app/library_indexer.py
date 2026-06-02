@@ -278,27 +278,222 @@ def _compose_one_page(
     brand_slug: str,
     tokens: dict[str, str],
 ) -> str:
-    """Render the per-class HTML for a brand snapshot.
+    """Render the per-class HTML body fragment for a brand snapshot.
 
-    Wraps ``compose.render_html`` with the minimal ``section`` shape it
-    needs (empty ``content_samples`` so it falls back to DEFAULT_CONTENT,
-    plus ``pattern_tags`` and ``notes`` filled with placeholders the
-    skeleton requires). The returned string is the full asset.html.
+    Wraps the DRL ``templates.get_template`` lookup directly (rather than
+    going through ``compose.render_html``) for two reasons:
+
+    1. **Body fragment, not full document.** DRL's ``render_html`` returns
+       a full ``<!doctype html><html>...</html>`` document because in the
+       DRL repo the output is written as a standalone ``asset.html`` file.
+       In the Resemblio web context the fragment is injected into a
+       Next.js page; a nested ``<html>`` would be invalid markup and the
+       browser would surface the inner ``<head>``/``<body>`` as raw text.
+    2. **Real brand tokens reach the page.** DRL's skeleton links to a
+       sibling ``tokens.css`` file; on the web the file does not exist,
+       so every ``var(--ds-*)`` reference would resolve to its CSS
+       fallback (or nothing). We inline a ``:root { --ds-*: ...; }`` block
+       built from the brand's actual DTCG payload so the template styles
+       paint with the brand's real palette and typography.
+
+    Content placeholders (``{title}``, ``{wordmark}``, etc.) are still
+    filled from DEFAULT_CONTENT (Lorem-stable) because those are copy
+    samples, not tokens; the brand-truth carried into the page is the
+    visual token set, not editorial content. If a brand later carries a
+    wordmark/tagline in its DTCG payload we can route those through here.
     """
-    from _scripts import compose  # local import: avoid cycle if DRL absent
+    from _scripts import templates as tpl  # local import
 
-    section: dict[str, Any] = {
-        "content_samples": {},
-        "pattern_tags": [],
-        "notes": [],
-        "inspired_by": [],
-    }
-    return compose.render_html(
-        slug=brand_slug,
-        class_folder=class_name,
-        section=section,
-        template_class=class_name,
+    bundle = tpl.get_template(class_name)
+    filled = {ph: _brand_placeholder(ph, brand_slug=brand_slug) for ph in bundle["placeholders"]}
+    body = bundle["body"].format(**filled)
+    styles = bundle["styles"]
+    inline_tokens_css = _tokens_to_inline_css(tokens)
+    # Wrap in a per-page article element so the fragment is self-contained
+    # when injected into the Next.js library page. The data attribute
+    # carries the class for downstream CSS scoping if needed.
+    return (
+        f'<article class="rs-library-page" data-rs-class="{class_name}" data-rs-brand="{brand_slug}">\n'
+        f"<style>\n{inline_tokens_css}\n{styles}\n</style>\n"
+        f"{body}\n"
+        f"</article>\n"
     )
+
+
+def _brand_placeholder(name: str, *, brand_slug: str) -> str:
+    """Return a neutral, non-Lorem placeholder for a template content slot.
+
+    The DRL ``DEFAULT_CONTENT`` map is Lorem-ipsum-heavy because in the DRL
+    repo the composed output is a developer-facing specimen page; Lorem is
+    appropriate there. In the Resemblio library, the page is user-facing
+    and Lorem leaks across as visible junk text ("Lorem ipsum dolor sit
+    amet"). We provide a small map of human-readable, brand-aware
+    placeholders that read like a real navigation/section/article without
+    pretending to be brand-authored copy.
+
+    Unknown placeholders fall back to a humanized version of the slot name
+    (e.g. ``col_1_title`` -> "Col 1 Title") so the page still has visible,
+    sensible text even for template slots we haven't enumerated.
+    """
+    pretty_brand = brand_slug.replace("-", " ").title()
+    presets: dict[str, str] = {
+        # Generic copy slots
+        "kicker": "Featured",
+        "title": f"{pretty_brand} design snapshot",
+        "headline": f"{pretty_brand} design snapshot",
+        "dek": "A brand-stripped, code-bearing view of the design system.",
+        "wordmark": pretty_brand,
+        "tagline": "Design tokens, captured.",
+        "cta_primary": "Explore",
+        "cta_secondary": "View tokens",
+        "signin": "Sign in",
+        "signup": "Sign up",
+        "recommended_label": "Recommended",
+        "copyright_line": f"© {pretty_brand}",
+        # Navigation links
+        "link_1": "Overview",
+        "link_2": "Components",
+        "link_3": "Tokens",
+        "link_4": "Patterns",
+        # Footer columns
+        "col_1_title": "Product",
+        "col_1_link_1": "Overview",
+        "col_1_link_2": "Components",
+        "col_1_link_3": "Tokens",
+        "col_2_title": "Resources",
+        "col_2_link_1": "Patterns",
+        "col_2_link_2": "Guides",
+        "col_2_link_3": "Changelog",
+        "col_3_title": "Company",
+        "col_3_link_1": "About",
+        "col_3_link_2": "Contact",
+        "col_3_link_3": "Terms",
+        # Alphabet samples (typography specimens)
+        "display_headline": "Display headline",
+        "display_sample": "The quick brown fox jumps over the lazy dog",
+        "display_sample_2": "Numbers 0123456789",
+        "h2_sample": "Section heading",
+        "h3_sample": "Subsection heading",
+        "lead_sample": "A lead paragraph sets the tone for the article.",
+        "body_sample": (
+            "Body copy renders here at the default text size. "
+            "It carries the bulk of the reading work on the page."
+        ),
+        "dek_sample": "A dek paragraph sits between headline and body.",
+        "small_sample": "Small text, often used for metadata.",
+        "footnote_sample": "1. Footnote text, the smallest reading size.",
+        "kicker_sample": "Eyebrow kicker",
+        "nav_link_sample": "Nav link",
+        "button_sample": "Button label",
+        "mono_sample": "code_sample_here",
+        "wordmark_sample": pretty_brand.lower(),
+        # Buttons / labels
+        "label_primary": "Primary",
+        "label_secondary": "Secondary",
+        "label_outline": "Outline",
+        "label_ghost": "Ghost",
+        "label_destructive": "Delete",
+        "label_sm": "Small",
+        "label_md": "Medium",
+        "label_lg": "Large",
+        "label_icon_leading": "New item",
+        "label_icon_trailing": "Continue",
+        "label_disabled": "Disabled",
+        "label_disabled_outline": "Disabled",
+        # Form fields
+        "legend_text": "Account details",
+        "label_text": "Full name",
+        "placeholder_text": "Your name",
+        "help_text": "We use this to address you in emails.",
+        "label_textarea": "Notes",
+        "placeholder_textarea": "Add any context here.",
+        "label_select": "Country",
+        "option_1": "Option one",
+        "option_2": "Option two",
+        "option_3": "Option three",
+        "label_checkbox": "Subscribe to updates",
+        "radio_group_label": "Preferred contact",
+        "radio_1": "Email",
+        "radio_2": "Phone",
+        "radio_3": "Mail",
+        "label_date": "Start date",
+        "label_file": "Upload document",
+        "label_error": "Email address",
+        "error_text": "Enter a valid email address.",
+        # Inputs
+        "search_label": "Search",
+        "search_placeholder": "Search components, tokens, sources",
+        "tags_label": "Selected tags",
+        "tag_1": "design",
+        "tag_2": "tokens",
+        "tag_3": "components",
+        "tags_placeholder": "Add tag",
+        "segmented_label": "View mode",
+        "seg_1": "Grid",
+        "seg_2": "List",
+        "seg_3": "Table",
+        "toggle_label": "Enable notifications",
+        "stepper_label": "Quantity",
+        "stepper_value": "3",
+        # Badges
+        "label_info": "Info",
+        "label_success": "Live",
+        "label_warning": "Beta",
+        "label_neutral": "Draft",
+        "label_with_icon_1": "Online",
+        "label_with_icon_2": "Pending",
+        "label_online": "Online",
+        "label_away": "Away",
+        "label_offline": "Offline",
+        # Cards
+        "basic_title": f"{pretty_brand} card",
+        "basic_body": "Short card body sits under the title.",
+        "basic_link": "Learn more",
+        "image_title": "Featured asset",
+        "image_body": "Card body sits under the title.",
+        "quote_text": "Design is how it works.",
+        "quote_author": "Jane Doe",
+        "quote_role": "Design Lead",
+        "pricing_eyebrow": "Studio",
+        "pricing_tier": "Studio plan",
+        "pricing_amount": "$49",
+        "pricing_period": "/month",
+        "pricing_dek": "Everything in Solo plus more capacity.",
+        "pricing_cta": "Get started",
+        "stat_label": "Active users",
+        "stat_value": "12,480",
+        "stat_dek": "Up from last month.",
+        "list_title": "Recent activity",
+        "list_item_1": "Released a new component",
+        "list_item_2": "Updated the color palette",
+        "list_item_3": "Shipped dark-mode variants",
+    }
+    if name in presets:
+        return presets[name]
+    return name.replace("_", " ").strip().title() or name
+
+
+def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
+    """Render the brand's DTCG token dict as a ``:root { --ds-*: ...; }`` block.
+
+    The DRL templates reference design tokens via ``var(--ds-<key>)`` where
+    ``<key>`` is the flat token name with underscores replaced by dashes
+    (e.g. ``font_display`` -> ``--ds-font-display``). We emit a custom
+    property per token so the template styles paint with the brand's
+    actual palette/typography rather than the browser default.
+
+    Tokens are emitted in sorted order for deterministic output (the
+    fragment ends up in ``library_pages.rendered_html`` and stable text
+    output keeps diffs reviewable).
+    """
+    if not tokens:
+        return ":root {}"
+    lines = [":root {"]
+    for key in sorted(tokens):
+        css_key = "--ds-" + key.replace("_", "-")
+        lines.append(f"  {css_key}: {tokens[key]};")
+    lines.append("}")
+    return "\n".join(lines)
 
 
 def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -> dict[str, Any]:
