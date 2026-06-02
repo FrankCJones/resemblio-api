@@ -319,6 +319,41 @@ class MagicLinkToken(Base):
     )
 
 
+class IdempotencyKey(Base):
+    """Cached HTTP response keyed by ``(user_id, key)`` for replay safety.
+
+    Purpose: a client retrying ``POST /v1/extractions`` after a transient
+    network failure must not be charged twice. The client passes
+    ``Idempotency-Key: <token>``; the route looks up
+    ``(user_id, key)``, and on hit replays the cached HTTP status + body.
+
+    ``request_hash`` (SHA-256 of the canonical request body) guards against
+    the "same key, different body" misuse: a client that reuses one
+    idempotency token across two semantically distinct requests is always
+    a bug; the route rejects the second with HTTP 409.
+
+    TTL: rows older than ``IDEMPOTENCY_KEY_TTL_SECONDS`` are treated as
+    expired at lookup time. A separate sweep job (deferred; not v1.1) can
+    prune them; until then ``created_at`` is indexed so a manual
+    ``DELETE ... WHERE created_at < ...`` runs cheaply. Migration 0014.
+    """
+
+    __tablename__ = "idempotency_keys"
+
+    user_id: Mapped[int] = mapped_column(BigIntType, ForeignKey("users.id"), primary_key=True)
+    key: Mapped[str] = mapped_column(String(256), primary_key=True)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    status_code: Mapped[int] = mapped_column(Integer, nullable=False)
+    response_body: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        Index("ix_idempotency_keys_created_at", "created_at"),
+    )
+
+
 class WebSessionKey(Base):
     """Maps a user to the ApiKey row currently acting as their BFF session key.
 

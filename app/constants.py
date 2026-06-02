@@ -138,6 +138,32 @@ TOPUP_BUNDLE_ACCEPTED_PAID_CENTS = frozenset(
     {TOPUP_BUNDLE_20_CENTS_PAID, TOPUP_BUNDLE_100_CENTS_PAID, TOPUP_BUNDLE_500_CENTS_PAID}
 )
 
+# Idempotency-Key support on POST /v1/extractions. The header value is bound
+# per-user for 24 hours: a replay within that window returns the original
+# cached response with ``X-Idempotency-Replayed: true`` and does NOT re-charge
+# credits. A replay carrying the SAME key but a DIFFERENT request body hash is
+# rejected with HTTP 409 (Stripe's behavior; the client used one idempotency
+# token for two semantically different requests, which is always a bug).
+# TTL chosen to bound the cache table size (sweep query can prune any row
+# older than this constant); 24h is long enough to absorb sane client retry
+# loops including overnight cron jobs that re-fire on resume.
+IDEMPOTENCY_KEY_TTL_SECONDS = 24 * 60 * 60
+# Header name the API reads; matches Stripe / IETF draft conventions.
+IDEMPOTENCY_HEADER_NAME = "Idempotency-Key"
+# Header echoed on a cache-hit replay so the client can distinguish
+# a fresh computation from a replayed cached response.
+IDEMPOTENCY_REPLAYED_HEADER_NAME = "X-Idempotency-Replayed"
+# Bounds on the supplied key value. Lower bound prevents trivial collisions
+# (e.g. ``"1"``); upper bound caps the row width and the URL-encoded header
+# cost. Character allowlist excludes whitespace and control characters so a
+# malformed CRLF-injection cannot land in the persisted row.
+IDEMPOTENCY_KEY_MIN_LENGTH = 8
+IDEMPOTENCY_KEY_MAX_LENGTH = 256
+import re as _re  # local alias to keep the module's top-level imports clean
+
+IDEMPOTENCY_KEY_PATTERN = _re.compile(r"^[A-Za-z0-9._-]+$")
+
+
 # Feature flag env var name. Both the API and the web BFF read this; the value
 # is the literal string "true" (case-insensitive) to enable. Anything else,
 # including unset, means disabled. Disabled = the API returns 503 and the web

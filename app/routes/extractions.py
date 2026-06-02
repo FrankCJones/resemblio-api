@@ -9,11 +9,11 @@ from typing import Any, Protocol
 
 import threading
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Header, Query, Request
 from sqlalchemy import func, insert, literal, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from app.auth import current_api_key, current_user, utcnow
 from app.constants import (
@@ -26,6 +26,15 @@ from app.constants import (
     SPEND_CAP_WINDOW_DAYS,
 )
 from app.db import get_db
+from app.idempotency import (
+    build_replay_response,
+    hash_request_body,
+    lookup_cached_response,
+    store_response,
+    validate_idempotency_key,
+    validation_error_response,
+)
+from app.constants import IDEMPOTENCY_HEADER_NAME
 from app.email import EmailSender, EmailSenderFactory, get_email_sender_factory
 from app.extractor_bridge import ExtractionBridgeError, ExtractionBundle, extract_design_tokens
 from app.failure_modes import (
@@ -433,6 +442,24 @@ def _suggestion_string_from_row(dimension_scores: dict[str, float] | None) -> st
     return ""
 
 
+def _serialize_response_for_cache(result: ExtractionResponse | JSONResponse) -> tuple[int, str]:
+    """Reduce a route return value to (status_code, body_string) for caching.
+
+    The idempotency cache stores the body bytes verbatim so a replay
+    returns the same hash a client computed against the original
+    response. For a Pydantic model we dump with ``mode='json'`` and the
+    same separators FastAPI would otherwise use; for a raw
+    ``JSONResponse`` we decode the already-serialized body.
+    """
+    if isinstance(result, JSONResponse):
+        return result.status_code, result.body.decode("utf-8")
+    # ExtractionResponse (pydantic v2 BaseModel). FastAPI's default JSON
+    # encoder respects model_dump(mode="json") for datetime serialization;
+    # mirror that so the cached body matches what FastAPI would have
+    # rendered on a fresh call.
+    return 200, json.dumps(result.model_dump(mode="json"), separators=(",", ":"))
+
+
 @router.post("/extractions", response_model=ExtractionResponse)
 def create_extraction(
     payload: ExtractionCreateRequest,
@@ -441,8 +468,68 @@ def create_extraction(
     storage: R2Storage = Depends(get_storage),
     extractor: ExtractorCallable = Depends(get_extractor),
     email_sender_factory: EmailSenderFactory = Depends(get_email_sender_factory),
+    idempotency_key: str | None = Header(default=None, alias=IDEMPOTENCY_HEADER_NAME),
+) -> ExtractionResponse | JSONResponse | Response:
+    """Create a charged extraction, persist it, and upload the ZIP bundle.
+
+    Optional ``Idempotency-Key`` header bounds replay safety: a retry
+    within ``IDEMPOTENCY_KEY_TTL_SECONDS`` carrying the same key + same
+    request body replays the original response with
+    ``X-Idempotency-Replayed: true`` and does NOT re-charge credits. A
+    replay with the same key but a different body is a client bug and
+    returns HTTP 409. See ``app/idempotency.py``.
+    """
+    user_id_for_idem: int = current_user(request).id
+    if idempotency_key is not None:
+        validation = validate_idempotency_key(idempotency_key)
+        if validation != "ok":
+            return validation_error_response(validation)
+        request_hash = hash_request_body(payload.model_dump(mode="json"))
+        cached = lookup_cached_response(session, user_id_for_idem, idempotency_key, request_hash)
+        if cached == "hash_mismatch":
+            return JSONResponse(
+                status_code=409,
+                content={"error": "idempotency_key_reused_with_different_body"},
+            )
+        if cached is not None:
+            return build_replay_response(cached)
+    result = _create_extraction_inner(
+        payload=payload,
+        request=request,
+        session=session,
+        storage=storage,
+        extractor=extractor,
+        email_sender_factory=email_sender_factory,
+    )
+    if idempotency_key is not None:
+        status_code, body_str = _serialize_response_for_cache(result)
+        store_response(
+            session,
+            user_id_for_idem,
+            idempotency_key,
+            request_hash,
+            status_code,
+            body_str,
+        )
+    return result
+
+
+def _create_extraction_inner(
+    *,
+    payload: ExtractionCreateRequest,
+    request: Request,
+    session: Session,
+    storage: R2Storage,
+    extractor: ExtractorCallable,
+    email_sender_factory: EmailSenderFactory,
 ) -> ExtractionResponse | JSONResponse:
-    """Create a charged extraction, persist it, and upload the ZIP bundle."""
+    """Charge + run + persist one extraction. Idempotency-free core path.
+
+    Split out from ``create_extraction`` so the idempotency wrapper can
+    cache the resulting response without duplicating the charge logic.
+    All replay safety lives in the caller; this function performs the
+    one-shot work and returns whatever a fresh request would.
+    """
     user: User = current_user(request)
     api_key: ApiKey = current_api_key(request)
     required_cents = extraction_price_cents(payload.private)
