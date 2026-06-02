@@ -59,6 +59,7 @@ from app.db import get_db
 from app.email import EmailSender, get_email_sender
 from app.models import ApiKey, ApiKeyEvent, MagicLinkToken, User, WebSessionKey
 from app.routes.account import credit_balance
+from app.users import ensure_onboarding_grant
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -375,6 +376,14 @@ def redeem_magic_link(
         )
         session.add(user)
         session.flush()
+        # Magic-link signup is the only user-creation path on the BFF surface
+        # and must honor the LP promise ("New accounts start with $10 of
+        # credit"). ``ensure_onboarding_grant`` is idempotent: it no-ops when
+        # the ledger already shows nonzero balance, so re-redeeming a token
+        # for an existing user (or a future seed script that pre-credits)
+        # cannot double-grant. Cold-user E2E audit finding #1
+        # (`projects/Resemblio/marketing/2026-06-02-cold-user-e2e-audit.md`).
+        ensure_onboarding_grant(session, user)
 
     # Revoke any prior BFF key for this user and detach the old session row.
     existing_session = session.execute(

@@ -18,6 +18,7 @@ from app.constants import (
     MAGIC_LINK_EMAIL_SUBJECT,
     MAGIC_LINK_EXPIRY_MINUTES,
     RESEND_RETRY_DELAYS_SECONDS,
+    TRANSACTIONAL_REPLY_TO,
 )
 
 
@@ -31,6 +32,7 @@ class AutoRefundEmailPayload(TypedDict):
 
     from_: str
     to: list[str]
+    reply_to: str
     subject: str
     text: str
 
@@ -91,6 +93,7 @@ class ResendEmailSender:
         payload = {
             "from": self._from_email,
             "to": [to_email],
+            "reply_to": TRANSACTIONAL_REPLY_TO,
             "subject": subject,
             "text": text,
         }
@@ -136,13 +139,20 @@ class ResendEmailSender:
         payload: AutoRefundEmailPayload = {
             "from_": self._from_email,
             "to": [to_email],
+            "reply_to": TRANSACTIONAL_REPLY_TO,
             "subject": AUTO_REFUND_EMAIL_SUBJECT,
             "text": text,
         }
         # Resend's API uses ``from`` not ``from_``; we keep the TypedDict key
         # as ``from_`` because ``from`` is a Python keyword, then rewrite at
         # the boundary.
-        wire = {"from": payload["from_"], "to": payload["to"], "subject": payload["subject"], "text": payload["text"]}
+        wire = {
+            "from": payload["from_"],
+            "to": payload["to"],
+            "reply_to": payload["reply_to"],
+            "subject": payload["subject"],
+            "text": payload["text"],
+        }
         body = json.dumps(wire).encode("utf-8")
 
         def _call() -> None:
@@ -176,6 +186,7 @@ class ResendEmailSender:
         payload = {
             "from": self._from_email,
             "to": [to_email],
+            "reply_to": TRANSACTIONAL_REPLY_TO,
             "subject": MAGIC_LINK_EMAIL_SUBJECT,
             "text": text,
         }

@@ -52,6 +52,12 @@ STRIPE_WEBHOOK_MAX_BODY_BYTES = 256 * 1024
 # in the v1 brand pages and the resemblio.com MX records. The subject and body
 # template live next to it so a copy review (Frank) is a one-file diff.
 AUTO_REFUND_SUPPORT_EMAIL = "hello@resemblio.com"
+# Reply-to address attached to every transactional email so a confused
+# customer's reply lands in a human inbox rather than the no-reply ``hello@``
+# alias the messages are sent from. Cold-user E2E audit finding #3
+# (`projects/Resemblio/marketing/2026-06-02-cold-user-e2e-audit.md`).
+# Open item: switch to ``hello@resemblio.com`` once that mailbox is staffed.
+TRANSACTIONAL_REPLY_TO = "frank@optsus.com"
 AUTO_REFUND_EMAIL_SUBJECT = "Your Resemblio extraction was auto-refunded"
 # Format args: amount (USD string, e.g. "$5.00"), source_url, support_email.
 # Plain text body; no HTML rendering on Resend for this transactional message.

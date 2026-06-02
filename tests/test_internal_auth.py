@@ -424,12 +424,15 @@ def test_whoami_returns_credit_balance(
         json={"token": token},
     )
     user_id = redeem.json()["user_id"]
+    # Redemption already posted the $10 onboarding grant; add a second test
+    # ledger row so the assertion verifies multi-row aggregation rather than
+    # just the auto-grant value.
     session.add(
         CreditLedger(
             user_id=user_id,
-            entry_type="signup_grant",
+            entry_type="manual_grant",
             amount_cents=1000,
-            balance_after_cents=1000,
+            balance_after_cents=2000,
             note="test signup",
         )
     )
@@ -439,5 +442,79 @@ def test_whoami_returns_credit_balance(
         headers=_internal_headers({"X-Bff-Key": redeem.json()["api_key"]}),
     )
     assert response.status_code == 200
-    assert response.json()["credit_balance_cents"] == 1000
+    assert response.json()["credit_balance_cents"] == 2000
     assert response.json()["email"] == "balance@example.com"
+
+
+def test_signup_grants_onboarding_credit(
+    client: TestClient, session: Session, fake_email_sender: _FakeEmailSender
+) -> None:
+    """A first-time magic-link redemption posts the $10 onboarding grant.
+
+    Cold-user E2E audit finding #1: prior to this fix the user row was created
+    but the ledger stayed empty, so the LP-promised "free public extraction"
+    was silently broken.
+    """
+    from app.constants import ONBOARDING_GRANT_CENTS
+    from app.models import CreditLedger
+
+    token = _request_link(client, "grant@example.com")
+    response = client.post(
+        "/v1/internal/auth/redeem_magic_link",
+        headers=_internal_headers(),
+        json={"token": token},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["is_new_user"] is True
+
+    user = session.query(User).one()
+    ledger_rows = (
+        session.query(CreditLedger).filter(CreditLedger.user_id == user.id).all()
+    )
+    assert len(ledger_rows) == 1
+    assert ledger_rows[0].entry_type == "onboarding_grant"
+    assert ledger_rows[0].amount_cents == ONBOARDING_GRANT_CENTS
+    assert ledger_rows[0].balance_after_cents == ONBOARDING_GRANT_CENTS
+
+    whoami = client.get(
+        "/v1/internal/auth/whoami",
+        headers=_internal_headers({"X-Bff-Key": response.json()["api_key"]}),
+    )
+    assert whoami.status_code == 200
+    assert whoami.json()["credit_balance_cents"] == ONBOARDING_GRANT_CENTS
+
+
+def test_redeem_magic_link_does_not_double_grant(
+    client: TestClient, session: Session, fake_email_sender: _FakeEmailSender
+) -> None:
+    """A second magic-link redemption for the same email must not re-grant.
+
+    ``ensure_onboarding_grant`` is idempotent on nonzero balance, so a returning
+    user who logs in via a fresh magic link keeps exactly one grant row.
+    """
+    from app.constants import ONBOARDING_GRANT_CENTS
+    from app.models import CreditLedger
+
+    first_token = _request_link(client, "again@example.com")
+    first = client.post(
+        "/v1/internal/auth/redeem_magic_link",
+        headers=_internal_headers(),
+        json={"token": first_token},
+    )
+    assert first.status_code == 200
+
+    second_token = _request_link(client, "again@example.com")
+    second = client.post(
+        "/v1/internal/auth/redeem_magic_link",
+        headers=_internal_headers(),
+        json={"token": second_token},
+    )
+    assert second.status_code == 200
+    assert second.json()["is_new_user"] is False
+
+    user = session.query(User).one()
+    ledger_rows = (
+        session.query(CreditLedger).filter(CreditLedger.user_id == user.id).all()
+    )
+    assert len(ledger_rows) == 1
+    assert ledger_rows[0].amount_cents == ONBOARDING_GRANT_CENTS
