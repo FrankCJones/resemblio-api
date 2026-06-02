@@ -95,6 +95,29 @@ jobs:
           set -euo pipefail
 
           cd /opt/resemblio-api/app
+
+          # Probe: detect git-objects ownership drift before it bites the
+          # `git fetch` below. Root cause of the e631585 deploy failure
+          # (2026-06-02): a stray `sudo`/`root@` git op during a prior
+          # session left pack objects under .git/objects/ owned by root,
+          # making subsequent `git fetch` as claude-cowork fail with
+          # `unpack-objects failed`. RCA:
+          # _handoff/inbox/claude/2026-06-02-cicd-git-perm-failure-rca.md
+          NON_OWNED=$(find /opt/resemblio-api/app/.git -not -user claude-cowork -print -quit 2>/dev/null || true)
+          if [ -n "$NON_OWNED" ]; then
+            echo "WARN: .git/ contains files not owned by claude-cowork (drift detected)."
+            echo "  example: $NON_OWNED"
+            echo "Attempting self-heal via sudo chown (requires NOPASSWD entry)."
+            if sudo -n chown -R claude-cowork:claude-cowork /opt/resemblio-api/app/.git 2>/dev/null; then
+              echo "Self-heal OK: .git/ ownership normalized to claude-cowork:claude-cowork."
+            else
+              echo "FATAL: .git/ ownership drift detected and sudo self-heal not permitted."
+              echo "Run from parent SSH: sudo chown -R claude-cowork:claude-cowork /opt/resemblio-api/app/.git"
+              echo "Then re-trigger this workflow. RCA: 2026-06-02-cicd-git-perm-failure-rca.md"
+              exit 1
+            fi
+          fi
+
           git fetch --quiet origin main
           git reset --hard origin/main
           /opt/resemblio-api/venv/bin/pip install -q --upgrade pip
