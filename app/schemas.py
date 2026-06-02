@@ -222,6 +222,44 @@ class CreditBalanceResponse(BaseModel):
     schema_version: int
 
 
+class CreditLedgerEntry(BaseModel):
+    """Public, customer-safe view of a single credit_ledger row.
+
+    Intentionally omits ``stripe_payment_intent_id`` and ``api_key_id``;
+    both are internal-only fields per defensive-design (the v1.1 dashboard
+    surface has no need to expose payment-processor or key-identifier values
+    to the browser, and exposing them in a JSON response widens the blast
+    radius of any future log-leak / Sentry breadcrumb regression).
+    """
+
+    id: int
+    entry_type: str
+    amount_cents: int
+    balance_after_cents: int
+    extraction_id: int | None
+    note: str | None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CreditLedgerListResponse(BaseModel):
+    """Offset-paginated ledger view for the authenticated user.
+
+    Convention follows the v1.1 dashboard brief: ``items`` newest-first,
+    ``total`` reflects the full row count for the user (not the page size),
+    and ``limit`` / ``offset`` echo the resolved (clamped) values the route
+    actually used so the client can render pagination controls without
+    re-deriving them.
+    """
+
+    items: list[CreditLedgerEntry]
+    total: int
+    limit: int
+    offset: int
+    schema_version: int
+
+
 class CreditTopupRequest(BaseModel):
     """Request body for starting a Stripe Checkout credit top-up."""
 
