@@ -200,3 +200,28 @@ CONVERT_RESPONSE_SCHEMA_VERSION = 2
 ASSET_VERSION_MANIFEST_SCHEMA_DEFAULT = 2
 ASSET_VERSIONS_SEED_SOURCE_LABEL = "drl_v1"
 
+# R3 extraction-fidelity heuristic constants. Added 2026-06-02 per mission
+# `projects/OptSus Team/missions/resemblio-r3-extraction-fidelity-v1.md`
+# (Deliverable C). The two original penalties (system_font_stack +
+# common_default_colors) live in app/quality_heuristics.py; these constants
+# back the two additional R3 rules.
+#
+# PENALTY_ACCENT_TEXT_LAB_THRESHOLD: minimum CIE LAB Delta-E distance
+# (CIE76 formula) between `accent` and `text` for a token set to count as
+# having a distinctive accent. Distances under this floor read as "the
+# accent and text are essentially the same color" — the LLM-defaulted-its-
+# way-into-a-monochrome-palette pathology described in the Susann finding's
+# Hypothesis-adjacent failure surface. Calibrated against fixture 010
+# (default HTML baseline) which must trip the threshold.
+PENALTY_ACCENT_TEXT_LAB_THRESHOLD: float = 5.0
+
+# Penalty magnitude for the missing-accent-diversity rule. Sized so that
+# this penalty alone does NOT drive a baseline-distinctive output below the
+# refund threshold, but stacks usefully with the other penalties when the
+# extractor truly defaulted.
+PENALTY_ACCENT_DIVERSITY: float = 0.15
+
+# Penalty magnitude for the display-equals-body rule. Same sizing rationale
+# as PENALTY_ACCENT_DIVERSITY: standalone informative; stackable.
+PENALTY_DISPLAY_EQUALS_BODY: float = 0.15
+

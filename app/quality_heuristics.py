@@ -33,11 +33,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping
 
+from app.constants import (
+    PENALTY_ACCENT_DIVERSITY,
+    PENALTY_ACCENT_TEXT_LAB_THRESHOLD,
+    PENALTY_DISPLAY_EQUALS_BODY,
+)
 from app.quality_scoring import QualityScoreResult, _normalize_hex
 
 
-# Schema-version constant for any persisted heuristic result.
-QUALITY_HEURISTICS_SCHEMA_VERSION: str = "1.0"
+# Schema-version constant for any persisted heuristic result. Bumped to 1.1
+# 2026-06-02 to mark the R3 additions (accent-diversity + display-equals-
+# body penalties). Additive change: existing penalty names + score shape
+# are unchanged; new entries can appear in ``penalties_applied``.
+QUALITY_HEURISTICS_SCHEMA_VERSION: str = "1.1"
 
 
 # Common-default font primary-family set. All values are lowercase, single-
@@ -188,6 +196,127 @@ def _detect_all_default_colors(tokens: Mapping[str, Any]) -> tuple[bool, list[st
     return all_default, observed
 
 
+# ----------------------------------------------------------------------
+# R3 additions (2026-06-02): accent-diversity + display-equals-body rules.
+# Source mission: `projects/OptSus Team/missions/resemblio-r3-extraction-
+# fidelity-v1.md` Deliverable C. Each rule is a pure function with its
+# own docstring naming the SOURCE finding hypothesis it covers.
+# ----------------------------------------------------------------------
+
+
+def _srgb_to_linear(channel: float) -> float:
+    """Convert one 0-1 sRGB component to its linear-light equivalent.
+
+    Standard sRGB inverse companding curve. Edge case: input is clipped to
+    [0, 1] before applying the curve so out-of-gamut inputs do not produce
+    NaNs from the power function.
+    """
+    if channel < 0.0:
+        channel = 0.0
+    elif channel > 1.0:
+        channel = 1.0
+    if channel <= 0.04045:
+        return channel / 12.92
+    return ((channel + 0.055) / 1.055) ** 2.4
+
+
+def _hex_to_lab(hex_value: str) -> tuple[float, float, float]:
+    """Convert a 6-digit hex color to CIE LAB (D65 white point).
+
+    sRGB -> linear-light RGB -> XYZ -> LAB. Standard formula; reference
+    constants are the D65 illuminant whites. Returns (L*, a*, b*).
+    """
+    text = hex_value[1:] if hex_value.startswith("#") else hex_value
+    r = int(text[0:2], 16) / 255.0
+    g = int(text[2:4], 16) / 255.0
+    b = int(text[4:6], 16) / 255.0
+    rl = _srgb_to_linear(r)
+    gl = _srgb_to_linear(g)
+    bl = _srgb_to_linear(b)
+    # sRGB -> XYZ (D65) via the standard matrix.
+    x = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375
+    y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750
+    z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041
+    # Normalize against D65 white.
+    xn = x / 0.95047
+    yn = y / 1.00000
+    zn = z / 1.08883
+
+    def _f(t: float) -> float:
+        if t > (6 / 29) ** 3:
+            return t ** (1 / 3)
+        return t / (3 * (6 / 29) ** 2) + (4 / 29)
+
+    fx = _f(xn)
+    fy = _f(yn)
+    fz = _f(zn)
+    L = 116 * fy - 16
+    a = 500 * (fx - fy)
+    b_lab = 200 * (fy - fz)
+    return L, a, b_lab
+
+
+def _delta_e_cie76(hex_a: str, hex_b: str) -> float:
+    """Return the CIE76 Delta-E distance between two normalized hex colors.
+
+    CIE76 (the original 1976 formula) is the cheap-and-good-enough metric
+    for "are these two colors perceptually similar?". A Delta-E under ~2.3
+    is the just-noticeable-difference threshold; under ~5 is "the human
+    eye reads them as related"; under ~10 is "same hue, different shade."
+    The accent-diversity penalty threshold is `PENALTY_ACCENT_TEXT_LAB_THRESHOLD`.
+    """
+    la, aa, ba = _hex_to_lab(hex_a)
+    lb, ab, bb = _hex_to_lab(hex_b)
+    return ((la - lb) ** 2 + (aa - ab) ** 2 + (ba - bb) ** 2) ** 0.5
+
+
+def _detect_missing_accent_diversity(
+    tokens: Mapping[str, Any],
+) -> tuple[bool, str | None]:
+    """Return (penalty_fires, diagnostic) for the accent-vs-text diversity rule.
+
+    Penalty fires iff both `accent` AND `text` slots are populated with
+    valid hex AND their CIE76 Delta-E distance is below
+    `PENALTY_ACCENT_TEXT_LAB_THRESHOLD`. Covers the failure mode where the
+    extractor emits a near-monochrome palette (accent and text are both
+    dark grays) because it could not resolve a brand color signal. Source
+    finding 2026-05-31 Hypothesis 2 (frequency-weighting can wash out a
+    single-CTA accent into the dominant text gray).
+    """
+    accent = _normalize_hex(tokens.get("accent"))
+    text = _normalize_hex(tokens.get("text"))
+    if accent is None or text is None:
+        return False, None
+    distance = _delta_e_cie76(accent, text)
+    if distance >= PENALTY_ACCENT_TEXT_LAB_THRESHOLD:
+        return False, None
+    return True, (
+        f"accent={accent} text={text} delta_e={distance:.2f} < "
+        f"threshold={PENALTY_ACCENT_TEXT_LAB_THRESHOLD}"
+    )
+
+
+def _detect_display_equals_body(
+    tokens: Mapping[str, Any],
+) -> tuple[bool, str | None]:
+    """Return (penalty_fires, diagnostic) for the display==body font rule.
+
+    Penalty fires iff both `font_display` AND `font_body` are populated AND
+    their primary family names are equal (case-insensitive). Real design
+    systems pair a display face with a distinct body face; when an
+    extractor cannot resolve the type pairing it sometimes copies one slot
+    into the other. Source finding 2026-05-31 Hypothesis 3 (Google Fonts
+    link tags in `<head>` not parsed; type-pairing signal collapses).
+    """
+    display = _primary_family_lower(tokens.get("font_display"))
+    body = _primary_family_lower(tokens.get("font_body"))
+    if display is None or body is None:
+        return False, None
+    if display != body:
+        return False, None
+    return True, f"font_display={display!r} == font_body={body!r}"
+
+
 def apply_heuristic_penalties(
     tokens: Mapping[str, Any] | None,
     base_result: QualityScoreResult,
@@ -228,6 +357,22 @@ def apply_heuristic_penalties(
         diagnostic_parts.append(
             f"all_common_default_colors(-{COMMON_DEFAULT_COLORS_PENALTY}): "
             f"colors={observed_colors!r}"
+        )
+
+    accent_collapse, accent_diag = _detect_missing_accent_diversity(safe_tokens)
+    if accent_collapse:
+        penalized -= PENALTY_ACCENT_DIVERSITY
+        applied.append("missing_accent_diversity")
+        diagnostic_parts.append(
+            f"missing_accent_diversity(-{PENALTY_ACCENT_DIVERSITY}): {accent_diag}"
+        )
+
+    type_collapse, type_diag = _detect_display_equals_body(safe_tokens)
+    if type_collapse:
+        penalized -= PENALTY_DISPLAY_EQUALS_BODY
+        applied.append("display_equals_body")
+        diagnostic_parts.append(
+            f"display_equals_body(-{PENALTY_DISPLAY_EQUALS_BODY}): {type_diag}"
         )
 
     # Clip to valid score range. A composite below 0 carries no extra

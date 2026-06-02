@@ -11,10 +11,18 @@ from __future__ import annotations
 
 import pytest
 
+from app.constants import (
+    PENALTY_ACCENT_DIVERSITY,
+    PENALTY_ACCENT_TEXT_LAB_THRESHOLD,
+    PENALTY_DISPLAY_EQUALS_BODY,
+)
 from app.quality_heuristics import (
     COMMON_DEFAULT_COLORS_PENALTY,
     QUALITY_HEURISTICS_SCHEMA_VERSION,
     SYSTEM_FONT_STACK_PENALTY,
+    _delta_e_cie76,
+    _detect_display_equals_body,
+    _detect_missing_accent_diversity,
     apply_heuristic_penalties,
 )
 from app.quality_scoring import compute_quality_score
@@ -52,8 +60,13 @@ SUSANN_EXTRACTED_TOKENS: dict[str, str] = {
 
 
 def test_schema_version_constant_shape() -> None:
-    """The schema version stays a simple semver-major string for cheap diffs."""
-    assert QUALITY_HEURISTICS_SCHEMA_VERSION == "1.0"
+    """The schema version stays a simple semver-major string for cheap diffs.
+
+    Bumped to ``1.1`` on 2026-06-02 with the R3 additions (accent-diversity
+    and display-equals-body penalties). Additive change; existing penalty
+    names and the result shape are unchanged.
+    """
+    assert QUALITY_HEURISTICS_SCHEMA_VERSION == "1.1"
 
 
 def test_apply_penalties_no_op_on_distinctive_brand_tokens() -> None:
@@ -176,6 +189,126 @@ def test_susann_extraction_now_falls_below_refund_threshold() -> None:
         f"base={base.composite_score} penalized={out.penalized_score} "
         f"diagnostic={out.diagnostic}"
     )
+
+
+# ----------------------------------------------------------------------
+# R3 additions: missing-accent-diversity + display-equals-body rules.
+# ----------------------------------------------------------------------
+
+
+def test_delta_e_cie76_identical_colors_is_zero() -> None:
+    """Sanity check on the LAB color-distance helper.
+
+    Identical hex inputs produce zero distance; LAB conversion is stable.
+    """
+    assert _delta_e_cie76("#abcdef", "#abcdef") == pytest.approx(0.0, abs=1e-9)
+
+
+def test_delta_e_cie76_known_distinct_colors_above_threshold() -> None:
+    """Black vs white has a large LAB distance; threshold check is sane.
+
+    L*=0 vs L*=100 is roughly Delta-E 100; this confirms the helper is
+    not silently returning a tiny value (which would void the rule).
+    """
+    distance = _delta_e_cie76("#000000", "#ffffff")
+    assert distance > PENALTY_ACCENT_TEXT_LAB_THRESHOLD * 5
+
+
+def test_accent_diversity_rule_fires_on_near_monochrome_palette() -> None:
+    """Accent and text within Delta-E 5 of each other triggers the rule.
+
+    Two dark-near-grays (#1a1a1a and #1d1d1f) read as basically the same
+    color; the rule catches the "extractor defaulted into a monochrome
+    palette" failure mode adjacent to the Susann case.
+    """
+    tokens = {
+        "bg": "#0B0B0F",
+        "text": "#1a1a1a",
+        "accent": "#1d1d1f",
+        "font_body": "Inter, sans-serif",
+        "font_display": "Anton, sans-serif",
+    }
+    fires, diag = _detect_missing_accent_diversity(tokens)
+    assert fires
+    assert "delta_e" in (diag or "")
+    base = compute_quality_score(tokens)
+    out = apply_heuristic_penalties(tokens, base)
+    assert "missing_accent_diversity" in out.penalties_applied
+    assert out.penalized_score == pytest.approx(base.composite_score - PENALTY_ACCENT_DIVERSITY)
+
+
+def test_accent_diversity_rule_does_not_fire_on_distinctive_brand_accent() -> None:
+    """Sun yellow vs bone cream are perceptually distinct; rule must not fire.
+
+    Calibrated against Susann's actual brand: accent #FBE71F vs text
+    #F5F2EA. Both are light, but yellow vs warm-cream is a wide LAB
+    distance. If this case triggers the penalty, the threshold is wrong.
+    """
+    tokens = {
+        "bg": "#0B0B0F",
+        "text": "#F5F2EA",
+        "accent": "#FBE71F",
+    }
+    fires, _ = _detect_missing_accent_diversity(tokens)
+    assert not fires
+
+
+def test_display_equals_body_rule_fires_on_duplicated_typeface() -> None:
+    """display_font_family == body_font_family triggers the rule.
+
+    Case-insensitive primary-family match; the rule does not care about
+    fallback chain order. Single-typeface SYSTEMS are common (and the
+    fixture set includes such cases), so this single penalty alone must
+    not push a healthy design below the refund threshold.
+    """
+    # Realistic-healthy single-typeface design: Susann's headlights palette
+    # plus the surrounding signal a healthy extraction surfaces (full palette
+    # role coverage, a real type scale, a real spacing scale). The minimal
+    # bg/text/accent-only form scores ~0.5 from the base scorer because four
+    # of the six dimensions (type_scale, type_pairing, spacing_scale,
+    # plus partial palette coverage) read as empty; that is not a "healthy"
+    # extraction, it is a sparse one. The docstring's claim is about a
+    # realistic-healthy design, so the fixture must carry realistic-healthy
+    # signal across the dimensions the base scorer measures.
+    tokens = {
+        "bg": "#0B0B0F",
+        "surface": "#14141A",
+        "text": "#F5F2EA",
+        "text_muted": "#A8A496",
+        "accent": "#FBE71F",
+        "border": "#3A372E",
+        "font_body": "Inter, sans-serif",
+        "font_display": "INTER, system-ui, sans-serif",
+        "text_base": "1rem",
+        "text_lg": "1.125rem",
+        "text_xl": "1.25rem",
+        "text_2xl": "1.5rem",
+        "text_3xl": "1.875rem",
+        "space_1": "0.25rem",
+        "space_2": "0.5rem",
+        "space_4": "1rem",
+        "space_6": "1.5rem",
+        "space_8": "2rem",
+    }
+    fires, diag = _detect_display_equals_body(tokens)
+    assert fires
+    assert "inter" in (diag or "").lower()
+    base = compute_quality_score(tokens)
+    out = apply_heuristic_penalties(tokens, base)
+    assert "display_equals_body" in out.penalties_applied
+    # Single-typeface design must not collapse below threshold from this
+    # rule alone (Susann's distinctive palette saves the composite).
+    assert out.penalized_score >= DEFAULT_THRESHOLD_V1_1_X
+
+
+def test_display_equals_body_rule_does_not_fire_on_paired_typefaces() -> None:
+    """A real display+body pair (Anton + Inter) leaves this rule silent."""
+    tokens = {
+        "font_body": "Inter, sans-serif",
+        "font_display": "Anton, sans-serif",
+    }
+    fires, _ = _detect_display_equals_body(tokens)
+    assert not fires
 
 
 def test_susann_subset_with_only_default_colors_triggers_color_penalty() -> None:

@@ -1,0 +1,22 @@
+{
+  "schema_version": "extraction_fidelity_fixture_v1",
+  "_provenance": {
+    "author": "Builder (R3 mission)",
+    "date_iso": "2026-06-02",
+    "source_concept": "synthetic; Wix-class JS-rendered shell with the real styles in a post-hydration comment block",
+    "failure_mode_caught": "Static HTML serves an empty <div id='root'>; design tokens only resolve after JS hydration. The current extractor sees the empty shell. R3.1 will add a Playwright pass; this fixture catches that delta when it lands."
+  },
+  "tokens": {
+    "bg": "#F1E9DD",
+    "text": "#1F2A5C",
+    "accent": "#B85138",
+    "accent_2": "#6B7A3F",
+    "font_body": "Cormorant Garamond, Georgia, serif",
+    "font_display": "Work Sans, system-ui, sans-serif"
+  },
+  "rubric_expectations": {
+    "should_flag_low_quality": false,
+    "expected_penalties": [],
+    "notes": "Ground truth reflects the POST-HYDRATION DOM (what a Playwright-equipped extractor would see). The current LLM-only extractor fed the raw shell HTML cannot recover these values; that delta is the R3.1 surgery target."
+  }
+}
