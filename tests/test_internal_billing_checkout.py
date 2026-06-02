@@ -81,8 +81,21 @@ def enable_billing_flag(monkeypatch: pytest.MonkeyPatch) -> None:
 def _install_fake_stripe() -> _FakeStripeService:
     """Bind a fresh fake to the gateway dependency and return it."""
     fake = _FakeStripeService()
-    app.dependency_overrides[get_stripe_service] = lambda: fake
+    app.dependency_overrides[get_stripe_service] = _bind_fake(fake)
     return fake
+
+
+def _bind_fake(fake: _FakeStripeService):
+    """Return a zero-arg provider closing over ``fake``.
+
+    A bare ``lambda f=fake: f`` exposes ``f`` as a callable parameter, and
+    FastAPI's dependency resolver introspects that signature and constructs
+    a fresh value for the parameter rather than using the captured default.
+    A closure with no parameters sidesteps the resolver entirely.
+    """
+    def _provider() -> _FakeStripeService:
+        return fake
+    return _provider
 
 
 def _internal_headers() -> dict[str, str]:
@@ -135,7 +148,7 @@ def test_create_checkout_session_accepts_all_three_bundle_tiers(
         [TOPUP_BUNDLE_20_CENTS_PAID, TOPUP_BUNDLE_100_CENTS_PAID, TOPUP_BUNDLE_500_CENTS_PAID]
     ):
         fake = _FakeStripeService(session_id=f"cs_live_fake_{tier}")
-        app.dependency_overrides[get_stripe_service] = lambda f=fake: f
+        app.dependency_overrides[get_stripe_service] = _bind_fake(fake)
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers=_internal_headers(),
