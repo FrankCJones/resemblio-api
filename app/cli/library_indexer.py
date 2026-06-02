@@ -21,6 +21,7 @@ scope; no Stripe or credit-ledger writes).
 """
 from __future__ import annotations
 
+import argparse
 import logging
 import sys
 
@@ -31,13 +32,30 @@ from app.library_indexer import drain_pending
 logger = logging.getLogger("resemblio.cli.library_indexer")
 
 
+def _build_parser() -> argparse.ArgumentParser:
+    """Argparse parser. Exists so ``--help`` exits 0 without DB access.
+
+    The CI entrypoint smoke (`ci/entrypoints.sh`) runs ``python -m
+    app.cli.library_indexer --help`` in a clean subprocess to prove the
+    module imports cleanly. Without a parser, ``--help`` would be silently
+    ignored and the worker would try to open a DB session in CI.
+    """
+    return argparse.ArgumentParser(
+        prog="library_indexer",
+        description=(
+            "Drain pending library_index_jobs rows. Invoked every 60s by "
+            "resemblio-library-indexer.timer on resemblio-prod-01."
+        ),
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entrypoint. Returns a shell exit code.
 
     The log line shape is intentionally stable so an operator can grep
     ``library_indexer_tick_complete`` from journald without parsing prose.
     """
-    del argv  # no flags in v1; preserved for future --once / --dry-run wiring
+    _build_parser().parse_args(argv)  # exits 0 on --help; no flags accepted
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",

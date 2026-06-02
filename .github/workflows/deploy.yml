@@ -49,6 +49,16 @@ jobs:
           # about our own in-tree package not being on PyPI.
           /tmp/ci-venv/bin/pip-audit --skip-editable
 
+      # Entrypoint smoke: every declared CLI module runs `--help` in a clean
+      # subprocess. Catches module-load ordering bugs (transitive import
+      # side effects that break `python -m app.cli.X`) BEFORE deploy.
+      # Per CTO Week 1 Day 4-5 rollout
+      # (`projects/OptSus Team/cto-reviews/2026-06-02-workflow-rollout-week1.md`).
+      - name: Entrypoint smoke (every CLI module --help cleanly)
+        env:
+          PYTHON: /tmp/ci-venv/bin/python
+        run: bash ci/entrypoints.sh
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh

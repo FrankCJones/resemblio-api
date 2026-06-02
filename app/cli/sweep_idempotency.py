@@ -98,6 +98,24 @@ def sweep_expired(session: Session, now: datetime | None = None) -> SweepResult:
     return SweepResult(deleted_count=deleted, cutoff=cutoff)
 
 
+def _build_parser():
+    """Argparse parser. Exists so ``--help`` exits 0 without DB access.
+
+    The CI entrypoint smoke (`ci/entrypoints.sh`) runs ``python -m
+    app.cli.sweep_idempotency --help`` in a clean subprocess to prove the
+    module imports cleanly. Without a parser, ``--help`` would be silently
+    ignored and the sweeper would try to open a DB session in CI.
+    """
+    import argparse
+    return argparse.ArgumentParser(
+        prog="sweep_idempotency",
+        description=(
+            "Delete expired idempotency_keys rows. Invoked by "
+            "resemblio-idempotency-sweep.timer on resemblio-prod-01."
+        ),
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entrypoint. Returns a shell exit code.
 
@@ -106,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     log line shape is intentionally stable so an operator alert can grep
     for ``sweep_idempotency_complete`` without parsing prose.
     """
-    del argv  # no flags in v1; preserved for future --dry-run wiring
+    _build_parser().parse_args(argv)  # exits 0 on --help; no flags accepted
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
