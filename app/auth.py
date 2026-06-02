@@ -145,7 +145,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Validate credentials, attach auth state, and record usage events."""
-        if request.url.path in AUTH_FREE_PATHS or request.url.path.startswith("/docs"):
+        if (
+            request.url.path in AUTH_FREE_PATHS
+            or request.url.path.startswith("/docs")
+            # Public-corpus library read API. Quality-filtered rows only;
+            # no PII; safe to expose to anonymous BFF + crawlers. See
+            # ``app/routes/library.py`` docstring (Auth section) for rationale.
+            or request.url.path.startswith("/v1/library/")
+        ):
             return await call_next(request)
 
         header = request.headers.get("authorization", "")
