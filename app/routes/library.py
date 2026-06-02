@@ -312,20 +312,35 @@ def list_brands(
     """List public-corpus brands for the ``/library/`` hub page.
 
     Returns ``page`` of size ``page_size`` ordered by brand_slug ascending,
-    each row carrying the brand's most recent canonical source_url and the
-    count of canonical category pages currently live for the brand. Quality
-    gate is enforced by the upstream indexer (library_pages is the only
-    table read) plus ``asset_versions.is_public`` re-checked at the join.
+    each row carrying the brand's most recent source_url (from any public
+    asset_version owning a library_page for the brand) and the count of
+    DISTINCT category pages currently live for the brand. Quality gate is
+    enforced by the upstream indexer (library_pages is the only table read)
+    plus ``asset_versions.is_public`` re-checked at the join.
+
+    Note on canonical-flag handling
+    -------------------------------
+    The hub deliberately does NOT filter on ``is_canonical=True``. The
+    canonical flag is owned by the indexer's reconciler and flips between
+    rows of the same (brand_slug, category_slug) as new asset_versions
+    arrive. For the hub's purpose (does this brand have ANY public library
+    content?), requiring is_canonical=True would silently hide brands whose
+    rows were seeded outside the indexer's reconciliation path (e.g. the
+    DRL bootstrap) or whose canonical row was momentarily flipped FALSE
+    during a reconcile window. We count DISTINCT category_slug so a brand
+    with both canonical and non-canonical rows for the same category
+    contributes one to category_count, matching the brand-detail page count.
+    The detail endpoints still gate on is_canonical where the contract
+    demands a single canonical row.
     """
-    # Aggregate canonical pages per brand with one categorical count + one
-    # representative asset_version_id (most recent) per brand_slug.
+    # Aggregate library pages per brand with DISTINCT category count and
+    # representative asset_version (most recent public) per brand_slug.
     base = (
         select(
             LibraryPage.brand_slug.label("brand_slug"),
-            func.count(LibraryPage.id).label("category_count"),
+            func.count(func.distinct(LibraryPage.category_slug)).label("category_count"),
         )
         .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
-        .where(LibraryPage.is_canonical.is_(True))
         .where(AssetVersion.is_public.is_(True))
         .group_by(LibraryPage.brand_slug)
         .order_by(LibraryPage.brand_slug.asc())
