@@ -72,6 +72,15 @@ from app.constants import (
     LIBRARY_INDEX_QUALITY_THRESHOLD,
     LIBRARY_PAGE_METADATA_SCHEMA_VERSION,
 )
+# Importing ``app.extractor_bridge`` for its side effects: at module-load
+# time it prepends the vendored ``_vendored/drl/drl`` tree onto ``sys.path``
+# and verifies the DRL corpus is intact. The indexer's lazy ``from _scripts
+# import ...`` calls inside ``_all_template_classes`` and ``_compose_one_page``
+# depend on that path setup having already run. Without this import the CLI
+# entrypoint (``python -m app.cli.library_indexer``) loads this module but
+# never triggers the path install, and every job in the queue fails with
+# ``ModuleNotFoundError: No module named '_scripts'``. Do not remove.
+from app import extractor_bridge as _extractor_bridge  # noqa: F401
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 
 
@@ -79,12 +88,15 @@ logger = logging.getLogger("resemblio.library_indexer")
 
 
 # The DRL ``_scripts`` package (templates, compose, slate, extraction) is
-# vendored under ``_vendored/drl/drl/_scripts`` and loaded by
-# ``app.extractor_bridge`` at import time. All submodules the indexer needs
-# (``templates``, ``compose``, ``slate``) now live in that vendored tree, so
-# no sys.path or ``__path__`` patching is required here. CI checks out only
-# the resemblio-api repo and must resolve these imports against the vendored
-# tree alone; do not reintroduce workspace-relative lookups.
+# vendored under ``_vendored/drl/drl/_scripts``. The ``sys.path`` install
+# that makes those modules importable is performed by
+# ``app.extractor_bridge`` at its module-load time; we import it above
+# purely for that side effect so that the indexer's lazy ``from _scripts
+# import ...`` calls below resolve correctly when this module is loaded
+# from the CLI entrypoint (which does not otherwise import the bridge).
+# CI checks out only the resemblio-api repo and must resolve these imports
+# against the vendored tree alone; do not reintroduce workspace-relative
+# lookups.
 
 
 # ----------------------------------------------------------------------
