@@ -1,0 +1,49 @@
+# Canonical systemd service for resemblio-idempotency-sweep.
+#
+# Triggered hourly by resemblio-idempotency-sweep.timer. Invokes
+# `python -m app.cli.sweep_idempotency` which deletes rows from the
+# `idempotency_keys` table older than IDEMPOTENCY_KEY_TTL_SECONDS (24h).
+#
+# Paired hardening matches resemblio-api.service so the sweep cannot
+# escape the same filesystem and capability sandbox the API runs under.
+# `Type=oneshot` is correct here: the process runs to completion, emits
+# a single log line, and exits 0. Systemd records the success and the
+# timer fires again on schedule.
+#
+# Source of truth lives in the repo at
+# `code/api/deploy/systemd/resemblio-idempotency-sweep.service`.
+# Apply changes via:
+#   sudo cp resemblio-idempotency-sweep.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl restart resemblio-idempotency-sweep.timer
+
+[Unit]
+Description=Resemblio idempotency-keys table sweep (delete expired rows)
+After=network-online.target postgresql.service resemblio-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=claude-cowork
+Group=claude-cowork
+WorkingDirectory=/opt/resemblio-api/app
+EnvironmentFile=/opt/resemblio-api/.env
+ExecStart=/opt/resemblio-api/venv/bin/python -m app.cli.sweep_idempotency
+
+# Hardening (mirrors resemblio-api.service)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/resemblio-api
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+# Hourly timer for the idempotency-keys sweep.
+#
+# Cadence rationale: hourly cleanup is cheap on the
+# `ix_idempotency_keys_created_at` index and keeps stale-row count bounded
+# to roughly one hour of POST /v1/extractions traffic between sweeps. A
+# 24h cadence would allow a burst day to inflate the table before
+# reclamation. The TTL on row expiry itself stays at 24h (read-path
+# contract); only the cleanup frequency is hourly.
+#
+# `Persistent=true` means if the box was off when an hourly tick was due,
+# the sweep runs once at boot to catch up. `RandomizedDelaySec` jitters
+# the actual fire instant so simultaneous timers across hosts don't all
+# hit the DB at :00:00 if the fleet ever grows beyond one box.
+#
+# Apply changes via:
+#   sudo cp resemblio-idempotency-sweep.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now resemblio-idempotency-sweep.timer
+
+[Unit]
+Description=Hourly trigger for resemblio-idempotency-sweep.service
+Requires=resemblio-idempotency-sweep.service
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+RandomizedDelaySec=2min
+Persistent=true
+Unit=resemblio-idempotency-sweep.service
+
+[Install]
+WantedBy=timers.target
