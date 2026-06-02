@@ -76,6 +76,15 @@ AUTO_REFUND_AUDIT_SCHEMA_VERSION = "auto_refund_audit_v1"
 # live before a forced rotation on next login.
 MAGIC_LINK_TOKEN_BYTES = 32
 MAGIC_LINK_EXPIRY_MINUTES = 15
+# Minimum interval between magic-link emails to the same address, in seconds.
+# Closes a mailbox-bombing / volume-enumeration edge: if the internal-auth
+# shared secret leaks (or a buggy BFF loop-fires the endpoint), every retry
+# would otherwise mint a fresh token AND fire a fresh Resend send to the
+# target's inbox. Within this window the API still returns the standard
+# ``{ok: true}`` anti-enumeration ack but skips the mint+send. Tuned so a
+# human-pace retry (refresh, "didn't get it") still works while loop-fire
+# is rate-bounded. Raise if abuse is observed.
+MAGIC_LINK_REQUEST_COOLDOWN_SECONDS = 30
 BFF_SESSION_MAX_AGE_DAYS = 30
 # Magic-link email copy lives next to the constant so a copy review is a
 # one-file diff. The link URL is supplied by the caller (the web BFF

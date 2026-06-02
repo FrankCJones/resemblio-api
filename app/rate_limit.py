@@ -34,6 +34,23 @@ class TokenBucket:
         self.tokens -= cost
         return True
 
+    def seconds_until_token(self, cost: int = 1, now: float | None = None) -> int:
+        """Return whole seconds until ``cost`` tokens would refill into the bucket.
+
+        Used to populate the HTTP ``Retry-After`` header on 429 responses.
+        Returns at least 1 so a client honoring the header never tight-loops.
+        The math mirrors ``allow``'s refill rate (``capacity / refill_seconds``)
+        and reads ``tokens`` after the most recent ``allow`` call updated it,
+        so callers MUST invoke this immediately after ``allow`` returned False
+        without intervening mutations on the same bucket.
+        """
+        deficit = max(0.0, float(cost) - self.tokens)
+        if deficit <= 0:
+            return 1
+        seconds = deficit * (self.refill_seconds / self.capacity)
+        # Ceil to whole seconds; Retry-After is an integer per RFC 9110.
+        return max(1, int(seconds) + (1 if seconds % 1 else 0))
+
 
 @dataclass(frozen=True)
 class RateLimitResult:
@@ -41,6 +58,7 @@ class RateLimitResult:
 
     allowed: bool
     error: str | None = None
+    retry_after_seconds: int | None = None
 
 
 class InMemoryRateLimiter:
@@ -70,9 +88,13 @@ class InMemoryRateLimiter:
                 TokenBucket(RATE_LIMIT_PER_DAY, RATE_LIMIT_DAY_WINDOW_SECONDS, float(RATE_LIMIT_PER_DAY)),
             )
             if not minute.allow():
-                return RateLimitResult(False, "rate_limit_minute")
+                return RateLimitResult(
+                    False, "rate_limit_minute", minute.seconds_until_token()
+                )
             if not day.allow():
-                return RateLimitResult(False, "rate_limit_day")
+                return RateLimitResult(
+                    False, "rate_limit_day", day.seconds_until_token()
+                )
             return RateLimitResult(True)
 
     def reset(self) -> None:

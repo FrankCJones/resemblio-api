@@ -89,12 +89,22 @@ def _client_ip(request: Request) -> str | None:
     return peer_host
 
 
-def _error(status_code: int, code: str, detail: str | None = None) -> JSONResponse:
-    """Build a contract-shaped JSON error response."""
+def _error(
+    status_code: int,
+    code: str,
+    detail: str | None = None,
+    headers: dict[str, str] | None = None,
+) -> JSONResponse:
+    """Build a contract-shaped JSON error response.
+
+    ``headers`` is optional and used for protocol-level hints such as
+    ``Retry-After`` on 429 responses (see RFC 9110 § 15.5.7). The body shape
+    is unchanged for backward-compat; headers are additive.
+    """
     body: dict[str, str] = {"error": code}
     if detail is not None:
         body["detail"] = detail
-    return JSONResponse(status_code=status_code, content=body)
+    return JSONResponse(status_code=status_code, content=body, headers=headers or None)
 
 
 def _append_event(api_key: ApiKey, event_type: str, ip: str | None, metadata: dict[str, Any] | None = None) -> ApiKeyEvent:
@@ -174,7 +184,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             limit = rate_limiter.check(api_key.key_hash, user.id)
             if not limit.allowed:
-                return _error(429, limit.error or "rate_limited")
+                rate_headers: dict[str, str] | None = None
+                if limit.retry_after_seconds is not None:
+                    # RFC 9110 § 10.2.3: Retry-After accepts a delta-seconds
+                    # integer. Clients (curl, requests, browsers) honor this
+                    # automatically; without it they have to guess a backoff.
+                    rate_headers = {"Retry-After": str(limit.retry_after_seconds)}
+                return _error(429, limit.error or "rate_limited", headers=rate_headers)
 
             request.state.current_user = user
             request.state.current_api_key = api_key

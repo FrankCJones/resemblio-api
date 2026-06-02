@@ -51,6 +51,7 @@ from app.constants import (
     BFF_KEY_LOG_PREFIX_CHARS,
     DEFAULT_API_SCOPE,
     MAGIC_LINK_EXPIRY_MINUTES,
+    MAGIC_LINK_REQUEST_COOLDOWN_SECONDS,
     MAGIC_LINK_TOKEN_BYTES,
 )
 from app.crypto import generate_api_key, hash_api_key, hash_password
@@ -219,11 +220,42 @@ def request_magic_link(
     if not _internal_secret_ok(x_internal_auth, real_settings):
         return _error(401, "internal_auth_invalid")
 
+    now = utcnow()
+    normalized_email = payload.email.lower()
+
+    # Per-email cooldown to bound mailbox-bombing / volume-enumeration.
+    # If a non-consumed, non-expired token was minted within the cooldown
+    # window we keep the standard anti-enumeration ack but skip the
+    # mint+send. The previous token still works in the recipient's inbox;
+    # the cooldown only suppresses redundant sends. The query is bounded
+    # by the index on ``magic_link_tokens.email``.
+    cooldown_cutoff = now - timedelta(seconds=MAGIC_LINK_REQUEST_COOLDOWN_SECONDS)
+    existing = session.execute(
+        select(MagicLinkToken)
+        .where(MagicLinkToken.email == normalized_email)
+        .where(MagicLinkToken.consumed_at.is_(None))
+        .where(MagicLinkToken.expires_at > now)
+        .order_by(MagicLinkToken.created_at.desc())
+        .limit(1)
+    ).scalar_one_or_none()
+    if existing is not None:
+        existing_created_at = existing.created_at
+        # SQLite returns naive datetimes; Postgres returns aware. Normalize
+        # to UTC-aware for the cooldown comparison without mutating the row.
+        if existing_created_at.tzinfo is None:
+            existing_created_at = existing_created_at.replace(tzinfo=timezone.utc)
+        if existing_created_at >= cooldown_cutoff:
+            logger.info(
+                "magic_link_request_throttled email=%s cooldown_seconds=%s",
+                normalized_email,
+                MAGIC_LINK_REQUEST_COOLDOWN_SECONDS,
+            )
+            return InternalAck(ok=True)
+
     plaintext_token = secrets.token_urlsafe(MAGIC_LINK_TOKEN_BYTES)
     token_hash = _hash_token(plaintext_token)
-    now = utcnow()
     row = MagicLinkToken(
-        email=payload.email.lower(),
+        email=normalized_email,
         token_hash=token_hash,
         expires_at=now + timedelta(minutes=MAGIC_LINK_EXPIRY_MINUTES),
         ip=payload.ip,

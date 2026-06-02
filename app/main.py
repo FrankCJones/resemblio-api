@@ -5,9 +5,11 @@ import logging
 import os
 
 from fastapi import FastAPI, Request
+from starlette.responses import JSONResponse
 
 from app.auth import AuthMiddleware
 from app.config import get_settings, validate_startup_settings
+from app.request_id import REQUEST_ID_HEADER, RequestIdMiddleware
 from app.routes import account, api_keys, billing, credit, extractions, health, internal_auth, webhooks
 
 
@@ -88,6 +90,46 @@ def create_app() -> FastAPI:
         return response
 
     app.add_middleware(AuthMiddleware)
+    # Starlette wraps middlewares LIFO, so the LAST middleware added is the
+    # OUTERMOST in the chain. Add RequestIdMiddleware last so it sees every
+    # request first, attaches ``request.state.request_id`` before
+    # AuthMiddleware runs (auth 401/403 responses then carry the header), and
+    # echoes the header on every response including error responses.
+    app.add_middleware(RequestIdMiddleware)
+
+    @app.exception_handler(Exception)
+    async def _unhandled_exception_handler(  # type: ignore[no-untyped-def]
+        request: Request, exc: Exception
+    ):
+        """Return a structured 500 with the request id on every unhandled error.
+
+        The audit-IP 500 on 2026-06-02 took a ``journalctl`` dig because the
+        body was an opaque FastAPI default and the response had no caller-
+        usable correlation token. With this handler in place every unhandled
+        exception:
+
+        * logs ``unhandled_exception`` at ERROR with the request id, request
+          path, and exception class for grep-against-journalctl;
+        * returns ``{"error": "internal_error", "request_id": "<id>"}`` so
+          the customer sending the bug report includes the id by accident.
+
+        Auth middleware short-circuits 401/403 with its own well-formed JSON
+        body before ever reaching this handler; this only catches the truly
+        unhandled cases.
+        """
+        request_id = getattr(request.state, "request_id", None) or ""
+        logging.getLogger(__name__).error(
+            "unhandled_exception request_id=%s path=%s exc=%s",
+            request_id,
+            request.url.path,
+            exc.__class__.__name__,
+        )
+        headers = {REQUEST_ID_HEADER: request_id} if request_id else None
+        return JSONResponse(
+            status_code=500,
+            content={"error": "internal_error", "request_id": request_id},
+            headers=headers,
+        )
     app.include_router(health.router, prefix="/v1", tags=["health"])
     app.include_router(account.router, prefix="/v1", tags=["account"])
     app.include_router(api_keys.router, prefix="/v1", tags=["api_keys"])

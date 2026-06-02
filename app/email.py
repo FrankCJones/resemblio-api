@@ -37,6 +37,16 @@ class AutoRefundEmailPayload(TypedDict):
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
+# Cloudflare sits in front of api.resend.com and rejects User-Agent strings
+# matching automation-bot heuristics (Python-urllib/3.x triggers error 1010,
+# a 403 with no body forwarded by Resend itself). Setting an explicit
+# product-branded User-Agent satisfies the gate. Verified 2026-06-02 during
+# Wave 2c Step 3 magic-link smoke (Frank's signup email never arrived;
+# direct curl from the same box returned 200 because curl's UA passes the
+# gate). Workspace lock-in candidate: any urllib.request call hitting a
+# Cloudflare-fronted API needs an explicit User-Agent.
+RESEND_USER_AGENT = "Resemblio/1.0 (+https://resemblio.com; transactional-email)"
+
 
 class EmailSender(Protocol):
     """Protocol implemented by real and fake transactional email senders."""
@@ -93,6 +103,7 @@ class ResendEmailSender:
                 headers={
                     "Authorization": f"Bearer {self._api_key}",
                     "Content-Type": "application/json",
+                    "User-Agent": RESEND_USER_AGENT,
                 },
                 method="POST",
             )
@@ -141,6 +152,7 @@ class ResendEmailSender:
                 headers={
                     "Authorization": f"Bearer {self._api_key}",
                     "Content-Type": "application/json",
+                    "User-Agent": RESEND_USER_AGENT,
                 },
                 method="POST",
             )
@@ -176,6 +188,7 @@ class ResendEmailSender:
                 headers={
                     "Authorization": f"Bearer {self._api_key}",
                     "Content-Type": "application/json",
+                    "User-Agent": RESEND_USER_AGENT,
                 },
                 method="POST",
             )
