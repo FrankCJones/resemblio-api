@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, Float, ForeignKey, Index, Integer, String, Text, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
@@ -456,4 +456,74 @@ class WebSessionKey(Base):
     __table_args__ = (
         Index("ix_web_session_keys_user_id", "user_id"),
         Index("ix_web_session_keys_api_key_id", "api_key_id", unique=True),
+    )
+
+
+class LibraryIndexJob(Base):
+    """Queue row for the library indexer service (mission Phase 4).
+
+    The indexer drains rows in ``pending`` state, moves them to ``running``,
+    runs the DRL compose pipeline against the referenced ``asset_versions``
+    row, and writes per-page renders into ``library_pages``. On success the
+    row flips to ``complete``; on transient failure it flips back to
+    ``pending`` with ``attempts`` incremented; once ``attempts`` exceeds
+    ``LIBRARY_INDEX_MAX_ATTEMPTS`` the row is parked at ``failed`` for
+    operator triage via ``last_error``. Migration 0019.
+    """
+
+    __tablename__ = "library_index_jobs"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    asset_version_id: Mapped[int] = mapped_column(
+        BigIntType, ForeignKey("asset_versions.id"), nullable=False
+    )
+    status: Mapped[str] = mapped_column(Text, nullable=False, default="pending", server_default="pending")
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    enqueued_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (
+        Index("ix_library_index_jobs_status_enqueued_at", "status", "enqueued_at"),
+        Index("ix_library_index_jobs_asset_version_id", "asset_version_id"),
+    )
+
+
+class LibraryPage(Base):
+    """One per-category compose render for an ``asset_versions`` row.
+
+    Read directly by the Next.js library routes (Phase 5) to render
+    ``/library/<brand_slug>/<category_slug>/`` and its versioned variants.
+    ``is_canonical`` marks the latest version per ``(brand_slug,
+    category_slug)``; the canonical-brand page reads only TRUE rows while
+    versioned pages read every row regardless of the flag. ``metadata_json``
+    carries the token subset + sample text + display font that powers OG
+    image generation and page copy interpolation. Migration 0020.
+    """
+
+    __tablename__ = "library_pages"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    asset_version_id: Mapped[int] = mapped_column(
+        BigIntType, ForeignKey("asset_versions.id"), nullable=False
+    )
+    category_slug: Mapped[str] = mapped_column(Text, nullable=False)
+    brand_slug: Mapped[str] = mapped_column(Text, nullable=False)
+    version_label: Mapped[str | None] = mapped_column(Text, nullable=True)
+    rendered_html: Mapped[str | None] = mapped_column(Text, nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False)
+    is_canonical: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("asset_version_id", "category_slug", name="uq_library_pages_asset_version_category"),
+        Index("ix_library_pages_brand_category", "brand_slug", "category_slug"),
+        Index("ix_library_pages_is_canonical", "is_canonical"),
     )

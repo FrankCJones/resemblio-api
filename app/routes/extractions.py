@@ -44,6 +44,7 @@ from app.failure_modes import (
     redact_secrets,
 )
 from app.asset_versions import insert_or_reuse_asset_version
+from app.library_indexer import enqueue_for_asset_version
 from app.models import ApiKey, AutoRefundAuditEvent, CreditLedger, Extraction, User
 from app.quality_heuristics import HeuristicPenaltyResult, apply_heuristic_penalties
 from app.quality_scoring import QualityScoreResult, compute_quality_score
@@ -730,6 +731,19 @@ def _create_extraction_inner(
     extraction.zip_sha256 = zip_sha256
     extraction.extracted_at = bundle.extracted_at
     extraction.schema_version = bundle.schema_version
+    # Mission Phase 4: enqueue the new asset_version for the library indexer.
+    # The indexer's quality gate (``LIBRARY_INDEX_QUALITY_THRESHOLD`` + penalty
+    # flags + is_public) decides whether pages actually render; the enqueue
+    # itself is unconditional so re-classified-public rows post-moderation
+    # land in the queue without a backfill pass. Failures here MUST NOT
+    # poison the extraction success path: log and continue.
+    try:
+        enqueue_for_asset_version(session, asset_version.id)
+    except Exception as enqueue_exc:  # noqa: BLE001 - non-fatal
+        logger.warning(
+            "library_indexer_enqueue_failed asset_version_id=%s error=%r",
+            asset_version.id, enqueue_exc,
+        )
     session.commit()
     session.refresh(extraction)
 

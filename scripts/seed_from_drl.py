@@ -333,6 +333,7 @@ def upsert_extraction(
       attribute the bootstrap corpus to the ``--seed-user-id`` operator.
     """
     from app.asset_versions import insert_or_reuse_asset_version
+    from app.library_indexer import enqueue_for_asset_version
     from app.models import Extraction  # local import: dry-run safety
 
     existing = find_existing(session, stripped.source_id)
@@ -365,6 +366,18 @@ def upsert_extraction(
         )
         session.add(row)
         session.flush()
+        # Enqueue this asset_version for the library indexer (mission Phase 4).
+        # Idempotent: a no-op if a pending/running job already exists. Failures
+        # here MUST NOT abort the seed transaction; the indexer can also be
+        # backfilled by an operator running ``python -m app.cli.library_indexer``
+        # on demand if the enqueue ever drops a row.
+        try:
+            enqueue_for_asset_version(session, asset_version.id)
+        except Exception as enqueue_exc:  # noqa: BLE001 - log and continue
+            LOG.warning(
+                "enqueue_for_asset_version failed for source_id=%s: %r",
+                stripped.source_id, enqueue_exc,
+            )
         return row, "insert"
 
     existing.tokens_json = bundle.tokens_json
@@ -374,6 +387,13 @@ def upsert_extraction(
     existing.zip_sha256 = bundle.zip_sha256
     existing.schema_version = SCHEMA_V1
     session.flush()
+    try:
+        enqueue_for_asset_version(session, asset_version.id)
+    except Exception as enqueue_exc:  # noqa: BLE001 - log and continue
+        LOG.warning(
+            "enqueue_for_asset_version failed for source_id=%s: %r",
+            stripped.source_id, enqueue_exc,
+        )
     return existing, "update"
 
 

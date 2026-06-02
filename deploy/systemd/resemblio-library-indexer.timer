@@ -1,0 +1,33 @@
+# 60-second timer for the library indexer.
+#
+# Cadence rationale: the indexer is the path that turns a fresh extraction
+# into the per-page rows the Next.js library routes (Phase 5) serve. The
+# DRL compose pipeline runs sub-second per asset_version (no network, pure
+# string-format on 18 templates); LIBRARY_INDEX_BATCH_SIZE = 10 means a
+# steady-state burst of 10 extractions takes one tick to clear. A 60-second
+# cadence keeps the longest "extracted but not yet visible in /library/"
+# window inside one minute even on a tick-miss boundary.
+#
+# `Persistent=true` means a missed tick after a reboot still fires once.
+# `RandomizedDelaySec` jitters the actual fire instant so simultaneous
+# timers across a future multi-host deployment don't all hit the DB at
+# :00 of every minute.
+#
+# Apply changes via:
+#   sudo cp resemblio-library-indexer.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now resemblio-library-indexer.timer
+
+[Unit]
+Description=60s trigger for resemblio-library-indexer.service
+Requires=resemblio-library-indexer.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=60s
+RandomizedDelaySec=10s
+Persistent=true
+Unit=resemblio-library-indexer.service
+
+[Install]
+WantedBy=timers.target
