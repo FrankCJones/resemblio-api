@@ -82,6 +82,9 @@ from app.constants import (
 # ``ModuleNotFoundError: No module named '_scripts'``. Do not remove.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
+from extractor.button_override import apply_button_tokens
+from extractor.button_tokens import ButtonTokens, derive_button_tokens
+from extractor.computed_styles import ComputedStyleReport
 
 
 logger = logging.getLogger("resemblio.library_indexer")
@@ -296,6 +299,7 @@ def _compose_one_page(
     *,
     brand_slug: str,
     tokens: dict[str, str],
+    button_tokens: ButtonTokens | None = None,
 ) -> str:
     """Render the per-class HTML body fragment for a brand snapshot.
 
@@ -331,12 +335,68 @@ def _compose_one_page(
     # Wrap in a per-page article element so the fragment is self-contained
     # when injected into the Next.js library page. The data attribute
     # carries the class for downstream CSS scoping if needed.
-    return (
+    fragment = (
         f'<article class="rs-library-page" data-rs-class="{class_name}" data-rs-brand="{brand_slug}">\n'
         f"<style>\n{inline_tokens_css}\n{styles}\n</style>\n"
         f"{body}\n"
         f"</article>\n"
     )
+    # Hybrid Path B button-fidelity seam (CTO 2026-06-02). When the brand
+    # has an R3.1 computed-styles snapshot on disk we derive ButtonTokens
+    # and inject a `.b-btn` override block so the rendered button matches
+    # the source page's pill/chiclet/etc. For brands without a snapshot
+    # (the current default for every DRL-seeded entry) `apply_button_tokens`
+    # is a no-op and the vendored DRL default ships untouched. Override is
+    # retired when DRL upstream lands the `--ds-button-*` contract (Path A).
+    return apply_button_tokens(fragment, button_tokens)
+
+
+# Conventional on-disk location for per-brand R3.1 snapshots. None exist
+# today; the path is reserved so the post-compose seam has a canonical
+# place to look. When R3.1 re-extraction lands, snapshots are written
+# here as `{brand_slug}.json` carrying a ComputedStyleReport.
+_BUTTON_SNAPSHOT_DIR = (
+    Path(__file__).resolve().parents[1]
+    / "_vendored"
+    / "drl"
+    / "drl"
+    / "_data"
+    / "computed_styles"
+)
+
+
+def _load_button_tokens(brand_slug: str) -> ButtonTokens | None:
+    """Load the brand's R3.1 button tokens from its on-disk snapshot.
+
+    Returns ``None`` when no snapshot exists for ``brand_slug``, when the
+    snapshot is malformed, or when the report carries no usable ``cta``
+    slot. The caller treats every ``None`` as "no override, ship the DRL
+    default" - the override is fail-safe by design (CTO Hybrid Path B,
+    2026-06-02). Failure to read a snapshot is logged but never raised.
+    """
+    if not brand_slug:
+        return None
+    snapshot_path = _BUTTON_SNAPSHOT_DIR / f"{brand_slug}.json"
+    if not snapshot_path.exists():
+        return None
+    try:
+        import json as _json
+
+        report_raw = _json.loads(snapshot_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        logger.warning(
+            "library_indexer_button_snapshot_unreadable brand=%s path=%s err=%s",
+            brand_slug,
+            snapshot_path,
+            exc,
+        )
+        return None
+    if not isinstance(report_raw, dict):
+        return None
+    # Drop any human-facing README key the fixture format carries.
+    report_raw.pop("_README", None)
+    report: ComputedStyleReport = report_raw  # type: ignore[assignment]
+    return derive_button_tokens(report)
 
 
 def _brand_placeholder(name: str, *, brand_slug: str) -> str:
@@ -665,9 +725,17 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
 
     brand_slug = derive_brand_slug(asset_version.url)
     tokens = tokens_for_compose(asset_version.dtcg_json or {})
+    # Hybrid Path B button-fidelity override (CTO 2026-06-02). One disk
+    # read per asset version (None for the common no-snapshot case).
+    button_tokens = _load_button_tokens(brand_slug)
     written = 0
     for class_name in _all_template_classes():
-        rendered = _compose_one_page(class_name, brand_slug=brand_slug, tokens=tokens)
+        rendered = _compose_one_page(
+            class_name,
+            brand_slug=brand_slug,
+            tokens=tokens,
+            button_tokens=button_tokens,
+        )
         metadata = _metadata_for(class_name, brand_slug=brand_slug, tokens=tokens)
         page = LibraryPage(
             asset_version_id=asset_version.id,

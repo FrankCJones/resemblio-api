@@ -32,6 +32,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.constants import LIBRARY_PAGE_METADATA_SCHEMA_VERSION, SCHEMA_V1
+from app import library_indexer as library_indexer_mod
 from app.library_indexer import (
     _metadata_for,
     drain_pending,
@@ -302,3 +303,111 @@ def test_metadata_for_returns_byte_identical_envelope_across_key_shapes() -> Non
                 f"bare_keys: {other[field_name]!r} vs {bare[field_name]!r} "
                 f"(bug 11 regression: _metadata_for fails to normalize key shape)"
             )
+
+
+# ---------------------------------------------------------------------------
+# Render-fidelity pill assertion (Hybrid Path B button override)
+# CTO packet: projects/OptSus Team/cto-reviews/2026-06-02-resemblio-button-fidelity-fix.md
+# ---------------------------------------------------------------------------
+
+
+# Reuse the Apple computed-styles fixture authored for the Layer 1 tests.
+APPLE_FIXTURE_DIR = Path(__file__).parent / "fixtures" / "button_fidelity"
+APPLE_SEED_URL = "resemblio://seed/drl_v1/apple/library/apple-snapshot"
+APPLE_EXPECTED_BRAND_SLUG = "apple"
+
+
+def _seed_apple_button_snapshot(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Point the indexer's snapshot loader at a tmp dir holding apple.json.
+
+    The production loader looks for ``{brand_slug}.json`` under the
+    vendored DRL ``_data/computed_styles`` directory. For tests we
+    override the directory constant to a tmp_path and copy the Apple
+    fixture into ``apple.json`` so ``_load_button_tokens("apple")`` finds
+    it without touching the real vendored tree.
+    """
+    snapshot_dir = tmp_path / "computed_styles"
+    snapshot_dir.mkdir()
+    src = APPLE_FIXTURE_DIR / "apple_computed.json"
+    (snapshot_dir / "apple.json").write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+    monkeypatch.setattr(library_indexer_mod, "_BUTTON_SNAPSHOT_DIR", snapshot_dir)
+
+
+def _make_apple_asset_version(session: Session) -> AssetVersion:
+    """Insert a minimal Apple AssetVersion carrying just enough DTCG to pass quality gate."""
+    # We reuse the Aeon DTCG token bag (any non-empty bag will do for compose);
+    # the relevant assertion is about the button override block, not Aeon's tokens.
+    dtcg = json.loads(
+        (FIXTURE_DIR / "aeon_dtcg.json").read_text(encoding="utf-8")
+    )
+    row = AssetVersion(
+        url=APPLE_SEED_URL,
+        content_hash="apple-min-fixture-hash",
+        dtcg_json=dtcg,
+        manifest_schema_version=SCHEMA_V1,
+        is_public=True,
+        version_label="apple-min-fixture",
+        fetched_at=datetime.now(timezone.utc),
+    )
+    session.add(row)
+    session.flush()
+    return row
+
+
+def test_apple_button_renders_as_pill_when_snapshot_present(
+    session: Session, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Layer 3 render-fidelity gate: Apple's pill survives the compose pipeline.
+
+    Given an Apple R3.1 computed-styles snapshot on disk, every composed
+    page that contains a `.b-btn` block (in practice the `buttons` page)
+    must end up with the override block writing a >=100px border-radius.
+    Failing this is the headline button-fidelity regression.
+    """
+    _seed_apple_button_snapshot(monkeypatch, tmp_path)
+    user, _key, _ = seed_user(session)
+    av = _make_apple_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    written = _enqueue_and_drain(session, av)
+    assert written > 0
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    # At least one page (the buttons page) carries `.b-btn`; that page
+    # must show the override block with the >=100px radius. Pages
+    # without `.b-btn` are no-op'd and skipped from this assertion.
+    pages_with_btn = [p for p in pages if ".b-btn" in (p.rendered_html or "")]
+    assert pages_with_btn, "no rendered page contains the `.b-btn` block to override"
+    for page in pages_with_btn:
+        assert "resemblio-button-override" in page.rendered_html, (
+            f"page {page.category_slug}: override marker missing - "
+            f"button-fidelity seam not engaged"
+        )
+        assert "border-radius: 980px !important;" in page.rendered_html, (
+            f"page {page.category_slug}: Apple pill radius did not propagate "
+            f"through the override - headline button-fidelity regression"
+        )
+        assert "font-size: 17px !important;" in page.rendered_html, (
+            f"page {page.category_slug}: Apple 17px font-size did not propagate"
+        )
+        assert "font-weight: 400 !important;" in page.rendered_html, (
+            f"page {page.category_slug}: Apple 400 weight did not propagate"
+        )
+
+
+def test_aeon_button_renders_default_when_no_snapshot(session: Session) -> None:
+    """No-snapshot path: Aeon renders the DRL default with no override block.
+
+    Pins the graceful-degrade contract from the CTO packet: brands
+    without an R3.1 snapshot continue to ship today's output untouched.
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_aeon_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    _enqueue_and_drain(session, av)
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    for page in pages:
+        assert "resemblio-button-override" not in page.rendered_html, (
+            f"page {page.category_slug}: override block injected for a brand "
+            f"with no on-disk snapshot - graceful-degrade contract broken"
+        )
