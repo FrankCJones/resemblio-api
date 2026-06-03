@@ -545,17 +545,39 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
     plus the schema-version tag. Downstream consumers may add fields; we
     keep the v1 shape intentionally small so the OG image generator can
     render off this payload alone.
+
+    Key normalization mirrors the ``_tokens_to_inline_css`` /
+    ``_ds_var_name`` fix shipped in commit ``066f503``: DRL-seeded brands
+    arrive with already-namespaced (``ds-bg``, ``ds-font-body``) and/or
+    underscored keys (``font_display``); organic rows arrive with bare
+    keys (``bg``, ``font_body``). Without normalization the envelope
+    returned ``None`` for every field on DRL-seeded input, which is the
+    bug 11 cause from the 2026-06-02 failure trail. Look up each
+    envelope field under both the bare and the ``ds-``-prefixed name.
     """
+    def _lookup(field: str) -> str | None:
+        # Underscore -> dash so ``font_display`` and ``font-display``
+        # collapse to a single canonical form before the ds- prefix check.
+        dashed = field.replace("_", "-")
+        # Bare-key spelling first (organic rows), then DRL ds- spelling.
+        value = tokens.get(field)
+        if value is not None:
+            return value
+        value = tokens.get(dashed)
+        if value is not None:
+            return value
+        return tokens.get(f"ds-{dashed}")
+
     return {
         "schema_version": LIBRARY_PAGE_METADATA_SCHEMA_VERSION,
         "brand_slug": brand_slug,
         "category_slug": class_name,
-        "bg": tokens.get("bg"),
-        "surface": tokens.get("surface"),
-        "text": tokens.get("text"),
-        "accent": tokens.get("accent"),
-        "font_display": tokens.get("font_display"),
-        "font_body": tokens.get("font_body"),
+        "bg": _lookup("bg"),
+        "surface": _lookup("surface"),
+        "text": _lookup("text"),
+        "accent": _lookup("accent"),
+        "font_display": _lookup("font_display"),
+        "font_body": _lookup("font_body"),
     }
 
 
