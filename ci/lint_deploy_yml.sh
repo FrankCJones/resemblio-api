@@ -20,6 +20,13 @@
 #   3. "PID did not change" - equality-failure diagnostic + non-zero exit
 #   4. /v1/readyz         - verb-probe smoke (exercises DB + storage)
 #
+# Stage 12 marker (CTO Stage 12 - entrypoint smoke gate):
+#   5. bash ci/entrypoints.sh - asserts every declared CLI module imports
+#      cleanly in a subprocess BEFORE the deploy step runs. Paired with
+#      `tests/test_entrypoint_smoke.py` (pytest-time parity assertion
+#      between `app.cli/` and the ENTRYPOINTS shell array). Closes the
+#      module-load race class flagged by the Library v1.1 3-hour outage.
+#
 # Run from the repo root: bash ci/lint_deploy_yml.sh
 set -euo pipefail
 
@@ -35,6 +42,7 @@ REQUIRED=(
   "AFTER_PID="
   "PID did not change"
   "/v1/readyz"
+  "bash ci/entrypoints.sh"
 )
 
 MISSING=0

@@ -63,6 +63,10 @@ REQUIRED_MARKERS: tuple[str, ...] = (
     "AFTER_PID=",        # 2. post-restart PID capture
     "PID did not change",  # 3. equality-failure diagnostic + non-zero exit
     "/v1/readyz",        # 4. verb-probe smoke (exercises new code path)
+    # Stage 12 marker (CTO Stage 12 - entrypoint smoke gate). Catches
+    # module-load races in `app.cli.*` BEFORE the deploy SSH block runs.
+    # Paired with `tests/test_entrypoint_smoke.py` and `ci/entrypoints.sh`.
+    "bash ci/entrypoints.sh",  # 5. entrypoint smoke step invocation
 )
 
 
