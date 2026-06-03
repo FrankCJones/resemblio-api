@@ -58,12 +58,21 @@ def get_account(request: Request) -> AccountResponse:
 
 @router.get("/credit/balance", response_model=CreditBalanceResponse)
 def get_credit_balance(request: Request, session: Session = Depends(get_db)) -> CreditBalanceResponse:
-    """Return computed credit balance and newest ledger timestamp."""
+    """Return computed credit balance and newest ledger timestamp.
+
+    `schema_version` is `SCHEMA_V1_1` (=2) to match the paired
+    `GET /v1/credit/ledger` endpoint. A client that pins on the version
+    field must get the same value from BOTH halves of the `credit` pair;
+    the Stage 10 parity test in `test_schema_version_parity.py` enforces
+    this invariant for every documented LIST/DETAIL or balance/ledger
+    pair. The response shape itself is unchanged from V1; the bump is
+    a pair-parity marker, not a contract break.
+    """
     user: User = current_user(request)
     return CreditBalanceResponse(
         balance_cents=credit_balance(session, user.id),
         last_entry_at=last_ledger_at(session, user.id),
-        schema_version=SCHEMA_V1,
+        schema_version=SCHEMA_V1_1,
     )
 
 
