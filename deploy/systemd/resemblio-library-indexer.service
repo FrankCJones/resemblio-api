@@ -30,6 +30,12 @@ User=claude-cowork
 Group=claude-cowork
 WorkingDirectory=/opt/resemblio-api/app
 EnvironmentFile=/opt/resemblio-api/.env
+# Same runtime-data contract as resemblio-api.service. The indexer reads
+# computed-style snapshots via the runtime/seed fallback resolver; future
+# pipeline steps may write here too.
+Environment=RESEMBLIO_RUNTIME_DATA_ROOT=/var/lib/resemblio
+StateDirectory=resemblio
+StateDirectoryMode=0755
 ExecStart=/opt/resemblio-api/venv/bin/python -m app.cli.library_indexer
 
 # Hardening (mirrors resemblio-api.service)
@@ -37,7 +43,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/opt/resemblio-api
+ReadWritePaths=/opt/resemblio-api /var/lib/resemblio
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectControlGroups=true

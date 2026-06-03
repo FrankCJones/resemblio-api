@@ -31,6 +31,17 @@ User=claude-cowork
 Group=claude-cowork
 WorkingDirectory=/opt/resemblio-api/app
 EnvironmentFile=/opt/resemblio-api/.env
+# Runtime-data root. The API writes per-brand computed-style snapshots and
+# (forward) other service-owned data here. This MUST live outside the git
+# checkout: pre-2026-06-03 the snapshots wrote into the tracked tree and
+# every CI deploy failed at `git reset --hard` because the runtime-owned
+# files blocked the unlink. See app/runtime_data.py for the resolver.
+Environment=RESEMBLIO_RUNTIME_DATA_ROOT=/var/lib/resemblio
+# StateDirectory makes systemd create /var/lib/resemblio at unit start and
+# chown it to User/Group above. Avoids a separate provisioning step for
+# the runtime root on fresh boxes.
+StateDirectory=resemblio
+StateDirectoryMode=0755
 # --workers 1 is REQUIRED. See header note. Do not change without first
 # migrating app/rate_limit.py off the in-memory store.
 # --no-server-header strips the default `Server: uvicorn` response header at
@@ -54,7 +65,11 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/opt/resemblio-api
+# `/var/lib/resemblio` is the runtime-data root (see Environment= above).
+# `StateDirectory=resemblio` makes systemd add it to ReadWritePaths
+# automatically, but we list it explicitly here so a future maintainer
+# searching for the writable paths finds both in one place.
+ReadWritePaths=/opt/resemblio-api /var/lib/resemblio
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectControlGroups=true

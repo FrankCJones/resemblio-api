@@ -86,10 +86,27 @@ EXTRACTION_FILENAME = "extraction.json"
 """Per-brand provenance file inside each `_extractions/<brand>/`."""
 
 DEFAULT_OUT_DIR_REL = Path("_vendored") / "drl" / "drl" / "_data" / "computed_styles"
-"""Default output dir, expressed relative to the api package root."""
+"""Legacy default, expressed relative to the api package root. Retained for
+reference and one-off recovery; the live default is now the runtime-data
+root resolved via ``app.runtime_data``. Writing into the git-tracked seed
+tree is what broke CI deploys on 2026-06-03; do not use this path for
+service-owned writes."""
 
-DEFAULT_OUT_DIR = (_API_ROOT / DEFAULT_OUT_DIR_REL).resolve()
-"""Resolved default: `<api>/_vendored/drl/drl/_data/computed_styles/`."""
+LEGACY_SEED_OUT_DIR = (_API_ROOT / DEFAULT_OUT_DIR_REL).resolve()
+"""Where the script wrote pre-2026-06-03. Used by the migration script and
+``--write-into-seed`` rescue flag; never used as the live default."""
+
+
+def _resolve_default_out_dir() -> Path:
+    """Return the live default output dir: the runtime-data root.
+
+    Lazy import avoids a hard dependency at module load (the script imports
+    cleanly in environments where ``app`` is not on sys.path until the
+    ``_API_ROOT`` sys.path insert above runs).
+    """
+    from app.runtime_data import runtime_subdir, COMPUTED_STYLES_SUBDIR
+
+    return runtime_subdir(COMPUTED_STYLES_SUBDIR, mkdir=False).resolve()
 
 DEFAULT_DRL_ROOT = Path("/opt/resemblio-api/drl")
 """Prod DRL root. Tests + local runs must pass --drl-root explicitly."""
@@ -428,11 +445,15 @@ def parse_args(argv: list[str] | None = None) -> CaptureArgs:
         default=DEFAULT_DRL_ROOT,
         help=f"Path to the DRL root (default {DEFAULT_DRL_ROOT}).",
     )
+    # Live default is resolved lazily so test imports of this module don't
+    # require ``RESEMBLIO_RUNTIME_DATA_ROOT`` to be set. When --out-dir is
+    # omitted the runtime-data root wins; the argparse default of None is
+    # converted to the resolved runtime path below.
     parser.add_argument(
         "--out-dir",
         type=Path,
-        default=DEFAULT_OUT_DIR,
-        help=f"Snapshot output dir (default {DEFAULT_OUT_DIR}).",
+        default=None,
+        help="Snapshot output dir (default: <RESEMBLIO_RUNTIME_DATA_ROOT>/computed_styles).",
     )
     parser.add_argument("--single", type=str, default=None, help="Capture one brand only.")
     parser.add_argument("--limit", type=int, default=None, help="Cap number of brands processed.")
@@ -443,11 +464,16 @@ def parse_args(argv: list[str] | None = None) -> CaptureArgs:
         help="Per-page Playwright timeout (default 15000).",
     )
     namespace = parser.parse_args(argv)
+    resolved_out_dir: Path
+    if namespace.out_dir is None:
+        resolved_out_dir = _resolve_default_out_dir()
+    else:
+        resolved_out_dir = Path(namespace.out_dir).resolve()
     return CaptureArgs(
         apply=bool(namespace.apply),
         force=bool(namespace.force),
         drl_root=Path(namespace.drl_root).resolve(),
-        out_dir=Path(namespace.out_dir).resolve(),
+        out_dir=resolved_out_dir,
         single=namespace.single,
         limit=namespace.limit,
         timeout_ms=int(namespace.timeout_ms),

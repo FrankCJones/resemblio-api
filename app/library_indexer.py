@@ -360,18 +360,23 @@ def _compose_one_page(
     return apply_button_tokens(fragment, button_tokens)
 
 
-# Conventional on-disk location for per-brand R3.1 snapshots. None exist
-# today; the path is reserved so the post-compose seam has a canonical
-# place to look. When R3.1 re-extraction lands, snapshots are written
-# here as `{brand_slug}.json` carrying a ComputedStyleReport.
-_BUTTON_SNAPSHOT_DIR = (
-    Path(__file__).resolve().parents[1]
-    / "_vendored"
-    / "drl"
-    / "drl"
-    / "_data"
-    / "computed_styles"
-)
+# Subdirectory name under both the runtime root and the seed root. Path
+# resolution lives in ``app.runtime_data``; see that module's docstring for
+# the runtime-vs-seed split. Pre-2026-06-03 this constant pointed directly
+# at the in-tree vendored path, which caused CI deploys to fail when
+# runtime-owned files blocked ``git reset --hard``.
+_BUTTON_SNAPSHOT_SUBDIR = "computed_styles"
+
+# Preserved for backward compatibility with tests that monkeypatched the
+# seed location directly. New code should use ``app.runtime_data`` instead.
+# This attribute now resolves on demand via a property-like proxy so the
+# legacy test pattern (``monkeypatch.setattr(library_indexer_mod,
+# "_BUTTON_SNAPSHOT_DIR", tmp_path)``) keeps working: when set on the
+# module object it overrides the runtime-data resolver.
+_BUTTON_SNAPSHOT_DIR: Path | None = None
+"""Test-only override hook. When set, ``_load_button_tokens`` looks here
+exclusively and skips the runtime/seed split. Production code leaves this
+``None`` so the runtime_data resolver controls path lookup."""
 
 
 def _load_button_tokens(brand_slug: str) -> ButtonTokens | None:
@@ -382,12 +387,28 @@ def _load_button_tokens(brand_slug: str) -> ButtonTokens | None:
     slot. The caller treats every ``None`` as "no override, ship the DRL
     default" - the override is fail-safe by design (CTO Hybrid Path B,
     2026-06-02). Failure to read a snapshot is logged but never raised.
+
+    Path resolution: when ``_BUTTON_SNAPSHOT_DIR`` is set (test override),
+    look only there. Otherwise delegate to ``app.runtime_data`` which tries
+    the runtime-data root first and falls back to the in-tree seed
+    location, so a brand newly captured by the running service is read
+    from ``/var/lib/resemblio/computed_styles/`` while a brand still on
+    its baseline snapshot is read from the vendored seed tree.
     """
     if not brand_slug:
         return None
-    snapshot_path = _BUTTON_SNAPSHOT_DIR / f"{brand_slug}.json"
-    if not snapshot_path.exists():
-        return None
+    if _BUTTON_SNAPSHOT_DIR is not None:
+        snapshot_path: Path | None = _BUTTON_SNAPSHOT_DIR / f"{brand_slug}.json"
+        if snapshot_path is not None and not snapshot_path.exists():
+            return None
+    else:
+        from app.runtime_data import resolve_read_path
+
+        snapshot_path = resolve_read_path(
+            _BUTTON_SNAPSHOT_SUBDIR, f"{brand_slug}.json"
+        )
+        if snapshot_path is None:
+            return None
     try:
         import json as _json
 

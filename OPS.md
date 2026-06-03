@@ -31,6 +31,15 @@ the date in `last_verified` above.
 
 All on `resemblio-prod-01` (`5.161.249.32`).
 
+**Code-vs-data split (locked 2026-06-03).** Code lives under
+`/opt/resemblio-api/app/` and is git-managed + deploy-user-owned
+(`claude-cowork`). Runtime data lives under `/var/lib/resemblio/` and is
+service-user-owned. NOT git-tracked. The split exists because pre-2026-06-03
+the API wrote per-brand computed-style snapshots into the tracked vendored
+tree; every CI `git reset --hard origin/main` then failed because the deploy
+user could not unlink the service-owned files. The runtime-data resolver
+lives at `app/runtime_data.py`; every service-side write routes through it.
+
 | Purpose | Path |
 |---|---|
 | App root (git checkout) | `/opt/resemblio-api/app` |
@@ -38,6 +47,9 @@ All on `resemblio-prod-01` (`5.161.249.32`).
 | Production `.env` | `/opt/resemblio-api/.env` |
 | Python venv | `/opt/resemblio-api/venv` |
 | DRL vendored corpus | `/opt/resemblio-api/drl` |
+| Runtime-data root | `/var/lib/resemblio/` (env: `RESEMBLIO_RUNTIME_DATA_ROOT`) |
+| Computed-style snapshots (runtime) | `/var/lib/resemblio/computed_styles/<slug>.json` |
+| Computed-style snapshots (seed, in-tree) | `/opt/resemblio-api/app/_vendored/drl/drl/_data/computed_styles/<slug>.json` |
 | systemd unit (API) | `/etc/systemd/system/resemblio-api.service` |
 | systemd unit (indexer) | `/etc/systemd/system/resemblio-library-indexer.service` |
 | systemd timer (indexer) | `/etc/systemd/system/resemblio-library-indexer.timer` |
@@ -48,6 +60,28 @@ All on `resemblio-prod-01` (`5.161.249.32`).
 
 `/opt/resemblio-api/current` does NOT exist. Do not `cd` into it. Do not write
 to it. The web repo uses symlink-swap; the API does not (yet).
+
+### Runtime-data convention (locked 2026-06-03)
+
+Rule: **code lives in `/opt/resemblio-api/app/` (git-managed,
+claude-cowork-owned); runtime data lives in `/var/lib/resemblio/`
+(service-user-owned, NOT git-tracked).**
+
+- The systemd units set `RESEMBLIO_RUNTIME_DATA_ROOT=/var/lib/resemblio`
+  and use `StateDirectory=resemblio` so the dir exists with the right
+  owner on every unit start.
+- Code reads via `app.runtime_data.resolve_read_path(subdir, name)`,
+  which tries the runtime root first and falls back to the in-tree seed
+  path. A committed reference snapshot in
+  `_vendored/drl/drl/_data/computed_styles/` continues to work
+  unmodified; a runtime-captured snapshot supersedes it.
+- Code writes via `app.runtime_data.resolve_write_path(subdir, name)`,
+  which only returns runtime-root paths. Writing into the seed tree from
+  the running service is a regression and breaks CI.
+- New runtime-data categories MUST mirror the runtime/seed subdir name
+  (e.g. `computed_styles/`) and read via the resolver.
+- The one-time migration of pre-fix snapshots out of the seed tree is
+  `scripts/migrate_runtime_data.sh` (idempotent; safe to re-run).
 
 ---
 
@@ -403,6 +437,27 @@ Root cause: the bootstrap resolves `--drl-root` and joins it against
 manifest paths. A relative root resolves against `cwd` at import time, not
 at compose time; subsequent file opens against the joined path fail with
 `FileNotFoundError`. Always pass an absolute path on prod.
+
+### 8.12 CI deploy fails on `git reset --hard origin/main` with `Permission denied` on `_data/computed_styles/`
+
+```
+Symptom: deploy job logs
+         `error: unable to unlink old '_vendored/drl/drl/_data/computed_styles/.gitkeep': Permission denied`
+Probe:   ssh ... 'ls -la /opt/resemblio-api/app/_vendored/drl/drl/_data/computed_styles/'
+         # Look for files owned by a user other than claude-cowork.
+Fix:     sudo /opt/resemblio-api/app/scripts/migrate_runtime_data.sh
+         # Re-run the deploy; runtime files now live under
+         # /var/lib/resemblio/computed_styles/ and the seed dir is back to
+         # claude-cowork ownership.
+```
+
+Root cause: pre-2026-06-03 the API wrote per-brand computed-style
+snapshots into the git-tracked seed tree. The deploy user could not
+unlink the service-owned files, so `git reset --hard` aborted before any
+new code landed. The structural fix moved runtime writes to
+`/var/lib/resemblio/`; this row is the recovery for any box that still
+carries pre-fix snapshots in the seed dir. The migration script is
+idempotent; a clean box returns immediately.
 
 ### 8.9 `.git/` ownership drift after a stray `sudo` git op
 
