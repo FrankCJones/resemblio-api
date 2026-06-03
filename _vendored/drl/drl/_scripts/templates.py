@@ -693,7 +693,7 @@ body { background: var(--ds-bg); color: var(--ds-text);
            line-height: 1.1; margin: 16px 0 12px; letter-spacing: -0.018em; }
 .l-dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
          color: var(--ds-text-muted); margin: 0; }
-.l-section { padding: 32px 0; border-top: 1px solid var(--ds-hairline); }
+.l-section { padding: 48px 0; border-top: 1px solid var(--ds-hairline); }
 .l-section__title { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
                     text-transform: uppercase; letter-spacing: 0.08em;
                     color: var(--ds-text-muted); margin: 0 0 16px; }

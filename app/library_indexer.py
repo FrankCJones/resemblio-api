@@ -81,6 +81,7 @@ from app.constants import (
 # never triggers the path install, and every job in the queue fails with
 # ``ModuleNotFoundError: No module named '_scripts'``. Do not remove.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
+from app.library_style_scope import scope_style_block
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 from extractor.button_override import apply_button_tokens
 from extractor.button_tokens import ButtonTokens, derive_button_tokens
@@ -331,13 +332,20 @@ def _compose_one_page(
     filled = {ph: _brand_placeholder(ph, brand_slug=brand_slug) for ph in bundle["placeholders"]}
     body = bundle["body"].format(**filled)
     styles = bundle["styles"]
+    # Selector-scope the DRL template CSS to the per-page article wrapper.
+    # Vendored DRL emits document-level resets (`*, *::before, *::after`,
+    # `html, body { ... }`) that leak out of the article and repaint the
+    # surrounding Next.js page chrome. scope_style_block rewrites bare
+    # selectors to be prefixed by `.rs-library-page`; :root and at-rules
+    # are preserved. See app/library_style_scope.py for the rule table.
+    scoped_styles = scope_style_block(styles)
     inline_tokens_css = _tokens_to_inline_css(tokens)
     # Wrap in a per-page article element so the fragment is self-contained
     # when injected into the Next.js library page. The data attribute
     # carries the class for downstream CSS scoping if needed.
     fragment = (
         f'<article class="rs-library-page" data-rs-class="{class_name}" data-rs-brand="{brand_slug}">\n'
-        f"<style>\n{inline_tokens_css}\n{styles}\n</style>\n"
+        f"<style>\n{inline_tokens_css}\n{scoped_styles}\n</style>\n"
         f"{body}\n"
         f"</article>\n"
     )
