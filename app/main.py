@@ -16,6 +16,7 @@ from app.routes import (
     billing,
     convert,
     credit,
+    exports,
     extractions,
     extractions_anonymous,
     health,
@@ -153,6 +154,12 @@ def create_app() -> FastAPI:
     app.include_router(billing.router, prefix="/v1", tags=["internal_billing"])
     app.include_router(library.router, prefix="/v1", tags=["library"])
     app.include_router(extractions_anonymous.router, prefix="/v1", tags=["anonymous_extractions"])
+    # Stage O7 export-format download routes. Registered AFTER the canonical
+    # extractions router so the format-typed `/extractions/{id}/export/{fmt}`
+    # path does not shadow a future extractions sub-route; FastAPI matches
+    # path-with-suffix-segment uniquely regardless of registration order, but
+    # ordering is the human-readability default.
+    app.include_router(exports.router, prefix="/v1", tags=["exports"])
     return app
 
 

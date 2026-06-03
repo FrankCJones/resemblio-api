@@ -622,6 +622,67 @@ extractions are not authenticated).
 
 ---
 
+## 8c. Stage O7 export-format endpoints
+
+Two routes serve every export format off the persisted DTCG payload:
+
+| Endpoint | Auth | Notes |
+|---|---|---|
+| `GET /v1/extractions/{id}/export/{fmt}` | Bearer | Ownership-scoped; 404 across user boundary |
+| `GET /v1/anonymous/extractions/{id}/export/{fmt}?claim_token=<...>` | claim_token | 403 on missing or mismatched token |
+
+`fmt` is one of `dtcg`, `css`, `tailwind`, `zip`. Anything else returns
+400 with the supported-format list so a client can self-correct. Style
+Dictionary and Figma Tokens are intentionally NOT in this list; they
+sit on the v1.1 backlog per the URL-first respec.
+
+Format conventions (locked 2026-06-03):
+
+| Format | Content-Type | Filename |
+|---|---|---|
+| `dtcg` | `application/json` | `resemblio-<id>-tokens.json` |
+| `css` | `text/css; charset=utf-8` | `resemblio-<id>-tokens.css` |
+| `tailwind` | `text/css; charset=utf-8` | `resemblio-<id>-tailwind.css` |
+| `zip` | `application/zip` | `resemblio-<id>-bundle.zip` |
+
+Every response carries `Content-Disposition: attachment; filename="..."`
+plus `X-Exporter-Schema-Version: 1`. The exporter wire-contract version
+is fixed at `1`; bumping requires coordinated client rollout.
+
+CSS output shape: `:root { --<group>-<leaf>: <value>; ... }`. Group
+names are kebab-cased (`fontFamily` -> `font-family`). DTCG
+`schema_version` sibling is filtered out.
+
+Tailwind output shape: `@theme { ... }` block matching Tailwind v4
+namespaces (`--color-*`, `--font-*`, `--spacing-*`, `--radius-*`,
+`--text-*`, `--shadow-*`). DTCG groups with no Tailwind v4 namespace
+(duration, cubicBezier, "other") are omitted from this output by
+design; the DTCG + CSS exports carry them.
+
+ZIP bundle layout:
+
+```
+resemblio-<id>-bundle.zip
++-- README.md
++-- tokens.json     (canonical DTCG, pretty-printed)
++-- tokens.css      (CSS :root custom properties)
++-- tailwind.css    (Tailwind v4 @theme block)
++-- screenshot.png  (optional; only when caller supplies bytes)
+```
+
+The bundle uses a fixed timestamp on every ZIP entry so two requests
+for the same extraction return byte-identical archives (content-hash
+stable across requests).
+
+Pricing: FREE in v1. The extraction was already charged at creation
+time; conversion is value-add per the pricing ladder. No ledger debit.
+
+Subsystem reference: `app/exporters/README.md`. Pure-data converters
+unit-tested in `tests/test_exporter_*.py`; route integration in
+`tests/test_routes_exports.py`.
+
+---
+
 ## 9. When this file goes stale
 
 If reality on the box differs from anything above, the file is wrong.
