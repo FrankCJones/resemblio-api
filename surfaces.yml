@@ -1,0 +1,25 @@
+schema_version: 1
+project: resemblio
+# Deploy-verification surface registry. Consumed by:
+#   tools/discipline/verify_deploy.py
+#   .claude/hooks/stop_verify_claims.py
+# Spec: projects/OptSus Team/cto-reviews/2026-06-03-discipline-as-code-implementation-spec.md
+surfaces:
+  - name: resemblio-web
+    base_url: https://resemblio.com
+    routes:
+      - /
+      - /app
+      - /app/signup
+      - /app/auth/verify
+      - /app/extractions
+      - /app/account
+    requires_auth: false
+    expect_status: 200
+  - name: resemblio-api
+    base_url: https://api.resemblio.com
+    routes:
+      - /v1/healthz
+      - /v1/readyz
+    requires_auth: false
+    expect_status: 200

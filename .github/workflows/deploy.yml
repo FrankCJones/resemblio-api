@@ -290,11 +290,21 @@ jobs:
 
       # Link-crawl smoke gate (standing PR gate locked 2026-06-03).
       # Runs AFTER /v1/readyz; same retry pattern as the smoke step above.
-      # Reads `projects/Resemblio/surfaces.yml` for the surface registry,
-      # crawls every registered surface, parses every `<a href>` / `<link>`
-      # / `<script src>` / `<img src>` / `<iframe src>` / `<form action>`
-      # in the rendered HTML via stdlib `html.parser` (DOM parse, NOT regex),
-      # and asserts every INTERNAL link returns 200 (or a documented 301).
+      # Reads `code/api/surfaces.yml` (vendored copy of the canonical
+      # workspace-level `projects/Resemblio/surfaces.yml`) for the surface
+      # registry, crawls every registered surface, parses every `<a href>`
+      # / `<link>` / `<script src>` / `<img src>` / `<iframe src>` /
+      # `<form action>` in the rendered HTML via stdlib `html.parser`
+      # (DOM parse, NOT regex), and asserts every INTERNAL link returns
+      # 200 (or a documented 301).
+      #
+      # Path note: the GitHub Actions runner checks out only the
+      # resemblio-api repo (rooted at what is `code/api/` in Frank's
+      # workspace), so the canonical workspace path `../../surfaces.yml`
+      # does not exist on CI. The repo carries its own copy at
+      # `surfaces.yml` (this file's repo root) which MUST stay
+      # byte-identical to the workspace canonical source. A test asserts
+      # the parity.
       #
       # Why this gate exists: on 2026-06-02 the Library v1.1 deploy went
       # green and 500'd every metadata route. Same shape bit Susann WP
@@ -310,7 +320,7 @@ jobs:
         run: |
           set -e
           /tmp/ci-venv/bin/python scripts/link_crawl_smoke.py \
-            --surfaces ../../surfaces.yml \
+            --surfaces ./surfaces.yml \
             --report /tmp/link_crawl_report.json
 
       - name: Upload link-crawl report
