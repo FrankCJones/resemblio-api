@@ -1,0 +1,446 @@
+<!--
+schema_version: ops_v1
+purpose: Single first read for any prod-touching dispatch on resemblio-api.
+         Closes the "operational drift" failure class (Class E in CTO TDD
+         Recovery Plan 2026-06-02). Wrong SSH host, wrong layout path, wrong
+         module name, wrong CLI shape, wrong PAT - every one of these has
+         cost wall-clock in the last week. Each lives below with the
+         wrong-vs-right incantation.
+last_verified: 2026-06-02
+maintainer: LLM-operated; humans read first, edit if reality drifts.
+-->
+
+# Resemblio API - OPS
+
+The single first read before any prod-touching dispatch on `resemblio-api`.
+Read this top-to-bottom; do not pattern-match from another host.
+
+Source-of-truth cross-references:
+
+- `infra/box-resemblio-prod-01.yaml` (workspace root) - canonical box facts
+- `projects/Resemblio/Resemblio_INFRA.md` - infra runbook
+- `projects/Resemblio/AUTHORITY.yml` - GREEN/YELLOW/RED per action
+- `_credentials/CREDENTIALS_README.md` - what each env key is for
+
+If this file disagrees with the YAML, the YAML wins. Fix this file and note
+the date in `last_verified` above.
+
+---
+
+## 1. Canonical paths
+
+All on `resemblio-prod-01` (`5.161.249.32`).
+
+| Purpose | Path |
+|---|---|
+| App root (git checkout) | `/opt/resemblio-api/app` |
+| Release symlink | none (API does not use symlink-swap; web does) |
+| Production `.env` | `/opt/resemblio-api/.env` |
+| Python venv | `/opt/resemblio-api/venv` |
+| DRL vendored corpus | `/opt/resemblio-api/drl` |
+| systemd unit (API) | `/etc/systemd/system/resemblio-api.service` |
+| systemd unit (indexer) | `/etc/systemd/system/resemblio-library-indexer.service` |
+| systemd timer (indexer) | `/etc/systemd/system/resemblio-library-indexer.timer` |
+| systemd unit (sweep) | `/etc/systemd/system/resemblio-idempotency-sweep.service` |
+| journald log surface | `journalctl -u resemblio-api -u resemblio-library-indexer` |
+| Postgres data | `/var/lib/postgresql/16/` |
+| Reconcile audit log | `/var/log/resemblio/customer_reconcile.log` |
+
+`/opt/resemblio-api/current` does NOT exist. Do not `cd` into it. Do not write
+to it. The web repo uses symlink-swap; the API does not (yet).
+
+---
+
+## 2. Canonical SSH
+
+ONE form. Use this exact invocation. No alternates.
+
+```bash
+KEY="/c/Users/fjone/Desktop/Shared with Claude/_credentials/resemblio_ed25519"
+KH="/c/Users/fjone/Desktop/Shared with Claude/_credentials/resemblio-prod-01.known_hosts"
+
+ssh -i "$KEY" \
+    -o "UserKnownHostsFile=\"$KH\"" \
+    -o "StrictHostKeyChecking=yes" \
+    claude-cowork@5.161.249.32 \
+    'whoami; hostname; uptime'
+```
+
+Notes that are non-obvious and have bitten previously:
+
+- **Use the IP `5.161.249.32`, not `api.resemblio.com`.** The hostname is not
+  in `known_hosts`; the IP is. Connecting by hostname returns
+  `No ED25519 host key is known` and fails strict-host-key-checking.
+- **Inner-quote the path-with-spaces.** `-o "UserKnownHostsFile=\"$KH\""`
+  (escaped inner quotes) - bare `-o "UserKnownHostsFile=$KH"` lets OpenSSH
+  split on the first space and report the known-hosts file as missing.
+  Confirmed 2026-06-02 during Wave 3 web deploy.
+- **User is `claude-cowork`.** `root@` is the fallback per the YAML but is
+  locked for normal ops; only invoke through Hetzner rescue mode in recovery.
+- **Never copy the key to `/tmp/rkey`.** The absolute path above is the
+  workspace-standard. Alternate paths force a fresh harness allow-prompt
+  every time.
+
+For sudo operations, `claude-cowork` has scoped NOPASSWD entries in
+`/etc/sudoers.d/`. If a command needs root and that user cannot sudo it,
+treat it as a recovery operation and escalate per AUTHORITY.yml.
+
+---
+
+## 3. Env loading
+
+`.env` on prod holds RESEMBLIO_DB_URL, R2 keys, Stripe keys, Resend key,
+RESEMBLIO_INTERNAL_AUTH_SECRET, RESEMBLIO_KEY_PEPPER, and other secrets.
+It is loaded by the systemd unit (EnvironmentFile=/opt/resemblio-api/.env)
+automatically. Manual one-off commands must load it explicitly.
+
+The canonical pattern (mirrors the CI deploy step):
+
+```bash
+set -a
+. /opt/resemblio-api/.env
+set +a
+
+# Now invoke the python entry under the right user. R2 + Stripe creds
+# are read from the calling environment by app/config.py, so they MUST
+# survive the sudo hop.
+sudo --preserve-env -u claude-cowork \
+    /opt/resemblio-api/venv/bin/python -m app.cli.library_indexer
+```
+
+### The R2-credentials-across-sudo trap
+
+`sudo` resets the environment by default. Without `--preserve-env` (or
+`-E`), `CLOUDFLARE_R2_ACCESS_KEY` / `CLOUDFLARE_R2_SECRET_KEY` /
+`CLOUDFLARE_R2_ENDPOINT` / `RESEMBLIO_R2_BUCKET` are stripped before the
+child process starts. The script then fails late with an
+`InvalidAccessKeyId` or `Could not connect` from the R2 client.
+
+Wrong: `sudo -u claude-cowork /opt/resemblio-api/venv/bin/python ...`
+Right: `sudo --preserve-env -u claude-cowork /opt/resemblio-api/venv/bin/python ...`
+
+If the script's job is purely DB-only (e.g. `alembic upgrade`), you can omit
+`--preserve-env` provided RESEMBLIO_DB_URL is in the environment of the
+inner shell. The systemd unit handles this correctly via `EnvironmentFile=`;
+the manual-ssh path is what needs the discipline.
+
+---
+
+## 4. CLI shapes
+
+Exact invocations. Copy-paste runnable after SSH-ing in and loading `.env`
+per section 3. Run from `/opt/resemblio-api/app` unless noted.
+
+### 4.1 Alembic migrate
+
+```bash
+cd /opt/resemblio-api/app
+/opt/resemblio-api/venv/bin/alembic -c alembic.ini current   # show prod head
+/opt/resemblio-api/venv/bin/alembic -c alembic.ini upgrade head
+/opt/resemblio-api/venv/bin/alembic -c alembic.ini current   # verify
+```
+
+The DB URL env var name is `RESEMBLIO_DB_URL` (NOT `DATABASE_URL`). Alembic
+reads it via `alembic.ini` + `app/config.py`. If you see
+`sqlalchemy.exc.ArgumentError: Could not parse SQLAlchemy URL`, you forgot
+section 3 (`. /opt/resemblio-api/.env` with `set -a`).
+
+### 4.2 DRL bootstrap (seed brand corpus)
+
+The orchestrator is a SCRIPT, not a CLI subcommand. There is no
+`library_indexer bootstrap` subcommand; do not invent one.
+
+```bash
+cd /opt/resemblio-api/app
+
+# Dry-run first (default; lists what would be touched, writes nothing).
+/opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library \
+    --drl-root /opt/resemblio-api/drl
+
+# Apply for one brand.
+/opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library \
+    --apply --drl-root /opt/resemblio-api/drl --single aeon
+
+# Apply for every discovered brand.
+/opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library \
+    --apply --drl-root /opt/resemblio-api/drl
+
+# Verify DB state without seeding.
+/opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library \
+    --verify-only --drl-root /opt/resemblio-api/drl
+```
+
+`--drl-root` is REQUIRED on prod. The script default points at the
+workspace dev path and does not exist on the box.
+
+### 4.3 Indexer drain (turn seeded asset_versions into library_pages)
+
+```bash
+cd /opt/resemblio-api/app
+/opt/resemblio-api/venv/bin/python -m app.cli.library_indexer
+```
+
+The CLI takes NO arguments. `--help` is the only accepted flag. It drains
+up to `LIBRARY_INDEX_BATCH_SIZE` (10) jobs per tick and exits. To clear a
+backlog larger than 10, LOOP until the tick reports `jobs_run=0`:
+
+```bash
+while true; do
+  OUT=$(/opt/resemblio-api/venv/bin/python -m app.cli.library_indexer 2>&1)
+  echo "$OUT" | tail -n1
+  echo "$OUT" | grep -q 'jobs_run=0' && break
+done
+```
+
+The cap (10) is a deliberate knob, not a bug. The 60s timer drains it
+naturally in steady state; the loop is for catch-up after a bootstrap.
+
+### 4.4 Verify bootstrap (report DB state for DRL rows)
+
+```bash
+cd /opt/resemblio-api/app
+/opt/resemblio-api/venv/bin/python -m scripts.verify_drl_bootstrap
+```
+
+### 4.5 Restart services after a config or unit edit
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart resemblio-api
+sudo systemctl restart resemblio-library-indexer.timer
+sudo systemctl status resemblio-api --no-pager
+```
+
+---
+
+## 5. Module names
+
+These are the imports the bootstrap, seed, and drain entry points expect.
+Wrong-import errors here have cost real time; the seam is brittle because
+nothing asserts these at deploy gate.
+
+| Symbol | Correct | Wrong (do not use) |
+|---|---|---|
+| DB session | `from app.db import SessionLocal` | `from app.database import ...` |
+| Library indexer | `from app.library_indexer import drain_pending` | `from app.indexer ...` |
+| Config | `from app.config import load_project_env` | `from app.settings ...` |
+| Constants | `from app.constants import ...` | inline magic numbers |
+| Seed | `from scripts.seed_from_drl import apply_seed, iter_assets, ...` | `from app.scripts ...` |
+| Bootstrap | run as `python -m scripts.bootstrap_drl_library` | `python scripts/bootstrap...` (sys.path mutation lives inside the module) |
+
+`scripts/` is on `sys.path` because each script self-inserts its parent into
+`sys.path[0]` at import time. Run as `python -m scripts.X` from
+`/opt/resemblio-api/app`. Do not run as `./scripts/X.py`.
+
+---
+
+## 6. Credentials map
+
+Source-of-truth: `_credentials/credentials.env` (workspace root) and
+`_credentials/CREDENTIALS_README.md`. Prod `.env` on the box is the live
+copy; `credentials.env` is the recovery source.
+
+| Env key | Used for | Notes |
+|---|---|---|
+| `GITHUB_TOKEN_RESEMBLIO_API` | `git push` to `FrankCJones/resemblio-api` (this repo) | Fine-scoped PAT. Use this, NOT the default token. |
+| `GITHUB_TOKEN_RESEMBLIO` | `git push` to `FrankCJones/resemblio-web` | Different repo, different PAT. Mixing them 403s. |
+| `GITHUB_TOKEN_RESEMBLIO_MCP` | `git push` to `FrankCJones/resemblio-mcp` | Separate PAT, separate repo. |
+| `RESEMBLIO_DB_URL` | Alembic + app DB connection | `postgresql://resemblio:<pw>@127.0.0.1:5432/resemblio` |
+| `CLOUDFLARE_R2_ENDPOINT` | R2 client init | Workspace-shared R2 account |
+| `CLOUDFLARE_R2_ACCESS_KEY` | R2 auth | Lost across sudo without `--preserve-env` |
+| `CLOUDFLARE_R2_SECRET_KEY` | R2 auth | Lost across sudo without `--preserve-env` |
+| `RESEMBLIO_R2_BUCKET` | Per-project bucket name | Default `resemblio-extractions` |
+| `STRIPE_RESTRICTED_KEY_RESEMBLIO_LIVE` | Stripe LIVE mode (post-cutover) | Live cutover SHIPPED 2026-06-02 |
+| `STRIPE_RESTRICTED_KEY_RESEMBLIO_TEST` | Stripe TEST mode | For TEST-mode dev only |
+| `STRIPE_WEBHOOK_SECRET_RESEMBLIO_LIVE` | Stripe webhook signature verify (LIVE) | Per-mode secret |
+| `STRIPE_WEBHOOK_SECRET_RESEMBLIO_TEST` | Stripe webhook signature verify (TEST) | Per-mode secret |
+| `RESEND_API_KEY` | Transactional email | CRLF in this value broke email-403 once; verify clean newline |
+| `RESEMBLIO_INTERNAL_AUTH_SECRET` | BFF magic-link auth (web -> API) | Unset = `/v1/internal/auth/*` returns 503 (fail-closed) |
+| `RESEMBLIO_KEY_PEPPER` | API-key storage hash | 32+ chars, never rotate without `_OLD` overlap |
+| `HETZNER_API_TOKEN` | Hetzner Cloud API | Box-level recovery only |
+| `CLOUDFLARE_API_TOKEN` | DNS via CF API | Zone scope `resemblio.com` |
+
+When pushing to the resemblio-api repo from local:
+
+```bash
+# In the repo working tree:
+git push https://x-access-token:${GITHUB_TOKEN_RESEMBLIO_API}@github.com/FrankCJones/resemblio-api.git main
+```
+
+The default workspace `GITHUB_TOKEN` does NOT have access to the private
+resemblio-api repo. Using it returns 403 and burns 30 seconds re-discovering
+which PAT is correct.
+
+---
+
+## 7. Deploy verification queries
+
+These curls run against the live prod surface and prove the API + indexer
+are healthy after a deploy or a bootstrap. CI runs the first two; the rest
+are operator-side verification.
+
+```bash
+# 1. API healthz returns 200.
+curl -s -o /dev/null -w "%{http_code}\n" https://api.resemblio.com/v1/healthz
+
+# 2. Hub returns >0 brands.
+curl -s https://api.resemblio.com/v1/library/hub | python -c \
+  "import sys, json; d=json.load(sys.stdin); print('hub_total:', d.get('total'))"
+
+# 3. One canonical brand renders (Aeon).
+curl -s -o /dev/null -w "%{http_code}\n" \
+  https://api.resemblio.com/v1/library/aeon/categories
+
+# 4. A category page body contains the CSS variable that proves token
+#    composition fired. Body fragment, no <html> wrapper.
+curl -s "https://api.resemblio.com/v1/library/aeon/<known-category-slug>/page" \
+  | grep -c -- '--ds-bg:'
+# Expect exactly 1.
+
+# 5. Alembic parity (over SSH after deploy):
+ssh ...  '/opt/resemblio-api/venv/bin/alembic -c /opt/resemblio-api/app/alembic.ini current'
+# Compare to repo head: alembic -c alembic.ini heads
+```
+
+These are the same shape as the deploy-time gate in
+`.github/workflows/deploy.yml`. If any returns non-200 or zero matches,
+do NOT mark the dispatch done; investigate before reporting.
+
+---
+
+## 8. Common failures and their fixes
+
+The bug-15 family in tabular form. Wrong shape, right shape, root cause.
+
+### 8.1 `api.resemblio.com` not in known_hosts
+
+```
+Wrong: ssh ... claude-cowork@api.resemblio.com
+Right: ssh ... claude-cowork@5.161.249.32
+```
+
+Root cause: the prod box's known_hosts entry is keyed by IP, not hostname.
+Strict-host-key-checking refuses the hostname connection.
+
+### 8.2 `/opt/resemblio-api/current` does not exist
+
+```
+Wrong: cd /opt/resemblio-api/current && git pull
+Right: cd /opt/resemblio-api/app && git pull
+```
+
+Root cause: only the web repo uses symlink-swap (`current` -> `releases/<sha>`).
+The API ships in-place at `/opt/resemblio-api/app`. Pattern-matching from
+the web layout is the prohibited shortcut.
+
+### 8.3 `ImportError: No module named app.database`
+
+```
+Wrong: from app.database import SessionLocal
+Right: from app.db   import SessionLocal
+```
+
+Root cause: the package is `app.db`, not `app.database`. This bug surfaces
+in ad-hoc scripts that get written from memory.
+
+### 8.4 `library_indexer bootstrap --apply` unrecognized
+
+```
+Wrong: python -m app.cli.library_indexer bootstrap --apply
+Right: python -m scripts.bootstrap_drl_library --apply --drl-root /opt/resemblio-api/drl
+```
+
+Root cause: the indexer CLI takes no arguments. Bootstrap is a separate
+SCRIPT, not a subcommand. Conflating them is a 5-minute round-trip every
+time it happens.
+
+### 8.5 `git push` 403 from default PAT
+
+```
+Wrong: git push origin main           (uses default GITHUB_TOKEN)
+Right: git push https://x-access-token:${GITHUB_TOKEN_RESEMBLIO_API}@github.com/FrankCJones/resemblio-api.git main
+```
+
+Root cause: the default workspace token has no access to private resemblio
+repos. Per-repo PATs in `_credentials/credentials.env`:
+`GITHUB_TOKEN_RESEMBLIO_API` for api, `GITHUB_TOKEN_RESEMBLIO` for web,
+`GITHUB_TOKEN_RESEMBLIO_MCP` for mcp.
+
+### 8.6 R2 credentials lost across sudo
+
+```
+Wrong: sudo -u claude-cowork /opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library --apply
+Right: sudo --preserve-env -u claude-cowork /opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library --apply --drl-root /opt/resemblio-api/drl
+```
+
+Root cause: `sudo` strips the environment by default. The R2 client
+initialized inside the bootstrap reads `CLOUDFLARE_R2_*` from os.environ;
+without `--preserve-env` they are absent and the upload fails late.
+
+### 8.7 Drain caps at 10 jobs/tick, backlog never clears
+
+```
+Wrong: python -m app.cli.library_indexer       # one shot; 10 jobs/tick
+Right: while true; do
+         OUT=$(/opt/resemblio-api/venv/bin/python -m app.cli.library_indexer 2>&1)
+         echo "$OUT" | tail -n1
+         echo "$OUT" | grep -q 'jobs_run=0' && break
+       done
+```
+
+Root cause: `LIBRARY_INDEX_BATCH_SIZE=10` is intentional (steady-state burst
+size). Bootstrap-time backlogs (hundreds of jobs) need a loop. The systemd
+timer drains naturally at 60s cadence in steady state.
+
+### 8.8 Relative manifest_dir breaks redirect-map load
+
+```
+Wrong: python -m scripts.bootstrap_drl_library --drl-root drl
+Right: python -m scripts.bootstrap_drl_library --drl-root /opt/resemblio-api/drl
+```
+
+Root cause: the bootstrap resolves `--drl-root` and joins it against
+manifest paths. A relative root resolves against `cwd` at import time, not
+at compose time; subsequent file opens against the joined path fail with
+`FileNotFoundError`. Always pass an absolute path on prod.
+
+### 8.9 `.git/` ownership drift after a stray `sudo` git op
+
+```
+Symptom: git fetch fails with `unpack-objects failed`
+Probe:   find /opt/resemblio-api/app/.git -not -user claude-cowork -print -quit
+Fix:     sudo chown -R claude-cowork:claude-cowork /opt/resemblio-api/app/.git
+```
+
+Root cause: a prior session ran a git op as root (typically while debugging),
+leaving pack objects owned by root that the deploy user cannot read. The
+CI workflow's self-heal handles this if sudo NOPASSWD is configured.
+
+### 8.10 Alembic upgrade silently skipped
+
+```
+Symptom:  deploy reports green, but `alembic current` on prod is behind head
+Probe:    LOCAL=$(alembic heads | awk '{print $1}' | head -n1)
+          PROD=$(ssh ... 'alembic -c /opt/resemblio-api/app/alembic.ini current | awk "{print \$1}" | head -n1')
+          [ "$LOCAL" = "$PROD" ] && echo PARITY || echo GAP
+Fix:      The CI workflow now asserts post-upgrade parity and fails the deploy.
+          For manual catch-up: alembic upgrade head, then re-assert.
+```
+
+Root cause: multi-head or unresolved-dependency states let `alembic upgrade`
+exit 0 without advancing. The CI parity-assert step is the gate; do not
+remove it.
+
+---
+
+## 9. When this file goes stale
+
+If reality on the box differs from anything above, the file is wrong.
+
+1. Probe the live box (section 7 queries).
+2. Update the affected section here.
+3. Update `last_verified` in the header.
+4. Commit with the deploy that touched the underlying surface.
+
+Pattern-match from another host is the prohibited shortcut. Read this file
+first; read the box YAML second; only then act.
