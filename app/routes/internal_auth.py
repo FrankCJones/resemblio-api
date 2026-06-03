@@ -57,9 +57,24 @@ from app.constants import (
 from app.crypto import generate_api_key, hash_api_key, hash_password
 from app.db import get_db
 from app.email import EmailSender, get_email_sender
-from app.models import ApiKey, ApiKeyEvent, MagicLinkToken, User, WebSessionKey
+from app.models import (
+    AnonymousExtraction,
+    ApiKey,
+    ApiKeyEvent,
+    Extraction,
+    MagicLinkToken,
+    User,
+    WebSessionKey,
+)
 from app.routes.account import credit_balance
 from app.users import ensure_onboarding_grant
+
+
+# Stage O5 claim-endpoint response envelope version. Mirrors the
+# anonymous-extraction surface (``ANON_EXTRACTION_SCHEMA_VERSION``) so the
+# BFF can switch on a single integer when reading either side of the
+# anonymous-to-account handoff.
+CLAIM_ANONYMOUS_EXTRACTION_SCHEMA_VERSION: int = 1
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -446,6 +461,150 @@ def redeem_magic_link(
         email=user.email,
         is_new_user=is_new_user,
     )
+
+
+class ClaimAnonymousExtractionBody(BaseModel):
+    """Inbound payload for the Stage O5 anonymous-to-account claim endpoint.
+
+    The BFF supplies both halves of the claim secret. ``user_id`` is the
+    newly-minted account that just completed magic-link redeem; the BFF
+    pulls it from the redeem response. ``claim_token`` is the opaque
+    secret minted at anonymous-extract time (stored in a short-lived
+    browser cookie across the magic-link round trip).
+    """
+
+    claim_token: str = Field(min_length=8, max_length=128)
+    user_id: int = Field(gt=0)
+
+
+@dataclass(frozen=True)
+class ClaimAnonymousExtractionResponse:
+    """Structured success response for the claim endpoint.
+
+    Emitted via ``JSONResponse`` to match the error-status surface and
+    keep the ``schema_version`` envelope uniform across happy and error
+    paths.
+    """
+
+    schema_version: int
+    ok: bool
+    extraction_id: int
+
+    def to_dict(self) -> dict[str, int | bool]:
+        """Return the response body as a plain dict."""
+        return {
+            "schema_version": self.schema_version,
+            "ok": self.ok,
+            "extraction_id": self.extraction_id,
+        }
+
+
+@router.post("/internal/auth/claim_anonymous_extraction")
+def claim_anonymous_extraction(
+    payload: ClaimAnonymousExtractionBody,
+    session: Session = Depends(get_db),
+    x_internal_auth: str | None = Header(default=None, alias="X-Internal-Auth"),
+) -> JSONResponse:
+    """Bind an anonymous extraction row to a freshly-minted user account.
+
+    Called by the BFF immediately after a successful magic-link redeem
+    when the visitor arrived at ``/app/signup?claim=<id>&token=<...>``
+    (the conversion path off the Stage O4 anonymous-result surface).
+
+    Atomic side effects, in order: (1) lookup the ``AnonymousExtraction``
+    row by ``claim_token`` (constant-time compare via the UNIQUE index);
+    (2) validate the row is not expired and not already claimed by
+    another user; (3) rebind the underlying ``Extraction`` row's
+    ``user_id`` from the synthetic anonymous service user to the new
+    account; (4) stamp ``claimed_at`` on the registry row and walk its
+    ``status`` to ``"claimed"``.
+
+    Edge cases:
+    - Unknown ``claim_token`` returns 404 ``invalid_claim_token``. We do
+      NOT mention whether the token existed and was simply consumed by
+      another user (that would leak claim-token guessing signal); the
+      404 covers both shapes.
+    - Already-claimed (``claimed_at`` is non-null) returns 409
+      ``already_claimed`` regardless of which user did the claim. Double-
+      claim is a hard error; the BFF surfaces a friendly redirect to the
+      dashboard rather than retrying.
+    - Past ``expires_at`` returns 410 ``claim_expired``. The 24-hour
+      window is enforced server-side; the BFF never trusts the cookie
+      timestamp.
+    - Missing or NULL ``extraction_id`` on the registry row (out-of-scope
+      classification path; nothing was ever extracted to bind) returns
+      404 ``nothing_to_claim``. The BFF treats this the same as an
+      unknown token for UX purposes.
+    - Unknown ``user_id`` returns 400 ``user_not_found``; the BFF should
+      never hit this path because it just minted the user one HTTP hop
+      earlier, but the route handler validates rather than crashes.
+    """
+    settings = get_settings()
+    if settings.internal_auth_secret is None:
+        return _error(503, "internal_auth_unconfigured")
+    if not _internal_secret_ok(x_internal_auth, settings):
+        return _error(401, "internal_auth_invalid")
+
+    user = session.get(User, payload.user_id)
+    if user is None:
+        return _error(400, "user_not_found")
+
+    # The UNIQUE index on ``claim_token`` makes this a single index hit;
+    # constant-time compare via the DB index is fine here (the lookup is
+    # equality on a 64-char column, no LIKE).
+    registry = session.execute(
+        select(AnonymousExtraction).where(AnonymousExtraction.claim_token == payload.claim_token)
+    ).scalar_one_or_none()
+    if registry is None:
+        return _error(404, "invalid_claim_token")
+
+    # Race-safe claim: a peer claim from another newly-signed-up user
+    # could race here. The conditional UPDATE pattern from
+    # ``redeem_magic_link`` would work but anonymous extractions are
+    # not a contention surface (one claim_token, one cookie, one
+    # visitor); a check-then-set guarded by the UNIQUE token + row-lock
+    # is sufficient. Postgres takes the row lock implicitly on UPDATE;
+    # SQLite serializes writes at the connection level.
+    if registry.claimed_at is not None:
+        return _error(409, "already_claimed")
+
+    expires_at = registry.expires_at
+    if expires_at.tzinfo is None:  # SQLite returns naive datetimes
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if expires_at < utcnow():
+        return _error(410, "claim_expired")
+
+    if registry.extraction_id is None:
+        # Out-of-scope classifications never created an extractions row;
+        # there is nothing to bind. The BFF treats this as "no claim".
+        return _error(404, "nothing_to_claim")
+
+    extraction = session.get(Extraction, registry.extraction_id)
+    if extraction is None:
+        # The FK is nullable but referential integrity in Postgres + the
+        # registry's own ``extraction_id NOT NULL`` check above would
+        # normally guarantee this row exists. A missing row points at
+        # operator-deleted state; treat as nothing-to-claim rather than
+        # crashing the BFF.
+        return _error(404, "nothing_to_claim")
+
+    now_ts = utcnow()
+    extraction.user_id = user.id
+    registry.claimed_at = now_ts
+    registry.status = "claimed"
+    session.commit()
+    logger.info(
+        "anonymous_extraction_claimed user_id=%s extraction_id=%s registry_id=%s",
+        user.id,
+        extraction.id,
+        registry.id,
+    )
+    response = ClaimAnonymousExtractionResponse(
+        schema_version=CLAIM_ANONYMOUS_EXTRACTION_SCHEMA_VERSION,
+        ok=True,
+        extraction_id=extraction.id,
+    )
+    return JSONResponse(status_code=200, content=response.to_dict())
 
 
 @router.get("/internal/auth/whoami", response_model=WhoamiResponse)
