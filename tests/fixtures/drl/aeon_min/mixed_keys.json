@@ -1,0 +1,33 @@
+{
+  "_comment": "Three parallel token bags that must produce identical OG metadata envelopes from _metadata_for. Bug 11 (failure trail 2026-06-02): _metadata_for reads bare keys; DRL emits ds-prefixed. Without normalization the ds_prefixed and mixed variants return all-null OG fields while the bare variant returns the right colors. Fixture is the regression pin. The three variants share the SAME source values for the six envelope fields {bg, surface, text, accent, font_display, font_body}; the only thing that differs is the key shape. mixed_keys carries BOTH the bare and ds-prefixed key for every field (same value under each name) so the bare-vs-namespaced normalization path inside _metadata_for is exercised on the same envelope.",
+  "bare_keys": {
+    "bg": "#ffffff",
+    "surface": "#fafafa",
+    "text": "#000000",
+    "accent": "#005645",
+    "font_display": "'PP Right Grotesk Wide', sans-serif",
+    "font_body": "'Academica', serif"
+  },
+  "ds_prefixed_keys": {
+    "ds-bg": "#ffffff",
+    "ds-surface": "#fafafa",
+    "ds-text": "#000000",
+    "ds-accent": "#005645",
+    "ds-font-display": "'PP Right Grotesk Wide', sans-serif",
+    "ds-font-body": "'Academica', serif"
+  },
+  "mixed_keys": {
+    "bg": "#ffffff",
+    "ds-bg": "#ffffff",
+    "surface": "#fafafa",
+    "ds-surface": "#fafafa",
+    "text": "#000000",
+    "ds-text": "#000000",
+    "accent": "#005645",
+    "ds-accent": "#005645",
+    "font_display": "'PP Right Grotesk Wide', sans-serif",
+    "ds-font-display": "'PP Right Grotesk Wide', sans-serif",
+    "font_body": "'Academica', serif",
+    "ds-font-body": "'Academica', serif"
+  }
+}

@@ -1,0 +1,304 @@
+"""Render-fidelity tests for the library indexer compose pipeline.
+
+CTO TDD recovery plan Phase 1 deliverable 2
+(``projects/OptSus Team/cto-reviews/2026-06-02-resemblio-library-tdd-recovery.md``)
+plus the Item 4 metadata-envelope extension from
+``projects/OptSus Team/cto-reviews/2026-06-02-resemblio-library-phase1-fixture-signoff.md``.
+
+The library historically accepted brand tokens and then composed HTML that
+did not project them - Lorem placeholders survived and ``_metadata_for``
+read the wrong key shape. These tests load a frozen Aeon DRL fixture,
+drive ``_process_job`` against an in-memory SQLite (the same pattern
+``tests/test_library_indexer.py`` uses), and assert the contract at the
+compose seam:
+
+(a) every brand-token key from the fixture appears as a ``--ds-<key>:``
+    CSS variable in the rendered HTML, exactly once, in the namespaced
+    shape (no ``--ds-ds-bg``)
+(b) no ``lorem`` substring leaks into the body
+(c) no ``<!doctype`` or ``<html`` substring (body fragments only)
+(d) ``metadata_json`` carries the v1 envelope with the right
+    ``schema_version`` / ``brand_slug`` / ``category_slug`` / six
+    color+font fields (extension Item 4 from the CTO sign-off)
+"""
+from __future__ import annotations
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+import pytest
+from sqlalchemy.orm import Session
+
+from app.constants import LIBRARY_PAGE_METADATA_SCHEMA_VERSION, SCHEMA_V1
+from app.library_indexer import (
+    _metadata_for,
+    drain_pending,
+    enqueue_for_asset_version,
+)
+from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
+from tests.conftest import seed_user
+
+
+# ---------------------------------------------------------------------------
+# Constants - keep declarative so a future shape change has one diff site.
+# ---------------------------------------------------------------------------
+
+# The six envelope fields ``_metadata_for`` projects today. Listed by their
+# bare-key spelling; the test asserts every one survives bare-vs-namespaced
+# normalization regardless of input shape.
+METADATA_ENVELOPE_FIELDS: tuple[str, ...] = (
+    "bg",
+    "surface",
+    "text",
+    "accent",
+    "font_display",
+    "font_body",
+)
+
+# Aeon seed URL convention: derive_brand_slug strips the
+# resemblio://seed/<system>/<brand>/... prefix and returns the second
+# segment slugified.
+AEON_SEED_URL = "resemblio://seed/drl_v1/aeon/library/aeon-snapshot"
+EXPECTED_BRAND_SLUG = "aeon"
+
+FIXTURE_DIR = Path(__file__).parent / "fixtures" / "drl" / "aeon_min"
+
+
+# ---------------------------------------------------------------------------
+# Fixture loaders
+# ---------------------------------------------------------------------------
+
+
+def _load_aeon_dtcg() -> dict[str, Any]:
+    """Return the frozen Aeon DTCG payload (DRL-shape: nested ``tokens``)."""
+    return json.loads((FIXTURE_DIR / "aeon_dtcg.json").read_text(encoding="utf-8"))
+
+
+def _load_mixed_keys() -> dict[str, dict[str, str]]:
+    """Return the three parallel token bags from ``mixed_keys.json``.
+
+    Keys: ``bare_keys``, ``ds_prefixed_keys``, ``mixed_keys``. Each maps to
+    a token dict carrying the same source values for the six envelope
+    fields, differing only in key shape.
+    """
+    raw = json.loads((FIXTURE_DIR / "mixed_keys.json").read_text(encoding="utf-8"))
+    return {
+        "bare_keys": raw["bare_keys"],
+        "ds_prefixed_keys": raw["ds_prefixed_keys"],
+        "mixed_keys": raw["mixed_keys"],
+    }
+
+
+def _make_aeon_asset_version(session: Session) -> AssetVersion:
+    """Insert an AssetVersion carrying the frozen Aeon DRL DTCG payload."""
+    dtcg = _load_aeon_dtcg()
+    row = AssetVersion(
+        url=AEON_SEED_URL,
+        content_hash="aeon-min-fixture-hash",
+        dtcg_json=dtcg,
+        manifest_schema_version=SCHEMA_V1,
+        is_public=True,
+        version_label="aeon-min-fixture",
+        fetched_at=datetime.now(timezone.utc),
+    )
+    session.add(row)
+    session.flush()
+    return row
+
+
+def _attach_passing_extraction(
+    session: Session, asset_version: AssetVersion, *, user_id: int
+) -> Extraction:
+    """Attach a high-quality extraction so the indexer quality gate passes."""
+    extraction = Extraction(
+        user_id=user_id,
+        api_key_id=None,
+        url=asset_version.url,
+        url_normalized=asset_version.url,
+        status="ok",
+        tokens_json=asset_version.dtcg_json.get("tokens", {}),
+        asset_version_id=asset_version.id,
+        schema_version=SCHEMA_V1,
+        credit_cents=0,
+        quality_score=0.95,
+        quality_dimension_scores={"penalty_flags": []},
+    )
+    session.add(extraction)
+    session.flush()
+    return extraction
+
+
+def _enqueue_and_drain(session: Session, asset_version: AssetVersion) -> int:
+    """Enqueue an index job for ``asset_version`` and run one drain tick."""
+    job = enqueue_for_asset_version(session, asset_version.id)
+    assert job is not None, "enqueue helper returned None - precondition broken"
+    session.commit()
+    result = drain_pending(session)
+    return result.pages_written
+
+
+# ---------------------------------------------------------------------------
+# Render-fidelity assertions (CTO plan items a, b, c)
+# ---------------------------------------------------------------------------
+
+
+def test_every_brand_token_key_renders_as_namespaced_css_variable(session: Session) -> None:
+    """Every key in the Aeon fixture appears as ``--ds-<key>:`` exactly once.
+
+    Pins items (a) + the no-double-prefix corollary from the CTO plan: a
+    DRL-shape token bag (already-namespaced ``ds-*`` keys) must collapse to
+    a single ``--ds-*`` form per key, with no ``--ds-ds-*`` double prefix.
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_aeon_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    written = _enqueue_and_drain(session, av)
+    assert written > 0, "drain wrote zero pages - quality gate or compose failure"
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    assert pages, "no library_pages rows persisted for the Aeon asset version"
+
+    source_tokens: dict[str, str] = _load_aeon_dtcg()["tokens"]
+
+    for page in pages:
+        rendered = page.rendered_html
+        assert isinstance(rendered, str) and rendered, (
+            f"page {page.category_slug} has empty rendered_html"
+        )
+        for raw_key in source_tokens:
+            # The fixture is all already-namespaced (ds-*); after
+            # normalization through _ds_var_name the var name must be the
+            # raw key prefixed with --, never --ds-<raw_key>.
+            expected_var = f"--{raw_key}:" if raw_key.startswith("ds-") else f"--ds-{raw_key}:"
+            count = rendered.count(expected_var)
+            assert count == 1, (
+                f"page {page.category_slug}: expected CSS var {expected_var!r} "
+                f"to appear exactly once in rendered_html, found {count}"
+            )
+            # No double-prefix variant ever leaks through.
+            assert f"--ds-{raw_key}:" not in rendered or not raw_key.startswith("ds-"), (
+                f"page {page.category_slug}: double-prefixed CSS var "
+                f"--ds-{raw_key} leaked into rendered_html (bug 10 regression)"
+            )
+
+
+def test_rendered_html_contains_no_lorem_placeholder(session: Session) -> None:
+    """No ``lorem`` substring leaks through compose (item b).
+
+    Lorem ipsum surviving in the body was the visible symptom of the
+    indexer ignoring its inputs (bug 3).
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_aeon_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    _enqueue_and_drain(session, av)
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    for page in pages:
+        lowered = page.rendered_html.lower()
+        assert "lorem" not in lowered, (
+            f"page {page.category_slug} carries 'lorem' placeholder text"
+        )
+
+
+def test_rendered_html_is_a_body_fragment_only(session: Session) -> None:
+    """``rendered_html`` is a body fragment (no doctype / no nested document).
+
+    Pins item (c). The web shell injects the fragment into a Next.js page;
+    a nested ``<html>`` or doctype would break the parent DOM.
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_aeon_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    _enqueue_and_drain(session, av)
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    for page in pages:
+        lowered = page.rendered_html.lower()
+        assert "<!doctype" not in lowered, (
+            f"page {page.category_slug} carries a doctype declaration"
+        )
+        assert "<html" not in lowered, (
+            f"page {page.category_slug} carries a nested <html> tag"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Metadata-envelope assertions (CTO Item 4 extension, points 1-4)
+# ---------------------------------------------------------------------------
+
+
+def test_metadata_envelope_carries_v1_shape_for_every_page(session: Session) -> None:
+    """Every composed page's ``metadata_json`` carries the v1 OG envelope.
+
+    Pins Item 4 points 1-4 from the CTO sign-off:
+
+    1. ``schema_version`` equals ``LIBRARY_PAGE_METADATA_SCHEMA_VERSION``
+       (string-equality assertion, no tolerance).
+    2. ``brand_slug`` matches the slug derived from the seed URL.
+    3. ``category_slug`` equals the class the page was composed for.
+    4. Every one of the six envelope fields is present, non-None, str.
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_aeon_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    _enqueue_and_drain(session, av)
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    assert pages, "no library_pages rows persisted for the Aeon asset version"
+
+    for page in pages:
+        envelope = page.metadata_json
+        assert isinstance(envelope, dict), (
+            f"page {page.category_slug} metadata_json is not a dict"
+        )
+        # Point 1: schema_version equals the constant, exactly.
+        assert envelope["schema_version"] == LIBRARY_PAGE_METADATA_SCHEMA_VERSION
+        # Point 2: brand_slug derived from the seed URL.
+        assert envelope["brand_slug"] == EXPECTED_BRAND_SLUG
+        # Point 3: category_slug is the class name the page was composed for.
+        assert envelope["category_slug"] == page.category_slug
+        # Point 4: every envelope field is present, non-None, and a string.
+        for field_name in METADATA_ENVELOPE_FIELDS:
+            value = envelope.get(field_name)
+            assert value is not None, (
+                f"page {page.category_slug} envelope field {field_name!r} is None - "
+                f"bug 11 (OG metadata reading wrong key shape) regression"
+            )
+            assert isinstance(value, str), (
+                f"page {page.category_slug} envelope field {field_name!r} is "
+                f"{type(value).__name__}, expected str"
+            )
+
+
+# ---------------------------------------------------------------------------
+# Cross-shape parity (CTO Item 4 extension, point 5)
+# ---------------------------------------------------------------------------
+
+
+def test_metadata_for_returns_byte_identical_envelope_across_key_shapes() -> None:
+    """``_metadata_for`` envelope is byte-identical across bare / ds- / mixed inputs.
+
+    Pins Item 4 point 5 from the CTO sign-off. The three token bags in
+    ``mixed_keys.json`` carry the same source values for the six envelope
+    fields; only the key shape varies. If ``_metadata_for`` reads only one
+    shape (the bug 11 cause), one variant returns the right values and the
+    others return null. After normalization the six envelope fields must
+    be byte-identical across all three variants.
+    """
+    variants = _load_mixed_keys()
+    envelopes = {
+        name: _metadata_for("navigation", brand_slug="aeon", tokens=tokens)
+        for name, tokens in variants.items()
+    }
+    bare = envelopes["bare_keys"]
+    for variant_name in ("ds_prefixed_keys", "mixed_keys"):
+        other = envelopes[variant_name]
+        for field_name in METADATA_ENVELOPE_FIELDS:
+            assert other[field_name] == bare[field_name], (
+                f"variant {variant_name} field {field_name!r} differs from "
+                f"bare_keys: {other[field_name]!r} vs {bare[field_name]!r} "
+                f"(bug 11 regression: _metadata_for fails to normalize key shape)"
+            )
