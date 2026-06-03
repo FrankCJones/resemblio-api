@@ -18,6 +18,7 @@ Operational and one-shot scripts for the Resemblio API. Every script is run via 
 | `save_extraction.py` | Local-dev helper: run one extraction end-to-end and persist to the dev DB. | n/a | local-only |
 | `smoke_stripe_mode.py` | Pre-flight: verify Stripe key mode matches expected (TEST vs LIVE). Read-only probe used by the cutover playbook. | n/a | always read-only |
 | `smoke_wave3_user_flow.py` | Wave 3 user-flow smoke. Read-then-conditional-write inside test mode only. | n/a | gated by `STRIPE_MODE=test` assertion |
+| `refund_reconcile.py` | Stage 9 daily check: count yesterday's failed extractions vs paired refund-ledger rows; Resend-alert on non-zero drift. Pure-data logic lives in `app/refund_reconcile.py`. | yes (read-only) | daily 03:00 UTC via `resemblio-refund-reconcile.timer` |
 
 ## Data flow
 

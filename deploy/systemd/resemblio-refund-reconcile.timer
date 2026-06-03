@@ -1,0 +1,30 @@
+# Daily 03:00 UTC timer for the Resemblio refund-reconciliation check.
+#
+# Cadence rationale: Stage 9 spec sets the cadence at "daily 03:00 UTC".
+# 03:00 UTC sits in the lowest-traffic window for the resemblio.com user
+# base (predominantly North American + European waking hours) which both
+# minimizes contention with normal API traffic and ensures the "yesterday
+# UTC" window is fully closed before the reconciliation runs.
+#
+# `Persistent=true` so a missed tick after a reboot still fires once.
+# `RandomizedDelaySec` is small (60s) because the check is cheap and we
+# do not need to spread load across many hosts.
+#
+# Apply changes via:
+#   sudo cp resemblio-refund-reconcile.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now resemblio-refund-reconcile.timer
+
+[Unit]
+Description=Daily trigger for resemblio-refund-reconcile.service
+Requires=resemblio-refund-reconcile.service
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 UTC
+RandomizedDelaySec=60s
+AccuracySec=30s
+Persistent=true
+Unit=resemblio-refund-reconcile.service
+
+[Install]
+WantedBy=timers.target

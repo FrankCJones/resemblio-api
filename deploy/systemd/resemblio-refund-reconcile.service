@@ -1,0 +1,68 @@
+# Canonical systemd service for the Resemblio refund-reconciliation daily check.
+#
+# Triggered once per day by resemblio-refund-reconcile.timer (03:00 UTC).
+# Invokes `python -m scripts.refund_reconcile`, which:
+#   1. Reads yesterday's UTC window of extractions where
+#      `status IN ('failed', 'out_of_scope')`.
+#   2. Counts the paired refunds in `credit_ledger` for those rows.
+#   3. On non-zero drift, dispatches a Resend alert to frank@optsus.com.
+#
+# Closes Stage 9 of the 2026-06-03 back-on-track TDD plan (failure
+# inventory item #18, the "no observability that proves refund-on-failure
+# actually fires" gap).
+#
+# RESEND_API_KEY and RESEMBLIO_DB_URL are sourced from
+# /etc/resemblio/probe.env (chmod 0600, root:root). The .env file is
+# operator-installed at provisioning time, not committed to the repo.
+# This is the same file the synthetic-probe service reads; centralizing
+# operator credentials in one location keeps rotation cheap.
+#
+# Source of truth lives in the repo at
+# `code/api/deploy/systemd/resemblio-refund-reconcile.service`.
+# Apply changes via:
+#   sudo cp resemblio-refund-reconcile.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl restart resemblio-refund-reconcile.timer
+
+[Unit]
+Description=Resemblio refund reconciliation (daily drift check + Resend alert)
+After=network-online.target resemblio-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=claude-cowork
+Group=claude-cowork
+WorkingDirectory=/opt/resemblio-api/app
+EnvironmentFile=/etc/resemblio/probe.env
+ExecStart=/opt/resemblio-api/venv/bin/python -m scripts.refund_reconcile
+
+# Hardening (mirrors resemblio-synthetic-probe.service).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# /var/log/resemblio holds the per-day reconciliation log (one line per
+# run, append-only). The service does not write under /var/lib.
+ReadWritePaths=/opt/resemblio-api /var/log/resemblio
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+# Cap wall-time well above the expected sub-second SQL plus Resend send
+# (15s + 3 retries). A 2-minute ceiling is generous and still bounds the
+# blast radius of a runaway DB query.
+TimeoutStartSec=120
+
+# Drift is NOT a service failure; the script exits 0 in both clean and
+# drift cases. A non-zero exit means the script itself crashed, which IS
+# operator-actionable.
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target
