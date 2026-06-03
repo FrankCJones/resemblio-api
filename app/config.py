@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.constants import MIN_KEY_PEPPER_CHARS, R2_BUCKET_NAME
@@ -96,6 +96,29 @@ class Settings(BaseSettings):
     web_app_base_url: str = Field("https://resemblio.com", alias="RESEMBLIO_WEB_APP_BASE_URL")
 
     model_config = SettingsConfigDict(populate_by_name=True, extra="ignore")
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def _strip_env_whitespace_and_quotes(cls, value: object) -> object:
+        """Strip CRLF, surrounding whitespace, and surrounding quotes from env strings.
+
+        Closes Failure #5 from the 2026-06-02 incident: a CRLF in the
+        ``RESEND_API_KEY`` value reached the Resend client and produced HTTP 403
+        with silent auto-refund-email failures. ``load_project_env()`` already
+        normalizes values that come from the workspace ``_credentials/credentials.env``
+        file, but env values supplied by other sources (systemd ``EnvironmentFile``,
+        a hand-edited shell ``export``, a copy-pasted Docker secret) bypass that
+        path and reach pydantic raw.
+
+        This validator runs ``mode="before"`` so the normalization applies to
+        every string-typed Settings field uniformly. Non-string inputs pass
+        through untouched so Literal/int/bool fields keep their native types.
+        The strip semantics match ``load_project_env``:
+        ``value.strip().strip('"').strip("'")``.
+        """
+        if isinstance(value, str):
+            return value.strip().strip('"').strip("'")
+        return value
 
 
 def validate_startup_settings(settings: Settings) -> None:

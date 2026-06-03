@@ -109,6 +109,49 @@ def test_mode_flag_drives_validator_selection() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    "field_name, alias, raw_value, expected",
+    [
+        ("resend_api_key", "RESEND_API_KEY", "re_FAKE_resend_key_value\r\n", "re_FAKE_resend_key_value"),
+        (
+            "stripe_restricted_key",
+            "STRIPE_RESTRICTED_KEY_RESEMBLIO_TEST",
+            "rk_test_FAKEFAKEFAKE\r\n",
+            "rk_test_FAKEFAKEFAKE",
+        ),
+        ("key_pepper", "RESEMBLIO_KEY_PEPPER", f"  {_PEPPER}\r\n", _PEPPER),
+        ("resend_api_key", "RESEND_API_KEY", '"re_FAKE_quoted_value"\r\n', "re_FAKE_quoted_value"),
+        ("resend_api_key", "RESEND_API_KEY", "'re_FAKE_squoted'", "re_FAKE_squoted"),
+        ("key_pepper", "RESEMBLIO_KEY_PEPPER", _PEPPER + "\n", _PEPPER),
+    ],
+)
+def test_loader_strips_trailing_whitespace_and_crlf(
+    monkeypatch: pytest.MonkeyPatch,
+    field_name: str,
+    alias: str,
+    raw_value: str,
+    expected: str,
+) -> None:
+    """Settings sanitizes CRLF + surrounding whitespace/quotes from env values.
+
+    Closes Failure #5 from the 2026-06-02 incident: a stray ``\\r\\n`` in
+    ``RESEND_API_KEY`` produced HTTP 403 from Resend and silent auto-refund
+    email failures. systemd ``EnvironmentFile`` and other env sources bypass
+    ``load_project_env()``'s strip path, so the Settings model itself must
+    normalize on the way in.
+    """
+    # Ensure required fields are present so Settings construction succeeds even
+    # when the parametrized field is something other than the Stripe pair.
+    monkeypatch.setenv("RESEMBLIO_KEY_PEPPER", _PEPPER)
+    monkeypatch.setenv("STRIPE_RESTRICTED_KEY_RESEMBLIO_TEST", _TEST_RESTRICTED)
+    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET_RESEMBLIO_TEST", _TEST_WEBHOOK_SECRET)
+    monkeypatch.setenv(alias, raw_value)
+
+    settings = Settings()
+
+    assert getattr(settings, field_name) == expected
+
+
 def test_default_mode_is_test_when_env_unset(monkeypatch: pytest.MonkeyPatch) -> None:
     """Unset RESEMBLIO_STRIPE_MODE defaults to test (safer-side fallback)."""
     monkeypatch.delenv("RESEMBLIO_STRIPE_MODE", raising=False)
