@@ -492,6 +492,25 @@ def _brand_placeholder(name: str, *, brand_slug: str) -> str:
     return name.replace("_", " ").strip().title() or name
 
 
+def _ds_var_name(key: str) -> str:
+    """Return the ``--ds-*`` CSS custom-property name for a token key.
+
+    The DRL token parser (``scripts/seed_from_drl.py:parse_tokens_css``)
+    captures the full token identifier including the ``ds-`` namespace
+    prefix (its regex strips only the leading ``--``). Some token sources
+    feed us keys that already start with ``ds-`` (e.g. ``ds-bg``); others
+    feed bare keys (e.g. ``bg``, ``font_display``). Both must normalize
+    to a single ``--ds-<name>`` form so DRL templates' ``var(--ds-bg)``
+    references resolve. Without this guard, ``ds-bg`` would become
+    ``--ds-ds-bg`` and every brand var would fall through to browser
+    defaults (root cause of the 2026-06-02 library visual-fidelity audit).
+    """
+    normalized = key.replace("_", "-")
+    if normalized.startswith("ds-"):
+        return f"--{normalized}"
+    return f"--ds-{normalized}"
+
+
 def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
     """Render the brand's DTCG token dict as a ``:root { --ds-*: ...; }`` block.
 
@@ -501,6 +520,10 @@ def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
     property per token so the template styles paint with the brand's
     actual palette/typography rather than the browser default.
 
+    Key normalization is delegated to ``_ds_var_name`` so both bare keys
+    (``bg``) and already-namespaced keys (``ds-bg``) produce the same
+    ``--ds-bg`` output.
+
     Tokens are emitted in sorted order for deterministic output (the
     fragment ends up in ``library_pages.rendered_html`` and stable text
     output keeps diffs reviewable).
@@ -509,7 +532,7 @@ def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
         return ":root {}"
     lines = [":root {"]
     for key in sorted(tokens):
-        css_key = "--ds-" + key.replace("_", "-")
+        css_key = _ds_var_name(key)
         lines.append(f"  {css_key}: {tokens[key]};")
     lines.append("}")
     return "\n".join(lines)
