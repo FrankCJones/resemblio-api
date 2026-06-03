@@ -21,6 +21,11 @@ from extractor.computed_styles import (
     empty_report as empty_computed_report,
     render_for_prompt as render_computed_styles_for_prompt,
 )
+from extractor.css_root_parser import (
+    RootCustomProperties,
+    parse_root_custom_properties,
+    render_for_prompt as render_root_props_for_prompt,
+)
 from extractor.drl_adapter import (
     REQUIRED_TOKEN_KEYS,
     SCHEMA_VERSION,
@@ -65,8 +70,9 @@ Optional keys, include only when you can fill them confidently:
 
 Rules:
 - Every value must be a non-empty string.
-- Prefer the GROUND-TRUTH SIGNALS sections (computed styles, detected web fonts) over the raw HTML when they conflict. Those values come from a real browser; the raw HTML may reference CSS custom properties (var(--x)) that you cannot resolve by hand.
-- For font_body and font_display, only use family names that appear in the detected-web-fonts block or in literal `font-family:` declarations in the source. Do not invent fallbacks (no Georgia, Times New Roman, Arial unless they are literally present).
+- Prefer the GROUND-TRUTH SIGNALS sections (declared CSS custom properties, computed styles, detected web fonts) over the raw HTML when they conflict. Priority order: declared `:root` custom properties (brand intent) > computed styles (rendered artifact) > raw HTML inline CSS.
+- When a declared `--*` custom property exists with a literal hex/rgb value that matches a brand role (e.g. `--ink`, `--bg`, `--background` -> bg slot; `--bone`, `--fg`, `--text`, `--foreground` -> text slot; `--sun`, `--accent`, `--brand`, `--primary` -> accent slot), prefer the custom-property value over any computed-style sample.
+- For font_body and font_display, only use family names that appear in the detected-web-fonts block, in a declared `--*-font*` / `--type-*` / `--font-*` custom property, or in literal `font-family:` declarations in the source. Do not invent fallbacks (no Georgia, Times New Roman, Arial unless they are literally present).
 - For color slots, prefer the rgb()/hex values from computed styles. The raw CSS may contain var() indirection that is resolved only at render time.
 - Use plausible defaults only when a required slot is unspecified by ALL signals.
 - Use CSS-ready strings: hex/rgb/hsl colors, CSS font-family stacks, px/rem/em sizes, numeric line heights, box-shadow strings, ms durations, and cubic-bezier values.
@@ -137,6 +143,7 @@ class CodexExtractor(ResemblioExtractor):
 
         decoded_html = body.decode("utf-8", errors="replace")
         loaded_fonts = parse_loaded_fonts(decoded_html)
+        root_props = parse_root_custom_properties(decoded_html)
         if os.environ.get("RESEMBLIO_DISABLE_BROWSER_PASS") == "1":
             computed_styles: ComputedStyleReport = empty_computed_report("skipped", "disabled by env")
         else:
@@ -149,6 +156,7 @@ class CodexExtractor(ResemblioExtractor):
                     html_context(body),
                     loaded_fonts=loaded_fonts,
                     computed_styles=computed_styles,
+                    root_props=root_props,
                 )
             )
             tokens = coerce_token_set(extract_json_object(reply))
@@ -241,16 +249,25 @@ def build_prompt(
     html: str,
     loaded_fonts: LoadedFonts | None = None,
     computed_styles: ComputedStyleReport | None = None,
+    root_props: RootCustomProperties | None = None,
 ) -> str:
     """Build the single extraction prompt sent to Sonnet.
 
-    `loaded_fonts` and `computed_styles` are the structured pre-LLM
-    signals produced by `parse_loaded_fonts` (Phase A) and
-    `capture_computed_styles` (Phase B). When either is None or empty
-    the prompt simply omits that block, leaving the LLM to reason from
-    the raw HTML the way it always has.
+    `loaded_fonts`, `computed_styles`, and `root_props` are the structured
+    pre-LLM signals produced by `parse_loaded_fonts` (Phase A),
+    `capture_computed_styles` (Phase B), and `parse_root_custom_properties`
+    (R3.2). When any is None or empty the prompt simply omits that block,
+    leaving the LLM to reason from the raw HTML the way it always has.
+
+    Block order matters: `root_props` goes FIRST because brand-declared
+    `:root` custom properties outrank computed-style samples (intent
+    beats artifact). Computed styles come next, then loaded web fonts.
     """
     signals_chunks: list[str] = []
+    if root_props is not None:
+        rendered = render_root_props_for_prompt(root_props)
+        if rendered:
+            signals_chunks.append(rendered)
     if computed_styles is not None:
         rendered = render_computed_styles_for_prompt(computed_styles)
         if rendered:

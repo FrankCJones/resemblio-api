@@ -62,11 +62,13 @@ SUSANN_EXTRACTED_TOKENS: dict[str, str] = {
 def test_schema_version_constant_shape() -> None:
     """The schema version stays a simple semver-major string for cheap diffs.
 
-    Bumped to ``1.1`` on 2026-06-02 with the R3 additions (accent-diversity
-    and display-equals-body penalties). Additive change; existing penalty
-    names and the result shape are unchanged.
+    Bumped to ``1.1`` on 2026-06-02 (morning) with the R3 additions
+    (accent-diversity + display-equals-body). Bumped to ``1.2`` later
+    the same day with the R3.2 near-default-extraction fail-loud rule.
+    Both bumps are additive: existing penalty names and the result shape
+    are unchanged; new entries can appear in ``penalties_applied``.
     """
-    assert QUALITY_HEURISTICS_SCHEMA_VERSION == "1.1"
+    assert QUALITY_HEURISTICS_SCHEMA_VERSION == "1.2"
 
 
 def test_apply_penalties_no_op_on_distinctive_brand_tokens() -> None:
@@ -329,3 +331,171 @@ def test_susann_subset_with_only_default_colors_triggers_color_penalty() -> None
     assert "all_common_default_colors" in out.penalties_applied
     assert "all_system_font_stack" in out.penalties_applied
     assert out.penalized_score < DEFAULT_THRESHOLD_V1_1_X
+
+
+# ----------------------------------------------------------------------
+# R3.2 additions (2026-06-02): near-default-extraction fail-loud rule.
+# ----------------------------------------------------------------------
+
+
+from app.constants import (  # noqa: E402
+    DEFAULT_COLOR_SCORE_THRESHOLD,
+    NEAR_DEFAULT_EXTRACTION_FAILURE_MODE,
+    NEAR_DEFAULT_EXTRACTION_FLAG,
+)
+from app.quality_heuristics import (  # noqa: E402
+    _default_color_score,
+    _detect_near_default_extraction,
+    _is_near_default_color,
+    _manhattan_rgb_distance,
+    _system_stack_score,
+)
+
+
+def test_manhattan_distance_known_pairs() -> None:
+    """Sanity: identical inputs are 0; black-vs-white is 765."""
+    assert _manhattan_rgb_distance("#abcdef", "#abcdef") == 0
+    assert _manhattan_rgb_distance("#000000", "#ffffff") == 765
+
+
+def test_is_near_default_color_recognizes_each_reference() -> None:
+    """Every reference hex is exactly within the threshold of itself."""
+    for hex_value in ("#000000", "#ffffff", "#888888", "#f5f5f5", "#1a1a1a", "#4f46e5"):
+        assert _is_near_default_color(hex_value), hex_value
+
+
+def test_is_near_default_color_rejects_distinctive_brand_color() -> None:
+    """Susann's sun yellow #FBE71F is NOT near any common default."""
+    assert not _is_near_default_color("#fbe71f")
+
+
+def test_system_stack_score_one_when_all_fonts_system() -> None:
+    """All-system-stack font slots produce a score of 1.0."""
+    tokens = {
+        "font_body": "Arial, sans-serif",
+        "font_display": "Georgia, serif",
+        "font_mono": "'Courier New', monospace",
+    }
+    score, observed = _system_stack_score(tokens)
+    assert score == 1.0
+    assert len(observed) == 3
+
+
+def test_system_stack_score_zero_when_all_fonts_brand() -> None:
+    """All-brand fonts (Inter, Anton, Fira Code) score 0.0."""
+    tokens = {
+        "font_body": "Inter, sans-serif",
+        "font_display": "Anton, sans-serif",
+        "font_mono": "'Fira Code', monospace",
+    }
+    score, _ = _system_stack_score(tokens)
+    assert score == 0.0
+
+
+def test_default_color_score_one_when_all_colors_default() -> None:
+    """All-default color slots produce a score of 1.0."""
+    tokens = {
+        "bg": "#ffffff",
+        "text": "#1a1a1a",
+        "accent": "#4f46e5",
+        "surface": "#f5f5f5",
+    }
+    score, _ = _default_color_score(tokens)
+    assert score == 1.0
+
+
+def test_default_color_score_low_on_distinctive_brand() -> None:
+    """Headlights identity (ink/bone/sun + warm brown) stays below threshold.
+
+    The ink #0B0B0F is near #000000 by Manhattan distance (33 < 80) so it
+    counts as one near-default slot; bone/sun/warm-brown do not. Score is
+    1/4 = 0.25; well below the 0.9 threshold, so the rule will not fire.
+    """
+    tokens = {
+        "bg": "#0B0B0F",
+        "text": "#F5F2EA",
+        "accent": "#FBE71F",
+        "surface": "#7A4A2E",
+    }
+    score, _ = _default_color_score(tokens)
+    assert score < DEFAULT_COLOR_SCORE_THRESHOLD
+
+
+def test_near_default_extraction_fires_on_susann_signature() -> None:
+    """The R3.2 fail-loud rule fires on the exact Susann extraction shape."""
+    tokens = {
+        "bg": "#f5f5f5",
+        "text": "#1a1a1a",
+        "accent": "#4f46e5",
+        "surface": "#ffffff",
+        "font_body": "system-ui, -apple-system, sans-serif",
+        "font_display": "Georgia, serif",
+        "font_mono": "'Courier New', monospace",
+    }
+    fires, diag = _detect_near_default_extraction(tokens)
+    assert fires
+    assert NEAR_DEFAULT_EXTRACTION_FAILURE_MODE in (diag or "")
+
+
+def test_near_default_extraction_does_not_fire_on_distinctive_brand() -> None:
+    """The Headlights identity (ink/bone/sun + Anton/Inter) does NOT fire."""
+    tokens = {
+        "bg": "#0B0B0F",
+        "text": "#F5F2EA",
+        "accent": "#FBE71F",
+        "surface": "#14141A",
+        "font_body": "Inter, sans-serif",
+        "font_display": "Anton, sans-serif",
+    }
+    fires, _ = _detect_near_default_extraction(tokens)
+    assert not fires
+
+
+def test_apply_penalties_floors_susann_shaped_extraction_to_zero() -> None:
+    """End-to-end: Susann-shaped tokens go through apply_heuristic_penalties
+    and emerge with quality_score == 0.0 + the near_default flag set."""
+    tokens = {
+        "bg": "#f5f5f5",
+        "text": "#1a1a1a",
+        "accent": "#4f46e5",
+        "surface": "#ffffff",
+        "font_body": "system-ui, -apple-system, sans-serif",
+        "font_display": "Georgia, serif",
+        "font_mono": "'Courier New', monospace",
+        "text_base": "1rem",
+        "text_lg": "1.125rem",
+        "text_xl": "1.25rem",
+        "text_2xl": "1.5rem",
+        "space_2": "0.5rem",
+        "space_4": "1rem",
+        "space_6": "1.5rem",
+    }
+    base = compute_quality_score(tokens)
+    out = apply_heuristic_penalties(tokens, base)
+    assert NEAR_DEFAULT_EXTRACTION_FLAG in out.penalties_applied, out.diagnostic
+    assert out.penalized_score == 0.0
+    assert NEAR_DEFAULT_EXTRACTION_FAILURE_MODE in out.diagnostic
+
+
+def test_apply_penalties_does_not_floor_distinctive_brand() -> None:
+    """A Headlights-shape extraction passes the rule and keeps composite > 0."""
+    tokens = {
+        "bg": "#0B0B0F",
+        "text": "#F5F2EA",
+        "accent": "#FBE71F",
+        "surface": "#7A4A2E",
+        "font_body": "Inter, sans-serif",
+        "font_display": "Anton, sans-serif",
+        "text_base": "1rem",
+        "text_lg": "1.125rem",
+        "text_xl": "1.25rem",
+        "text_2xl": "1.5rem",
+        "text_3xl": "1.875rem",
+        "space_2": "0.5rem",
+        "space_4": "1rem",
+        "space_6": "1.5rem",
+    }
+    base = compute_quality_score(tokens)
+    out = apply_heuristic_penalties(tokens, base)
+    assert NEAR_DEFAULT_EXTRACTION_FLAG not in out.penalties_applied
+    assert out.penalized_score > 0.0

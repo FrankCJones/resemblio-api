@@ -202,3 +202,18 @@ def test_non_font_or_familyless_links_return_empty(href: str) -> None:
     html = f'<head><link rel="stylesheet" href="{href}"></head>'
     result = parse_loaded_fonts(html)
     assert result["families"] == []
+
+
+def test_adobe_fonts_host_is_recognized_as_kit_marker() -> None:
+    """fonts.adobe.com links are recorded as opaque adobe-fonts kit markers.
+
+    The host does not expose family names in its URL; we still want the
+    SIGNAL that Adobe Fonts is in use so the LLM does not silently fall
+    back to a system stack.
+    """
+    html = '<head><link rel="stylesheet" href="https://fonts.adobe.com/projects/abc123.css"></head>'
+    result = parse_loaded_fonts(html)
+    assert result["entries"]
+    entry = result["entries"][0]
+    assert entry["source"] == "adobe-fonts"
+    assert entry["family"].startswith("adobe-fonts")

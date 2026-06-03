@@ -34,9 +34,14 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from app.constants import (
+    DEFAULT_COLOR_DISTANCE_MAX,
+    DEFAULT_COLOR_SCORE_THRESHOLD,
+    NEAR_DEFAULT_EXTRACTION_FAILURE_MODE,
+    NEAR_DEFAULT_EXTRACTION_FLAG,
     PENALTY_ACCENT_DIVERSITY,
     PENALTY_ACCENT_TEXT_LAB_THRESHOLD,
     PENALTY_DISPLAY_EQUALS_BODY,
+    SYSTEM_STACK_SCORE_THRESHOLD,
 )
 from app.quality_scoring import QualityScoreResult, _normalize_hex
 
@@ -45,7 +50,7 @@ from app.quality_scoring import QualityScoreResult, _normalize_hex
 # 2026-06-02 to mark the R3 additions (accent-diversity + display-equals-
 # body penalties). Additive change: existing penalty names + score shape
 # are unchanged; new entries can appear in ``penalties_applied``.
-QUALITY_HEURISTICS_SCHEMA_VERSION: str = "1.1"
+QUALITY_HEURISTICS_SCHEMA_VERSION: str = "1.2"
 
 
 # Common-default font primary-family set. All values are lowercase, single-
@@ -117,6 +122,31 @@ _COLOR_KEYS: tuple[str, ...] = (
     "bg",
     "text",
     "accent",
+)
+
+
+# Color slots inspected by the R3.2 near-default-extraction score. Includes
+# `surface` in addition to the brand-signal trio because a pure-white
+# `surface` plus near-default bg/text/accent is the exact Susann signature.
+_NEAR_DEFAULT_COLOR_KEYS: tuple[str, ...] = (
+    "bg",
+    "text",
+    "accent",
+    "surface",
+)
+
+
+# Common gray-scale and framework-default reference colors used by the
+# R3.2 near-default-extraction score. Each populated color slot is compared
+# to every reference; if any Manhattan-RGB distance is under
+# DEFAULT_COLOR_DISTANCE_MAX, the slot counts as "near-default".
+_NEAR_DEFAULT_REFERENCE_HEXES: tuple[str, ...] = (
+    "#000000",  # pure black
+    "#ffffff",  # pure white
+    "#888888",  # mid gray
+    "#f5f5f5",  # near-white (LLM bg default)
+    "#1a1a1a",  # near-black (LLM text default)
+    "#4f46e5",  # Tailwind indigo (LLM accent default)
 )
 
 
@@ -317,6 +347,120 @@ def _detect_display_equals_body(
     return True, f"font_display={display!r} == font_body={body!r}"
 
 
+# ----------------------------------------------------------------------
+# R3.2 additions (2026-06-02): near-default-extraction failure rule.
+# Source dispatch: `projects/Resemblio/_handoff/inbox/claude/
+# 2026-06-02-susann-extraction-fidelity-investigation.md`. This is the
+# fail-loud rule that drives `quality_score` to 0.0 when BOTH the system-
+# stack-font score and the default-color score exceed
+# SYSTEM_STACK_SCORE_THRESHOLD / DEFAULT_COLOR_SCORE_THRESHOLD. Pre-R3.2
+# the two individual penalties (each -0.30) summed to -0.60 which could
+# still leave a base 0.85 above the 0.55 refund threshold on a degenerate
+# scorer state; this rule provides a deterministic floor.
+# ----------------------------------------------------------------------
+
+
+def _system_stack_score(tokens: Mapping[str, Any]) -> tuple[float, list[str]]:
+    """Return (fraction-in-system-stack, observed_primary_families).
+
+    The fraction is `populated_system_fonts / populated_font_slots`. When
+    no font slot is populated the fraction is 0.0 (the rule should not
+    fire on an empty payload; the base scorer flags that case separately).
+    """
+    observed: list[str] = []
+    system_hits = 0
+    for key in _FONT_KEYS:
+        family = _primary_family_lower(tokens.get(key))
+        if family is None:
+            continue
+        observed.append(family)
+        if family in _SYSTEM_FONT_FAMILIES:
+            system_hits += 1
+    if not observed:
+        return 0.0, observed
+    return system_hits / len(observed), observed
+
+
+def _manhattan_rgb_distance(hex_a: str, hex_b: str) -> int:
+    """Return the sum of absolute per-channel differences between two hexes.
+
+    Inputs must be 7-character `#rrggbb` strings already normalized by
+    `_normalize_hex`. Range: 0 (identical) to 765 (#000 vs #fff). Cheap
+    metric; perceptual fidelity is not required for the gray-scale-
+    neighborhood test the R3.2 rule cares about.
+    """
+    ar = int(hex_a[1:3], 16)
+    ag = int(hex_a[3:5], 16)
+    ab = int(hex_a[5:7], 16)
+    br = int(hex_b[1:3], 16)
+    bg = int(hex_b[3:5], 16)
+    bb = int(hex_b[5:7], 16)
+    return abs(ar - br) + abs(ag - bg) + abs(ab - bb)
+
+
+def _is_near_default_color(hex_value: str) -> bool:
+    """Return True if `hex_value` is within DEFAULT_COLOR_DISTANCE_MAX of any reference.
+
+    References are the LLM-default palette (`#000`, `#fff`, `#888`, plus
+    the observed-Susann-defaults `#f5f5f5` / `#1a1a1a` / `#4f46e5`). A
+    distinctive brand color (sun yellow `#FBE71F`, ink `#0B0B0F` near
+    pure-black) is checked against EVERY reference; `#0B0B0F` is Manhattan
+    33 from `#000000` so it WILL count as near-default, which is correct
+    behavior - a near-black brand background still passes the
+    "did the extractor capture distinctive identity?" test only via the
+    DISTINCTIVE accent slot, which the score requires across the slot set.
+    """
+    for ref in _NEAR_DEFAULT_REFERENCE_HEXES:
+        if _manhattan_rgb_distance(hex_value, ref) < DEFAULT_COLOR_DISTANCE_MAX:
+            return True
+    return False
+
+
+def _default_color_score(tokens: Mapping[str, Any]) -> tuple[float, list[str]]:
+    """Return (fraction-near-default, observed_normalized_hexes).
+
+    The fraction is `populated_near_default_colors / populated_color_slots`.
+    When no color slot is populated the fraction is 0.0.
+    """
+    observed: list[str] = []
+    near_default_hits = 0
+    for key in _NEAR_DEFAULT_COLOR_KEYS:
+        normalized = _normalize_hex(tokens.get(key))
+        if normalized is None:
+            continue
+        observed.append(normalized)
+        if _is_near_default_color(normalized):
+            near_default_hits += 1
+    if not observed:
+        return 0.0, observed
+    return near_default_hits / len(observed), observed
+
+
+def _detect_near_default_extraction(
+    tokens: Mapping[str, Any],
+) -> tuple[bool, str | None]:
+    """Return (penalty_fires, diagnostic) for the R3.2 fail-loud rule.
+
+    Penalty fires iff BOTH the system-stack font score AND the default-color
+    score equal or exceed their respective thresholds. The two-score-AND
+    structure is deliberate: a brand with all-system fonts is plausible
+    (some sites genuinely choose Helvetica), and a brand with all-default
+    colors is plausible (a minimalist black-on-white site), but the
+    CONJUNCTION is the smoking gun for an extractor that resolved nothing.
+    """
+    font_score, observed_fonts = _system_stack_score(tokens)
+    color_score, observed_colors = _default_color_score(tokens)
+    if font_score < SYSTEM_STACK_SCORE_THRESHOLD:
+        return False, None
+    if color_score < DEFAULT_COLOR_SCORE_THRESHOLD:
+        return False, None
+    return True, (
+        f"system_stack_score={font_score:.2f} (fonts={observed_fonts!r}); "
+        f"default_color_score={color_score:.2f} (colors={observed_colors!r}); "
+        f"failure_mode={NEAR_DEFAULT_EXTRACTION_FAILURE_MODE}"
+    )
+
+
 def apply_heuristic_penalties(
     tokens: Mapping[str, Any] | None,
     base_result: QualityScoreResult,
@@ -374,6 +518,18 @@ def apply_heuristic_penalties(
         diagnostic_parts.append(
             f"display_equals_body(-{PENALTY_DISPLAY_EQUALS_BODY}): {type_diag}"
         )
+
+    # R3.2 fail-loud rule. Runs LAST so the individual diagnostics still
+    # appear in the trail; when this fires we hard-floor the score to 0.0
+    # regardless of the per-rule arithmetic above so downstream consumers
+    # always see the worst-case signal.
+    near_default, near_default_diag = _detect_near_default_extraction(safe_tokens)
+    if near_default:
+        applied.append(NEAR_DEFAULT_EXTRACTION_FLAG)
+        diagnostic_parts.append(
+            f"{NEAR_DEFAULT_EXTRACTION_FLAG}(floor=0.0): {near_default_diag}"
+        )
+        penalized = 0.0
 
     # Clip to valid score range. A composite below 0 carries no extra
     # information for downstream consumers and would break any sort that

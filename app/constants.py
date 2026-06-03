@@ -225,6 +225,51 @@ PENALTY_ACCENT_DIVERSITY: float = 0.15
 # as PENALTY_ACCENT_DIVERSITY: standalone informative; stackable.
 PENALTY_DISPLAY_EQUALS_BODY: float = 0.15
 
+# R3.2 near-default-extraction rule (2026-06-02). Source mission:
+# `projects/Resemblio/_handoff/inbox/claude/2026-06-02-susann-extraction-fidelity-investigation.md`.
+#
+# When BOTH the system-stack font score AND the default-color score for a
+# TokenSet exceed `NEAR_DEFAULT_EXTRACTION_THRESHOLD`, the extractor almost
+# certainly missed the source's brand identity (CSS-variable indirection
+# unresolved, web fonts not parsed, computed-style pass unavailable). The
+# `apply_heuristic_penalties` helper drives `penalized_score` to 0.0 and
+# adds the `near_default_extraction` flag to `penalties_applied`.
+#
+# Threshold sized at 0.9 (not 1.0) so a TokenSet with ONE legitimately-
+# distinctive slot in five still passes - the failure mode is "almost
+# everything is a default", not "exactly everything".
+
+# System-stack score: fraction of populated font slots whose primary family
+# is in `_SYSTEM_FONT_FAMILIES` (Arial / system-ui / Georgia / etc.).
+SYSTEM_STACK_SCORE_THRESHOLD: float = 0.9
+"""Minimum system-stack fraction across populated font slots to count as 'all defaults'."""
+
+# Default-color score: fraction of populated color slots within Manhattan-RGB
+# distance `DEFAULT_COLOR_DISTANCE_MAX` of any common default
+# (#000 / #fff / #888 + extras).
+DEFAULT_COLOR_SCORE_THRESHOLD: float = 0.9
+"""Minimum default-color fraction across populated color slots to count as 'all defaults'."""
+
+# Manhattan distance in RGB (0-765) under which a color is considered
+# "near a common gray-scale default". 30 keeps the rule tight: #f5f5f5
+# vs #ffffff is Manhattan 30; #1a1a1a vs #000000 is Manhattan 78 - both
+# match a default. Anything chromatic (a brand red, blue, yellow) falls
+# well outside this radius.
+DEFAULT_COLOR_DISTANCE_MAX: int = 80
+"""Manhattan-RGB distance under which a color is 'near a common gray-scale default'."""
+
+# Failure-mode string surfaced via the diagnostic + penalty flag when the
+# near-default rule fires. Customers see this string via the route handler
+# in the low-quality response path.
+NEAR_DEFAULT_EXTRACTION_FLAG: str = "near_default_extraction"
+"""Canonical penalty flag name for the R3.2 near-default-extraction rule."""
+
+NEAR_DEFAULT_EXTRACTION_FAILURE_MODE: str = (
+    "Source uses :root custom properties or web fonts that extractor missed. "
+    "Re-extract after enabling R3.2 parsers."
+)
+"""Human-readable failure-mode message surfaced when near-default rule fires."""
+
 
 # Library indexer (mission Phase 4). Constants here are read by both the
 # worker (``app/library_indexer.py``) and the migration-aware ORM models

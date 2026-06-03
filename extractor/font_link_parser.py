@@ -44,6 +44,13 @@ GOOGLE_LIKE_HOSTS: frozenset[str] = frozenset({
 TYPEKIT_HOST = "use.typekit.net"
 FONTSHARE_HOST = "api.fontshare.com"
 
+# Adobe Fonts (fonts.adobe.com) embeds also resolve through use.typekit.net,
+# but a marketing-page <link> sometimes points at fonts.adobe.com directly
+# as a CSS asset. We treat the host as a Typekit-equivalent marker so the
+# extractor at least sees "Adobe Fonts is in use" rather than silently
+# missing the signal.
+ADOBE_FONTS_HOST = "fonts.adobe.com"
+
 # Pull <link rel="stylesheet" href="..."> from <head>. We do not require a
 # specific attribute order; `rel` may appear before or after `href`.
 _LINK_RE = re.compile(
@@ -186,6 +193,12 @@ def _classify_link(href: str) -> list[LoadedFont]:
         if kit_id:
             return [LoadedFont(family=f"typekit:{kit_id}", source="typekit", raw=href)]
         return []
+    if host == ADOBE_FONTS_HOST:
+        # Adobe Fonts marketing host; opaque kit identifier in the path.
+        # Same handling as Typekit: emit the SIGNAL without inventing names.
+        kit_id = parsed.path.strip("/").split("/")[-1].split(".")[0] if parsed.path else ""
+        marker = f"adobe-fonts:{kit_id}" if kit_id else "adobe-fonts"
+        return [LoadedFont(family=marker, source="adobe-fonts", raw=href)]
     if host == FONTSHARE_HOST:
         return [LoadedFont(family=fam, source="fontshare", raw=href) for fam in _families_from_fontshare_query(parsed.query)]
     return []
