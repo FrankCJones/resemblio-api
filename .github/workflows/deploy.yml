@@ -10,7 +10,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Stage 3 lint: assert the deploy workflow still carries the
+  # silent-partial-deploy gate. Greps deploy.yml for four required strings.
+  # If any are missing, this job fails and `build-and-deploy` is skipped
+  # (the `needs:` dependency below makes the gate hard).
+  #
+  # Why a separate job rather than a step inside build-and-deploy:
+  # a careless edit that removes the PID-change block would also remove
+  # any step lint embedded in the same block. A sibling job that grep's
+  # the raw file cannot be self-deleted by editing inside build-and-deploy.
+  # The lint is paired with `tests/test_deploy_workflow_logic.py` which
+  # asserts the same four markers at pytest time.
+  lint-deploy-yml:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Assert Stage 3 markers present
+        run: bash ci/lint_deploy_yml.sh
+
   build-and-deploy:
+    needs: lint-deploy-yml
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -178,11 +199,56 @@ jobs:
           fi
           echo "ALEMBIC POST-UPGRADE: prod at ${POST_CURRENT} (matches repo head)."
 
+          # Stage 3 (`cto-reviews/2026-06-03-resemblio-back-on-track-tdd-plan.md`):
+          # close the silent-partial-deploy bug. On 2026-06-02 two deploys
+          # returned green while the systemd unit's MainPID did NOT change -
+          # the service kept serving the prior process image with the new
+          # schema already applied. Parity assertion below captures the
+          # MainPID BEFORE restart and AFTER restart and fails the deploy
+          # when they match (the no-op restart signature).
+          #
+          # `systemctl show -p MainPID --value` returns just the number
+          # (`--value` strips the `MainPID=` prefix). If the unit was
+          # inactive, MainPID is 0; in that case we accept any non-zero
+          # AFTER_PID as proof the restart took.
+          BEFORE_PID=$(systemctl show -p MainPID --value resemblio-api 2>/dev/null || echo "0")
+          echo "BEFORE_PID=${BEFORE_PID}"
+
           sudo systemctl restart resemblio-api
           sleep 2
           systemctl is-active resemblio-api
+
+          AFTER_PID=$(systemctl show -p MainPID --value resemblio-api 2>/dev/null || echo "0")
+          echo "AFTER_PID=${AFTER_PID}"
+
+          # PID-change parity assertion. The before/after PIDs MUST differ;
+          # if they match, the restart was a no-op and we are about to ship
+          # a silent partial deploy. Special case: if BEFORE_PID was 0 (unit
+          # was inactive), any non-zero AFTER_PID counts as a real start.
+          if [ "${AFTER_PID}" = "0" ]; then
+            echo "FATAL: AFTER_PID=0; systemd reports resemblio-api is not running after restart."
+            exit 1
+          fi
+          if [ "${BEFORE_PID}" != "0" ] && [ "${BEFORE_PID}" = "${AFTER_PID}" ]; then
+            echo "FATAL: PID did not change across restart (BEFORE_PID=${BEFORE_PID}, AFTER_PID=${AFTER_PID})."
+            echo "This is the silent-partial-deploy signature. The new code is NOT running."
+            echo "Rollback: parent SSH runs 'alembic downgrade -1' + 'git reset --hard <prior-sha>'"
+            echo "  + 'sudo systemctl restart resemblio-api' per Resemblio_INFRA.md."
+            exit 1
+          fi
+          echo "PID changed across restart: ${BEFORE_PID} -> ${AFTER_PID}; new code is running."
           REMOTE
 
+      # Post-deploy smoke. Two probes:
+      #   (1) /v1/healthz - liveness only; cheap, retried up to 8 times to
+      #       cover the systemd-active-but-uvicorn-still-binding window.
+      #   (2) /v1/readyz  - verb-probe; exercises the DB + storage paths
+      #       (`app/routes/health.py::readyz`). A 200 here proves the NEW
+      #       process can actually serve a request that touches the real
+      #       backing services, not just that some process is bound to
+      #       port 8000. This is the Stage 3 verb-probe that, paired with
+      #       the in-deploy PID-change assertion above, makes silent
+      #       partial deploys structurally impossible.
       - name: Post-deploy smoke check
         run: |
           for i in 1 2 3 4 5 6 7 8; do
@@ -195,6 +261,29 @@ jobs:
             sleep 5
             if [ "$i" = "8" ]; then
               echo "healthz failed after retries"
+              exit 1
+            fi
+          done
+
+          # /v1/readyz verb-probe. 5 retries are enough; if the DB or
+          # storage path is broken after deploy, that is the actual deploy
+          # failure and we want to surface it red, not paper over with
+          # longer backoff. Rollback path on failure is documented in
+          # Resemblio_INFRA.md under "Schema migration discipline":
+          # alembic downgrade -1 + redeploy prior code sha.
+          for i in 1 2 3 4 5; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" https://api.resemblio.com/v1/readyz)
+            if [ "$CODE" = "200" ]; then
+              echo "readyz OK (HTTP $CODE) - new code is exercising DB + storage"
+              break
+            fi
+            echo "readyz attempt $i: HTTP $CODE; retrying"
+            sleep 5
+            if [ "$i" = "5" ]; then
+              echo "FATAL: /v1/readyz did not return 200 after deploy."
+              echo "The service is bound but cannot serve a real verb-probe."
+              echo "Rollback: alembic downgrade -1 + redeploy prior code sha"
+              echo "  (Resemblio_INFRA.md > Schema migration discipline)."
               exit 1
             fi
           done
