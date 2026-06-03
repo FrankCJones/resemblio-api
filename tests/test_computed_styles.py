@@ -15,14 +15,19 @@ import os
 import pytest
 
 from extractor.computed_styles import (
+    BRAND_SELECTOR_OVERRIDES,
     CAPTURED_PROPERTIES,
+    DEFAULT_WAIT_STRATEGY,
     ELEMENT_CENSUS,
     SCHEMA_VERSION,
+    WAIT_STRATEGY_ENV_VAR,
     _coerce_signals,
     build_capture_script,
     capture_computed_styles,
     empty_report,
     render_for_prompt,
+    resolve_census,
+    resolve_wait_strategy,
 )
 
 
@@ -130,6 +135,90 @@ def test_capture_without_playwright_reports_unavailable() -> None:
     assert report["status"] == "unavailable"
     assert report["error"] is not None
     assert "playwright" in report["error"].lower()
+
+
+# --- Per-brand selector override map ----------------------------------------
+
+
+def test_resolve_census_no_brand_returns_default() -> None:
+    """Backward compat: brand_slug=None yields ELEMENT_CENSUS verbatim."""
+    assert resolve_census(None) == ELEMENT_CENSUS
+    assert resolve_census("") == ELEMENT_CENSUS
+
+
+def test_resolve_census_unknown_brand_returns_default() -> None:
+    """Unknown brand slugs degrade to defaults (no error)."""
+    assert resolve_census("does-not-exist") == ELEMENT_CENSUS
+
+
+def test_resolve_census_openai_override_replaces_cta_only() -> None:
+    """openai override swaps the cta selector but preserves all other slots."""
+    census = resolve_census("openai")
+    by_slot = {slot: selector for selector, slot in census}
+    default_by_slot = {slot: selector for selector, slot in ELEMENT_CENSUS}
+    assert by_slot["cta"] == BRAND_SELECTOR_OVERRIDES["openai"]["cta"]
+    assert by_slot["cta"] != default_by_slot["cta"]
+    # Non-overridden slots unchanged.
+    for slot in ("root", "body", "h1", "h2", "h3", "link"):
+        assert by_slot[slot] == default_by_slot[slot]
+    # Slot order preserved.
+    assert [slot for _, slot in census] == [slot for _, slot in ELEMENT_CENSUS]
+
+
+def test_resolve_census_aeon_override_distinct_from_openai() -> None:
+    """Aeon and openai overrides are independent map entries."""
+    aeon = {slot: sel for sel, slot in resolve_census("aeon")}
+    openai = {slot: sel for sel, slot in resolve_census("openai")}
+    assert aeon["cta"] != openai["cta"]
+    assert aeon["cta"] == BRAND_SELECTOR_OVERRIDES["aeon"]["cta"]
+
+
+def test_build_capture_script_uses_override_census_when_passed() -> None:
+    """Build script with an override census embeds the override selector."""
+    census = resolve_census("openai")
+    script = build_capture_script(census)
+    assert BRAND_SELECTOR_OVERRIDES["openai"]["cta"] in script
+    # Default cta selector for the OTHER slot is not present.
+    default_cta = next(sel for sel, slot in ELEMENT_CENSUS if slot == "cta")
+    assert default_cta not in script
+
+
+def test_build_capture_script_default_when_no_census() -> None:
+    """Calling without a census argument preserves v1 behavior."""
+    script = build_capture_script()
+    default_cta = next(sel for sel, slot in ELEMENT_CENSUS if slot == "cta")
+    assert default_cta in script
+
+
+# --- Wait-strategy resolution -----------------------------------------------
+
+
+def test_resolve_wait_strategy_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    """No explicit arg and no env var -> DEFAULT_WAIT_STRATEGY."""
+    monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
+    assert resolve_wait_strategy(None) == DEFAULT_WAIT_STRATEGY
+
+
+def test_resolve_wait_strategy_env_var(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Env var flips the strategy when no explicit arg is given."""
+    monkeypatch.setenv(WAIT_STRATEGY_ENV_VAR, "networkidle")
+    assert resolve_wait_strategy(None) == "networkidle"
+
+
+def test_resolve_wait_strategy_explicit_overrides_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explicit arg wins over the env var."""
+    monkeypatch.setenv(WAIT_STRATEGY_ENV_VAR, "networkidle")
+    assert resolve_wait_strategy("domcontentloaded") == "domcontentloaded"
+
+
+def test_resolve_wait_strategy_unknown_falls_back(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Bogus values fall back to default rather than raising."""
+    monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
+    assert resolve_wait_strategy("load-and-pray") == DEFAULT_WAIT_STRATEGY
 
 
 @pytest.mark.skipif(

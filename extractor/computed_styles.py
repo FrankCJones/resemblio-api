@@ -30,9 +30,64 @@ RESEMBLIO_RUN_REAL_BROWSER=1.
 from __future__ import annotations
 
 import json
+import logging
+import os
 from typing import Any, Literal, TypedDict
 
+LOG = logging.getLogger(__name__)
+
 SCHEMA_VERSION = 1
+
+# Per-brand selector override map.
+#
+# Contract: brand_slug -> { signal_name -> CSS selector }.
+# When `capture_computed_styles` is called with `brand_slug=<slug>`, any
+# slot listed in this map is sampled via the brand-specific selector
+# INSTEAD OF the default in ELEMENT_CENSUS for that one capture run.
+#
+# If the override selector matches no element on the page, the capture
+# pass falls back to the default selector for that slot and a warning is
+# logged. This keeps overrides surgical and reversible: adding a brand
+# entry never regresses other brands, and a stale override degrades to
+# default behavior rather than dropping the slot silently.
+#
+# Diagnosis trail: openai.com's first-`<button>` is a nav icon stub;
+# aeon.co renders zero `<button>` elements until React hydrates. The
+# generic `button, .cta, [role=button]` selector therefore captures
+# garbage or nothing. Per-brand entries below name a real CTA selector
+# discovered on each site. See
+# `_handoff/inbox/claude/2026-06-02-openai-aeon-capture-diagnosis.md`.
+BRAND_SELECTOR_OVERRIDES: dict[str, dict[str, str]] = {
+    "openai": {"cta": "a.btn-primary, a.button-primary, main a[href*='chatgpt']"},
+    "aeon": {"cta": "a.donate, a.subscribe, main a[role='button']"},
+}
+"""brand_slug -> { signal_name -> selector } overrides, consulted before defaults."""
+
+# Wait-strategy controls for SPA-hydration tolerance.
+#
+# `domcontentloaded` was the v1 default and is preserved for backward
+# compatibility. Modern marketing sites (aeon, vercel, linear, etc.)
+# render their primary CTA client-side, so the capture script ran before
+# the element existed. `networkidle` adds a real wait for the network to
+# settle plus an explicit hydration buffer, closing that whole class of
+# misses at the cost of <3s per capture (well inside DEFAULT_TIMEOUT_MS).
+#
+# Selection precedence: explicit `wait_strategy=` arg > env var
+# RESEMBLIO_CAPTURE_WAIT_STRATEGY > module default.
+WAIT_STRATEGY_ENV_VAR = "RESEMBLIO_CAPTURE_WAIT_STRATEGY"
+"""Env var the capture script reads when no explicit strategy is passed."""
+
+VALID_WAIT_STRATEGIES: tuple[str, ...] = ("domcontentloaded", "networkidle")
+"""Wait-until values we accept; anything else falls back to the default."""
+
+DEFAULT_WAIT_STRATEGY: Literal["domcontentloaded", "networkidle"] = "domcontentloaded"
+"""Module-level default. Pass `wait_strategy='networkidle'` or set the env var to switch."""
+
+HYDRATION_BUFFER_MS = 1_000
+"""Extra wait after `networkidle` settles, to absorb late React mounts."""
+
+NETWORKIDLE_WAIT_MS = 2_000
+"""Explicit `wait_for_load_state('networkidle')` timeout (after the initial nav)."""
 
 # Element census kept short on purpose. Each entry: a CSS selector and a
 # stable slot name the LLM can correlate with TokenSet keys.
@@ -114,15 +169,46 @@ def empty_report(status: Literal["ok", "unavailable", "error", "skipped"], error
     )
 
 
-def build_capture_script() -> str:
+def resolve_census(brand_slug: str | None) -> tuple[tuple[str, str], ...]:
+    """Return the (selector, slot) census for one capture run.
+
+    Behavior:
+    - When ``brand_slug`` is None or unknown, returns ``ELEMENT_CENSUS``
+      unchanged (the v1 default behavior; zero regression risk).
+    - When ``brand_slug`` is in ``BRAND_SELECTOR_OVERRIDES``, returns a
+      census where any slot listed in the override map uses the brand's
+      selector; every other slot keeps the default. Slot order is
+      preserved so the LLM-prompt rendering stays stable.
+
+    No fallback-on-miss is encoded here; that is a runtime decision
+    handled in ``capture_computed_styles`` after the JS evaluates, so we
+    can detect "override matched nothing" and re-try with the default.
+    """
+    if not brand_slug:
+        return ELEMENT_CENSUS
+    overrides = BRAND_SELECTOR_OVERRIDES.get(brand_slug)
+    if not overrides:
+        return ELEMENT_CENSUS
+    return tuple(
+        (overrides.get(slot, selector), slot)
+        for selector, slot in ELEMENT_CENSUS
+    )
+
+
+def build_capture_script(census: tuple[tuple[str, str], ...] | None = None) -> str:
     """Return the JS that captures computed styles for every census element.
 
     The script returns a JSON-serialisable array of `{slot, selector, properties}`
     objects. We build the script in Python so the property list and census
     stay synchronised and easy to extend; the browser-side code is small,
     deterministic, and side-effect-free.
+
+    When ``census`` is None, ELEMENT_CENSUS is used (backward compat).
+    Brand-override callers pass the resolved census from
+    ``resolve_census(brand_slug)``.
     """
-    census_json = json.dumps([{"selector": sel, "slot": slot} for sel, slot in ELEMENT_CENSUS])
+    effective_census = census if census is not None else ELEMENT_CENSUS
+    census_json = json.dumps([{"selector": sel, "slot": slot} for sel, slot in effective_census])
     properties_json = json.dumps(list(CAPTURED_PROPERTIES))
     return (
         "() => {\n"
@@ -145,10 +231,30 @@ def build_capture_script() -> str:
     )
 
 
+def resolve_wait_strategy(
+    explicit: str | None,
+) -> Literal["domcontentloaded", "networkidle"]:
+    """Pick the wait-until value for one capture run.
+
+    Precedence: explicit arg > ``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` env
+    var > ``DEFAULT_WAIT_STRATEGY``. Unknown values fall back to the
+    default and emit a warning rather than failing the capture.
+    """
+    candidate = explicit or os.environ.get(WAIT_STRATEGY_ENV_VAR) or DEFAULT_WAIT_STRATEGY
+    if candidate not in VALID_WAIT_STRATEGIES:
+        LOG.warning(
+            "unknown wait_strategy=%r; falling back to %s", candidate, DEFAULT_WAIT_STRATEGY
+        )
+        return DEFAULT_WAIT_STRATEGY
+    return candidate  # type: ignore[return-value]
+
+
 def capture_computed_styles(
     html: str | None = None,
     url: str | None = None,
     timeout_ms: int = DEFAULT_TIMEOUT_MS,
+    brand_slug: str | None = None,
+    wait_strategy: str | None = None,
 ) -> ComputedStyleReport:
     """Render `html` (or navigate to `url`) and capture computed styles.
 
@@ -156,12 +262,32 @@ def capture_computed_styles(
     for the extraction path because the extractor has already fetched
     the body and we avoid a second network round-trip.
 
+    Args:
+        html: Rendered HTML to load via ``page.set_content``. Mutually
+            exclusive with ``url``.
+        url: URL to navigate to via ``page.goto``. Mutually exclusive
+            with ``html``.
+        timeout_ms: Hard timeout for the whole render+capture step.
+        brand_slug: When set and present in ``BRAND_SELECTOR_OVERRIDES``,
+            the override map's per-slot selectors replace the defaults
+            in ``ELEMENT_CENSUS`` for this single run. If the override
+            matches no element, a second pass runs with the default
+            selector for that slot and a warning is logged. Unknown
+            slugs are treated as None (no overrides).
+        wait_strategy: ``"domcontentloaded"`` or ``"networkidle"``. When
+            ``"networkidle"``, the capture additionally calls
+            ``wait_for_load_state("networkidle")`` (up to
+            ``NETWORKIDLE_WAIT_MS``) and a ``HYDRATION_BUFFER_MS``
+            timeout, to absorb SPA hydration. Defaults via env var
+            ``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` then
+            ``DEFAULT_WAIT_STRATEGY``.
+
     Returns:
-    - status="ok" with populated signals on success
-    - status="unavailable" when Playwright is not importable or its
-      Chromium binary is missing
-    - status="error" with a short error message on runtime failure
-      (timeout, navigation failure, JS exception)
+        - status="ok" with populated signals on success
+        - status="unavailable" when Playwright is not importable or its
+          Chromium binary is missing
+        - status="error" with a short error message on runtime failure
+          (timeout, navigation failure, JS exception)
 
     Never raises. The caller treats any non-"ok" status as "use
     raw-HTML-only mode" and records the skip in confidence_signals.
@@ -181,7 +307,9 @@ def capture_computed_styles(
     except ImportError:  # pragma: no cover - sync_api always ships Error
         PlaywrightError = Exception  # type: ignore[assignment,misc]
 
-    script = build_capture_script()
+    effective_wait = resolve_wait_strategy(wait_strategy)
+    primary_census = resolve_census(brand_slug)
+    primary_script = build_capture_script(primary_census)
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -190,10 +318,47 @@ def capture_computed_styles(
                 page = context.new_page()
                 page.set_default_timeout(timeout_ms)
                 if html is not None:
-                    page.set_content(html, wait_until="domcontentloaded")
+                    page.set_content(html, wait_until=effective_wait)
                 else:
-                    page.goto(url or "", wait_until="domcontentloaded")
-                raw = page.evaluate(script)
+                    page.goto(url or "", wait_until=effective_wait)
+                if effective_wait == "networkidle":
+                    # Belt-and-braces: a second explicit wait closes
+                    # late-hydrating SPAs that satisfy `goto`'s
+                    # networkidle before the React tree has mounted.
+                    try:
+                        page.wait_for_load_state("networkidle", timeout=NETWORKIDLE_WAIT_MS)
+                    except PlaywrightError as exc:
+                        LOG.debug("networkidle wait timed out: %s", exc)
+                    page.wait_for_timeout(HYDRATION_BUFFER_MS)
+                raw = page.evaluate(primary_script)
+                # Per-slot fallback: any override slot whose primary
+                # selector matched nothing gets re-sampled with the
+                # default selector, and a warning is logged. This keeps
+                # stale brand overrides from regressing capture below
+                # the v1 baseline.
+                if brand_slug and brand_slug in BRAND_SELECTOR_OVERRIDES:
+                    primary_signals = _coerce_signals(raw)
+                    captured_slots = {s["slot"] for s in primary_signals}
+                    overrides = BRAND_SELECTOR_OVERRIDES[brand_slug]
+                    missing_overridden = [
+                        slot for slot in overrides if slot not in captured_slots
+                    ]
+                    if missing_overridden:
+                        fallback_census = tuple(
+                            (selector, slot)
+                            for selector, slot in ELEMENT_CENSUS
+                            if slot in missing_overridden
+                        )
+                        if fallback_census:
+                            LOG.warning(
+                                "brand=%s override slots matched nothing; falling back to defaults: %s",
+                                brand_slug,
+                                ",".join(missing_overridden),
+                            )
+                            fallback_script = build_capture_script(fallback_census)
+                            fallback_raw = page.evaluate(fallback_script)
+                            fallback_signals = _coerce_signals(fallback_raw)
+                            raw = list(primary_signals) + list(fallback_signals)
             finally:
                 browser.close()
     except PlaywrightError as exc:

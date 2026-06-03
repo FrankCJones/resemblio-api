@@ -280,16 +280,36 @@ def select_brands(
 # --- Per-brand capture -------------------------------------------------------
 
 
-CaptureFn = Callable[[str | None, str | None, int], "ComputedStyleReport"]
-"""Signature of ``capture_computed_styles(html, url, timeout_ms)``."""
+CaptureFn = Callable[[str | None, str | None, int, str | None], "ComputedStyleReport"]
+"""Signature of ``capture_computed_styles(html, url, timeout_ms, brand_slug)``.
+
+The brand_slug arg threads through to ``extractor.computed_styles`` so its
+``BRAND_SELECTOR_OVERRIDES`` map can replace the default CTA selector for
+brands whose first-`<button>` is a junk nav stub (openai) or whose CTAs
+hydrate client-side after navigation (aeon). See the diagnosis at
+``_handoff/inbox/claude/2026-06-02-openai-aeon-capture-diagnosis.md``.
+The wait-strategy lever is controlled out-of-band via the
+``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` env var so prod re-captures can flip
+SPA-tolerant mode on without a code change.
+"""
 
 
 def _default_capture_fn() -> CaptureFn:
     """Lazy import of the real capture function (keeps tests Playwright-free)."""
     from extractor.computed_styles import capture_computed_styles
 
-    def _wrapped(html: str | None, url: str | None, timeout_ms: int) -> "ComputedStyleReport":
-        return capture_computed_styles(html=html, url=url, timeout_ms=timeout_ms)
+    def _wrapped(
+        html: str | None,
+        url: str | None,
+        timeout_ms: int,
+        brand_slug: str | None,
+    ) -> "ComputedStyleReport":
+        return capture_computed_styles(
+            html=html,
+            url=url,
+            timeout_ms=timeout_ms,
+            brand_slug=brand_slug,
+        )
 
     return _wrapped
 
@@ -326,7 +346,7 @@ def capture_one_brand(
             error="snapshot exists (pass --force to overwrite)",
         )
     try:
-        report = capture_fn(None, spec["url"], timeout_ms)
+        report = capture_fn(None, spec["url"], timeout_ms, spec["slug"])
     except Exception as exc:  # noqa: BLE001 - per-brand isolation
         LOG.exception("capture raised for brand %s", spec["slug"])
         return BrandOutcome(

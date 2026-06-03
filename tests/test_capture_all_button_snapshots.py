@@ -123,7 +123,12 @@ def _make_capture_fn(fail_for: set[str] | None = None) -> Any:
     """
     fail_hosts = fail_for or set()
 
-    def fn(html: str | None, url: str | None, timeout_ms: int) -> dict[str, Any]:
+    def fn(
+        html: str | None,
+        url: str | None,
+        timeout_ms: int,
+        brand_slug: str | None = None,
+    ) -> dict[str, Any]:
         assert html is None and url is not None
         for host in fail_hosts:
             if host in (url or ""):
@@ -260,7 +265,7 @@ def test_capture_one_brand_failure_isolated(out_dir: Path) -> None:
 
 
 def test_capture_one_brand_handles_runner_exception(out_dir: Path) -> None:
-    def boom(html, url, ms):  # noqa: ANN001
+    def boom(html, url, ms, brand_slug=None):  # noqa: ANN001
         raise RuntimeError("kaboom")
 
     spec: BrandSpec = {"slug": "x", "url": "https://x.example"}
