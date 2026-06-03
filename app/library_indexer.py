@@ -80,6 +80,21 @@ from app.constants import (
 # entrypoint (``python -m app.cli.library_indexer``) loads this module but
 # never triggers the path install, and every job in the queue fails with
 # ``ModuleNotFoundError: No module named '_scripts'``. Do not remove.
+#
+# 2026-06-02 OUTAGE NOTE: a 3-hour Library outage on prod was caused by this
+# module-load contract being implicit. Some import path in the running
+# service loaded ``app.library_indexer`` before ``app.extractor_bridge``'s
+# ``sys.path`` install had run, every job in the queue silently failed with
+# ``ModuleNotFoundError: No module named '_scripts'``, and ``library_pages``
+# stayed empty until the eventual fix in commit c5631c8. The implicit
+# contract (this import line MUST execute before any compose call) was not
+# enforced by code, only by a comment. The runtime guard below
+# (``_assert_drl_path_ready``) and the structured startup log
+# (``_emit_startup_log``) turn that implicit contract into an explicit,
+# fail-loud one: if the path install did not run, module load itself raises
+# an ``ImportError`` with a specific message naming the failure mode, and a
+# downstream operator can grep ``library_indexer.startup`` in journald to
+# confirm the load order on every CLI tick.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
 from app.library_style_scope import scope_style_block
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
@@ -90,6 +105,151 @@ from extractor.token_contract import BRAND_TOKEN_CONTRACT
 
 
 logger = logging.getLogger("resemblio.library_indexer")
+
+
+# ----------------------------------------------------------------------
+# Module-load race guard + startup observability
+# ----------------------------------------------------------------------
+#
+# Locked 2026-06-03 after the 2026-06-02 3-hour Library outage. See the
+# OUTAGE NOTE above for context. The two helpers below run once, at module
+# load time, immediately under this block. Together they enforce the
+# previously-implicit ``extractor_bridge before library_indexer`` contract.
+
+
+LIBRARY_INDEXER_STARTUP_LOG_SCHEMA_VERSION = "library_indexer_startup_v1"
+"""Schema version stamped onto every ``library_indexer.startup`` log entry.
+
+Operators grep this string in journald to confirm the indexer module loaded
+cleanly on the most recent CLI tick. The version is bumped only if the
+StartupLog dataclass shape below changes; downstream log-shipping consumers
+key off this string for shape detection.
+"""
+
+_DRL_PATH_GUARD_REQUIRED_MODULE = "_scripts.templates"
+"""DRL module the indexer's compose path lazy-imports. If the vendored DRL
+``sys.path`` install (from ``app.extractor_bridge``) did not run, importing
+this module raises ``ModuleNotFoundError`` and the worker silently writes
+zero ``library_pages`` rows for every job. Probing this exact module is the
+cheapest way to prove the load-order contract held."""
+
+_DRL_PATH_GUARD_FAILURE_MSG = (
+    "library_indexer module-load race detected: "
+    "{required_module!r} is not importable, which means "
+    "app.extractor_bridge did not run its DRL sys.path install before "
+    "app.library_indexer loaded. This is the 2026-06-02 outage shape "
+    "(commit c5631c8 fix). Restore the top-of-module "
+    "``from app import extractor_bridge`` import or ensure the bridge "
+    "loads before this module on every entrypoint. Original ImportError: "
+    "{original!r}"
+)
+"""Failure-message template for the runtime guard. Specific enough that an
+operator paging on it knows the exact shape (the 2026-06-02 outage) and the
+exact remediation (the bridge-first import) without needing to read this
+file."""
+
+
+@dataclass(frozen=True)
+class StartupLog:
+    """Structured log entry emitted once per module load.
+
+    The shape is grep-able from journald. ``module_load_order`` lists the
+    DRL-related modules in the order they appear in ``sys.modules`` at
+    guard-time so the next outage post-mortem can confirm whether the bridge
+    actually loaded first. ``schema_version`` stamps the entry so downstream
+    consumers can detect shape drift.
+    """
+
+    schema_version: str
+    extractor_bridge_loaded: bool
+    drl_templates_importable: bool
+    module_load_order: tuple[str, ...]
+
+
+def _drl_module_load_order() -> tuple[str, ...]:
+    """Return the DRL-related modules in ``sys.modules`` insertion order.
+
+    Insertion order matters for the post-mortem signal: ``app.extractor_bridge``
+    must appear before any ``_scripts.*`` module on every healthy startup.
+    The dict-iteration order is insertion order in CPython 3.7+; we rely on
+    that contract here.
+    """
+    import sys as _sys
+
+    interesting: list[str] = []
+    for name in _sys.modules:
+        if name == "app.extractor_bridge" or name.startswith("_scripts"):
+            interesting.append(name)
+    return tuple(interesting)
+
+
+def _assert_drl_path_ready() -> None:
+    """Fail loud at module load if the DRL ``sys.path`` install did not run.
+
+    Probes ``_DRL_PATH_GUARD_REQUIRED_MODULE``. If the import succeeds, the
+    bridge's path install ran; the guard is silent. If the import raises
+    ``ModuleNotFoundError`` (or any ``ImportError``), the guard re-raises an
+    ``ImportError`` whose message names the 2026-06-02 outage shape and the
+    remediation, so an operator paging on the error gets actionable context
+    without reading source.
+
+    Defensive note: this guard runs once, at module load. It does not
+    re-check on every ``drain_pending`` call; the cost would be a `sys.path`
+    rescan per tick for no marginal protection (the bridge cannot un-install
+    its path mid-process).
+    """
+    import importlib
+
+    try:
+        importlib.import_module(_DRL_PATH_GUARD_REQUIRED_MODULE)
+    except ImportError as exc:
+        raise ImportError(
+            _DRL_PATH_GUARD_FAILURE_MSG.format(
+                required_module=_DRL_PATH_GUARD_REQUIRED_MODULE,
+                original=exc,
+            )
+        ) from exc
+
+
+def _emit_startup_log() -> StartupLog:
+    """Emit and return the structured startup log entry.
+
+    Called once at module load time, right after the runtime guard passes.
+    Returns the entry so callers (and tests) can introspect the shape.
+    """
+    import sys as _sys
+
+    # Check the bridge two ways: sys.modules entry AND attribute on the
+    # parent app package. In long-lived test sessions the sys.modules entry
+    # may have been popped while the parent-package attribute is still set
+    # (the indexer's ``from app import extractor_bridge`` re-binds locally
+    # without re-running the submodule). Either signal proves the bridge
+    # contract held for this module load.
+    import app as _app_pkg
+    bridge_in_sys = "app.extractor_bridge" in _sys.modules
+    bridge_on_pkg = hasattr(_app_pkg, "extractor_bridge")
+    entry = StartupLog(
+        schema_version=LIBRARY_INDEXER_STARTUP_LOG_SCHEMA_VERSION,
+        extractor_bridge_loaded=bridge_in_sys or bridge_on_pkg,
+        drl_templates_importable=_DRL_PATH_GUARD_REQUIRED_MODULE in _sys.modules,
+        module_load_order=_drl_module_load_order(),
+    )
+    logger.info(
+        "library_indexer.startup schema_version=%s extractor_bridge_loaded=%s "
+        "drl_templates_importable=%s module_load_order=%s",
+        entry.schema_version,
+        entry.extractor_bridge_loaded,
+        entry.drl_templates_importable,
+        list(entry.module_load_order),
+    )
+    return entry
+
+
+# Run the guard + emit the log at module load. Order matters: the guard runs
+# first so a failed startup raises before the log is emitted (an emitted
+# "startup ok" log on a broken load would lie to the operator).
+_assert_drl_path_ready()
+_STARTUP_LOG: StartupLog = _emit_startup_log()
 
 
 # The DRL ``_scripts`` package (templates, compose, slate, extraction) is
