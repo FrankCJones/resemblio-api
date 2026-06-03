@@ -152,6 +152,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
             # no PII; safe to expose to anonymous BFF + crawlers. See
             # ``app/routes/library.py`` docstring (Auth section) for rationale.
             or request.url.path.startswith("/v1/library/")
+            # Stage O1 anonymous-extraction surface. Unauthenticated by
+            # design; the route handler enforces per-IP rate-limit +
+            # claim-token gating in lieu of bearer-token auth. See
+            # ``app/routes/extractions_anonymous.py`` docstring for the
+            # security posture.
+            or request.url.path.startswith("/v1/anonymous/")
+            or request.url.path == "/v1/notify-when-supported"
         ):
             return await call_next(request)
 

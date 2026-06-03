@@ -315,3 +315,68 @@ DRL_BOOTSTRAP_MIN_EXPECTED_BRANDS = 19
 non-zero when the asset_versions DRL-tagged count corresponds to fewer
 than this many distinct brand slugs."""
 
+
+# Stage O1 anonymous-extraction constants. Source: CTO respec
+# `projects/OptSus Team/cto-reviews/2026-06-03-resemblio-url-first-onboarding-respec.md`
+# Stage O1, plus Frank's decisions baked in for this Builder dispatch
+# (per-IP cap = 1; signup grant raised to $10; four export formats only).
+
+# Per-IP anonymous-extraction daily cap (default 1). Overridable via env
+# ``ANON_EXTRACT_PER_IP_PER_DAY`` so we can loosen during cohort tests
+# without a code change. Decisions 3 (default Y) of the respec.
+ANON_EXTRACT_PER_IP_PER_DAY_DEFAULT: int = 1
+ANON_EXTRACT_PER_IP_PER_DAY_ENV_VAR: str = "ANON_EXTRACT_PER_IP_PER_DAY"
+
+# Claim-token random byte count. URL-safe base64 of 32 bytes is 43 chars,
+# fits comfortably in the ``claim_token`` VARCHAR(64) column.
+ANON_CLAIM_TOKEN_BYTES: int = 32
+
+# Anonymous-extraction claim window. After this, the row is reaped by
+# the daily cleanup script (``scripts/reap_anonymous_extractions.py``).
+ANON_EXTRACTION_CLAIM_WINDOW_HOURS: int = 24
+
+# Site-class taxonomy (Decision 3 / 2026-06-03). The classifier (O3) emits
+# exactly one of these labels. ``SUPPORTED_CLASSES`` gates whether the
+# anonymous endpoint enqueues a real extraction or returns the
+# "notify-when-supported" out-of-scope payload.
+ANON_CLASS_HTML_FIRST: str = "html_first"
+ANON_CLASS_JS_RENDERED: str = "js_rendered"
+ANON_CLASS_WIX: str = "wix_class"
+ANON_CLASS_WAF_BLOCKED: str = "waf_blocked"
+ANON_CLASS_UNKNOWN: str = "unknown"
+ANON_SUPPORTED_CLASSES: frozenset[str] = frozenset(
+    {ANON_CLASS_HTML_FIRST, ANON_CLASS_JS_RENDERED}
+)
+
+# Stage O1 response envelope. Bumped together with the migration if the
+# response shape changes; downstream consumers switch on this field.
+ANON_EXTRACTION_SCHEMA_VERSION: int = 1
+
+# Feature flag env var name. The route returns 503 ``feature_disabled``
+# when this is anything other than the literal string "true"
+# (case-insensitive). Frank flips this AFTER O3 lands in shadow per
+# the respec rollout plan; the flip itself is YELLOW.
+ANON_EXTRACT_FLAG_ENV_VAR: str = "RESEMBLIO_ANON_EXTRACT_ENABLED"
+
+# Stage O1 free-signup grant (Frank decision 4 / 2026-06-03). Raised
+# from $5 (``ONBOARDING_GRANT_CENTS`` at module top) to $10 so a new
+# user can run an extraction + top-up smoke + a re-extraction without
+# hitting the wall. Overridable via env so a temporary promo or test
+# environment can dial it without a redeploy.
+ANON_SIGNUP_GRANT_CENTS_DEFAULT: int = 1000
+ANON_SIGNUP_GRANT_CENTS_ENV_VAR: str = "RESEMBLIO_SIGNUP_GRANT_CENTS"
+
+# Failure-mode strings the anonymous route surfaces in the response body.
+# Kept as constants so a copy review (Frank) is a one-file diff and the
+# Playwright test in O2/O4 can switch on a stable string.
+ANON_OUT_OF_SCOPE_MESSAGE: str = (
+    "We can't extract this site yet. Tell us your email and we'll let you know "
+    "when {detected_class} sites are supported."
+)
+ANON_RATE_LIMITED_MESSAGE: str = (
+    "One anonymous extraction per 24 hours. Create an account to keep going."
+)
+"""Mission target floor: '19+ pre-extracted brands'. Verify harness exits
+non-zero when the asset_versions DRL-tagged count corresponds to fewer
+than this many distinct brand slugs."""
+

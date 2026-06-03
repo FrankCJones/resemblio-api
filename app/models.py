@@ -523,3 +523,103 @@ class LibraryPage(Base):
         Index("ix_library_pages_brand_category", "brand_slug", "category_slug"),
         Index("ix_library_pages_is_canonical", "is_canonical"),
     )
+
+
+class AnonymousExtraction(Base):
+    """Claim-token registry for Stage O1 anonymous extractions.
+
+    Created when an unauthenticated visitor POSTs a URL to
+    ``/v1/anonymous/extractions``. Holds the opaque ``claim_token`` the
+    visitor receives (32 random bytes URL-safe; unique) plus a
+    ``ip_hash`` (SHA-256 of the client IP, raw IP never persisted) so
+    abuse traces can correlate rows without storing PII. The row binds
+    to the actual ``extractions`` row created on the success path; on an
+    out-of-scope classification ``extraction_id`` stays NULL and no
+    extractor cycles are burned.
+
+    Lifecycle: ``status`` walks ``pending -> complete | refunded |
+    expired``. A daily cleanup script reaps rows past ``expires_at``.
+
+    Idempotency: ``claim_token`` is UNIQUE; a duplicate token is treated
+    as a hard collision (we regenerate at insert time and retry). The
+    token is the sole secret tying an anonymous extraction to its
+    future-account claim, so it must be opaque and forgery-resistant.
+    """
+
+    __tablename__ = "anonymous_extractions"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    claim_token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    ip_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    extraction_id: Mapped[int | None] = mapped_column(
+        BigIntType, ForeignKey("extractions.id"), nullable=True
+    )
+    url: Mapped[str] = mapped_column(Text, nullable=False)
+    classification: Mapped[str] = mapped_column(String(32), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="pending", server_default="pending")
+    schema_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    __table_args__ = (
+        Index("ix_anonymous_extractions_claim_token", "claim_token", unique=True),
+        Index("ix_anonymous_extractions_ip_hash", "ip_hash"),
+        Index("ix_anonymous_extractions_expires_at", "expires_at"),
+    )
+
+
+class AnonExtractCounter(Base):
+    """Per-IP per-day counter backing the anonymous-extraction rate limit.
+
+    Postgres-backed (not Redis-backed) by design: Redis is not yet
+    provisioned in the Resemblio stack and the existing in-process
+    token-bucket limiter (``app/rate_limit.py``) is per-process, which
+    silently multiplies the ceiling under multi-worker uvicorn. A simple
+    ``(ip_hash, day, count)`` row is cross-process correct without a new
+    runtime dependency. UPSERT semantics in the route handler: if no row
+    for ``(ip_hash, day)`` exists, insert with ``count=1``; if it exists
+    and ``count < cap``, increment; otherwise refuse with 429.
+    """
+
+    __tablename__ = "anon_extract_counters"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    ip_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    # ISO-8601 UTC date string (e.g. "2026-06-03"). TEXT for cross-dialect
+    # simplicity; the route handler computes the bucket from utcnow so
+    # all callers agree on the day boundary.
+    day: Mapped[str] = mapped_column(String(10), nullable=False)
+    count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("ip_hash", "day", name="uq_anon_extract_counters_ip_day"),
+    )
+
+
+class NotifyRequest(Base):
+    """Append-only email-capture row for unsupported-class anonymous URLs.
+
+    When a visitor's URL classifies into an out-of-scope class
+    (``wix_class`` / ``waf_blocked`` / ``unknown``), the result page
+    invites them to leave their email; the resulting POST lands here.
+    We never auto-send to this list; emails fire only when Frank
+    approves a "we now support <class>" broadcast.
+    """
+
+    __tablename__ = "notify_requests"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    url: Mapped[str] = mapped_column(Text, nullable=False)
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+    detected_class: Mapped[str] = mapped_column(String(32), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (Index("ix_notify_requests_created_at", "created_at"),)

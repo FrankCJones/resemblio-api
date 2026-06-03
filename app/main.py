@@ -10,7 +10,19 @@ from starlette.responses import JSONResponse
 from app.auth import AuthMiddleware
 from app.config import get_settings, validate_startup_settings
 from app.request_id import REQUEST_ID_HEADER, RequestIdMiddleware
-from app.routes import account, api_keys, billing, convert, credit, extractions, health, internal_auth, library, webhooks
+from app.routes import (
+    account,
+    api_keys,
+    billing,
+    convert,
+    credit,
+    extractions,
+    extractions_anonymous,
+    health,
+    internal_auth,
+    library,
+    webhooks,
+)
 
 
 def validate_worker_concurrency() -> None:
@@ -140,6 +152,7 @@ def create_app() -> FastAPI:
     app.include_router(internal_auth.router, prefix="/v1", tags=["internal_auth"])
     app.include_router(billing.router, prefix="/v1", tags=["internal_billing"])
     app.include_router(library.router, prefix="/v1", tags=["library"])
+    app.include_router(extractions_anonymous.router, prefix="/v1", tags=["anonymous_extractions"])
     return app
 
 

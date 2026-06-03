@@ -517,6 +517,111 @@ remove it.
 
 ---
 
+## 8b. Stage O1 anonymous-extraction surface
+
+Three endpoints landed via migration 0021 (`anonymous_extractions`,
+`anon_extract_counters`, `notify_requests`):
+
+| Endpoint | Auth | Notes |
+|---|---|---|
+| `POST /v1/anonymous/extractions` | none | Rate-limited per IP (default 1/day); classifies URL; supported -> 202 + `claim_token` + `extraction_id`; unsupported -> 200 `status="out_of_scope"` + notify capture URL |
+| `GET /v1/anonymous/extractions/{id}?claim_token=<...>` | claim_token | 403 on missing or mismatched token; surfaces classification + status + tokens preview when ready |
+| `POST /v1/notify-when-supported` | none | Append-only email capture for unsupported classes |
+
+Feature flag: `RESEMBLIO_ANON_EXTRACT_ENABLED=true` MUST be set in the
+prod `.env` before the endpoint serves real traffic. Default off; flag
+flip is YELLOW (see project `AUTHORITY.yml`).
+
+Rate-limit storage: Postgres-backed `anon_extract_counters(ip_hash, day, count)`.
+Redis is the future home; the table-backed counter is cross-process
+correct without a new runtime dependency. The per-IP daily cap is
+`ANON_EXTRACT_PER_IP_PER_DAY` (default 1). Raw client IPs are NEVER
+persisted; only their SHA-256 hash lands in `ip_hash` + counter rows.
+
+Observability paths:
+
+- Structured log line on every 429: `anon_extract_rate_limited ip_hash=<sha> cap=<n> retry_after=<s>`
+- Service user that owns anonymous extraction rows until Stage O5 conversion: `anonymous-service@resemblio.com` (created lazily on first request).
+- Reaper script (run daily via systemd timer in `deploy/scripts/`):
+  `python -m scripts.reap_anonymous_extractions` flips expired
+  pending rows to `status='expired'` and hard-deletes rows >30 days
+  past their `expires_at`.
+
+Classifier dependency: `app/site_classifier.py:classify_url` is the
+real Stage-O3 first-byte heuristic (shipped 2026-06-03). It fetches up
+to 16 KB of the URL via httpx with retry+backoff, then matches body +
+header + status-code signals defined in
+`app/site_classifier_signals.yml` to return one of:
+`html_first` / `js_rendered` / `wix_class` / `waf_blocked` / `unknown`.
+Supported set per `ANON_SUPPORTED_CLASSES` is `{html_first, js_rendered}`;
+out-of-scope classes short-circuit with the notify-when-supported capture.
+
+---
+
+## 8b. Tuning the URL classifier
+
+The signal patterns live in `app/site_classifier_signals.yml` (sibling
+of `app/site_classifier.py`). Edit-and-restart picks up new signals
+without a code redeploy; the loader caches by file mtime so a SIGHUP
+of the API service is enough.
+
+### Schema lock
+
+Header carries `schema_version: site_classifier_signals_v1`. The loader
+raises `RuntimeError` on a mismatch rather than silently classifying
+every URL as `unknown`. Adding new signal CLASSES requires updating
+`CLASS_PRECEDENCE` in code; adding new PATTERNS to existing classes is
+YAML-only.
+
+### Block shape
+
+```yaml
+classes:
+  <class_name>:
+    min_signals: <int>        # minimum matches to claim the class
+    confidence_base: <float>  # confidence when min_signals met
+    confidence_step: <float>  # added per signal above the minimum
+    patterns_body:            # strings (substring) or "re:<regex>"
+      - "static.parastorage.com"
+      - "re:<meta\\s+name=\"generator\"...>"
+    patterns_headers:         # (header_name, value_substring_or_regex)
+      - ["x-wix-request-id", ""]   # "" matches any value
+    status_codes: [403, 503]  # statuses that count as one signal
+```
+
+### Precedence
+
+`wix_class > waf_blocked > js_rendered > html_first`. Out-of-scope
+classes resolve first; a Wix-built SPA classifies as `wix_class` so we
+do not burn a Playwright slot on it.
+
+### Tuning workflow
+
+1. Capture a failing URL: probe with `classify_url(url)` from a Python
+   REPL on the box (one-shot, GREEN).
+2. Inspect `result.body_excerpt` and `result.response_headers` to see
+   what signals were actually present.
+3. Edit `site_classifier_signals.yml` to add the missing signal.
+4. Restart the API service or wait for the next request after the
+   file mtime updates (cache is mtime-keyed).
+5. Re-run `pytest tests/test_site_classifier.py` to confirm no
+   regression on the synthetic fixtures.
+
+### Test seam
+
+The classifier accepts dependency-injected `client` and `sleep` args
+plus an override `signals_path`. Tests in `tests/test_site_classifier.py`
+drive it with `httpx.MockTransport`; no live HTTP.
+
+### Trusted auth context
+
+For private extractions where the caller supplied HTTP basic auth,
+pass `trusted_auth_context=True` to suppress the 401/407 -> waf_blocked
+signal. The anonymous-extract route does NOT set this flag (anonymous
+extractions are not authenticated).
+
+---
+
 ## 9. When this file goes stale
 
 If reality on the box differs from anything above, the file is wrong.
