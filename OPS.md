@@ -416,6 +416,35 @@ Root cause: a prior session ran a git op as root (typically while debugging),
 leaving pack objects owned by root that the deploy user cannot read. The
 CI workflow's self-heal handles this if sudo NOPASSWD is configured.
 
+### 8.11 Library buttons render as default 6px chiclets across all brands
+
+```
+Symptom: every brand's library page renders the DRL default `.b-btn`
+         (6px radius, 10/16 padding, 14px / 500) instead of the brand's
+         actual button shape. Apple alone renders correctly.
+Root:    the Hybrid Path B button override (CTO 2026-06-02) needs a
+         per-brand R3.1 computed-style snapshot at
+         `_vendored/drl/drl/_data/computed_styles/<brand>.json`. Only
+         Apple ships with one; the other 23 brands fall back to the
+         DRL default because the loader returns None when no snapshot
+         exists (fail-safe by design).
+Fix:     python -m scripts.capture_all_button_snapshots --apply \
+           --drl-root /opt/resemblio-api/drl
+         python -m scripts.refresh_brand_library --all --apply \
+           --drl-root /opt/resemblio-api/drl
+         sudo systemctl restart resemblio-web
+         # Then purge the Cloudflare cache from the dashboard.
+One-shot: ./scripts/full_corpus_refresh.sh
+Verify:  curl -s https://resemblio.com/library/apple/buttons/ | \
+           grep -c 'data-resemblio-button-override'
+         # Expect >= 1 per brand once override applied.
+```
+
+The capture script is per-brand idempotent (existing snapshots skip
+unless `--force` is passed). Per-brand failures isolate: a brand that
+times out or fails Playwright capture is logged and the next brand
+still runs. The refresh script follows the same isolation contract.
+
 ### 8.10 Alembic upgrade silently skipped
 
 ```
