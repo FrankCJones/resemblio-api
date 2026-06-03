@@ -44,9 +44,22 @@ def test_namespaced_underscored_key() -> None:
     assert _ds_var_name("ds_bg") == "--ds-bg"
 
 
-def test_empty_tokens_dict_returns_empty_root_block() -> None:
-    """No tokens -> ``:root {}`` (matches pre-fix contract; downstream relies on it)."""
-    assert _tokens_to_inline_css({}) == ":root {}"
+def test_empty_tokens_dict_returns_contract_default_block() -> None:
+    """No brand tokens -> ``:root`` block populated with contract defaults.
+
+    Path C Phase 2 (CTO sign-off 2026-06-03): the emitter is no longer a
+    raw projection of the brand dict; it always emits every contract slot
+    so templates have a defined value to resolve. With an empty brand
+    dict every slot pulls its ``default`` from ``BRAND_TOKEN_CONTRACT``.
+    """
+    from extractor.token_contract import BRAND_TOKEN_CONTRACT
+
+    css = _tokens_to_inline_css({})
+    assert css.startswith(":root {")
+    assert css.endswith("}")
+    # At least one well-known slot with its contract default.
+    bg_default = BRAND_TOKEN_CONTRACT["slots"]["ds-bg"]["default"]
+    assert f"--ds-bg: {bg_default};" in css
 
 
 def test_mixed_keys_produce_no_double_prefix() -> None:

@@ -86,6 +86,7 @@ from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 from extractor.button_override import apply_button_tokens
 from extractor.button_tokens import ButtonTokens, derive_button_tokens
 from extractor.computed_styles import ComputedStyleReport
+from extractor.token_contract import BRAND_TOKEN_CONTRACT
 
 
 logger = logging.getLogger("resemblio.library_indexer")
@@ -339,7 +340,7 @@ def _compose_one_page(
     # selectors to be prefixed by `.rs-library-page`; :root and at-rules
     # are preserved. See app/library_style_scope.py for the rule table.
     scoped_styles = scope_style_block(styles)
-    inline_tokens_css = _tokens_to_inline_css(tokens)
+    inline_tokens_css = _emit_brand_root(tokens)
     # Wrap in a per-page article element so the fragment is self-contained
     # when injected into the Next.js library page. The data attribute
     # carries the class for downstream CSS scoping if needed.
@@ -579,31 +580,75 @@ def _ds_var_name(key: str) -> str:
     return f"--ds-{normalized}"
 
 
-def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
-    """Render the brand's DTCG token dict as a ``:root { --ds-*: ...; }`` block.
+def _emit_brand_root(tokens: dict[str, str]) -> str:
+    """Render a complete ``:root`` block populated from the brand-token contract.
 
-    The DRL templates reference design tokens via ``var(--ds-<key>)`` where
-    ``<key>`` is the flat token name with underscores replaced by dashes
-    (e.g. ``font_display`` -> ``--ds-font-display``). We emit a custom
-    property per token so the template styles paint with the brand's
-    actual palette/typography rather than the browser default.
+    Path C Phase 2 (per CTO sign-off
+    ``projects/OptSus Team/cto-reviews/2026-06-03-resemblio-path-c-phase2-contract-signoff.md``):
+    the DRL templates reference every visual decision through ``var(--ds-*)``
+    slots backed by the central ``BRAND_TOKEN_CONTRACT``. This emitter
+    guarantees EVERY contract slot has a value at the document root, so
+    rendered pages always paint with a defined slot value rather than
+    falling through to the in-line ``var()`` fallback in the template.
 
-    Key normalization is delegated to ``_ds_var_name`` so both bare keys
-    (``bg``) and already-namespaced keys (``ds-bg``) produce the same
-    ``--ds-bg`` output.
+    For each slot:
 
-    Tokens are emitted in sorted order for deterministic output (the
-    fragment ends up in ``library_pages.rendered_html`` and stable text
-    output keeps diffs reviewable).
+    - If the brand's ``tokens`` dict supplies a value (matched via the
+      same key-normalization rules as ``_ds_var_name``: underscores
+      collapse to dashes; both ``bg`` and ``ds-bg`` map to ``--ds-bg``),
+      that value wins.
+    - Otherwise the slot's ``default`` from the contract is emitted.
+
+    The wrapping selector is scoped to ``.rs-library-page`` so the brand
+    root never leaks out of the article fragment when it lands inside
+    the host Next.js page. Output is deterministic (slots sorted) so
+    ``library_pages.rendered_html`` diffs stay reviewable.
+
+    The shape returned is a single ``:root`` block; ``library_style_scope``
+    rewrites the selector during ``scope_style_block`` so the rules apply
+    only within the page article. Empty brand tokens still produce a
+    populated block (every slot at contract default) which is the
+    back-compat guarantee Path C inherits from Phase 1.
     """
-    if not tokens:
-        return ":root {}"
+    # Normalize the brand-supplied tokens to a {slot_name: value} map
+    # using the same rules ``_ds_var_name`` applies, but stripped of the
+    # leading ``--`` so the result keys match BRAND_TOKEN_CONTRACT keys.
+    overrides: dict[str, str] = {}
+    for raw_key, value in (tokens or {}).items():
+        var_name = _ds_var_name(raw_key)  # "--ds-bg"
+        slot_name = var_name[2:] if var_name.startswith("--") else var_name
+        overrides[slot_name] = value
+
+    contract_slots = set(BRAND_TOKEN_CONTRACT["slots"].keys())
     lines = [":root {"]
-    for key in sorted(tokens):
-        css_key = _ds_var_name(key)
-        lines.append(f"  {css_key}: {tokens[key]};")
+    # Contract slots first: every slot named in BRAND_TOKEN_CONTRACT emits
+    # with brand-override-or-contract-default. This guarantees the
+    # rendered page paints with a defined value for every templated slot.
+    for slot_name in sorted(contract_slots):
+        slot = BRAND_TOKEN_CONTRACT["slots"][slot_name]
+        value = overrides.get(slot_name, slot["default"])
+        lines.append(f"  --{slot_name}: {value};")
+    # Pass-through any extra brand-supplied keys (e.g. ``ds-font-body``)
+    # that are not yet contract slots. Keeps existing DRL templates that
+    # reference ``var(--ds-font-body)`` resolving even though the
+    # contract has not formally adopted font-family slots yet.
+    extras = sorted(name for name in overrides if name not in contract_slots)
+    for slot_name in extras:
+        lines.append(f"  --{slot_name}: {overrides[slot_name]};")
     lines.append("}")
     return "\n".join(lines)
+
+
+def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
+    """Compatibility alias for ``_emit_brand_root``.
+
+    Retained so the pre-Phase-2 regression tests at
+    ``tests/test_tokens_to_inline_css.py`` keep their import target. The
+    contract is unchanged - both bare and already-namespaced keys map to
+    a single ``--ds-<name>`` form - but the body is now contract-driven
+    rather than a raw projection of the brand dict.
+    """
+    return _emit_brand_root(tokens)
 
 
 def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -> dict[str, Any]:

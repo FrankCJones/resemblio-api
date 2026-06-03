@@ -219,9 +219,17 @@ def test_tokens_to_inline_css_emits_ds_custom_properties() -> None:
     assert css.index("--ds-bg") < css.index("--ds-font-display")
 
 
-def test_tokens_to_inline_css_empty_tokens_yields_empty_root() -> None:
-    """An empty token dict produces a valid (empty) :root block, not an error."""
-    assert _tokens_to_inline_css({}) == ":root {}"
+def test_tokens_to_inline_css_empty_tokens_yields_contract_defaults() -> None:
+    """Per Path C (2026-06-03), empty tokens populate every contract slot with its
+    default value via _emit_brand_root. Back-compat: rendered output matches
+    pre-Path-C because templates use var(--ds-*, <literal>) where <literal>
+    equals the contract default."""
+    out = _tokens_to_inline_css({})
+    assert out.startswith(":root {")
+    assert out.endswith("}")
+    assert "--ds-bg:" in out
+    assert "--ds-radius-sm:" in out
+    assert "--ds-button-radius:" in out
 
 
 # ----------------------------------------------------------------------
