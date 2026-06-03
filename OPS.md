@@ -290,6 +290,8 @@ copy; `credentials.env` is the recovery source.
 | `STRIPE_WEBHOOK_SECRET_RESEMBLIO_TEST` | Stripe webhook signature verify (TEST) | Per-mode secret |
 | `RESEND_API_KEY` | Transactional email | CRLF in this value broke email-403 once; verify clean newline |
 | `RESEMBLIO_INTERNAL_AUTH_SECRET` | BFF magic-link auth (web -> API) | Unset = `/v1/internal/auth/*` returns 503 (fail-closed) |
+| `RESEMBLIO_TEST_AUTH_ENABLED` | O9 Playwright E2E test-auth gate | MUST remain UNSET on prod. Value `"1"` opens the test-only readback + teardown endpoints (see Section 8d). Any other value (including `"true"`, `"yes"`) is treated as off. |
+| `RESEMBLIO_TEST_AUTH_TOKEN` | O9 Playwright E2E test-auth header | MUST remain UNSET on prod. Companion to `_ENABLED`; the route handlers require this value on the `X-Test-Auth` request header. |
 | `RESEMBLIO_KEY_PEPPER` | API-key storage hash | 32+ chars, never rotate without `_OLD` overlap |
 | `HETZNER_API_TOKEN` | Hetzner Cloud API | Box-level recovery only |
 | `CLOUDFLARE_API_TOKEN` | DNS via CF API | Zone scope `resemblio.com` |
@@ -555,6 +557,121 @@ header + status-code signals defined in
 `html_first` / `js_rendered` / `wix_class` / `waf_blocked` / `unknown`.
 Supported set per `ANON_SUPPORTED_CLASSES` is `{html_first, js_rendered}`;
 out-of-scope classes short-circuit with the notify-when-supported capture.
+
+---
+
+## 8c. Stage O5 anonymous-to-account claim endpoint
+
+`POST /v1/internal/auth/claim_anonymous_extraction` binds a Stage O1
+anonymous extraction row to a freshly-minted user account immediately
+after a successful magic-link redeem. Lives on the same internal-BFF
+surface (shared-secret header `X-Internal-Auth`) as the rest of
+`/v1/internal/auth/*`; bypass-listed in `AUTH_FREE_PATHS` so the
+Bearer-token middleware does not 401 it.
+
+Contract:
+
+| Field | Shape | Notes |
+|---|---|---|
+| Request body | `{claim_token: str, user_id: int}` | `claim_token` is the opaque 32-byte URL-safe secret minted at Stage O1; `user_id` is the new account from the redeem response |
+| Headers | `X-Internal-Auth: <RESEMBLIO_INTERNAL_AUTH_SECRET>` | Shared with the rest of `/internal/auth/*` |
+| 200 success | `{schema_version: 1, ok: true, extraction_id: int}` | Extraction row's `user_id` is now the new account; `anonymous_extractions.claimed_at` is stamped; status walks to `claimed` |
+| 400 `user_not_found` | - | The BFF should never hit this; it just minted the user |
+| 401 `internal_auth_invalid` | - | Missing or wrong shared secret |
+| 404 `invalid_claim_token` | - | Unknown token; covers both never-existed and silently-leaked states |
+| 404 `nothing_to_claim` | - | Registry exists but `extraction_id` is NULL (out-of-scope class) |
+| 409 `already_claimed` | - | `claimed_at` is already non-NULL; double-claim is a hard error |
+| 410 `claim_expired` | - | Past the 24-hour `expires_at` window |
+| 503 `internal_auth_unconfigured` | - | `RESEMBLIO_INTERNAL_AUTH_SECRET` unset |
+
+Atomicity: the bind walks Extraction.user_id rebind + AnonymousExtraction.claimed_at + AnonymousExtraction.status in one commit. A peer claim from a different user is caught by the `claimed_at IS NOT NULL` guard before any write lands (Postgres row-lock semantics; SQLite serializes writes at the connection level).
+
+Web side (BFF): the verify Route Handler at `app/api/auth/verify/route.ts` reads a short-lived `resemblio_claim` cookie (set by `app/api/auth/request/route.ts` when the signup body carries claim params), calls this endpoint, and redirects to `/app/extractions/<id>` on success or to `/app` on any bind failure. A failed bind is logged and dropped on the floor; the signup still completes.
+
+---
+
+## 8d. O9 Playwright E2E test-only surface
+
+Two endpoints exist solely to unblock the O9 Playwright E2E suite.
+They live in `app/routes/internal_test.py` and are DARK BY DEFAULT.
+
+WARNING. Enabling this surface on a prod box is a critical safety
+violation. The plaintext-token readback bypasses email-as-second-factor
+for any account whose address the caller knows; the teardown surface
+is unconditional destructive delete. Both env vars MUST remain unset
+on every prod `.env`. This surface is intended for staging + local
+dev only. Audit the prod `.env` before every cutover.
+
+Both endpoints share the same two-gate check:
+
+1. `RESEMBLIO_TEST_AUTH_ENABLED` must be exactly the string `"1"`. Any
+   other value (including `"true"`, `"yes"`, `"on"`) is treated as off.
+2. `RESEMBLIO_TEST_AUTH_TOKEN` must be set to a non-empty string, AND
+   the request must carry `X-Test-Auth: <that-token>` (constant-time
+   compare).
+
+Failure modes:
+
+| Condition | Status | Body |
+|---|---|---|
+| Either env var unset | 403 | `{"error": "test_auth_disabled"}` |
+| Header missing or mismatched | 401 | `{"error": "test_auth_invalid"}` |
+
+### Endpoint 1: GET /v1/internal/auth/test_get_latest_magic_link
+
+Query string `?email=<>`. Returns the latest unconsumed plaintext
+magic-link token for the supplied email so the Playwright harness can
+synthesize a redeem click without scraping a real inbox.
+
+| Status | Body | Cause |
+|---|---|---|
+| 200 | `{schema_version: 1, token: str, expires_at: str, email: str}` | Latest row matched; ordered by `created_at DESC` |
+| 404 | `{"error": "no_unconsumed_token"}` | No row, or only rows with `consumed_at IS NOT NULL`, or only rows whose `plaintext_token` is NULL (minted before the flag was on) |
+
+Plaintext is stored in `magic_link_tokens.plaintext_token` (migration
+0022). The `request_magic_link` route writes this column ONLY when the
+test-auth surface is enabled at mint time; rows minted with the flag
+off are NULL and the readback returns 404 even if the flag is later
+toggled. This means a prod deploy that flips only the readback flag
+without minting fresh tokens cannot leak anything.
+
+### Endpoint 2: POST /v1/internal/test/teardown_user
+
+Body `{email}`. Deletes the user and every child row a Playwright run
+could have produced. Idempotent: a second call against an
+already-deleted email returns `{ok: true, deleted_rows: 0}`.
+
+Fan-out (in order):
+
+* `magic_link_tokens` by email (these are not FK'd to `users`)
+* `api_key_events` for keys owned by the user
+* `web_session_keys` owned by the user
+* `anonymous_extractions` whose `extraction_id` points at an extraction
+  the user owns
+* `credit_ledger` rows scoped to the user's extractions
+* `auto_refund_audit_events` for the user's extractions
+* `extractions` owned by the user
+* `credit_ledger` rows scoped to the user directly (e.g. onboarding
+  grant)
+* `idempotency_keys` owned by the user
+* `topup_sessions` owned by the user
+* `api_keys` owned by the user
+* `users` row itself
+
+Returns `{schema_version: 1, ok: true, deleted_rows: int}`.
+
+### Auditing the surface is off on prod
+
+```bash
+ssh -i "$RKEY" -F "$RHOSTS" claude-cowork@$RHOST \
+  'sudo grep -E "RESEMBLIO_TEST_AUTH" /opt/resemblio-api/.env || echo OK'
+```
+
+`OK` (no match) is the expected output. Any match is the failure
+signal; clear the env vars, `sudo systemctl restart resemblio-api`,
+and rotate the magic-link token plaintext column with `UPDATE
+magic_link_tokens SET plaintext_token = NULL WHERE plaintext_token
+IS NOT NULL;`.
 
 ---
 

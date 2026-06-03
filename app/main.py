@@ -21,6 +21,7 @@ from app.routes import (
     extractions_anonymous,
     health,
     internal_auth,
+    internal_test,
     library,
     webhooks,
 )
@@ -151,6 +152,9 @@ def create_app() -> FastAPI:
     app.include_router(convert.router, prefix="/v1", tags=["convert"])
     app.include_router(webhooks.router, prefix="/v1", tags=["webhooks"])
     app.include_router(internal_auth.router, prefix="/v1", tags=["internal_auth"])
+    # Test-only surface; dark by default. Routes return 403 unless both
+    # RESEMBLIO_TEST_AUTH_ENABLED=1 and RESEMBLIO_TEST_AUTH_TOKEN are set.
+    app.include_router(internal_test.router, prefix="/v1", tags=["internal_test"])
     app.include_router(billing.router, prefix="/v1", tags=["internal_billing"])
     app.include_router(library.router, prefix="/v1", tags=["library"])
     app.include_router(extractions_anonymous.router, prefix="/v1", tags=["anonymous_extractions"])

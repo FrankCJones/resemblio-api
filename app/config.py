@@ -77,6 +77,18 @@ class Settings(BaseSettings):
     # themselves return 503 if it is unset in production, so a misconfigured
     # prod deploy fails closed rather than open.
     internal_auth_secret: str | None = Field(None, alias="RESEMBLIO_INTERNAL_AUTH_SECRET")
+    # Test-only endpoint gate. Both flags must be set for the
+    # ``/v1/internal/test/*`` and ``/v1/internal/auth/test_get_latest_magic_link``
+    # surfaces to respond at all. The endpoints return 403 when
+    # ``test_auth_enabled`` is not exactly the string ``"1"``, and 401 when the
+    # ``X-Test-Auth`` header does not match ``test_auth_token``. Both default to
+    # off so the prod box never accepts plaintext-token reads or destructive
+    # teardown calls unless an operator explicitly toggles both env vars.
+    # WARNING: enabling these on a live prod box is a critical safety violation;
+    # the plaintext magic-link token surface alone bypasses email-as-second-
+    # factor for any account whose address is known to the caller.
+    test_auth_enabled: str | None = Field(None, alias="RESEMBLIO_TEST_AUTH_ENABLED")
+    test_auth_token: str | None = Field(None, alias="RESEMBLIO_TEST_AUTH_TOKEN")
     # Base URL the BFF will use to construct the magic-link click target.
     # The API only assembles ``{base}/auth/verify?token=...`` style URLs if
     # the caller does not supply a fully-formed link. Defaults to the prod

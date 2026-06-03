@@ -270,12 +270,21 @@ def request_magic_link(
 
     plaintext_token = secrets.token_urlsafe(MAGIC_LINK_TOKEN_BYTES)
     token_hash = _hash_token(plaintext_token)
+    # Plaintext mirror is populated ONLY when the test-auth surface is
+    # explicitly enabled (both env vars set). On prod with the flag off the
+    # column stays NULL and the link plaintext lives only in the outbound
+    # email body. See ``app/routes/internal_test.py`` for the readback gate.
+    test_mode = (
+        real_settings.test_auth_enabled == "1"
+        and bool(real_settings.test_auth_token)
+    )
     row = MagicLinkToken(
         email=normalized_email,
         token_hash=token_hash,
         expires_at=now + timedelta(minutes=MAGIC_LINK_EXPIRY_MINUTES),
         ip=payload.ip,
         user_agent=payload.user_agent,
+        plaintext_token=plaintext_token if test_mode else None,
     )
     session.add(row)
     session.commit()

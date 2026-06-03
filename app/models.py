@@ -387,6 +387,14 @@ class MagicLinkToken(Base):
     consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     ip: Mapped[str | None] = mapped_column(Text, nullable=True)
     user_agent: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Plaintext token mirror used ONLY by the test-auth surface
+    # (``RESEMBLIO_TEST_AUTH_ENABLED=1``) so the Playwright E2E suite can
+    # synthesize a redeem click without scraping a real inbox. The
+    # request-magic-link route writes this value ONLY when the test-auth
+    # flag is enabled; on prod with the flag off the column stays NULL and
+    # the plaintext is never persisted. The test-readback endpoint refuses
+    # to return rows where ``plaintext_token`` is NULL. Migration 0022.
+    plaintext_token: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
         Index("ix_magic_link_tokens_email", "email"),

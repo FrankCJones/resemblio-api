@@ -34,11 +34,22 @@ AUTH_FREE_PATHS = frozenset({
     "/v1/internal/auth/redeem_magic_link",
     "/v1/internal/auth/whoami",
     "/v1/internal/auth/logout",
+    # Stage O5 anonymous-to-account claim. Same shared-secret posture as the
+    # other internal/auth endpoints; the Next.js BFF calls this immediately
+    # after a successful magic-link redeem to bind a just-claimed anonymous
+    # extraction row to the freshly-minted user.
+    "/v1/internal/auth/claim_anonymous_extraction",
     # S3b Wave 2c internal billing surface. Same posture as the auth surface
     # above: gated by the X-Internal-Auth shared secret on the route handler,
     # not by Bearer-token AuthMiddleware. The BFF holds the user's identity
     # via cookie + session-store, not via a billing-scoped API key.
     "/v1/internal/billing/create_checkout_session",
+    # O9 Playwright E2E test-only surface. Dark by default; the route
+    # handlers return 403 unless both ``RESEMBLIO_TEST_AUTH_ENABLED=1``
+    # and ``RESEMBLIO_TEST_AUTH_TOKEN`` are set in the environment. See
+    # ``app/routes/internal_test.py``.
+    "/v1/internal/auth/test_get_latest_magic_link",
+    "/v1/internal/test/teardown_user",
 })
 
 # Constant-shape pepper used when the operator has not configured an old pepper
