@@ -736,6 +736,69 @@ def _brand_placeholder(name: str, *, brand_slug: str) -> str:
         "list_item_1": "Released a new component",
         "list_item_2": "Updated the color palette",
         "list_item_3": "Shipped dark-mode variants",
+        # News-list items (the NEWS_LIST template at
+        # _scripts/templates.py:589-592 uses item_N_date / item_N_title /
+        # item_N_dek slots). Pre-2026-06-03 these fell through to the
+        # humanize-fallback and rendered as "Item 1 Title" / "Item 1 Dek"
+        # / "Item 1 Date" in plain English on every brand canonical page;
+        # the BLOCKER 1 fix for the URL-first flag-flip
+        # (cto-reviews/2026-06-03-library-ux-audit.md) is to enumerate
+        # them here so the page reads as a real "what shipped recently"
+        # vignette rather than a stub. Dates are stable text rather than
+        # live-clock values so render output is deterministic for tests
+        # and visual-fidelity-check snapshots.
+        "item_1_date": "MAR 12",
+        "item_1_title": f"{pretty_brand} ships a refreshed palette",
+        "item_1_dek": "New accent values land across the system, with dark-mode pairs.",
+        "item_2_date": "MAR 05",
+        "item_2_title": "Typography scale extends to display sizes",
+        "item_2_dek": "Three new heading steps cover hero and editorial layouts.",
+        "item_3_date": "FEB 22",
+        "item_3_title": "Button tokens land for every variant",
+        "item_3_dek": "Primary, secondary, outline, ghost, and destructive captured.",
+        "item_4_date": "FEB 09",
+        "item_4_title": "Spacing rhythm tightens at small viewports",
+        "item_4_dek": "Compact rails replace the prior 24px default on mobile.",
+        # Step-list slots (HOW_IT_WORKS template). Same fall-through
+        # pattern; humanize would have produced "Step 1 Title".
+        "step_1_title": "Capture",
+        "step_1_dek": "We read the source page's computed styles end to end.",
+        "step_2_title": "Normalize",
+        "step_2_dek": "Tokens collapse into a single DTCG-compatible namespace.",
+        "step_3_title": "Compose",
+        "step_3_dek": "Every component re-renders against the brand-stripped tokens.",
+        "step_4_title": "Ship",
+        "step_4_dek": "Export to your stack: Tailwind, CSS, Figma Variables, or JSON.",
+        # Team-member slots (ABOUT_TEAM template). Generic role labels so
+        # the page does not invent named people; this is brand-stripped
+        # by design.
+        "member_1_name": "Design lead",
+        "member_1_role": "Systems and tokens",
+        "member_2_name": "Engineering lead",
+        "member_2_role": "Component library",
+        "member_3_name": "Product lead",
+        "member_3_role": "Roadmap and review",
+        "member_4_name": "Research lead",
+        "member_4_role": "Audit and discovery",
+        # Article-layout slots (ARTICLE_LAYOUT template). Brand-aware
+        # specimen body for editorial pages; never reads as filler.
+        "author": "Studio team",
+        "date": "March 2026",
+        "lead": (
+            "A short editorial lead establishes the reading rhythm for the "
+            "article and demonstrates how body type sets at the default size."
+        ),
+        "section_2_title": "Section heading",
+        "section_2_body": (
+            "Section bodies carry the reading work. The typography scale "
+            "keeps line length comfortable while letting the heading lead."
+        ),
+        "pull_quote": "The system carries the reading work; the page stays out of the way.",
+        "section_3_title": "Closing notes",
+        "section_3_body": (
+            "Closing sections recap the through-line and point to related "
+            "components elsewhere in the system."
+        ),
     }
     if name in presets:
         return presets[name]
