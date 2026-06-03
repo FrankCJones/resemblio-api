@@ -288,6 +288,39 @@ jobs:
             fi
           done
 
+      # Link-crawl smoke gate (standing PR gate locked 2026-06-03).
+      # Runs AFTER /v1/readyz; same retry pattern as the smoke step above.
+      # Reads `projects/Resemblio/surfaces.yml` for the surface registry,
+      # crawls every registered surface, parses every `<a href>` / `<link>`
+      # / `<script src>` / `<img src>` / `<iframe src>` / `<form action>`
+      # in the rendered HTML via stdlib `html.parser` (DOM parse, NOT regex),
+      # and asserts every INTERNAL link returns 200 (or a documented 301).
+      #
+      # Why this gate exists: on 2026-06-02 the Library v1.1 deploy went
+      # green and 500'd every metadata route. Same shape bit Susann WP
+      # staging (nav 404s post-deploy). Status-only smoke (healthz/readyz)
+      # cannot catch link-shape regressions because the smoke routes
+      # themselves were healthy. This gate is the structural fix.
+      #
+      # External links are not crawled; the gate only asserts on surfaces
+      # Resemblio owns. The JSON report (schema_version=link_crawl_report_v1)
+      # is uploaded as a workflow artifact for forensics.
+      - name: Link-crawl smoke (assert every internal link returns 200)
+        id: link_crawl_smoke
+        run: |
+          set -e
+          /tmp/ci-venv/bin/python scripts/link_crawl_smoke.py \
+            --surfaces ../../surfaces.yml \
+            --report /tmp/link_crawl_report.json
+
+      - name: Upload link-crawl report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-crawl-report
+          path: /tmp/link_crawl_report.json
+          if-no-files-found: ignore
+
       # Closes audit finding M8-API (companion to the web-side security-header
       # smoke check at `projects/Resemblio/code/web/.github/workflows/deploy.yml`).
       # Asserts (1) Caddy-fronted HSTS is present (so a future Caddyfile edit
