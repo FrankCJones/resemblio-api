@@ -89,9 +89,14 @@ CACHE_HUB = "public, max-age=600, stale-while-revalidate=3600"
 CACHE_SITEMAP = "public, max-age=600, stale-while-revalidate=3600"
 
 # Validation regexes mirroring the web contract (library-data.ts).
+# Version label is intentionally a generic slug-shape (not YYYY-MM): the
+# indexer slugifies free-form labels (e.g. "DRL bootstrap 2026-05-21" ->
+# "drl-bootstrap-2026-05-21") so the URL form is arbitrary slug-shape.
+# Same posture as the web validator: shape-check at the edge, let the DB
+# 404 decide membership.
 _BRAND_SLUG_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
-_CATEGORY_SLUG_RE = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
-_VERSION_LABEL_RE = re.compile(r"^[0-9]{4}-[0-9]{2}$")
+_CATEGORY_SLUG_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$")
+_VERSION_LABEL_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,126}[a-z0-9])?$")
 _ASSET_ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$", re.IGNORECASE)
 
 RESERVED_BRAND_SLUGS = frozenset(
@@ -228,28 +233,54 @@ def _related_for(session: Session, brand_slug: str,
 
     Same shape the mock emits: sibling categories of this brand first
     (capped at 4), then each known version label for the brand.
+
+    Hardening notes (2026-06-02): the prior implementation gated sibling
+    categories on ``is_canonical=True``, which silently produced an empty
+    list whenever the reconciler had not yet flipped canonical flags for
+    a brand (e.g. seed-only corpora before the reconcile pass). We now
+    fall back to the full set of categories the brand has any public page
+    for, so the related block is always populated when data exists. The
+    canonical contract is preserved on the page-detail endpoints; only the
+    related-list lookup is relaxed. Every row is also filtered for non-empty
+    string values defensively so a stray NULL never serialises as
+    ``[None, None, ...]`` in the JSON response.
     """
     related: list[RelatedItem] = []
+
+    # Sibling categories (cap 4). No is_canonical filter: any public page
+    # for the brand contributes its category to the related set.
     cat_stmt = (
         select(LibraryPage.category_slug)
+        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
         .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.is_canonical.is_(True))
+        .where(AssetVersion.is_public.is_(True))
         .distinct()
     )
-    cats = sorted({row[0] for row in session.execute(cat_stmt).all()
-                   if row[0] and row[0] != exclude_category})
+    cat_rows = session.execute(cat_stmt).all()
+    cats = sorted({
+        row[0] for row in cat_rows
+        if row[0] and isinstance(row[0], str) and row[0] != exclude_category
+    })
     for cat in cats[:4]:
         related.append(RelatedItem(
             label=f"{_title_case(cat)} from {_title_case(brand_slug)}",
             href=f"/library/{brand_slug}/{cat}/",
         ))
+
+    # Version labels for the brand (no cap; few in practice).
     ver_stmt = (
         select(LibraryPage.version_label)
+        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
         .where(LibraryPage.brand_slug == brand_slug)
         .where(LibraryPage.version_label.is_not(None))
+        .where(AssetVersion.is_public.is_(True))
         .distinct()
     )
-    versions = sorted({row[0] for row in session.execute(ver_stmt).all() if row[0]})
+    ver_rows = session.execute(ver_stmt).all()
+    versions = sorted({
+        row[0] for row in ver_rows
+        if row[0] and isinstance(row[0], str)
+    })
     for v in versions:
         related.append(RelatedItem(
             label=f"{_title_case(brand_slug)} design system in {v}",

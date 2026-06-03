@@ -378,3 +378,65 @@ def test_library_endpoints_are_auth_free(
     ):
         resp = client.get(path)
         assert resp.status_code == 200, f"{path} expected 200, got {resp.status_code}"
+
+
+# ----------------------------------------------------------------------
+# Related-link population (regression: prior code emitted [None]*N)
+# ----------------------------------------------------------------------
+
+
+def _seed_corpus_for_related(session: Session) -> None:
+    """One brand, 5+ categories across 2 versions so related has enough rows."""
+    av_v1 = _make_asset_version(
+        session, url="https://stripe.com/", version_label="2026-05",
+        fetched_at=datetime.now(timezone.utc) - timedelta(hours=2),
+    )
+    av_v2 = _make_asset_version(
+        session, url="https://stripe.com/", version_label="2026-06",
+        fetched_at=datetime.now(timezone.utc),
+    )
+    for cat in ("buttons", "palette", "typography", "cards", "hero"):
+        _make_page(session, av_v2, brand_slug="stripe-com",
+                   category_slug=cat, is_canonical=True)
+    # v1 rows are non-canonical (the reconciler would have flipped them).
+    for cat in ("buttons", "palette"):
+        _make_page(session, av_v1, brand_slug="stripe-com",
+                   category_slug=cat, is_canonical=False)
+    session.commit()
+
+
+def test_related_populates_no_nones_on_brand_canonical(
+    client: TestClient, session: Session
+) -> None:
+    """``related`` on the brand-canonical page is a list of dicts, never None.
+
+    Regression: prior implementation produced ``[None, None, None, None, None]``
+    when the canonical-flag filter eliminated all rows (e.g. for DRL-seeded
+    corpora before reconciliation). The fix relaxes that filter and adds a
+    defensive None-strip on the projection.
+    """
+    _seed_corpus_for_related(session)
+    resp = client.get("/v1/library/brands/stripe-com")
+    assert resp.status_code == 200
+    related = resp.json()["data"]["related"]
+    assert isinstance(related, list)
+    assert len(related) >= 3, f"expected 3+ related rows, got {len(related)}"
+    for item in related:
+        assert item is not None
+        assert isinstance(item, dict)
+        assert isinstance(item.get("label"), str) and item["label"]
+        assert isinstance(item.get("href"), str) and item["href"].startswith("/library/")
+
+
+def test_related_excludes_current_category(
+    client: TestClient, session: Session
+) -> None:
+    """On a category-scoped page, ``related`` does not list the current category."""
+    _seed_corpus_for_related(session)
+    resp = client.get("/v1/library/brands/stripe-com/categories/buttons")
+    assert resp.status_code == 200
+    related = resp.json()["data"]["related"]
+    hrefs = [r["href"] for r in related]
+    assert not any(h == "/library/stripe-com/buttons/" for h in hrefs)
+    # Sibling categories should be present.
+    assert any("/palette/" in h for h in hrefs) or any("/cards/" in h for h in hrefs)

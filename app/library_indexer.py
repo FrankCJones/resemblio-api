@@ -169,6 +169,25 @@ def _slugify(text: str) -> str:
     return cleaned
 
 
+def slugify_version_label(label: str | None) -> str | None:
+    """Slugify a free-form ``version_label`` for URL-safe storage.
+
+    The seed pipeline writes ``asset_versions.version_label`` as a
+    human-readable string (e.g. ``"DRL bootstrap 2026-05-21"``). The library
+    indexer must write a URL-safe form to ``library_pages.version_label`` so
+    the downstream ``/library/<brand>/<version>/...`` route resolves.
+
+    Returns:
+        ``None`` for a ``None`` input or a label that slugifies to the empty
+        string (defensive; callers treat ``None`` as "no version scope").
+        Otherwise the lowercase + dash-collapsed slug.
+    """
+    if label is None:
+        return None
+    slug = _slugify(label)
+    return slug or None
+
+
 # ----------------------------------------------------------------------
 # DTCG payload -> compose TokenSet shape
 # ----------------------------------------------------------------------
@@ -609,7 +628,11 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
             asset_version_id=asset_version.id,
             category_slug=class_name,
             brand_slug=brand_slug,
-            version_label=asset_version.version_label,
+            # Slugify here, not at read-time: ``asset_versions.version_label``
+            # is a human-readable string (e.g. "DRL bootstrap 2026-05-21");
+            # ``library_pages.version_label`` must be URL-safe so the
+            # downstream /library/<brand>/<version>/... route resolves.
+            version_label=slugify_version_label(asset_version.version_label),
             rendered_html=rendered,
             metadata_json=metadata,
             is_canonical=False,
