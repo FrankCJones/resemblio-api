@@ -151,6 +151,128 @@ def test_brands_hub_pagination_walks_pages(
     assert len(data["featured"]) == 1
 
 
+def _make_page_with_metadata(
+    session: Session,
+    av: AssetVersion,
+    *,
+    brand_slug: str,
+    category_slug: str,
+    metadata: dict[str, Any],
+    is_canonical: bool = True,
+) -> LibraryPage:
+    """Insert a library_pages row carrying a caller-supplied metadata envelope."""
+    page = LibraryPage(
+        asset_version_id=av.id,
+        category_slug=category_slug,
+        brand_slug=brand_slug,
+        version_label=av.version_label,
+        rendered_html="<p>hi</p>",
+        metadata_json=metadata,
+        is_canonical=is_canonical,
+    )
+    session.add(page)
+    session.flush()
+    return page
+
+
+def test_brands_hub_returns_palette_and_display_font(
+    client: TestClient, session: Session
+) -> None:
+    """Each hub row carries palette[] + display_font sourced from metadata_json.
+
+    Palette is ordered accent-first (per the web contract's "index 0 is the
+    canonical accent / primary"), then bg, surface, text. Hex values are
+    lowercased; non-hex / missing slots are dropped silently.
+    """
+    av = _make_asset_version(session, url="https://stripe.com/",
+                             version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="stripe-com",
+        category_slug="buttons",
+        metadata={
+            "schema_version": 1,
+            "brand_slug": "stripe-com",
+            "category_slug": "buttons",
+            "bg": "#FFFFFF",
+            "surface": "#F6F9FC",
+            "text": "#0A2540",
+            "accent": "#635BFF",
+            "font_display": 'sohne-var, "Helvetica Neue", sans-serif',
+            "font_body": "system-ui",
+        },
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "stripe-com")
+    # accent first, then bg, surface, text - all lowercased
+    assert row["palette"] == ["#635bff", "#ffffff", "#f6f9fc", "#0a2540"]
+    assert row["display_font"] == 'sohne-var, "Helvetica Neue", sans-serif'
+
+
+def test_brands_hub_palette_drops_non_hex_and_caps_at_five(
+    client: TestClient, session: Session
+) -> None:
+    """Non-hex values are dropped; result is capped at 5 entries; dedupe is case-insensitive."""
+    av = _make_asset_version(session, url="https://example.com/",
+                             version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="example-com",
+        category_slug="buttons",
+        metadata={
+            "schema_version": 1,
+            "brand_slug": "example-com",
+            "category_slug": "buttons",
+            # accent invalid (rgb), bg duplicate of text but different case
+            "accent": "rgb(99, 91, 255)",
+            "bg": "#ABCDEF",
+            "surface": None,
+            "text": "#abcdef",
+            "font_display": None,
+        },
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "example-com")
+    # Only #abcdef survives (accent rgb dropped, surface None dropped,
+    # text dedupes against bg case-insensitively).
+    assert row["palette"] == ["#abcdef"]
+    assert row["display_font"] is None
+
+
+def test_brands_hub_palette_empty_when_no_metadata(
+    client: TestClient, session: Session
+) -> None:
+    """A brand whose metadata carries no usable color slots returns empty palette + null font."""
+    av = _make_asset_version(session, url="https://bare.example/",
+                             version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="bare-example",
+        category_slug="buttons",
+        metadata={
+            "schema_version": 1,
+            "brand_slug": "bare-example",
+            "category_slug": "buttons",
+        },
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "bare-example")
+    assert row["palette"] == []
+    assert row["display_font"] is None
+
+
 def test_brands_hub_quality_gate_hides_non_public_rows(
     client: TestClient, session: Session
 ) -> None:

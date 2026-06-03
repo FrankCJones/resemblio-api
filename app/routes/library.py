@@ -104,6 +104,14 @@ RESERVED_BRAND_SLUGS = frozenset(
      "privacy", "terms", "admin", "_next"}
 )
 
+# Hub-card palette config (added 2026-06-03 for BLOCKER 3).
+# Source slots inside ``library_pages.metadata_json``, in priority order.
+# Index 0 is the canonical accent / primary (web contract `library-data.ts`
+# line 116). Cap at 5 hex strings to match the BrandCard swatch row.
+_HUB_PALETTE_SLOTS: tuple[str, ...] = ("accent", "bg", "surface", "text")
+_HUB_PALETTE_MAX = 5
+_HEX_COLOR_RE = re.compile(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+
 
 # ---------------------------------------------------------------------------
 # Response shapes
@@ -135,12 +143,30 @@ class LibraryPageData(TypedDict, total=False):
     updated_at: str
 
 
-class HubFeaturedRow(TypedDict):
-    """One row of the hub list."""
+class HubFeaturedRow(TypedDict, total=False):
+    """One row of the hub list.
+
+    Required fields: ``brand_slug``, ``source_url``, ``category_count``.
+    Optional fields (added 2026-06-03 for the BLOCKER 3 hub card UI):
+
+    - ``palette``: up to 5 deduplicated hex strings (lowercase, with leading
+      ``#``) sourced from the brand's representative ``library_pages``
+      row's ``metadata_json`` color slots. Ordered by web-contract priority:
+      accent first (canonical primary), then bg, surface, text. Empty list
+      when the brand carries no real palette tokens.
+    - ``display_font``: the ``font_display`` CSS family string from the same
+      ``library_pages.metadata_json``. ``None`` when not present.
+
+    Old web clients ignore these fields; new ones consume them with a
+    fallback. Additive change; no envelope or data schema_version bump
+    required (web contract stays at ``library_data_v1``).
+    """
 
     brand_slug: str
     source_url: str
     category_count: int
+    palette: list[str]
+    display_font: str | None
 
 
 class LibraryHubData(TypedDict):
@@ -225,6 +251,60 @@ def _source_url_for_brand(session: Session, brand_slug: str) -> str | None:
         .limit(1)
     )
     return session.execute(stmt).scalar_one_or_none()
+
+
+def _palette_and_font_for_brand(
+    session: Session, brand_slug: str,
+) -> tuple[list[str], str | None]:
+    """Return (palette, display_font) for the brand's hub card.
+
+    Picks the brand's representative ``library_pages`` row (most recent
+    public, same selection rule as ``_source_url_for_brand``) and pulls
+    color slots + ``font_display`` from its ``metadata_json``. The library
+    indexer writes one row per (asset_version, category); any one row
+    for a given asset_version carries the same brand-level color/font
+    envelope, so picking the most recent is sufficient.
+
+    Palette ordering: ``_HUB_PALETTE_SLOTS`` (accent first, per the web
+    contract's "index 0 is canonical accent / primary"). Hex strings are
+    normalized to lowercase; duplicates collapsed case-insensitively.
+    Non-hex values (rgb(), named colors, garbage) are silently dropped.
+    Result is capped at ``_HUB_PALETTE_MAX``.
+
+    Returns ``([], None)`` when no public library_pages row exists for
+    the brand or the row's metadata is unusable. The web side handles
+    fallback placeholders for that case.
+    """
+    stmt = (
+        select(LibraryPage.metadata_json)
+        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
+        .where(LibraryPage.brand_slug == brand_slug)
+        .where(AssetVersion.is_public.is_(True))
+        .order_by(AssetVersion.fetched_at.desc())
+        .limit(1)
+    )
+    metadata = session.execute(stmt).scalar_one_or_none()
+    if not isinstance(metadata, dict):
+        return [], None
+    palette: list[str] = []
+    seen: set[str] = set()
+    for slot in _HUB_PALETTE_SLOTS:
+        if len(palette) >= _HUB_PALETTE_MAX:
+            break
+        raw = metadata.get(slot)
+        if not isinstance(raw, str):
+            continue
+        candidate = raw.strip()
+        if not _HEX_COLOR_RE.match(candidate):
+            continue
+        norm = candidate.lower()
+        if norm in seen:
+            continue
+        seen.add(norm)
+        palette.append(norm)
+    font_raw = metadata.get("font_display")
+    display_font = font_raw if isinstance(font_raw, str) and font_raw.strip() else None
+    return palette, display_font
 
 
 def _related_for(session: Session, brand_slug: str,
@@ -384,10 +464,13 @@ def list_brands(
     featured: list[HubFeaturedRow] = []
     for brand_slug, category_count in rows:
         url = _source_url_for_brand(session, brand_slug) or ""
+        palette, display_font = _palette_and_font_for_brand(session, brand_slug)
         featured.append(HubFeaturedRow(
             brand_slug=brand_slug,
             source_url=url,
             category_count=int(category_count),
+            palette=palette,
+            display_font=display_font,
         ))
     payload = LibraryHubData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
