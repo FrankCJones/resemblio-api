@@ -57,11 +57,22 @@ SCHEMA_VERSION = 1
 # garbage or nothing. Per-brand entries below name a real CTA selector
 # discovered on each site. See
 # `_handoff/inbox/claude/2026-06-02-openai-aeon-capture-diagnosis.md`.
-BRAND_SELECTOR_OVERRIDES: dict[str, dict[str, str]] = {
-    "openai": {"cta": "a.btn-primary, a.button-primary, main a[href*='chatgpt']"},
-    "aeon": {"cta": "a.donate, a.subscribe, main a[role='button']"},
+BRAND_SELECTOR_OVERRIDES: dict[str, dict[str, str | None]] = {
+    "openai": {"cta": "a[href^='https://chatgpt.com'], header a[href*='chatgpt.com']"},
+    "aeon": {"cta": None},  # Vercel security-checkpoint gated; capture not possible headlessly
+    # spot-check confirmed broader brands need href-pattern overrides too:
+    "vercel": {"cta": "a[href*='vercel.com/signup'], header a[href*='/new'], main a.button"},
+    "linear": {"cta": "a[href*='linear.app/sign-up'], header a[href*='signup'], main a[href*='/launch']"},
+    "anthropic": {"cta": "a[href*='claude.ai'], header a[href*='claude.ai']"},
 }
-"""brand_slug -> { signal_name -> selector } overrides, consulted before defaults."""
+"""brand_slug -> { signal_name -> selector or None } overrides, consulted before defaults.
+
+A value of ``None`` means "skip this slot entirely for this brand": the slot is
+removed from the census, no capture attempt is made, and no fallback to the
+default selector runs. Use ``None`` when the site cannot be captured for that
+signal (e.g. Vercel security-checkpoint gating) so the override layer does not
+inject a misleading marker downstream.
+"""
 
 # Wait-strategy controls for SPA-hydration tolerance.
 #
@@ -176,11 +187,16 @@ def resolve_census(brand_slug: str | None) -> tuple[tuple[str, str], ...]:
     - When ``brand_slug`` is None or unknown, returns ``ELEMENT_CENSUS``
       unchanged (the v1 default behavior; zero regression risk).
     - When ``brand_slug`` is in ``BRAND_SELECTOR_OVERRIDES``, returns a
-      census where any slot listed in the override map uses the brand's
-      selector; every other slot keeps the default. Slot order is
-      preserved so the LLM-prompt rendering stays stable.
+      census where any slot listed in the override map with a string
+      selector uses the brand's selector; every other slot keeps the
+      default. Slot order is preserved so the LLM-prompt rendering stays
+      stable.
+    - When an override slot maps to ``None``, the slot is REMOVED from
+      the census entirely for this brand. No capture is attempted and no
+      fallback to the default selector runs. A debug line is logged so
+      the omission is auditable.
 
-    No fallback-on-miss is encoded here; that is a runtime decision
+    No on-miss fallback is encoded here; that is a runtime decision
     handled in ``capture_computed_styles`` after the JS evaluates, so we
     can detect "override matched nothing" and re-try with the default.
     """
@@ -189,10 +205,17 @@ def resolve_census(brand_slug: str | None) -> tuple[tuple[str, str], ...]:
     overrides = BRAND_SELECTOR_OVERRIDES.get(brand_slug)
     if not overrides:
         return ELEMENT_CENSUS
-    return tuple(
-        (overrides.get(slot, selector), slot)
-        for selector, slot in ELEMENT_CENSUS
-    )
+    out: list[tuple[str, str]] = []
+    for selector, slot in ELEMENT_CENSUS:
+        if slot in overrides:
+            override_selector = overrides[slot]
+            if override_selector is None:
+                LOG.info("brand=%s slot=%s skipped per override (None)", brand_slug, slot)
+                continue
+            out.append((override_selector, slot))
+        else:
+            out.append((selector, slot))
+    return tuple(out)
 
 
 def build_capture_script(census: tuple[tuple[str, str], ...] | None = None) -> str:
@@ -340,8 +363,12 @@ def capture_computed_styles(
                     primary_signals = _coerce_signals(raw)
                     captured_slots = {s["slot"] for s in primary_signals}
                     overrides = BRAND_SELECTOR_OVERRIDES[brand_slug]
+                    # Skip None-valued slots: those are explicit "do not
+                    # capture this signal for this brand" markers. The
+                    # default-selector fallback would defeat the opt-out.
                     missing_overridden = [
-                        slot for slot in overrides if slot not in captured_slots
+                        slot for slot, sel in overrides.items()
+                        if sel is not None and slot not in captured_slots
                     ]
                     if missing_overridden:
                         fallback_census = tuple(

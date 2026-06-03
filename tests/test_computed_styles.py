@@ -165,12 +165,47 @@ def test_resolve_census_openai_override_replaces_cta_only() -> None:
     assert [slot for _, slot in census] == [slot for _, slot in ELEMENT_CENSUS]
 
 
-def test_resolve_census_aeon_override_distinct_from_openai() -> None:
-    """Aeon and openai overrides are independent map entries."""
-    aeon = {slot: sel for sel, slot in resolve_census("aeon")}
-    openai = {slot: sel for sel, slot in resolve_census("openai")}
-    assert aeon["cta"] != openai["cta"]
-    assert aeon["cta"] == BRAND_SELECTOR_OVERRIDES["aeon"]["cta"]
+def test_resolve_census_aeon_none_override_removes_cta_slot() -> None:
+    """Aeon's None override drops the cta slot from the census entirely.
+
+    Aeon is gated behind a Vercel security checkpoint that headless
+    Playwright cannot pass; capturing would yield garbage and tag the
+    brand with a misleading override marker downstream. A ``None`` value
+    in ``BRAND_SELECTOR_OVERRIDES`` is the opt-out for that signal.
+    """
+    assert BRAND_SELECTOR_OVERRIDES["aeon"]["cta"] is None
+    census = resolve_census("aeon")
+    slots = [slot for _, slot in census]
+    assert "cta" not in slots
+    # All other default slots are preserved in their original order.
+    expected = [slot for _, slot in ELEMENT_CENSUS if slot != "cta"]
+    assert slots == expected
+
+
+def test_resolve_census_href_pattern_overrides_embedded_in_script() -> None:
+    """Spot-checked href-pattern overrides (vercel/linear/anthropic) embed verbatim."""
+    for brand in ("vercel", "linear", "anthropic"):
+        selector = BRAND_SELECTOR_OVERRIDES[brand]["cta"]
+        assert selector is not None
+        script = build_capture_script(resolve_census(brand))
+        assert selector in script, f"{brand} selector missing from script"
+
+
+def test_none_override_skips_runtime_fallback() -> None:
+    """A None override does not trigger the default-selector fallback path.
+
+    Regression guard for `capture_computed_styles`'s fallback loop: only
+    slots with a real (string) override that matched nothing should be
+    re-sampled with the default selector. None-valued slots are explicit
+    opt-outs and must stay opted out.
+    """
+    overrides = BRAND_SELECTOR_OVERRIDES["aeon"]
+    captured_slots: set[str] = set()
+    missing_overridden = [
+        slot for slot, sel in overrides.items()
+        if sel is not None and slot not in captured_slots
+    ]
+    assert missing_overridden == []
 
 
 def test_build_capture_script_uses_override_census_when_passed() -> None:
