@@ -43,6 +43,12 @@ from extractor.font_link_parser import (
     parse_loaded_fonts,
     render_for_prompt as render_loaded_fonts_for_prompt,
 )
+from extractor.screenshot_palette import (
+    ScreenshotPaletteReport,
+    capture_screenshot_palette,
+    empty_report as empty_palette_report,
+    render_for_prompt as render_palette_for_prompt,
+)
 
 MODEL_ID = "claude-sonnet-4-6"
 ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages"
@@ -70,10 +76,11 @@ Optional keys, include only when you can fill them confidently:
 
 Rules:
 - Every value must be a non-empty string.
-- Prefer the GROUND-TRUTH SIGNALS sections (declared CSS custom properties, computed styles, detected web fonts) over the raw HTML when they conflict. Priority order: declared `:root` custom properties (brand intent) > computed styles (rendered artifact) > raw HTML inline CSS.
+- Prefer the GROUND-TRUTH SIGNALS sections (declared CSS custom properties, computed styles, detected web fonts, rendered-palette dominant colors) over the raw HTML when they conflict. Priority order for COLOR: declared `:root` custom properties (brand intent) > computed styles (rendered artifact) > rendered-palette dominant colors (cross-check; closes the WordPress theme.json-vs-page-builder gap) > raw HTML inline CSS.
 - When a declared `--*` custom property exists with a literal hex/rgb value that matches a brand role (e.g. `--ink`, `--bg`, `--background` -> bg slot; `--bone`, `--fg`, `--text`, `--foreground` -> text slot; `--sun`, `--accent`, `--brand`, `--primary` -> accent slot), prefer the custom-property value over any computed-style sample.
 - For font_body and font_display, only use family names that appear in the detected-web-fonts block, in a declared `--*-font*` / `--type-*` / `--font-*` custom property, or in literal `font-family:` declarations in the source. Do not invent fallbacks (no Georgia, Times New Roman, Arial unless they are literally present).
 - For color slots, prefer the rgb()/hex values from computed styles. The raw CSS may contain var() indirection that is resolved only at render time.
+- The "rendered-palette dominant colors NOT represented in declared tokens" block (when present) lists hex colors the visible page renders but the declared signals miss (the WordPress + page-builder pathology: declared palette is stock Gutenberg, rendered palette is the real brand). Surface those rendered colors into the appropriate brand-role slots (accent / accent_2 / surface / surface_2 / surface_3) when they are not already covered by declared signals. Prefer the higher-fraction rendered color for the primary accent slot when no declared accent is plausible.
 - Use plausible defaults only when a required slot is unspecified by ALL signals.
 - Use CSS-ready strings: hex/rgb/hsl colors, CSS font-family stacks, px/rem/em sizes, numeric line heights, box-shadow strings, ms durations, and cubic-bezier values.
 - Do not emit null, arrays, nested objects, comments, markdown outside the fenced JSON block, or unknown keys.
@@ -146,8 +153,19 @@ class CodexExtractor(ResemblioExtractor):
         root_props = parse_root_custom_properties(decoded_html)
         if os.environ.get("RESEMBLIO_DISABLE_BROWSER_PASS") == "1":
             computed_styles: ComputedStyleReport = empty_computed_report("skipped", "disabled by env")
+            screenshot_palette: ScreenshotPaletteReport = empty_palette_report(
+                "skipped", "disabled by env"
+            )
         else:
             computed_styles = capture_computed_styles(html=decoded_html)
+            # Second pre-LLM signal: render the page and surface dominant
+            # colors the declared pipeline missed. Closes the WordPress +
+            # page-builder pathology where theme.json declares Gutenberg
+            # defaults the visible site never uses. Failure is non-fatal:
+            # the report comes back status="unavailable" or "error" and
+            # `render_for_prompt` emits an empty block, so the extractor
+            # falls back cleanly to declared-token-only reasoning.
+            screenshot_palette = capture_screenshot_palette(html=decoded_html)
 
         try:
             reply = self._dispatch_anthropic(
@@ -157,6 +175,7 @@ class CodexExtractor(ResemblioExtractor):
                     loaded_fonts=loaded_fonts,
                     computed_styles=computed_styles,
                     root_props=root_props,
+                    screenshot_palette=screenshot_palette,
                 )
             )
             tokens = coerce_token_set(extract_json_object(reply))
@@ -250,18 +269,27 @@ def build_prompt(
     loaded_fonts: LoadedFonts | None = None,
     computed_styles: ComputedStyleReport | None = None,
     root_props: RootCustomProperties | None = None,
+    screenshot_palette: ScreenshotPaletteReport | None = None,
 ) -> str:
     """Build the single extraction prompt sent to Sonnet.
 
-    `loaded_fonts`, `computed_styles`, and `root_props` are the structured
-    pre-LLM signals produced by `parse_loaded_fonts` (Phase A),
-    `capture_computed_styles` (Phase B), and `parse_root_custom_properties`
-    (R3.2). When any is None or empty the prompt simply omits that block,
-    leaving the LLM to reason from the raw HTML the way it always has.
+    `loaded_fonts`, `computed_styles`, `root_props`, and
+    `screenshot_palette` are the structured pre-LLM signals produced by
+    `parse_loaded_fonts` (R3.1 Phase B), `capture_computed_styles` (R3.1
+    Phase C), `parse_root_custom_properties` (R3.2), and
+    `capture_screenshot_palette` (rendered-color cross-check, A1 fix per
+    2026-06-04 ENC bug). When any is None or empty the prompt simply
+    omits that block, leaving the LLM to reason from the raw HTML the
+    way it always has.
 
     Block order matters: `root_props` goes FIRST because brand-declared
     `:root` custom properties outrank computed-style samples (intent
     beats artifact). Computed styles come next, then loaded web fonts.
+    The rendered-palette cross-check goes LAST so the LLM sees it as a
+    "fill the gaps" signal after declared sources are exhausted; the
+    block is filtered to only colors NOT already present in the declared
+    or computed signals (closing the WordPress + page-builder pathology
+    without overpowering legitimately-declared brand tokens).
     """
     signals_chunks: list[str] = []
     if root_props is not None:
@@ -276,6 +304,14 @@ def build_prompt(
         rendered = render_loaded_fonts_for_prompt(loaded_fonts)
         if rendered:
             signals_chunks.append(rendered)
+    if screenshot_palette is not None:
+        declared_hexes = _declared_hex_colors(root_props, computed_styles)
+        rendered = render_palette_for_prompt(
+            screenshot_palette,
+            declared_hex_colors=declared_hexes,
+        )
+        if rendered:
+            signals_chunks.append(rendered)
     signals_block = "\n\n".join(signals_chunks)
     if signals_block:
         signals_block = signals_block + "\n\n"
@@ -286,6 +322,63 @@ def build_prompt(
         optional_keys_json=json.dumps(list(OPTIONAL_TOKEN_KEYS), indent=2),
         signals_block=signals_block,
     )
+
+
+# Hex / rgb regexes used to harvest declared color values from the structured
+# pre-LLM signal blocks so the rendered-palette cross-check filters against
+# the SAME set of declared colors the LLM is already seeing. Centralised here
+# so the threshold + format stay in one place.
+_HEX_COLOR_RE = re.compile(r"#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b")
+_RGB_COLOR_RE = re.compile(
+    r"rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*[\d.]+)?\s*\)"
+)
+
+
+def _declared_hex_colors(
+    root_props: RootCustomProperties | None,
+    computed_styles: ComputedStyleReport | None,
+) -> list[str]:
+    """Collect every hex color the declared signals expose.
+
+    The screenshot-palette cross-check uses this list to filter out
+    rendered colors that are already accounted for by declared signals.
+    The result intentionally OVER-collects (every value containing a hex
+    or rgb literal is included, not just the values from semantically
+    color-named properties) because over-filtering the rendered palette
+    is the safe direction: false negatives merely fall back to today's
+    behavior (no augmentation), while false positives would re-introduce
+    the bug class (rendered brand colors falsely treated as "already
+    declared" and excluded).
+
+    Never raises; missing or malformed inputs produce an empty list.
+    """
+    out: list[str] = []
+    if root_props is not None:
+        for value in root_props.get("properties_by_name", {}).values():
+            out.extend(_extract_hex_from_value(value))
+    if computed_styles is not None and computed_styles.get("status") == "ok":
+        for signal in computed_styles.get("signals", []):
+            for value in signal.get("properties", {}).values():
+                out.extend(_extract_hex_from_value(value))
+    return out
+
+
+def _extract_hex_from_value(value: str) -> list[str]:
+    """Extract hex strings from a single CSS value; convert rgb()/rgba() too."""
+    if not isinstance(value, str) or not value:
+        return []
+    found: list[str] = []
+    for match in _HEX_COLOR_RE.findall(value):
+        found.append(match.lower())
+    for r_str, g_str, b_str in _RGB_COLOR_RE.findall(value):
+        try:
+            r = max(0, min(255, int(r_str)))
+            g = max(0, min(255, int(g_str)))
+            b = max(0, min(255, int(b_str)))
+            found.append(f"#{r:02x}{g:02x}{b:02x}")
+        except ValueError:
+            continue
+    return found
 
 
 def gateway_config() -> GatewayConfig:
