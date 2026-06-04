@@ -96,6 +96,7 @@ from app.constants import (
 # downstream operator can grep ``library_indexer.startup`` in journald to
 # confirm the load order on every CLI tick.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
+from app.brand_names import pretty_brand_name
 from app.library_style_scope import scope_style_block
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 from extractor.button_override import apply_button_tokens
@@ -490,7 +491,10 @@ def _compose_one_page(
     from _scripts import templates as tpl  # local import
 
     bundle = tpl.get_template(class_name)
-    filled = {ph: _brand_placeholder(ph, brand_slug=brand_slug) for ph in bundle["placeholders"]}
+    filled = {
+        ph: _brand_placeholder(ph, brand_slug=brand_slug, category_slug=class_name)
+        for ph in bundle["placeholders"]
+    }
     body = bundle["body"].format(**filled)
     styles = bundle["styles"]
     # Selector-scope the DRL template CSS to the per-page article wrapper.
@@ -500,6 +504,15 @@ def _compose_one_page(
     # selectors to be prefixed by `.rs-library-page`; :root and at-rules
     # are preserved. See app/library_style_scope.py for the rule table.
     scoped_styles = scope_style_block(styles)
+    # L-6 / L-13 BLOCKER FIX (Phase B, 2026-06-03): text-only fallback for
+    # the ABOUT_TEAM avatar slot. The vendored DRL template emits empty
+    # ``<div class="at__avatar">`` shells that paint as gray circles in
+    # the brand-surface palette (Phase A audit, ``aeon_1440x900.png``).
+    # Path B per Jim's default: hide the avatar containers so the team
+    # card renders text-only (role + dek), no placeholder circles. The
+    # override is keyed on the scoped selector emitted by scope_style_block
+    # so it lands at the same specificity as the DRL rule it overrides.
+    scoped_styles = scoped_styles + LIBRARY_TEMPLATE_OVERRIDE_CSS
     inline_tokens_css = _emit_brand_root(tokens)
     # Wrap in a per-page article element so the fragment is self-contained
     # when injected into the Next.js library page. The data attribute
@@ -518,6 +531,29 @@ def _compose_one_page(
     # is a no-op and the vendored DRL default ships untouched. Override is
     # retired when DRL upstream lands the `--ds-button-*` contract (Path A).
     return apply_button_tokens(fragment, button_tokens)
+
+
+# L-6 / L-13 text-only-fallback override CSS appended to every rendered
+# article's scoped style block. The ABOUT_TEAM template's avatar shells
+# (``.at__avatar``) paint as gray placeholder circles in the brand surface
+# palette; Path B of Phase B (per Jim's default 2026-06-03) is to hide the
+# shells so the team card renders text-only. The selector is prefixed with
+# ``.rs-library-page`` to match the scope ``scope_style_block`` applies to
+# the DRL rule it overrides; ``display: none !important`` is needed because
+# the DRL rule and the override land at the same specificity and the DRL
+# rule comes first in source order.
+LIBRARY_TEMPLATE_OVERRIDE_CSS = (
+    "\n"
+    "/* Resemblio override: text-only team-card fallback (L-6 / L-13). */\n"
+    ".rs-library-page .at__avatar { display: none !important; }\n"
+)
+"""CSS block appended to every scoped article style.
+
+Lives at module scope (not inside ``_compose_one_page``) so a regression
+test can import it directly and assert the override is present in
+rendered output without re-deriving the literal string from a snapshot
+diff.
+"""
 
 
 # Subdirectory name under both the runtime root and the seed root. Path
@@ -589,7 +625,60 @@ def _load_button_tokens(brand_slug: str) -> ButtonTokens | None:
     return derive_button_tokens(report)
 
 
-def _brand_placeholder(name: str, *, brand_slug: str) -> str:
+# Category-slug -> lowercase display-fragment mapping used to specialize
+# the ``title``/``headline`` slots on per-category renders (L-15 fix).
+# Values are intentionally lowercase noun phrases so they read naturally
+# inside the "{Brand} {phrase}" template (e.g. "Aeon buttons", "Aeon
+# about team"). Slugs not in this map fall back to a humanize of the
+# slug ("article-layout" -> "article layout"); the snapshot/brand class
+# is excluded by returning None so the title falls through to the brand-
+# level "{Brand} design snapshot" copy.
+_CATEGORY_DISPLAY_LABELS: dict[str, str] = {
+    "buttons": "buttons",
+    "alphabet": "alphabet",
+    "about-team": "about team",
+    "article-layout": "article layout",
+    "badges": "badges",
+    "cards": "cards",
+    "forms": "forms",
+    "inputs": "inputs",
+    "navigation": "navigation",
+    "news-list": "news list",
+    "pricing": "pricing",
+    "how-it-works": "how it works",
+}
+
+
+def _category_display_label(category_slug: str | None) -> str | None:
+    """Return the lowercase display label for a category slug, or None.
+
+    Returns None when:
+
+    - ``category_slug`` is None / empty (legacy callers).
+    - The slug is one of the brand-snapshot family classes (``snapshot``,
+      ``featured-snapshot``) for which the brand-level title is correct
+      and must not be category-specialized.
+
+    For known slugs returns the curated display label; for unknown slugs
+    returns a humanized form (``"some-category"`` -> ``"some category"``)
+    so a new DRL category class still renders a sensible title without a
+    code edit. Pure-data; no I/O.
+    """
+    if not category_slug:
+        return None
+    if category_slug in {"snapshot", "featured-snapshot"}:
+        return None
+    if category_slug in _CATEGORY_DISPLAY_LABELS:
+        return _CATEGORY_DISPLAY_LABELS[category_slug]
+    return category_slug.replace("-", " ")
+
+
+def _brand_placeholder(
+    name: str,
+    *,
+    brand_slug: str,
+    category_slug: str | None = None,
+) -> str:
     """Return a neutral, non-Lorem placeholder for a template content slot.
 
     The DRL ``DEFAULT_CONTENT`` map is Lorem-ipsum-heavy because in the DRL
@@ -600,11 +689,43 @@ def _brand_placeholder(name: str, *, brand_slug: str) -> str:
     placeholders that read like a real navigation/section/article without
     pretending to be brand-authored copy.
 
+    Brand display name (L-7 fix, Phase B 2026-06-03)
+    ------------------------------------------------
+    Pre-2026-06-03 ``pretty_brand`` was a naive ``slug.replace("-", " ").title()``
+    which mis-rendered every brand whose canonical caps differ from
+    title-case (``openai`` -> "Openai", ``read-cv`` -> "Read Cv",
+    ``are-na`` -> "Are Na"). Now routed through ``app.brand_names.
+    pretty_brand_name`` which maintains a slug -> canonical-display map.
+    Unknown slugs still fall back to the title-case humanize so an
+    organic row never raises.
+
+    Category specialization (L-15 fix, Phase B 2026-06-03)
+    ------------------------------------------------------
+    When ``category_slug`` is supplied AND the slot is one of the
+    title-family slots (``title`` / ``headline``), the preset emits a
+    category-specialized phrase ("Aeon buttons" rather than "Aeon design
+    snapshot") so the category page's featured-card frame does not read
+    as a copy of the brand-snapshot frame. ``category_slug`` is optional:
+    callers that omit it (legacy tests, brand-canonical render path) get
+    the previous brand-level title.
+
     Unknown placeholders fall back to a humanized version of the slot name
     (e.g. ``col_1_title`` -> "Col 1 Title") so the page still has visible,
     sensible text even for template slots we haven't enumerated.
     """
-    pretty_brand = brand_slug.replace("-", " ").title()
+    pretty_brand = pretty_brand_name(brand_slug)
+    # Category-specialized title (L-15 fix). Only fires when the caller
+    # passes a category_slug AND the category is not the
+    # FEATURED_SNAPSHOT class itself (which is by definition the
+    # brand-level frame). For the brand-canonical page the indexer
+    # composes EVERY class so each per-class rendered_html row gets its
+    # own category-specialized title; the consumer of the brand-canonical
+    # row is the brand-snapshot page which surfaces the snapshot-class
+    # row only, so the brand-level "design snapshot" copy still ships
+    # there.
+    category_label = _category_display_label(category_slug)
+    if name in {"title", "headline"} and category_label is not None:
+        return f"{pretty_brand} {category_label}"
     presets: dict[str, str] = {
         # Generic copy slots
         "kicker": "Featured",

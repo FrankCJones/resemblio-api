@@ -61,6 +61,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
+from app.brand_names import pretty_brand_name
 from app.constants import SCHEMA_V1_1
 from app.db import get_db
 from app.models import AssetVersion, LibraryPage
@@ -203,8 +204,57 @@ def _json(data: dict[str, Any], *, cache: str, status_code: int = 200) -> JSONRe
 
 
 def _title_case(slug: str) -> str:
-    """Title-case a kebab slug for display."""
+    """Title-case a kebab slug for display.
+
+    Used for category labels (``buttons`` -> "Buttons") where simple
+    capitalization is correct. For BRAND labels callers should use
+    ``_brand_display`` instead; this function preserves the naive shape
+    so category display copy stays stable.
+    """
     return " ".join(p.capitalize() for p in slug.split("-") if p)
+
+
+def _brand_display(brand_slug: str) -> str:
+    """Return the brand's canonical display name (L-7 fix, Phase B 2026-06-03).
+
+    Routes brand slugs through ``app.brand_names.pretty_brand_name`` so
+    "openai" renders as "OpenAI" rather than "Openai". Used by every
+    chip-label, related-list, and page-frame builder that surfaces a
+    brand slug to the public page. Unknown slugs fall through to the
+    title-case humanize so an organic row never raises.
+    """
+    return pretty_brand_name(brand_slug)
+
+
+# Patterns matching build-internal version-label slugs that must not
+# surface as user-facing related chips. Locked 2026-06-03 per Phase B
+# stage B3 (closes C-5): "Aeon design system in drl-bootstrap-2026-05-21"
+# leaked into the public chip row because the indexer's slugified
+# version_label is the chip label. The filter is regex-based so any
+# future build-internal label shape ("drl-rebuild-..." / "ci-..." /
+# explicit ISO-date-only labels) is caught at the same edge.
+_INTERNAL_VERSION_LABEL_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"^drl-bootstrap"),
+    re.compile(r"^drl-rebuild"),
+    re.compile(r"^ci-"),
+    re.compile(r"^\d{4}-\d{2}-\d{2}$"),
+)
+
+
+def _is_internal_version_label(version_label: str) -> bool:
+    """Return True for version labels that should never surface to users.
+
+    Build-internal labels (DRL bootstrap stamps, CI seed-rebuild stamps,
+    raw ISO dates with no human prefix) read as developer artifacts when
+    rendered in a related-chip row. Filtering at the chip-list edge
+    keeps the version page itself reachable for any user that lands on
+    its direct URL (the route still resolves) while removing it from
+    the discoverability surface.
+    """
+    for pattern in _INTERNAL_VERSION_LABEL_PATTERNS:
+        if pattern.search(version_label):
+            return True
+    return False
 
 
 def _category_kind(slug: str) -> str:
@@ -343,7 +393,7 @@ def _related_for(session: Session, brand_slug: str,
     })
     for cat in cats[:4]:
         related.append(RelatedItem(
-            label=f"{_title_case(cat)} from {_title_case(brand_slug)}",
+            label=f"{_title_case(cat)} from {_brand_display(brand_slug)}",
             href=f"/library/{brand_slug}/{cat}/",
         ))
 
@@ -361,9 +411,17 @@ def _related_for(session: Session, brand_slug: str,
         row[0] for row in ver_rows
         if row[0] and isinstance(row[0], str)
     })
+    # Filter build-internal version labels at the chip-row edge so a
+    # "drl-bootstrap-2026-05-21" stamp does not surface as a user-facing
+    # chip ("Aeon design system in drl-bootstrap-2026-05-21"). The
+    # version page itself remains reachable for any user that types or
+    # is linked the direct URL; only the discoverability surface is
+    # filtered. See ``_is_internal_version_label`` for the pattern set.
     for v in versions:
+        if _is_internal_version_label(v):
+            continue
         related.append(RelatedItem(
-            label=f"{_title_case(brand_slug)} design system in {v}",
+            label=f"{_brand_display(brand_slug)} design system in {v}",
             href=f"/library/{brand_slug}/{v}/",
         ))
     return related
