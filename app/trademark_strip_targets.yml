@@ -1,0 +1,109 @@
+# Trademark-strip regression targets.
+#
+# Used by: tests/test_trademark_strip.py
+# Schema version: trademark_strip_targets_v1
+#
+# Per the Inspirado-no-copiado correction (Frank, 2026-06-04 + CTO plan
+# 2026-06-04 Phase 3): Resemblio strips ONLY the brand's trademark-protected
+# wordmark / logo / mascot. Everything else (typography, color, spacing,
+# layout, component styling) renders at brand fidelity.
+#
+# The brand NAME as plain text is allowed everywhere (it IS the "inspired
+# by <brand>" attribution). What is forbidden is the stylized logotype, the
+# icon mark, image / SVG references to the brand's canonical logo assets,
+# and any reference to a brand-CDN logo URL.
+#
+# This file is the source of truth for the regression test that pins the
+# strip. New brands MUST add an entry before they enter the public corpus.
+#
+# Entry shape (per brand):
+#   slug:                     <brand slug used in URLs and DRL fixtures>
+#   forbidden_image_substrings:
+#     - <substring that would appear in an <img src> / <svg> / url(...) /
+#        background-image: ... if the brand's canonical logo asset leaked
+#        into rendered_html>
+#   forbidden_class_substrings: (optional; pinned defensively)
+#     - <CSS class name that would only appear if a logo / wordmark <img>
+#        was injected, e.g. "brand-logo", "brand-wordmark">
+#
+# The test asserts NONE of these substrings appear in any rendered HTML for
+# the brand across all 18 DRL category templates.
+
+schema_version: trademark_strip_targets_v1
+
+# Universal forbidden patterns. These must never appear in any rendered
+# library HTML for ANY brand. Captures the most common shapes a leak would
+# take if a future template change reintroduced a logo / wordmark image.
+universal_forbidden_substrings:
+  - "class=\"brand-logo\""
+  - "class=\"brand-wordmark\""
+  - "class=\"brand-mark\""
+  - "class=\"logo-mark\""
+  - "<img class=\"logo\""
+  - "<svg class=\"logo\""
+  # Brand-CDN logo URL families. If a DRL extraction ever piped the brand's
+  # real logo SVG into metadata_json and a template referenced it, the
+  # URL would carry one of these segments.
+  - "/logo.svg"
+  - "/wordmark.svg"
+  - "/brand/logo"
+  - "/assets/logo"
+
+brands:
+  - slug: aeon
+    pretty: Aeon
+    # Aeon's wordmark is the "Aeon" lettering in their custom display face
+    # rendered as an SVG asset. The plain-text "Aeon" (brand name) is
+    # allowed; the SVG asset, the brand CDN URL, and any class indicating a
+    # wordmark <img> are not.
+    forbidden_image_substrings:
+      - "aeon.co/logo"
+      - "aeon-logo"
+      - "aeon-wordmark"
+
+  - slug: apple
+    pretty: Apple
+    # Apple logo is a famous trade mark. The apple silhouette must not
+    # surface as <img> or <svg> in any rendered template; the brand name
+    # "Apple" as text is fine.
+    forbidden_image_substrings:
+      - "apple.com/logo"
+      - "apple-logo"
+      - "/ac-globalnav/svg/logo"
+      - "apple.svg"
+
+  - slug: openai
+    pretty: OpenAI
+    # The OpenAI lockup (six-petal mark) is the trade-marked logo. Plain
+    # text "OpenAI" is allowed; the mark and the brand-CDN URL are not.
+    forbidden_image_substrings:
+      - "openai.com/logo"
+      - "openai-logo"
+      - "openai-wordmark"
+      - "openai.svg"
+
+  - slug: stripe
+    pretty: Stripe
+    # The Stripe S-curl is the trade-marked logo. Plain text "Stripe" is
+    # allowed; the mark, brand CDN URL, and any wordmark image are not.
+    forbidden_image_substrings:
+      - "stripe.com/img/v3/home/twitter.png"
+      - "stripe-logo"
+      - "stripe-wordmark"
+      - "/img/stripe"
+
+  - slug: vercel
+    pretty: Vercel
+    # The Vercel triangle mark is the trade-marked logo.
+    forbidden_image_substrings:
+      - "vercel.com/logo"
+      - "vercel-logo"
+      - "vercel-triangle"
+
+  - slug: linear
+    pretty: Linear
+    # The Linear angled-L mark is the trade-marked logo.
+    forbidden_image_substrings:
+      - "linear.app/logo"
+      - "linear-logo"
+      - "linear-mark"
