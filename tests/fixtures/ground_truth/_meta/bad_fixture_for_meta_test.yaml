@@ -1,4 +1,4 @@
-schema_version: resemblio_ground_truth_v1
+schema_version: resemblio_ground_truth_v2
 brand_slug: meta_bad
 source_url: https://example.com/synthetic-bad/
 fixture_authored_at: "2026-06-04"
@@ -13,6 +13,9 @@ provenance: |
   first).
 
   Excluded from the normal fixture sweep by living under _meta/.
+
+  v2 (2026-06-04 cycle #1.5): snapshot is FLAT under `tokens`, matching
+  the real POST /v1/extractions response shape.
 
 ground_truth:
   color:
@@ -34,11 +37,10 @@ expected_extraction_behavior:
   must_emit_palette_completeness_warning: true   # WILL FAIL: snapshot warning is None
 
 extracted_payload_snapshot:
-  color:
+  tokens:
     bg: "#ffffff"
     text: "#0a0a0a"
     accent: "#222222"                # NOT the brand accent
     legacy: "#007cba"                # forbidden default present
-  font_family:
-    body: "Helvetica, Arial, sans-serif"   # WILL FAIL: doesn't match Inter
+    font_body: "Helvetica, Arial, sans-serif"   # WILL FAIL: doesn't match Inter
   palette_completeness_warning: null

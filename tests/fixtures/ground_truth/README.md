@@ -10,11 +10,23 @@ set validates the quality-scoring rubric against hand-authored TokenSets,
 this set validates the actual extractor output against the visually
 verifiable design system of real URLs.
 
-- **Schema:** `resemblio_ground_truth_v1`
-- **Authored:** 2026-06-04 (R3-downstream cycle #1)
+- **Schema:** `resemblio_ground_truth_v2`
+- **Authored:** 2026-06-04 (R3-downstream cycle #1; shape-corrected by cycle #1.5)
 - **Source mission:** Jim Builder dispatch 2026-06-04 (R3 ground-truth fixture set + harness)
 - **Source PRD:** `projects/Resemblio/02-prd/2026-05-31-extraction-fidelity-finding-susann.md`
 - **Decision lock:** workspace decisions-log 2026-06-04 (R3 Option A ratified)
+
+### Schema version history
+
+- **v2 (2026-06-04, cycle #1.5):** `extracted_payload_snapshot` is now a
+  FLAT `{tokens: {...}, palette_completeness_warning: ...}` mirroring
+  the real `POST /v1/extractions` response. Color and font slots
+  interleave under `tokens` (`bg`, `accent`, `font_body`, `font_display`
+  alongside dimension/duration tokens). The fixture authoring blocks
+  `ground_truth.color` and `ground_truth.font_family` are unchanged.
+- **v1 (2026-06-04, cycle #1):** assumed a nested
+  `{color: {...}, font_family: {...}}` shape that turned out not to
+  match the live API response. Replaced same-day.
 
 ## File map
 

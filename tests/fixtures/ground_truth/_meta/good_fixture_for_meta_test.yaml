@@ -1,4 +1,4 @@
-schema_version: resemblio_ground_truth_v1
+schema_version: resemblio_ground_truth_v2
 brand_slug: meta_good
 source_url: https://example.com/synthetic-good/
 fixture_authored_at: "2026-06-04"
@@ -10,6 +10,12 @@ provenance: |
   the harness CATCHES known defects.
 
   Excluded from the normal fixture sweep by living under _meta/.
+
+  v2 (2026-06-04 cycle #1.5): extracted_payload_snapshot is now FLAT
+  under a `tokens` key, mirroring the real POST /v1/extractions response.
+  Authoring blocks (ground_truth.color, ground_truth.font_family) are
+  unchanged - they declare named slots the assertion runner searches for
+  inside the flat tokens dict.
 
 ground_truth:
   color:
@@ -32,11 +38,10 @@ expected_extraction_behavior:
   must_emit_palette_completeness_warning: false
 
 extracted_payload_snapshot:
-  color:
+  tokens:
     bg: "#ffffff"
     text: "#0a0a0a"
     accent: "#ff0064"                # within tolerance (Euclidean ~2.0) of #ff0066
-  font_family:
-    body: "Inter, -apple-system, sans-serif"
-    display: "Anton, 'Bebas Neue', sans-serif"
+    font_body: "Inter, -apple-system, sans-serif"
+    font_display: "Anton, 'Bebas Neue', sans-serif"
   palette_completeness_warning: null

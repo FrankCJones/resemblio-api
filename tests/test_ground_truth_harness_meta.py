@@ -168,7 +168,7 @@ def test_load_fixture_rejects_invalid_hex(tmp_path: Path) -> None:
     """Bad hex in ground_truth.color raises FixtureShapeError."""
     bad = tmp_path / "bad_hex.yaml"
     bad.write_text(
-        "schema_version: resemblio_ground_truth_v1\n"
+        "schema_version: resemblio_ground_truth_v2\n"
         "brand_slug: shape_test\n"
         "source_url: https://example.com/\n"
         "fixture_authored_at: '2026-06-04'\n"
@@ -188,7 +188,7 @@ def test_load_fixture_rejects_must_include_referencing_undeclared_slot(
     """must_include_colors slot that isn't in ground_truth.color is rejected."""
     bad = tmp_path / "bad_slot_ref.yaml"
     bad.write_text(
-        "schema_version: resemblio_ground_truth_v1\n"
+        "schema_version: resemblio_ground_truth_v2\n"
         "brand_slug: shape_test\n"
         "source_url: https://example.com/\n"
         "fixture_authored_at: '2026-06-04'\n"
@@ -209,7 +209,7 @@ def test_load_fixture_rejects_bad_font_mode(tmp_path: Path) -> None:
     """tolerance.font_family_match outside the allowed set is rejected."""
     bad = tmp_path / "bad_font_mode.yaml"
     bad.write_text(
-        "schema_version: resemblio_ground_truth_v1\n"
+        "schema_version: resemblio_ground_truth_v2\n"
         "brand_slug: shape_test\n"
         "source_url: https://example.com/\n"
         "fixture_authored_at: '2026-06-04'\n"
@@ -245,18 +245,18 @@ def test_discover_fixtures_excludes_meta_dir() -> None:
 
 
 def test_resolve_payload_returns_snapshot_when_present() -> None:
-    """Good meta fixture carries a snapshot; resolver returns it."""
+    """Good meta fixture carries a v2 flat-tokens snapshot; resolver returns it."""
     fx = load_fixture(GOOD_FIXTURE_PATH)
     payload = resolve_payload_for_snapshot_mode(fx)
-    assert "color" in payload
-    assert payload["color"]["accent"] == "#ff0064"
+    assert "tokens" in payload
+    assert payload["tokens"]["accent"] == "#ff0064"
 
 
 def test_resolve_payload_skips_when_live_only(tmp_path: Path) -> None:
     """Fixture flagged live_extraction_only raises SkipFixture."""
     fixture = tmp_path / "live_only.yaml"
     fixture.write_text(
-        "schema_version: resemblio_ground_truth_v1\n"
+        "schema_version: resemblio_ground_truth_v2\n"
         "brand_slug: live_only_test\n"
         "source_url: https://example.com/\n"
         "fixture_authored_at: '2026-06-04'\n"
@@ -276,7 +276,7 @@ def test_resolve_payload_skips_when_snapshot_absent(tmp_path: Path) -> None:
     """Fixture without snapshot AND without live_only flag still skips."""
     fixture = tmp_path / "no_snapshot.yaml"
     fixture.write_text(
-        "schema_version: resemblio_ground_truth_v1\n"
+        "schema_version: resemblio_ground_truth_v2\n"
         "brand_slug: no_snapshot_test\n"
         "source_url: https://example.com/\n"
         "fixture_authored_at: '2026-06-04'\n"

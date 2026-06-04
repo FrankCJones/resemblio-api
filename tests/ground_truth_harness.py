@@ -38,8 +38,22 @@ import yaml
 # Schema and tolerance constants
 # ---------------------------------------------------------------------------
 
-FIXTURE_SCHEMA_VERSION = "resemblio_ground_truth_v1"
-"""On-disk fixture schema marker. Bump only on shape changes."""
+FIXTURE_SCHEMA_VERSION = "resemblio_ground_truth_v2"
+"""On-disk fixture schema marker. Bump only on shape changes.
+
+v2 (2026-06-04, R3-downstream cycle #1.5): ``extracted_payload_snapshot``
+changed from a nested ``{color: {...}, font_family: {...}}`` shape to a
+FLAT ``{tokens: {bg: ..., text: ..., font_body: ..., ...},
+palette_completeness_warning: ...}`` shape that mirrors the real
+``POST /v1/extractions`` response. Cycle #1 authored the nested shape
+from the brief without verifying against a live API response; cycle
+#1.5's first live capture (the 5 observed JSONs under
+``observed/<slug>.json``) showed every brand returns a flat ``tokens``
+dict. The fixture's ``ground_truth.color`` and ``ground_truth.font_family``
+authoring blocks are unchanged (they declare named slots the assertion
+runner searches for in the flat palette); only the snapshot shape and
+the assertion runner's payload-walking logic changed.
+"""
 
 DEFAULT_COLOR_DISTANCE_MAX = 8.0
 """Default Euclidean RGB distance tolerance for ``must_include_colors``.
@@ -141,15 +155,23 @@ class ExpectedBehavior(TypedDict, total=False):
 class ExtractedPayloadSnapshot(TypedDict, total=False):
     """Observed extractor output captured for CI regression assertions.
 
-    The shape mirrors what ``codex_extractor`` returns: a flat dict of
-    color hex values keyed by slot, plus optional ``font_family`` and
-    optional ``palette_completeness_warning``. Fixture authors paste in
-    a payload captured from a real live-extraction run; the harness
-    asserts against this in snapshot mode.
+    Shape mirrors the real ``POST /v1/extractions`` response (v2 schema):
+    a flat ``tokens`` dict where color slots (``bg``, ``text``,
+    ``accent``, ``accent_2``, ``surface``, ``border``, ``hairline``,
+    ``text_strong``, ``text_muted``, ...) and font slots (``font_body``,
+    ``font_display``, ``font_mono``) live side-by-side with dimension
+    and timing tokens. The assertion runner walks the flat dict, treating
+    keys prefixed with ``font_`` as font-family declarations and other
+    string values matching ``_HEX_PATTERN`` as palette entries.
+
+    Fixture authors paste a raw ``tokens`` dict captured from a real
+    live-extraction run (or run the capture helper at
+    ``tests/fixtures/ground_truth/observed/_capture_observed.sh``).
+    ``palette_completeness_warning`` is optional and lives alongside the
+    ``tokens`` block in the real response.
     """
 
-    color: dict[str, str]
-    font_family: dict[str, str]
+    tokens: dict[str, str]
     palette_completeness_warning: bool | str | None
 
 
@@ -428,9 +450,11 @@ def run_assertions(
       is trivially passing. This is intentional: fixtures may carry only
       ground truth + tolerance during authoring, with the behavior
       block filled in later.
-    - When the payload has no ``color`` block the
-      ``must_include_colors`` check fails for every required slot. This
-      is the modal Susann-class failure and must be loud.
+    - When the payload has no ``tokens`` block (e.g. an error envelope
+      like ``{"error": "insufficient_credit"}`` returned by the API when
+      a brand has no balance) the ``must_include_colors`` check fails
+      for every required slot. This is the modal Susann-class failure
+      and must be loud.
     - When the fixture asserts ``must_emit_palette_completeness_warning``
       we check for a truthy value on the payload; both True and a
       populated string warning satisfy the contract.
@@ -443,8 +467,22 @@ def run_assertions(
     distance_max = float(tolerance.get("color_distance_max", DEFAULT_COLOR_DISTANCE_MAX))
     font_mode = str(tolerance.get("font_family_match", DEFAULT_FONT_MATCH_MODE))
 
-    extracted_colors = (payload.get("color") or {}) if isinstance(payload, dict) else {}
-    palette_hexes = [v for v in extracted_colors.values() if isinstance(v, str)]
+    # v2 shape: flat tokens dict mirrors the live API response. Split
+    # font_* keys off into a fonts map so font-family assertions can
+    # iterate them independently; treat every other string value matching
+    # the hex pattern as a palette entry. Non-hex strings (durations,
+    # dimensions, cubic-bezier strings) fall through harmlessly because
+    # color_present_in_palette filters by _HEX_PATTERN.
+    raw_tokens = (payload.get("tokens") or {}) if isinstance(payload, dict) else {}
+    extracted_fonts: dict[str, str] = {}
+    palette_hexes: list[str] = []
+    for key, value in raw_tokens.items():
+        if not isinstance(value, str):
+            continue
+        if key.startswith("font_"):
+            extracted_fonts[key.removeprefix("font_")] = value
+        else:
+            palette_hexes.append(value)
 
     for slot in behavior.get("must_include_colors", []) or []:
         expected_hex = truth_colors.get(slot)
@@ -499,7 +537,7 @@ def run_assertions(
             )
 
     truth_fonts: GroundTruthFontFamily = ground.get("font_family") or {}  # type: ignore[assignment]
-    extracted_fonts = (payload.get("font_family") or {}) if isinstance(payload, dict) else {}
+    # extracted_fonts was populated above from the flat tokens walk.
     for slot, expected_value in truth_fonts.items():
         if not expected_value:
             continue

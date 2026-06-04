@@ -73,7 +73,7 @@ def test_fixture_schema_constant_holds() -> None:
     Sentinel test: if FIXTURE_SCHEMA_VERSION changes, this is the
     canary that catches the in-test misuse before fixtures fail.
     """
-    assert FIXTURE_SCHEMA_VERSION == "resemblio_ground_truth_v1"
+    assert FIXTURE_SCHEMA_VERSION == "resemblio_ground_truth_v2"
 
 
 # ---------------------------------------------------------------------------
@@ -159,26 +159,26 @@ def _run_live_extraction(source_url: str) -> dict[str, Any]:
     must not pay the import cost. The shape returned matches
     ``ExtractedPayloadSnapshot``.
 
-    Edge case: the extractor returns a flat TokenSet; we split it into
-    color/font sub-dicts so the assertion runner can iterate them
-    independently.
+    v2 (2026-06-04 cycle #1.5): returns the FLAT shape mirroring the
+    real ``POST /v1/extractions`` response — ``{tokens: {...}, ...}`` —
+    not the nested ``{color, font_family}`` split cycle #1 assumed.
+    The assertion runner walks the flat dict and splits font_* keys off
+    internally, so callers should keep the API shape intact here.
     """
     # Imported lazily so the snapshot-mode test path stays import-clean
     # when the browser extras are not installed.
     from extractor.codex_extractor import extract_tokens_from_url  # type: ignore[import-not-found]
 
-    raw = extract_tokens_from_url(source_url)
-    color: dict[str, str] = {}
-    fonts: dict[str, str] = {}
-    for key, value in (raw or {}).items():
-        if not isinstance(value, str):
-            continue
-        if key.startswith("font_"):
-            fonts[key.removeprefix("font_")] = value
-        else:
-            color[key] = value
+    raw = extract_tokens_from_url(source_url) or {}
+    # The codex extractor returns a flat TokenSet directly; wrap it in
+    # the v2 envelope. If the extractor's contract changes to return the
+    # full API response (with a top-level "tokens" key), prefer that.
+    if isinstance(raw, dict) and "tokens" in raw and isinstance(raw["tokens"], dict):
+        return {
+            "tokens": raw["tokens"],
+            "palette_completeness_warning": raw.get("palette_completeness_warning"),
+        }
     return {
-        "color": color,
-        "font_family": fonts,
-        "palette_completeness_warning": (raw or {}).get("palette_completeness_warning"),
+        "tokens": {k: v for k, v in raw.items() if isinstance(v, str)},
+        "palette_completeness_warning": raw.get("palette_completeness_warning"),
     }
