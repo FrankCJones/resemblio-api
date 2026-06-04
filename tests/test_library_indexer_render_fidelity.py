@@ -174,9 +174,18 @@ def test_every_brand_token_key_renders_as_namespaced_css_variable(session: Sessi
             # raw key prefixed with --, never --ds-<raw_key>.
             expected_var = f"--{raw_key}:" if raw_key.startswith("ds-") else f"--ds-{raw_key}:"
             count = rendered.count(expected_var)
-            assert count == 1, (
+            # Font slots are intentionally emitted twice under the v2
+            # inspirado-no-copiado contract: once by the brand :root
+            # block (declarative truth) and once by the
+            # build_font_alternative_root_block override that points
+            # the variable at the loaded free alternative. Every other
+            # key still appears exactly once.
+            expected_count = (
+                2 if raw_key in {"ds-font-display", "ds-font-body", "ds-font-mono"} else 1
+            )
+            assert count == expected_count, (
                 f"page {page.category_slug}: expected CSS var {expected_var!r} "
-                f"to appear exactly once in rendered_html, found {count}"
+                f"to appear {expected_count} times in rendered_html, found {count}"
             )
             # No double-prefix variant ever leaks through.
             assert f"--ds-{raw_key}:" not in rendered or not raw_key.startswith("ds-"), (
@@ -394,16 +403,20 @@ def test_apple_button_renders_as_pill_when_snapshot_present(
         )
 
 
-def test_aeon_renders_without_google_fonts_link_tag(session: Session) -> None:
-    """L-20 graceful-degrade: Aeon's private-CDN faces emit no <link> tag.
+def test_aeon_renders_with_free_alternative_google_fonts_link_tag(session: Session) -> None:
+    """Phase 1 inspirado-no-copiado: Aeon emits a free-alternative <link> tag.
 
-    Aeon's typography stack is ``PP Right Grotesk Wide`` / ``Academica`` /
-    ``Atlas Typewriter`` - all private licensed faces not on Google Fonts.
-    The library_web_fonts allowlist must skip them so the rendered page
-    does not 404 on a Google Fonts request. The brand still reads with
-    its CSS fallback (Helvetica/Georgia/Consolas) which is the current
-    pre-fix behaviour; the L-20 fix specifically targets the brands
-    whose stack DOES include an allowlisted family.
+    Pre-correction (v1 L-20 fix): Aeon's stack (``PP Right Grotesk Wide`` /
+    ``Academica`` / ``Atlas Typewriter`` - all private licensed faces)
+    silently dropped through the Google Fonts allowlist filter and the
+    page rendered in system fallbacks. Same-font-across-brands was the
+    failure mode that broke the library's promise.
+
+    Post-correction (v2): the brand-font registry pairs Aeon's
+    ``PP Right Grotesk Wide`` with Plus Jakarta Sans and ``Academica``
+    with Lora, both of which are on Google Fonts. The rendered HTML
+    must load both free alternatives and disclose the brand's actual
+    fonts in the rs-font-attribution aside.
     """
     user, _key, _ = seed_user(session)
     av = _make_aeon_asset_version(session)
@@ -412,11 +425,13 @@ def test_aeon_renders_without_google_fonts_link_tag(session: Session) -> None:
 
     pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
     for page in pages:
-        assert "fonts.googleapis.com" not in page.rendered_html, (
-            f"page {page.category_slug}: Aeon rendered with a Google Fonts "
-            f"link tag, but Aeon's stack has no allowlisted families. The "
-            f"link emission must be allowlist-gated; without that we 404 "
-            f"on every brand whose face is private-licensed."
+        html = page.rendered_html
+        assert "fonts.googleapis.com/css2" in html, (
+            f"page {page.category_slug}: Aeon must load a Google Fonts link "
+            f"tag for its free alternatives under the v2 contract."
+        )
+        assert 'class="rs-font-attribution"' in html, (
+            f"page {page.category_slug}: missing disclosure aside"
         )
 
 
