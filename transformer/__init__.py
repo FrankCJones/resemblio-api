@@ -1,13 +1,16 @@
-"""Brand-strip transformer: DRL corpus row to Resemblio-shape stripped entry.
+"""Trademark-strip transformer: DRL corpus row to Resemblio-shape entry.
 
 One-way pipeline from the Design Reference Library (read-only upstream) to
 Resemblio's internal corpus. This module never writes back to the DRL.
 
-The DRL's ``corpus.json`` carries brand-attributed assets (system slug
-``"anthropic"``, ``"a24"``, etc.). Resemblio's public corpus must be
-brand-stripped: the source identity moves into private seed metadata that is
-not part of the API response surface, and the public-facing slug is the
-asset's neutral class+slug combination.
+The DRL's ``corpus.json`` carries trademark-bearing assets (system slug
+``"anthropic"``, ``"a24"``, etc.). Resemblio's public corpus is
+brand-faithful but trademark-stripped: wordmarks, logos, and brand-name
+attribution move into private seed metadata that is not part of the API
+response surface, while the underlying design language (colours, type,
+spacing, scale, component patterns) is preserved as the inspired-by
+starting point public copy frames as *inspirado, no copiado*. The
+public-facing slug is the asset's neutral class+slug combination.
 
 Stripping rules (v1):
 
@@ -77,10 +80,10 @@ class StrippedEntry:
     """Brand-stripped representation suitable for Resemblio's internal corpus.
 
     The public-facing fields (``slug``, ``cls``, ``kind``, ``tldr``,
-    ``patterns``, ``mood``, ``applicable_to``, ``tags``) carry no brand
-    identifier. Provenance lives only in the private ``source_id`` field,
-    which the seeder stores on the ``extractions`` row alongside
-    ``seed_source="drl_v1"``.
+    ``patterns``, ``mood``, ``applicable_to``, ``tags``) carry no
+    trademark identifier. Provenance lives only in the private
+    ``source_id`` field, which the seeder stores on the ``extractions``
+    row alongside ``seed_source="drl_v1"``.
     """
 
     source_id: str
@@ -99,7 +102,12 @@ class StrippedEntry:
 
 
 def brand_strip(system: DrlSystemRow | dict[str, Any], asset: DrlAssetRow | dict[str, Any]) -> StrippedEntry:
-    """Brand-strip a DRL ``(system, asset)`` pair to a ``StrippedEntry``.
+    """Trademark-strip a DRL ``(system, asset)`` pair to a ``StrippedEntry``.
+
+    Function name is preserved for back-compat with existing call sites;
+    the operation is the trademark / brand-name strip described in the
+    module docstring (design language is preserved; only the
+    trademark-bearing identifiers are stripped).
 
     Drops any tag whose lower-case form matches the system's slug or name.
     Composes ``source_id`` as ``"<system_slug>/<asset_class>/<asset_slug>"``
