@@ -116,9 +116,16 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           LOCAL_ALEMBIC_HEAD: ${{ steps.alembic_local_head.outputs.local_head }}
+          # GITHUB_SHA is the commit SHA that triggered this workflow run. We
+          # forward it via SendEnv so the remote heredoc can assert prod git
+          # HEAD landed at the SAME commit after `git reset --hard origin/main`.
+          # Closes the Incident 2 (2026-06-02 `b3f7ca2`) gap where the SSH
+          # heredoc apparently returned 0 with prod git HEAD never advancing.
+          # CTO design: `cto-reviews/2026-06-04-cicd-partial-deploy-investigation.md`.
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          ssh -o SendEnv=LOCAL_ALEMBIC_HEAD "$DEPLOY_USER@$DEPLOY_HOST" \
-            LOCAL_ALEMBIC_HEAD="$LOCAL_ALEMBIC_HEAD" bash -s << 'REMOTE'
+          ssh -o SendEnv=LOCAL_ALEMBIC_HEAD -o SendEnv=GITHUB_SHA "$DEPLOY_USER@$DEPLOY_HOST" \
+            LOCAL_ALEMBIC_HEAD="$LOCAL_ALEMBIC_HEAD" GITHUB_SHA="$GITHUB_SHA" bash -s << 'REMOTE'
           # set -e halts on any non-zero exit; -u catches unset vars; -o pipefail
           # surfaces errors mid-pipeline. Critical for the alembic step: prior
           # to 2026-06-01 a silent migration skip could pass under a looser
@@ -151,6 +158,25 @@ jobs:
 
           git fetch --quiet origin main
           git reset --hard origin/main
+
+          # Git-SHA parity assertion. Closes the class flagged by 2026-06-02
+          # Incident 2 (commit `b3f7ca2`): GH Actions step reported success
+          # but prod git HEAD never advanced from the prior commit. Triggers
+          # when the SSH channel dropped mid-heredoc, when a queued concurrent
+          # run raced on /opt/resemblio-api/app/.git, or when any future
+          # failure shape diverges prod-state from repo-state. The assertion
+          # makes both failure shapes loud and red instead of silent-green.
+          # CTO design: `cto-reviews/2026-06-04-cicd-partial-deploy-investigation.md`.
+          EXPECTED_SHA="${GITHUB_SHA}"
+          ACTUAL_SHA=$(git rev-parse HEAD)
+          if [ "${ACTUAL_SHA}" != "${EXPECTED_SHA}" ]; then
+            echo "FATAL: prod git HEAD (${ACTUAL_SHA}) does not match workflow trigger SHA (${EXPECTED_SHA})."
+            echo "The fetch+reset did not advance prod to the intended commit."
+            echo "Likely cause: SSH heredoc truncation or concurrent deploy race."
+            exit 1
+          fi
+          echo "Git-SHA parity OK: prod at ${ACTUAL_SHA} (matches workflow trigger)."
+
           /opt/resemblio-api/venv/bin/pip install -q --upgrade pip
           /opt/resemblio-api/venv/bin/pip install -q -e .
 

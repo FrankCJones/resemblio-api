@@ -67,6 +67,12 @@ REQUIRED_MARKERS: tuple[str, ...] = (
     # module-load races in `app.cli.*` BEFORE the deploy SSH block runs.
     # Paired with `tests/test_entrypoint_smoke.py` and `ci/entrypoints.sh`.
     "bash ci/entrypoints.sh",  # 5. entrypoint smoke step invocation
+    # CTO 2026-06-04 markers (silent-partial-deploy git-SHA gate). Closes
+    # Incident 2 (2026-06-02 `b3f7ca2`): SSH step returned success while
+    # prod git HEAD never advanced past the prior commit. Design doc:
+    # `cto-reviews/2026-06-04-cicd-partial-deploy-investigation.md`.
+    "Git-SHA parity",       # 6. in-heredoc parity assertion + diagnostic
+    "SendEnv=GITHUB_SHA",   # 7. forwards GITHUB_SHA to the remote shell
 )
 
 
@@ -126,4 +132,75 @@ def test_deploy_yml_exits_nonzero_on_pid_mismatch(deploy_yml_text: str) -> None:
     assert "exit 1" in window, (
         "Expected `exit 1` within 600 chars after the PID-change diagnostic; "
         "the workflow must fail red when restart did not advance MainPID."
+    )
+
+
+def test_git_sha_parity_check_precedes_pip_install(deploy_yml_text: str) -> None:
+    """The git-SHA parity check must run BEFORE pip install.
+
+    Rationale: if `git reset --hard origin/main` did not actually advance prod
+    to the workflow's trigger SHA (the Incident 2 failure shape), running
+    `pip install -e .` against a stale tree would install the prior version's
+    code into the venv and the partial deploy could still progress. Gate
+    order is "did the code actually land at the expected SHA?" first,
+    everything else after. Mirror of `test_pid_change_check_precedes_readyz_probe`.
+    """
+    parity_idx = deploy_yml_text.find("Git-SHA parity")
+    pip_idx = deploy_yml_text.find("/opt/resemblio-api/venv/bin/pip install")
+    assert parity_idx != -1, "Git-SHA parity marker not found"
+    assert pip_idx != -1, "pip install line not found"
+    assert parity_idx < pip_idx, (
+        "Git-SHA parity assertion must appear before the pip install step so "
+        "a stale tree fails fast before deps are installed against it."
+    )
+
+
+def test_git_sha_parity_exits_nonzero_on_mismatch(deploy_yml_text: str) -> None:
+    """The git-SHA mismatch branch must call ``exit 1`` (non-zero) explicitly.
+
+    Without an `exit 1`, the workflow could log the FATAL diagnostic and
+    continue, which is the silent-partial-deploy failure shape (Incident 2
+    on 2026-06-02). Same gate pattern as the PID-mismatch assertion.
+    """
+    idx = deploy_yml_text.find("Git-SHA parity")
+    assert idx != -1, "Git-SHA parity marker missing"
+    # 1500-char window catches the diagnostic comment block + assertion + exit
+    # while still bounding the search so an unrelated `exit 1` later in the
+    # file cannot satisfy the assertion.
+    window = deploy_yml_text[idx : idx + 1500]
+    assert "exit 1" in window, (
+        "Expected `exit 1` within 1500 chars after the Git-SHA parity marker; "
+        "the workflow must fail red when prod git HEAD does not match the "
+        "workflow trigger SHA."
+    )
+
+
+def test_git_sha_passed_via_env_and_sendenv(deploy_yml_text: str) -> None:
+    """GITHUB_SHA must be wired through the env block AND SendEnv AND inline.
+
+    Three-point match per CTO 2026-06-04 design doc test plan: a typo in any
+    of the three would silently break the assertion by leaving EXPECTED_SHA
+    empty. Asserting all three forces edits to keep them in lock-step.
+
+    1. Step `env:` block declares `GITHUB_SHA: ${{ github.sha }}` (GitHub
+       Actions expression that resolves the trigger SHA).
+    2. `SendEnv=GITHUB_SHA` on the ssh invocation (sshd-side acceptance).
+    3. Inline `GITHUB_SHA="$GITHUB_SHA"` prefix on `bash -s` (defense in
+       depth that does not depend on the remote sshd accepting SendEnv;
+       mirrors the same wiring already used for LOCAL_ALEMBIC_HEAD).
+    """
+    assert "GITHUB_SHA: ${{ github.sha }}" in deploy_yml_text, (
+        "deploy.yml step env block must declare `GITHUB_SHA: ${{ github.sha }}` "
+        "so the GitHub Actions trigger SHA is available to forward to the "
+        "remote shell."
+    )
+    assert "SendEnv=GITHUB_SHA" in deploy_yml_text, (
+        "ssh invocation must include `-o SendEnv=GITHUB_SHA` so sshd on prod "
+        "accepts the GITHUB_SHA variable."
+    )
+    assert 'GITHUB_SHA="$GITHUB_SHA"' in deploy_yml_text, (
+        "ssh command must inline `GITHUB_SHA=\"$GITHUB_SHA\"` as a prefix to "
+        "`bash -s` so the value reaches the remote shell even if sshd is not "
+        "configured to AcceptEnv GITHUB_SHA. Matches the LOCAL_ALEMBIC_HEAD "
+        "pattern already used in the same line."
     )

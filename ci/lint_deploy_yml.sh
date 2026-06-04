@@ -27,6 +27,15 @@
 #      between `app.cli/` and the ENTRYPOINTS shell array). Closes the
 #      module-load race class flagged by the Library v1.1 3-hour outage.
 #
+# Git-SHA parity marker (CTO 2026-06-04 - silent-partial-deploy gate):
+#   6. "Git-SHA parity" - asserts the in-heredoc check that prod git HEAD
+#      matches the workflow trigger SHA after `git reset --hard origin/main`.
+#      Closes Incident 2 (2026-06-02 `b3f7ca2`): SSH step reported success
+#      with prod git HEAD never advancing. Design doc:
+#      `cto-reviews/2026-06-04-cicd-partial-deploy-investigation.md`.
+#   7. "SendEnv=GITHUB_SHA" - asserts GITHUB_SHA is forwarded to the remote
+#      shell so the parity check above has the value to compare against.
+#
 # Run from the repo root: bash ci/lint_deploy_yml.sh
 set -euo pipefail
 
@@ -43,6 +52,8 @@ REQUIRED=(
   "PID did not change"
   "/v1/readyz"
   "bash ci/entrypoints.sh"
+  "Git-SHA parity"
+  "SendEnv=GITHUB_SHA"
 )
 
 MISSING=0
