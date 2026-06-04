@@ -16,6 +16,7 @@ import pytest
 
 from extractor.computed_styles import (
     BRAND_SELECTOR_OVERRIDES,
+    BRAND_WAIT_STRATEGY_OVERRIDES,
     CAPTURED_PROPERTIES,
     DEFAULT_WAIT_STRATEGY,
     ELEMENT_CENSUS,
@@ -254,6 +255,107 @@ def test_resolve_wait_strategy_unknown_falls_back(
     """Bogus values fall back to default rather than raising."""
     monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
     assert resolve_wait_strategy("load-and-pray") == DEFAULT_WAIT_STRATEGY
+
+
+# --- Per-brand wait-strategy override map -----------------------------------
+
+
+def test_brand_wait_strategy_overrides_cover_known_spa_brands() -> None:
+    """openai + aeon (the 22/24 button-corpus gap brands) carry overrides.
+
+    openai's hero CTA pill hydrates client-side; aeon's whole DOM is
+    behind a Vercel security checkpoint. Both need ``networkidle`` rather
+    than ``domcontentloaded`` to give the page a chance to render before
+    capture. Without the override the default `domcontentloaded` returns
+    the SSR shell and `derive_button_tokens` gets nothing.
+    """
+    assert BRAND_WAIT_STRATEGY_OVERRIDES["openai"] == "networkidle"
+    assert BRAND_WAIT_STRATEGY_OVERRIDES["aeon"] == "networkidle"
+
+
+def test_resolve_wait_strategy_brand_override_activates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A known-SPA brand resolves to networkidle without env or explicit arg."""
+    monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
+    assert resolve_wait_strategy(None, brand_slug="openai") == "networkidle"
+
+
+def test_resolve_wait_strategy_unknown_brand_uses_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Brands not in the override map fall through to env/default unchanged."""
+    monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
+    assert resolve_wait_strategy(None, brand_slug="acme-totally-not-spa") == DEFAULT_WAIT_STRATEGY
+
+
+def test_resolve_wait_strategy_explicit_overrides_brand(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explicit arg wins over brand override (caller intent is authoritative)."""
+    monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
+    assert (
+        resolve_wait_strategy("domcontentloaded", brand_slug="openai")
+        == "domcontentloaded"
+    )
+
+
+def test_resolve_wait_strategy_brand_override_beats_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Brand override wins over env var.
+
+    Justification: the env var is the global escape hatch ops uses to
+    flip strategy fleet-wide; the brand override is the per-brand
+    SPA-hydration fact baked into the code. If an SPA brand is being
+    captured under an env-set ``domcontentloaded``, the brand-specific
+    knowledge of "this site does not work without hydration wait"
+    should still apply.
+    """
+    monkeypatch.setenv(WAIT_STRATEGY_ENV_VAR, "domcontentloaded")
+    assert resolve_wait_strategy(None, brand_slug="openai") == "networkidle"
+
+
+def test_resolve_wait_strategy_no_brand_arg_preserves_v1_behavior(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Calling without the new brand_slug arg matches pre-B2 semantics."""
+    monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
+    assert resolve_wait_strategy(None) == DEFAULT_WAIT_STRATEGY
+    monkeypatch.setenv(WAIT_STRATEGY_ENV_VAR, "networkidle")
+    assert resolve_wait_strategy(None) == "networkidle"
+
+
+def test_brand_wait_overrides_use_only_valid_strategies() -> None:
+    """Every entry in the wait-override map is a recognized strategy.
+
+    Guard against a future entry typo (e.g. ``"network-idle"``) silently
+    falling back to the default and re-introducing the SPA-hydration
+    miss the override was supposed to fix.
+    """
+    from extractor.computed_styles import VALID_WAIT_STRATEGIES
+    for brand, strategy in BRAND_WAIT_STRATEGY_OVERRIDES.items():
+        assert strategy in VALID_WAIT_STRATEGIES, (
+            f"brand={brand} has invalid wait strategy {strategy!r}"
+        )
+
+
+def test_brand_wait_overrides_align_with_selector_overrides() -> None:
+    """Every BRAND_WAIT_STRATEGY_OVERRIDES brand also has a selector entry.
+
+    Soft invariant: the two override maps describe the same set of
+    "this brand needs special handling" brands. A wait-only entry with
+    no selector override suggests an incomplete diagnosis (or an SPA
+    site whose default `button, .cta, [role=button]` selector happens to
+    work post-hydration, which is rare enough to warrant a comment).
+    Today every entry overlaps; this test fires the canary if they drift.
+    """
+    wait_keys = set(BRAND_WAIT_STRATEGY_OVERRIDES.keys())
+    selector_keys = set(BRAND_SELECTOR_OVERRIDES.keys())
+    missing_selector = wait_keys - selector_keys
+    assert missing_selector == set(), (
+        f"brands have wait override but no selector override: {missing_selector}"
+    )
 
 
 @pytest.mark.skipif(

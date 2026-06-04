@@ -94,6 +94,39 @@ VALID_WAIT_STRATEGIES: tuple[str, ...] = ("domcontentloaded", "networkidle")
 DEFAULT_WAIT_STRATEGY: Literal["domcontentloaded", "networkidle"] = "domcontentloaded"
 """Module-level default. Pass `wait_strategy='networkidle'` or set the env var to switch."""
 
+# Per-brand wait-strategy override map.
+#
+# Some brands cannot be captured under `domcontentloaded` because their
+# primary CTA (and often the rest of their meaningful DOM) only exists
+# after React/Next/Vue hydration. The override layer above carries the
+# selector half of the fix; this map carries the wait half. Without the
+# wait, the override selector evaluates against an SSR shell that does
+# not contain the element yet and the per-slot fallback runs against
+# the default selector on the same un-hydrated DOM (also nothing).
+#
+# Precedence (decided in `resolve_wait_strategy`):
+#   explicit arg > brand-override > env var > module default
+#
+# Surgical + reversible: an entry here cannot regress non-SPA brands
+# (they never look up the map). The networkidle path adds <3s per
+# capture, well inside DEFAULT_TIMEOUT_MS. Diagnosis trail in
+# `_handoff/inbox/claude/2026-06-02-openai-aeon-capture-diagnosis.md`
+# and `_handoff/inbox/claude/2026-06-02-openai-aeon-selector-revision.md`.
+#
+# Entries here apply even when the brand's selector override is `None`
+# (the explicit-skip case). The wait shim is harmless for skipped slots
+# and keeps the per-brand contract internally consistent: an SPA brand
+# is an SPA brand whether or not we capture its CTA.
+BRAND_WAIT_STRATEGY_OVERRIDES: dict[str, Literal["domcontentloaded", "networkidle"]] = {
+    "openai": "networkidle",   # CTA pill hydrates client-side; SSR shell has only nav icon stubs
+    "aeon": "networkidle",     # Vercel-gated; networkidle is harmless and keeps contract consistent
+    "vercel": "networkidle",   # spot-checked: hero CTA hydrates client-side (Tailwind utility shell)
+    "linear": "networkidle",   # spot-checked: same pattern as vercel
+    "anthropic": "networkidle",  # spot-checked: same pattern
+}
+"""brand_slug -> wait strategy. Closes the SPA-hydration class for the
+modern marketing-site brands whose primary CTA is not in the SSR HTML."""
+
 HYDRATION_BUFFER_MS = 1_000
 """Extra wait after `networkidle` settles, to absorb late React mounts."""
 
@@ -256,14 +289,29 @@ def build_capture_script(census: tuple[tuple[str, str], ...] | None = None) -> s
 
 def resolve_wait_strategy(
     explicit: str | None,
+    brand_slug: str | None = None,
 ) -> Literal["domcontentloaded", "networkidle"]:
     """Pick the wait-until value for one capture run.
 
-    Precedence: explicit arg > ``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` env
-    var > ``DEFAULT_WAIT_STRATEGY``. Unknown values fall back to the
-    default and emit a warning rather than failing the capture.
+    Precedence: explicit arg > ``BRAND_WAIT_STRATEGY_OVERRIDES[brand_slug]``
+    > ``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` env var > ``DEFAULT_WAIT_STRATEGY``.
+
+    The brand-override slot sits between explicit and env so prod can
+    still globally flip strategy via the env var when needed, but the
+    per-brand SPA-hydration fix activates automatically on every capture
+    of a known-SPA brand without requiring a sidecar env var. Unknown
+    values at any layer fall back to the default and emit a warning
+    rather than failing the capture.
     """
-    candidate = explicit or os.environ.get(WAIT_STRATEGY_ENV_VAR) or DEFAULT_WAIT_STRATEGY
+    brand_override: str | None = None
+    if brand_slug:
+        brand_override = BRAND_WAIT_STRATEGY_OVERRIDES.get(brand_slug)
+    candidate = (
+        explicit
+        or brand_override
+        or os.environ.get(WAIT_STRATEGY_ENV_VAR)
+        or DEFAULT_WAIT_STRATEGY
+    )
     if candidate not in VALID_WAIT_STRATEGIES:
         LOG.warning(
             "unknown wait_strategy=%r; falling back to %s", candidate, DEFAULT_WAIT_STRATEGY
@@ -301,9 +349,10 @@ def capture_computed_styles(
             ``"networkidle"``, the capture additionally calls
             ``wait_for_load_state("networkidle")`` (up to
             ``NETWORKIDLE_WAIT_MS``) and a ``HYDRATION_BUFFER_MS``
-            timeout, to absorb SPA hydration. Defaults via env var
-            ``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` then
-            ``DEFAULT_WAIT_STRATEGY``.
+            timeout, to absorb SPA hydration. Precedence resolved by
+            ``resolve_wait_strategy``: explicit arg >
+            ``BRAND_WAIT_STRATEGY_OVERRIDES[brand_slug]`` > env var
+            ``RESEMBLIO_CAPTURE_WAIT_STRATEGY`` > ``DEFAULT_WAIT_STRATEGY``.
 
     Returns:
         - status="ok" with populated signals on success
@@ -330,7 +379,7 @@ def capture_computed_styles(
     except ImportError:  # pragma: no cover - sync_api always ships Error
         PlaywrightError = Exception  # type: ignore[assignment,misc]
 
-    effective_wait = resolve_wait_strategy(wait_strategy)
+    effective_wait = resolve_wait_strategy(wait_strategy, brand_slug)
     primary_census = resolve_census(brand_slug)
     primary_script = build_capture_script(primary_census)
     try:
