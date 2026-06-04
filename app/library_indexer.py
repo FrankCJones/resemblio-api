@@ -638,32 +638,79 @@ def _load_button_tokens(brand_slug: str) -> ButtonTokens | None:
     return derive_button_tokens(report)
 
 
-# Category-slug -> lowercase display-fragment mapping used to specialize
-# the ``title``/``headline`` slots on per-category renders (L-15 fix).
-# Values are intentionally lowercase noun phrases so they read naturally
-# inside the "{Brand} {phrase}" template (e.g. "Aeon buttons", "Aeon
-# about team"). Slugs not in this map fall back to a humanize of the
-# slug ("article-layout" -> "article layout"); the snapshot/brand class
-# is excluded by returning None so the title falls through to the brand-
-# level "{Brand} design snapshot" copy.
+# Category-slug -> Title-Case display-fragment mapping used to specialize
+# the ``title``/``headline`` slots on per-category renders (L-15 fix,
+# L-18 phrasing polish 2026-06-03).
+#
+# Phrasing convention
+# -------------------
+# Values are Title-Case noun phrases that read as editorial card titles.
+# They are joined to the brand with a colon at the call site
+# (``f"{pretty_brand}: {category_label}"``), producing magazine-cover-
+# style strings:
+#
+#   - "Apple: About & Team"     (was "Apple about team")
+#   - "Apple: Buttons"          (was "Apple buttons")
+#   - "Apple: Alphabet"
+#   - "Apple: Article Layout"
+#   - "Apple: How It Works"
+#
+# Why colon-join over the prior bare-juxtaposition pattern
+# ("Apple buttons"):
+#
+# 1. Grammatical: the prior pattern read as an implicit possessive
+#    ("Apple buttons" = "Apple's buttons") which works for some slugs
+#    ("buttons", "navigation") and reads broken for others
+#    ("about team", "article layout", "how it works", "news list",
+#    "cta block"). Colon-eyebrow works uniformly.
+# 2. Editorial: the surface is a featured-card title on the brand's
+#    library hub. Eyebrow + headline is the standard editorial card
+#    composition; brand-as-eyebrow followed by category-as-headline
+#    reads like a section label.
+# 3. Internal-jargon scrub: slugs like "cta-block" become "Call to
+#    Action" rather than leaking template jargon, and "form-fields"
+#    becomes "Form Fields" rather than the ambiguous "forms".
+#
+# Slugs not in this map fall back to a humanize+Title-Case of the slug
+# ("brand-new-category" -> "Brand New Category"). Snapshot/featured-
+# snapshot classes return None so the title falls through to the brand-
+# level "{Brand} design snapshot" copy on the brand-canonical page.
 _CATEGORY_DISPLAY_LABELS: dict[str, str] = {
-    "buttons": "buttons",
-    "alphabet": "alphabet",
-    "about-team": "about team",
-    "article-layout": "article layout",
-    "badges": "badges",
-    "cards": "cards",
-    "forms": "forms",
-    "inputs": "inputs",
-    "navigation": "navigation",
-    "news-list": "news list",
-    "pricing": "pricing",
-    "how-it-works": "how it works",
+    # Component-library categories (Library v1.1).
+    "buttons": "Buttons",
+    "alphabet": "Alphabet",
+    "badges": "Badges",
+    "cards": "Cards",
+    "inputs": "Inputs",
+    "navigation": "Navigation",
+    "pricing": "Pricing",
+    "forms": "Forms",
+    "form-fields": "Form Fields",
+    # Page-pattern categories (DRL canon).
+    "about-team": "About & Team",
+    "article-layout": "Article Layout",
+    "news-list": "News Feed",
+    "how-it-works": "How It Works",
+    "hero": "Hero",
+    "footer": "Footer",
+    "feature-grid": "Feature Grid",
+    "cta-block": "Call to Action",
+    "pricing-table": "Pricing Table",
+    "testimonials": "Testimonials",
+    "process-steps": "Process Steps",
+    "library": "Library Index",
 }
 
 
+# Join character between brand and category in the specialized title.
+# Magazine-cover convention: brand reads as eyebrow, category as
+# headline. Kept as a module-level constant so the test suite and any
+# downstream consumer can assert against a single source of truth.
+CATEGORY_TITLE_JOIN: str = ": "
+
+
 def _category_display_label(category_slug: str | None) -> str | None:
-    """Return the lowercase display label for a category slug, or None.
+    """Return the Title-Case display label for a category slug, or None.
 
     Returns None when:
 
@@ -672,10 +719,15 @@ def _category_display_label(category_slug: str | None) -> str | None:
       ``featured-snapshot``) for which the brand-level title is correct
       and must not be category-specialized.
 
-    For known slugs returns the curated display label; for unknown slugs
-    returns a humanized form (``"some-category"`` -> ``"some category"``)
-    so a new DRL category class still renders a sensible title without a
-    code edit. Pure-data; no I/O.
+    For known slugs returns the curated Title-Case display label; for
+    unknown slugs returns a humanized + title-cased form
+    (``"some-new-category"`` -> ``"Some New Category"``) so a new DRL
+    category class still renders a sensible title without a code edit.
+    Pure-data; no I/O.
+
+    The returned label is joined to the brand via ``CATEGORY_TITLE_JOIN``
+    at the call site in ``_brand_placeholder``; see the
+    ``_CATEGORY_DISPLAY_LABELS`` docstring for the phrasing rationale.
     """
     if not category_slug:
         return None
@@ -683,7 +735,10 @@ def _category_display_label(category_slug: str | None) -> str | None:
         return None
     if category_slug in _CATEGORY_DISPLAY_LABELS:
         return _CATEGORY_DISPLAY_LABELS[category_slug]
-    return category_slug.replace("-", " ")
+    # Unknown slug: humanize ("article-layout" -> "article layout") and
+    # title-case ("Article Layout"). Keeps the convention uniform for
+    # any DRL class added after this map was last updated.
+    return category_slug.replace("-", " ").title()
 
 
 def _brand_placeholder(
@@ -712,15 +767,20 @@ def _brand_placeholder(
     Unknown slugs still fall back to the title-case humanize so an
     organic row never raises.
 
-    Category specialization (L-15 fix, Phase B 2026-06-03)
+    Category specialization (L-15 fix, Phase B 2026-06-03; L-18 phrasing
+    polish 2026-06-03)
     ------------------------------------------------------
     When ``category_slug`` is supplied AND the slot is one of the
     title-family slots (``title`` / ``headline``), the preset emits a
-    category-specialized phrase ("Aeon buttons" rather than "Aeon design
-    snapshot") so the category page's featured-card frame does not read
-    as a copy of the brand-snapshot frame. ``category_slug`` is optional:
-    callers that omit it (legacy tests, brand-canonical render path) get
-    the previous brand-level title.
+    colon-joined ``{Brand}: {Title-Case Category}`` phrase (e.g.
+    ``"Aeon: Buttons"``, ``"Apple: About & Team"``) so the category
+    page's featured-card frame does not read as a copy of the brand-
+    snapshot frame. The colon-eyebrow convention replaced the prior
+    bare-juxtaposition pattern ("Apple about team") which read as broken
+    English for slugs that were not natural possessive nouns. See
+    ``_CATEGORY_DISPLAY_LABELS`` for the curated phrase map.
+    ``category_slug`` is optional: callers that omit it (legacy tests,
+    brand-canonical render path) get the previous brand-level title.
 
     Unknown placeholders fall back to a humanized version of the slot name
     (e.g. ``col_1_title`` -> "Col 1 Title") so the page still has visible,
@@ -738,7 +798,7 @@ def _brand_placeholder(
     # there.
     category_label = _category_display_label(category_slug)
     if name in {"title", "headline"} and category_label is not None:
-        return f"{pretty_brand} {category_label}"
+        return f"{pretty_brand}{CATEGORY_TITLE_JOIN}{category_label}"
     presets: dict[str, str] = {
         # Generic copy slots
         "kicker": "Featured",

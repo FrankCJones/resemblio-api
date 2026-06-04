@@ -28,7 +28,9 @@ import pytest
 
 from app.brand_names import pretty_brand_name
 from app.library_indexer import (
+    CATEGORY_TITLE_JOIN,
     LIBRARY_TEMPLATE_OVERRIDE_CSS,
+    _CATEGORY_DISPLAY_LABELS,
     _brand_placeholder,
     _category_display_label,
     _compose_one_page,
@@ -90,24 +92,30 @@ def test_brand_display_uses_canonical_caps_for_chip_labels() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_category_display_label_returns_lowercase_phrase() -> None:
-    """Known category slugs map to lowercase noun phrases.
+def test_category_display_label_returns_title_case_phrase() -> None:
+    """Known category slugs map to curated Title-Case noun phrases.
 
-    Lowercase by design so the "{Brand} {phrase}" interpolation reads
-    as a natural sentence ("Aeon buttons") rather than a title-cased
-    one ("Aeon Buttons"); pageTitle is the surface that title-cases the
-    full string at render time.
+    Title-Case by design (L-18 phrasing polish 2026-06-03) because the
+    label is joined to the brand with a colon eyebrow at the call site
+    (``"Apple: Buttons"``, not ``"Apple buttons"``). The colon-eyebrow
+    convention reads as editorial card composition; the bare-
+    juxtaposition pattern read as implicit possessive ("Apple buttons"
+    parsed as "Apple's buttons") and broke for slugs like ``about-team``
+    where ``"Apple about team"`` was grammatically odd.
     """
-    assert _category_display_label("buttons") == "buttons"
-    assert _category_display_label("about-team") == "about team"
-    assert _category_display_label("article-layout") == "article layout"
+    assert _category_display_label("buttons") == "Buttons"
+    assert _category_display_label("about-team") == "About & Team"
+    assert _category_display_label("article-layout") == "Article Layout"
+    assert _category_display_label("how-it-works") == "How It Works"
+    assert _category_display_label("cta-block") == "Call to Action"
+    assert _category_display_label("news-list") == "News Feed"
 
 
 def test_category_display_label_snapshot_classes_return_none() -> None:
     """The featured-snapshot class keeps the brand-level title.
 
     The brand-canonical page surfaces the snapshot class as its hero;
-    specializing that title would say "Aeon snapshot" which is
+    specializing that title would say "Aeon: Snapshot" which is
     redundant with the brand-snapshot heading. Returning None preserves
     the existing brand-level copy path.
     """
@@ -115,9 +123,11 @@ def test_category_display_label_snapshot_classes_return_none() -> None:
     assert _category_display_label("featured-snapshot") is None
 
 
-def test_category_display_label_unknown_slug_humanizes() -> None:
-    """Unknown slugs humanize to a lowercase, dash-stripped form."""
-    assert _category_display_label("brand-new-category") == "brand new category"
+def test_category_display_label_unknown_slug_humanizes_title_case() -> None:
+    """Unknown slugs humanize + Title-Case so a new DRL class still
+    reads naturally without a code edit.
+    """
+    assert _category_display_label("brand-new-category") == "Brand New Category"
 
 
 def test_category_display_label_empty_returns_none() -> None:
@@ -126,22 +136,73 @@ def test_category_display_label_empty_returns_none() -> None:
     assert _category_display_label("") is None
 
 
-def test_title_slot_specialized_when_category_passed() -> None:
-    """Title slot reads "{Brand} {category-phrase}" when category given.
+def test_category_display_label_covers_every_drl_class() -> None:
+    """Every shipping DRL category slug has a curated Title-Case phrase.
 
-    L-15 fix: category-detail pages must not show "Aeon design snapshot"
-    where they should show "Aeon buttons". The placeholder routes the
-    category slug into the title when one is supplied.
+    Pins the L-18 phrasing convention: the curated map must enumerate
+    every slug in ``TEMPLATES_BY_CLASS`` (minus the snapshot family)
+    rather than letting any slug fall through to the humanize fallback.
+    The fallback exists for forward-compat with a yet-unshipped class;
+    leaving an existing class on it would mean a phrasing regression
+    crept in unnoticed.
+    """
+    # Imported lazily because the DRL ``_scripts`` path is wired up at
+    # module-load of ``app.library_indexer``; importing it here is safe
+    # because the indexer module is already imported above.
+    from _scripts.templates import TEMPLATES_BY_CLASS
+
+    snapshot_family = {"snapshot", "featured-snapshot"}
+    for slug in TEMPLATES_BY_CLASS:
+        if slug in snapshot_family:
+            continue
+        assert slug in _CATEGORY_DISPLAY_LABELS, (
+            f"DRL category slug {slug!r} has no curated Title-Case label "
+            f"in _CATEGORY_DISPLAY_LABELS; add one before re-index, "
+            f"otherwise the featured-card title falls through to the "
+            f"humanize fallback and may read awkwardly."
+        )
+        label = _CATEGORY_DISPLAY_LABELS[slug]
+        # Title-Case sanity: first character of each whitespace-split
+        # token is uppercase, except common stop-words like "to" / "of"
+        # / "the" / "it" which appear mid-phrase ("How It Works",
+        # "Call to Action"). Just assert the leading char is uppercase.
+        assert label and label[0].isupper(), (
+            f"slug {slug!r} label {label!r} should start uppercase"
+        )
+
+
+def test_title_slot_uses_colon_join_when_category_passed() -> None:
+    """Title slot reads ``{Brand}: {Title-Case Phrase}`` when category given.
+
+    L-18 phrasing polish (2026-06-03): the bare-juxtaposition pattern
+    ("Apple about team") read awkwardly; the colon-eyebrow convention
+    works uniformly across every DRL category slug.
     """
     title = _brand_placeholder(
         "title", brand_slug="aeon", category_slug="buttons"
     )
-    assert title == "Aeon buttons", f"title={title!r}"
+    assert title == "Aeon: Buttons", f"title={title!r}"
+
+    title_apple = _brand_placeholder(
+        "title", brand_slug="apple", category_slug="about-team"
+    )
+    assert title_apple == "Apple: About & Team", f"title={title_apple!r}"
 
     title_openai = _brand_placeholder(
-        "title", brand_slug="openai", category_slug="about-team"
+        "headline", brand_slug="openai", category_slug="how-it-works"
     )
-    assert title_openai == "OpenAI about team", f"title={title_openai!r}"
+    assert title_openai == "OpenAI: How It Works", f"title={title_openai!r}"
+
+
+def test_category_title_join_is_colon_space() -> None:
+    """Pin the join character so a refactor cannot quietly change it.
+
+    The colon-eyebrow convention is the L-18 phrasing decision; the
+    rendered surface relies on the colon to read as editorial card
+    composition. A regression to plain-space join would re-introduce
+    the "Apple about team" phrasing problem.
+    """
+    assert CATEGORY_TITLE_JOIN == ": "
 
 
 def test_title_slot_brand_level_when_no_category() -> None:
