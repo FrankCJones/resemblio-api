@@ -1168,15 +1168,47 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
             metadata_json=metadata,
             is_canonical=False,
         )
+        # Wrap the speculative INSERT in a SAVEPOINT so a UNIQUE collision
+        # rolls back ONLY this iteration's insert, not the surrounding
+        # transaction. The previous implementation called session.rollback()
+        # in the except branch, which wiped every prior iteration's UPDATE
+        # in the same loop (L-17 regression root cause 2026-06-03: alphabet
+        # ran early, its UPDATE was flushed, then a later template's
+        # IntegrityError rolled the whole transaction back including the
+        # alphabet UPDATE). Nested transactions (SAVEPOINTs) scope the
+        # rollback to the failing statement only.
+        sp = session.begin_nested()
         session.add(page)
         try:
             session.flush()
+            sp.commit()
             written += 1
         except IntegrityError:
             # UNIQUE(asset_version_id, category_slug) trip: the row already
-            # exists from a prior run. The contract is idempotent — log and
-            # continue without counting it as a new write.
-            session.rollback()
+            # exists from a prior run. The contract is idempotent. Pre-2026-06-03
+            # this branch simply rolled back and skipped, which silently froze
+            # any row that had been written under an older template or compose
+            # pipeline (L-17 root cause: brands whose alphabet row was written
+            # by an earlier indexer version with no substantive body markup
+            # stayed empty forever because every subsequent re-enqueue hit this
+            # path and bailed). Self-heal by UPDATE-ing rendered_html +
+            # metadata_json in place so a re-enqueue of an already-indexed
+            # asset_version actually refreshes stale content.
+            sp.rollback()
+            existing = session.execute(
+                select(LibraryPage)
+                .where(LibraryPage.asset_version_id == asset_version.id)
+                .where(LibraryPage.category_slug == class_name)
+            ).scalar_one_or_none()
+            if existing is not None:
+                existing.rendered_html = rendered
+                existing.metadata_json = metadata
+                existing.brand_slug = brand_slug
+                existing.version_label = slugify_version_label(
+                    asset_version.version_label
+                )
+                session.flush()
+                written += 1
             continue
 
     _reconcile_canonical(session, asset_version)

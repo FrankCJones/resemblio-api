@@ -410,3 +410,77 @@ def test_category_renders_no_lorem_placeholder(
         f"text - compose pipeline ignored brand-aware placeholder map "
         f"(bug 3 regression)"
     )
+
+
+# Per-category substantive-markup markers. Each entry names a CSS class
+# (or wrapper substring) that MUST appear in the category's rendered
+# HTML for the page to carry the category's actual design content rather
+# than just the LibraryPageShell chrome. Locked 2026-06-03 per L-17 (Frank
+# reported the alphabet category-detail page rendered chrome + featured
+# card + locks only, with no substantive alphabet specimen rows). The
+# markers are CSS class names from the DRL templates, not text content,
+# so brand-specific copy variation does not destabilise the assertion.
+SUBSTANTIVE_MARKUP_MARKERS: dict[str, tuple[str, ...]] = {
+    # Class names lifted verbatim from
+    # ``_vendored/drl/drl/_scripts/templates.py`` 2026-06-03. Each tuple
+    # names a top-level wrapper class + at least one inner-content class
+    # so a chrome-only render (wrapper present, body empty) still fails.
+    "about-team": ("at__inner", "at__head"),
+    "alphabet": ("a-page", "a-row", "a-display-1"),
+    "article-layout": ("al__head", "al__title"),
+    "badges": ("bd-page", "bd-header"),
+    "buttons": ("b-page", "b-btn"),
+    "cards": ("cd-page", "cd-header"),
+    "cta-block": ("cta__inner", "cta__title"),
+    "feature-grid": ("fg-grid__inner", "fg-tile"),
+    "footer": ("f-footer", "f-footer__inner"),
+    "hero": ("h-hero", "h-hero__inner"),
+    "navigation": ("n-nav", "n-nav__inner"),
+    "pricing-table": ("pt__inner", "pt__tiers"),
+    "process-steps": ("ps__inner", "ps__steps"),
+    "testimonials": ("ts__inner", "ts__cards"),
+}
+
+
+@pytest.mark.parametrize("category", LIBRARY_CATEGORIES)
+def test_category_renders_substantive_markup(
+    session: Session, category: str
+) -> None:
+    """Every category's rendered HTML carries the category's body markup.
+
+    L-17 root cause (2026-06-03): brands whose alphabet ``library_pages``
+    row was written under an earlier indexer version held empty / minimal
+    ``rendered_html``. The web shell painted h1, description, the inline
+    ``<style>`` block, CTA, export-lock buttons, and share row, but the
+    alphabet specimen rows themselves never appeared because the article
+    body was empty. The pre-existing token-propagation tests still passed
+    (the ``<style>`` block carried Aeon's ``--ds-bg`` and ``--ds-font-display``
+    in the brand ``:root`` emission) which is why the regression slipped
+    through.
+
+    This contract asserts the category-specific BODY markup is present,
+    not just the brand-tokens ``<style>`` block. Markers are CSS class
+    names lifted from the DRL templates so brand text variation does
+    not destabilise the assertion.
+
+    If a future DRL template change renames a class, update
+    ``SUBSTANTIVE_MARKUP_MARKERS`` in the same diff so this contract stays
+    aligned with the template. The map is exhaustive over
+    ``LIBRARY_CATEGORIES``; a new category added without an entry here
+    fails loudly on the KeyError, which is the intended forcing function.
+    """
+    pages = _render_all_pages(session)
+    assert category in pages, (
+        f"category {category!r} has no rendered page - compose pipeline "
+        f"did not emit this template"
+    )
+    rendered = pages[category]
+    markers = SUBSTANTIVE_MARKUP_MARKERS[category]
+    for marker in markers:
+        assert marker in rendered, (
+            f"category {category!r}: rendered HTML missing substantive-markup "
+            f"marker {marker!r}. L-17 regression: the page would paint as "
+            f"chrome + featured + locks only, with no category-specific "
+            f"design content. Either the template stopped emitting the class "
+            f"or the compose pipeline wrote an empty body fragment."
+        )

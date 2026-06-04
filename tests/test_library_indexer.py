@@ -427,6 +427,59 @@ def test_re_running_same_asset_version_does_not_duplicate_pages(session: Session
     assert session.query(LibraryPage).count() == initial_count
 
 
+def test_re_enqueue_self_heals_stale_rendered_html(session: Session) -> None:
+    """Re-enqueue UPDATEs rendered_html on an existing (av, category) row.
+
+    L-17 root cause (2026-06-03): the IntegrityError branch in
+    ``_process_job`` historically rolled back and continued, which silently
+    froze any library_pages row written under an earlier template or
+    compose pipeline. The fix turns the conflict into an UPDATE so a
+    re-enqueue actually refreshes stale content; this test pins that
+    contract so a future revert lands red here instead of shipping empty
+    alphabet pages to production again.
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_asset_version(session)
+    _attach_scored_extraction(session, av, user_id=user.id, quality_score=0.95)
+    _enqueue(session, av)
+    drain_pending(session)
+
+    # Simulate a stale row by zeroing out rendered_html on one page in
+    # place. (In production this models a row written by an older indexer
+    # version whose template emitted no substantive body markup.)
+    target = (
+        session.query(LibraryPage)
+        .filter(LibraryPage.asset_version_id == av.id)
+        .filter(LibraryPage.category_slug == "alphabet")
+        .one()
+    )
+    target.rendered_html = ""
+    session.flush()
+    assert target.rendered_html == ""
+
+    # Re-enqueue + drain. The conflict path must UPDATE the stale row
+    # rather than skip it.
+    _enqueue(session, av)
+    drain_pending(session)
+
+    refreshed = (
+        session.query(LibraryPage)
+        .filter(LibraryPage.asset_version_id == av.id)
+        .filter(LibraryPage.category_slug == "alphabet")
+        .one()
+    )
+    assert refreshed.rendered_html, (
+        "L-17 regression: re-enqueue did not refresh stale alphabet "
+        "rendered_html (IntegrityError branch reverted to rollback-and-skip)"
+    )
+    # Substantive marker from the DRL alphabet template: a freshly composed
+    # row carries the per-row specimen wrapper.
+    assert "a-row" in refreshed.rendered_html, (
+        "L-17 regression: refreshed alphabet row lacks the substantive "
+        "body markup ('a-row' wrapper). Compose pipeline wrote chrome only."
+    )
+
+
 # ----------------------------------------------------------------------
 # Enqueue trigger surfaces
 # ----------------------------------------------------------------------
