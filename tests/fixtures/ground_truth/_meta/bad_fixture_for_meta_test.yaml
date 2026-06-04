@@ -1,0 +1,44 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: meta_bad
+source_url: https://example.com/synthetic-bad/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  Synthetic fixture for tests/test_ground_truth_harness_meta.py.
+  Carries a payload snapshot that DELIBERATELY violates every assertion
+  class: a required color is missing, a forbidden color is present, the
+  palette_completeness_warning is missing where expected, and a font
+  slot fails to match. The meta-test asserts the harness raises EVERY
+  failure (vs. fail-fast, which would hide later defects behind the
+  first).
+
+  Excluded from the normal fixture sweep by living under _meta/.
+
+ground_truth:
+  color:
+    bg: "#ffffff"
+    text: "#0a0a0a"
+    accent: "#ff0066"
+  font_family:
+    body: "Inter"
+
+tolerance:
+  color_distance_max: 8.0
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - accent                         # WILL FAIL: snapshot has accent=#222222 (far from #ff0066)
+  must_not_include_colors:
+    - "#007cba"                      # WILL FAIL: snapshot has #007cba present
+  must_emit_palette_completeness_warning: true   # WILL FAIL: snapshot warning is None
+
+extracted_payload_snapshot:
+  color:
+    bg: "#ffffff"
+    text: "#0a0a0a"
+    accent: "#222222"                # NOT the brand accent
+    legacy: "#007cba"                # forbidden default present
+  font_family:
+    body: "Helvetica, Arial, sans-serif"   # WILL FAIL: doesn't match Inter
+  palette_completeness_warning: null

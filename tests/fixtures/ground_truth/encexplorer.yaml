@@ -1,0 +1,61 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: encexplorer
+source_url: https://encexplorer.com/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  Canonical regression for the 2026-06-04 ENC Explorer extraction-misses-
+  rendered-colors bug. Ground-truth palette is derived from PIL dominant-color
+  analysis on actual page screenshots captured during the ENC redesign
+  discovery work, NOT from speculation.
+
+  Reference evidence (read-only; do not move):
+    projects/ENC Explorer/_verification/redesign-discovery-2026-06-04/screenshots/current/about_1440x900.png
+    projects/ENC Explorer/_verification/redesign-discovery-2026-06-04/screenshots/current/about_375x812.png
+    projects/Resemblio/_handoff/inbox/claude/2026-06-04-extraction-misses-rendered-colors-BUG.md
+
+  The site is a WordPress install where theme.json declares stock Gutenberg
+  defaults (including #007cba accent) while Elementor / Piotnet apply the
+  actual brand colors (coral + purple + supporting blue + teal) via inline
+  styles and plugin-specific CSS. This fixture is THE regression for the
+  R3 Option A screenshot-color cross-check ratified 2026-06-04.
+
+# Mode: live-extraction only until the post-A1 extraction payload is captured
+# and pasted into extracted_payload_snapshot below. Capturing the snapshot is
+# the next maintenance step after this fixture lands (Jim-queueable as a
+# small live-extraction probe).
+live_extraction_only: true
+
+ground_truth:
+  color:
+    bg: "#ffffff"
+    text: "#313131"
+    text_strong: "#000000"
+    accent_primary: "#f8485e"        # coral red, the visibly dominant brand accent
+    accent_secondary: "#592a8a"      # purple, secondary visible accent
+    accent_tertiary: "#1e73be"       # supporting blue
+    accent_quaternary: "#07a0c3"     # teal, surfaces on /about mobile
+  # Font ground-truth omitted; the site uses a WP-stack with no single
+  # dominant brand face confirmed without internal docs. Authoring guide
+  # says: omit slots you cannot verify with confidence.
+
+tolerance:
+  color_distance_max: 12.0           # generous; quantized screenshot buckets vary
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - accent_primary                 # coral MUST be in the extracted palette
+    - accent_secondary               # purple MUST be in the extracted palette
+  must_not_include_colors:
+    - "#007cba"                      # stock Gutenberg WP accent; the bug's smoking gun
+  must_emit_palette_completeness_warning: true
+  # Why warning required: this site is the case A1 was deployed for. If
+  # extraction returns the brand accents the warning may be False; if
+  # extraction misses them the screenshot cross-check should fire the
+  # warning. Either way the test of A1 is that ONE of these signals is
+  # present. We assert the stronger contract (warning fires) because the
+  # screenshot palette is the source of truth on this URL.
+
+# extracted_payload_snapshot will be populated by the post-fixture-merge
+# live-extraction capture run. Until then this fixture skips in snapshot mode.

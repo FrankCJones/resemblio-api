@@ -1,0 +1,42 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: figma
+source_url: https://www.figma.com/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  Public-record reference brand. Figma's public brand identity exposes
+  five named brand colors widely cited across Figma's own component
+  library documentation: red (#F24E1E), orange (#FF7262), green
+  (#0ACF83), blue (#1ABCFE), purple (#A259FF). The website fronts a
+  white background and near-black text.
+
+  This fixture tests the extractor against a utility-class-style site
+  (Tailwind-flavored stack) and against a brand whose dominant accents
+  are MULTIPLE not one. The R3 Option A screenshot cross-check is
+  expected to surface multiple non-default accents.
+
+  Conservative ground truth: only the two most visually dominant accents
+  on the current homepage hero (blue + purple) are asserted as must-
+  include. The other three colors are declared so future tightening can
+  add them to must-include when verified, but not asserted now.
+
+live_extraction_only: true
+
+ground_truth:
+  color:
+    bg: "#ffffff"
+    text: "#1e1e1e"                  # Figma near-black
+    accent_primary: "#1ABCFE"        # Figma blue
+    accent_secondary: "#A259FF"      # Figma purple
+    accent_tertiary: "#0ACF83"       # Figma green
+    accent_quaternary: "#F24E1E"     # Figma red
+
+tolerance:
+  color_distance_max: 8.0
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - accent_primary                 # blue is the homepage-hero dominant
+    - accent_secondary               # purple is paired with blue in hero CTA
+  must_emit_palette_completeness_warning: false

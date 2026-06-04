@@ -1,0 +1,37 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: apple
+source_url: https://www.apple.com/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  Public-record reference brand. Apple's foreground text on apple.com
+  is the canonical "Apple near-black" (#1d1d1f) cited across Apple's
+  HIG (Human Interface Guidelines) and visible on apple.com. Background
+  is white. Apple's web font cascade fronts "SF Pro Text" / "SF Pro
+  Display" via local() declarations.
+
+  Conservative ground truth: only foreground / background / display
+  font slots are declared. Apple uses a wide range of section-specific
+  accents on apple.com that vary by featured product; no single accent
+  slot is universally assertable for the homepage. This fixture exists
+  as a CALIBRATION CONTROL for the baseline body+display+text extraction
+  path against a high-traffic, well-specified site.
+
+live_extraction_only: true
+
+ground_truth:
+  color:
+    bg: "#ffffff"
+    text: "#1d1d1f"                  # Apple near-black, public-record
+  font_family:
+    display: "SF Pro Display"
+    body: "SF Pro Text"
+
+tolerance:
+  color_distance_max: 8.0
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - text                           # near-black foreground MUST land
+  must_emit_palette_completeness_warning: false

@@ -1,0 +1,39 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: stripe
+source_url: https://stripe.com/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  Public-record reference brand. Stripe's signature accent (#635bff,
+  "Stripe purple") is widely cited in Stripe's own design-system posts
+  and is the visible brand color on stripe.com's hero. Near-black
+  foreground text (#0A2540, "Stripe ink"). White-ish surfaces.
+
+  Conservative ground truth: only colors we can name with public-record
+  confidence are declared. Stripe uses a custom typeface (Sohne) that
+  is licensed and served from Stripe's CDN; "Sohne" head-of-cascade is
+  the assertable font intent.
+
+  This fixture is a POSITIVE CONTROL: a clean, well-specified site whose
+  extraction should pass without a palette_completeness_warning and
+  without any forbidden-colors trigger. If this fails it indicates a
+  regression in the baseline extraction path, not a page-builder gotcha.
+
+live_extraction_only: true
+
+ground_truth:
+  color:
+    bg: "#ffffff"
+    text: "#0A2540"                  # Stripe near-black ink
+    accent: "#635bff"                # Stripe purple
+  font_family:
+    body: "sohne-var"                # Stripe's Sohne variable web font (lowercase per CSS)
+
+tolerance:
+  color_distance_max: 8.0
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - accent                         # Stripe purple MUST land; this is THE brand color
+  must_emit_palette_completeness_warning: false

@@ -1,0 +1,55 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: susann
+source_url: https://review.optsus.com/susann-camus/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  The original Resemblio extraction-fidelity finding (2026-05-31 PRD).
+  Ground truth is verbatim from Susann's approved Headlights v2 concept
+  HTML at projects/Clients/Susann Camus/concepts/v2-headlights-writing-life/index.html
+  and from the child theme's _optsus.note field (theme.json lines 136-141)
+  cited in the PRD.
+
+  This fixture asserts R3.1 font-link parser correctness (Anton + Inter
+  from Google Fonts) AND the R3 Option A screenshot-color cross-check
+  (ink + bone + sun yellow dominant in rendered viewport).
+
+  Reference evidence:
+    projects/Resemblio/02-prd/2026-05-31-extraction-fidelity-finding-susann.md
+    projects/Clients/Susann Camus/concepts/v2-headlights-writing-life/index.html
+    projects/Resemblio/code/api/tests/fixtures/extraction/001_susann_headlights/ground_truth.json
+
+  Note: tests/fixtures/extraction/001_susann_headlights is the synthetic-
+  HTML rubric-calibration sibling of this fixture (different layer; both
+  protect the same regression class).
+
+live_extraction_only: true
+
+ground_truth:
+  color:
+    bg: "#0B0B0F"                    # ink black
+    surface: "#14141A"               # slightly-lifted dark surface
+    text: "#F5F2EA"                  # bone
+    accent: "#FBE71F"                # sun yellow
+    border: "#3A372E"                # dim earthy hairline (from synthetic fixture)
+  font_family:
+    body: "Inter"
+    display: "Anton"
+
+tolerance:
+  color_distance_max: 8.0
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - bg                             # ink MUST land
+    - text                           # bone MUST land
+    - accent                         # sun yellow MUST land (the 2026-05-30 miss)
+  must_not_include_colors:
+    - "#f5f5f5"                      # generic light gray (the original wrong bg)
+    - "#4f46e5"                      # indigo (the original wrong accent)
+  # Warning is NOT expected here: a correctly extracted Susann should have
+  # all three accents declared (R3.1 font-link + CSS-custom-property paths
+  # cover this). If the warning fires on Susann it means the declared-
+  # token path missed something the screenshot caught.
+  must_emit_palette_completeness_warning: false

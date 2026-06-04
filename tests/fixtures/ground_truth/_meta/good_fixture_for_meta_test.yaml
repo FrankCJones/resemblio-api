@@ -1,0 +1,42 @@
+schema_version: resemblio_ground_truth_v1
+brand_slug: meta_good
+source_url: https://example.com/synthetic-good/
+fixture_authored_at: "2026-06-04"
+fixture_author: builder-r3-downstream-cycle-1
+provenance: |
+  Synthetic fixture for tests/test_ground_truth_harness_meta.py. NOT a
+  real brand. Used to prove that a known-good extracted payload passes
+  the harness clean. Pair to bad_fixture_for_meta_test.yaml which proves
+  the harness CATCHES known defects.
+
+  Excluded from the normal fixture sweep by living under _meta/.
+
+ground_truth:
+  color:
+    bg: "#ffffff"
+    text: "#0a0a0a"
+    accent: "#ff0066"                # hot pink, intentionally far from any default
+  font_family:
+    body: "Inter"
+    display: "Anton"
+
+tolerance:
+  color_distance_max: 8.0
+  font_family_match: fuzzy
+
+expected_extraction_behavior:
+  must_include_colors:
+    - accent
+  must_not_include_colors:
+    - "#007cba"
+  must_emit_palette_completeness_warning: false
+
+extracted_payload_snapshot:
+  color:
+    bg: "#ffffff"
+    text: "#0a0a0a"
+    accent: "#ff0064"                # within tolerance (Euclidean ~2.0) of #ff0066
+  font_family:
+    body: "Inter, -apple-system, sans-serif"
+    display: "Anton, 'Bebas Neue', sans-serif"
+  palette_completeness_warning: null
