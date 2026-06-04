@@ -394,6 +394,80 @@ def test_apple_button_renders_as_pill_when_snapshot_present(
         )
 
 
+def test_aeon_renders_without_google_fonts_link_tag(session: Session) -> None:
+    """L-20 graceful-degrade: Aeon's private-CDN faces emit no <link> tag.
+
+    Aeon's typography stack is ``PP Right Grotesk Wide`` / ``Academica`` /
+    ``Atlas Typewriter`` - all private licensed faces not on Google Fonts.
+    The library_web_fonts allowlist must skip them so the rendered page
+    does not 404 on a Google Fonts request. The brand still reads with
+    its CSS fallback (Helvetica/Georgia/Consolas) which is the current
+    pre-fix behaviour; the L-20 fix specifically targets the brands
+    whose stack DOES include an allowlisted family.
+    """
+    user, _key, _ = seed_user(session)
+    av = _make_aeon_asset_version(session)
+    _attach_passing_extraction(session, av, user_id=user.id)
+    _enqueue_and_drain(session, av)
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    for page in pages:
+        assert "fonts.googleapis.com" not in page.rendered_html, (
+            f"page {page.category_slug}: Aeon rendered with a Google Fonts "
+            f"link tag, but Aeon's stack has no allowlisted families. The "
+            f"link emission must be allowlist-gated; without that we 404 "
+            f"on every brand whose face is private-licensed."
+        )
+
+
+def test_brand_with_allowlisted_font_renders_google_fonts_link_tag(session: Session) -> None:
+    """L-20 happy path: an allowlisted-font brand emits the <link> tag.
+
+    Constructs a synthetic asset version whose tokens reference Inter
+    (always-allowlisted) and asserts the rendered HTML carries the
+    Google Fonts link. Pins the L-20 contract end-to-end through the
+    compose pipeline rather than just at the helper boundary.
+    """
+    user, _key, _ = seed_user(session)
+    # Build a minimal token bag that pins the family stack the indexer
+    # actually walks. Other DTCG fields are not required for the compose
+    # path; the indexer only reads the ``tokens`` sub-dict.
+    dtcg = {
+        "schema_version": SCHEMA_V1,
+        "tokens": {
+            "ds-font-display": "Inter, sans-serif",
+            "ds-font-body": "Lora, serif",
+            "ds-font-mono": "JetBrains Mono, monospace",
+        },
+    }
+    av = AssetVersion(
+        url="resemblio://seed/drl_v1/synthetic-inter/library/inter-snapshot",
+        content_hash="synthetic-inter-fixture-hash",
+        dtcg_json=dtcg,
+        manifest_schema_version=SCHEMA_V1,
+        is_public=True,
+        version_label="synthetic-inter-fixture",
+        fetched_at=datetime.now(timezone.utc),
+    )
+    session.add(av)
+    session.flush()
+    _attach_passing_extraction(session, av, user_id=user.id)
+    _enqueue_and_drain(session, av)
+
+    pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
+    assert pages, "no library_pages rows persisted"
+    for page in pages:
+        assert "fonts.googleapis.com/css2" in page.rendered_html, (
+            f"page {page.category_slug}: missing Google Fonts <link> tag for "
+            f"a brand whose stack carries allowlisted families. L-20 fix "
+            f"regression: rendered HTML must load the actual web font."
+        )
+        assert "family=Inter" in page.rendered_html, (
+            f"page {page.category_slug}: Inter family not requested in the "
+            f"Google Fonts URL"
+        )
+
+
 def test_aeon_button_renders_default_when_no_snapshot(session: Session) -> None:
     """No-snapshot path: Aeon renders the DRL default with no override block.
 

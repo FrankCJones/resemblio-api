@@ -98,6 +98,7 @@ from app.constants import (
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
 from app.brand_names import pretty_brand_name
 from app.library_style_scope import scope_style_block
+from app.library_web_fonts import build_google_fonts_link_tag
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 from extractor.button_override import apply_button_tokens
 from extractor.button_tokens import ButtonTokens, derive_button_tokens
@@ -514,11 +515,23 @@ def _compose_one_page(
     # so it lands at the same specificity as the DRL rule it overrides.
     scoped_styles = scoped_styles + LIBRARY_TEMPLATE_OVERRIDE_CSS
     inline_tokens_css = _emit_brand_root(tokens)
+    # L-20 fix (Frank, 2026-06-04): the brand's --ds-font-* tokens are
+    # already emitted into the :root block above, but the rendered HTML
+    # never loaded the actual web fonts. Every brand was falling through
+    # its family stack to ``Helvetica Neue`` / ``Georgia`` / ``Consolas``
+    # and reading identically on /library/<brand>/alphabet/. Emit a
+    # single Google Fonts <link> tag for every allowlisted family the
+    # brand declares; brands whose faces are not on Google Fonts (private
+    # CDN-only faces) still render the CSS fallback - graceful degrade,
+    # no 404 burst. See app/library_web_fonts.py.
+    web_font_link = build_google_fonts_link_tag(tokens)
+    web_font_block = f"{web_font_link}\n" if web_font_link else ""
     # Wrap in a per-page article element so the fragment is self-contained
     # when injected into the Next.js library page. The data attribute
     # carries the class for downstream CSS scoping if needed.
     fragment = (
         f'<article class="rs-library-page" data-rs-class="{class_name}" data-rs-brand="{brand_slug}">\n'
+        f"{web_font_block}"
         f"<style>\n{inline_tokens_css}\n{scoped_styles}\n</style>\n"
         f"{body}\n"
         f"</article>\n"
