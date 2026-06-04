@@ -98,7 +98,12 @@ from app.constants import (
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
 from app.brand_names import pretty_brand_name
 from app.library_style_scope import scope_style_block
-from app.library_web_fonts import build_google_fonts_link_tag
+from app.library_web_fonts import (
+    build_font_alternative_root_block,
+    build_font_disclosure_payload,
+    build_google_fonts_link_tag,
+    render_font_disclosure_html,
+)
 from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 from extractor.button_override import apply_button_tokens
 from extractor.button_tokens import ButtonTokens, derive_button_tokens
@@ -526,13 +531,27 @@ def _compose_one_page(
     # no 404 burst. See app/library_web_fonts.py.
     web_font_link = build_google_fonts_link_tag(tokens)
     web_font_block = f"{web_font_link}\n" if web_font_link else ""
+    # Phase 1 inspirado-no-copiado correction (Frank, 2026-06-04 02:35 UTC).
+    # Override the brand's --ds-font-* slots to point at the free
+    # alternative we actually loaded above so every specimen paints with
+    # the loaded face rather than falling through to a system fallback.
+    # The override block sits AFTER the brand :root block in source
+    # order so the cascade wins. The disclosure aside surfaces the
+    # brand's real font + the free-alternative attribution to the user.
+    font_alt_root_block = build_font_alternative_root_block(tokens)
+    disclosure_payload = build_font_disclosure_payload(tokens)
+    disclosure_aside = render_font_disclosure_html(
+        disclosure_payload,
+        brand_display_name=pretty_brand_name(brand_slug),
+    )
     # Wrap in a per-page article element so the fragment is self-contained
     # when injected into the Next.js library page. The data attribute
     # carries the class for downstream CSS scoping if needed.
     fragment = (
         f'<article class="rs-library-page" data-rs-class="{class_name}" data-rs-brand="{brand_slug}">\n'
         f"{web_font_block}"
-        f"<style>\n{inline_tokens_css}\n{scoped_styles}\n</style>\n"
+        f"<style>\n{inline_tokens_css}\n{font_alt_root_block}{scoped_styles}\n</style>\n"
+        f"{disclosure_aside}\n"
         f"{body}\n"
         f"</article>\n"
     )
@@ -804,7 +823,7 @@ def _brand_placeholder(
         "kicker": "Featured",
         "title": f"{pretty_brand} design snapshot",
         "headline": f"{pretty_brand} design snapshot",
-        "dek": "A brand-stripped, code-bearing view of the design system.",
+        "dek": f"Inspired by {pretty_brand}'s design system. Code-bearing tokens, ready for your stack.",
         "wordmark": pretty_brand,
         "tagline": "Design tokens, captured.",
         "cta_primary": "Explore",
@@ -960,12 +979,14 @@ def _brand_placeholder(
         "step_2_title": "Normalize",
         "step_2_dek": "Tokens collapse into a single DTCG-compatible namespace.",
         "step_3_title": "Compose",
-        "step_3_dek": "Every component re-renders against the brand-stripped tokens.",
+        "step_3_dek": "Every component re-renders against the captured tokens. Inspirado, no copiado.",
         "step_4_title": "Ship",
         "step_4_dek": "Export to your stack: Tailwind, CSS, Figma Variables, or JSON.",
         # Team-member slots (ABOUT_TEAM template). Generic role labels so
-        # the page does not invent named people; this is brand-stripped
-        # by design.
+        # the page does not invent named people. Under the Inspirado-no-copiado
+        # correction (Frank-locked 2026-06-04) the right-of-publicity boundary
+        # keeps real photos out; generic role labels are the safe default
+        # pending the Phase 3.2 avatar-policy gate.
         "member_1_name": "Design lead",
         "member_1_role": "Systems and tokens",
         "member_2_name": "Engineering lead",
