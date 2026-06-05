@@ -24,12 +24,24 @@ from extractor.confidence_rubric import (
     WARN_THRESHOLD,
     compute_confidence_rubric,
     count_generic_default_matches,
+    identify_generic_default_matches,
     score_font_specificity,
     score_generic_defaults,
     score_palette_diversity,
     score_screenshot_consistency,
 )
-from extractor.known_cms_defaults import normalize_font_stack, normalize_hex
+from extractor.known_cms_defaults import (
+    ALL_CMS_DEFAULT_FONTS,
+    ALL_CMS_DEFAULT_PALETTES,
+    SHOPIFY_DAWN_DEFAULT_PALETTE,
+    SQUARESPACE_DEFAULT_PALETTE,
+    WEBFLOW_DEFAULT_PALETTE,
+    WIX_DEFAULT_PALETTE,
+    identify_cms_font_match,
+    identify_cms_match,
+    normalize_font_stack,
+    normalize_hex,
+)
 
 
 GROUND_TRUTH_DIR = Path(__file__).parent / "fixtures" / "ground_truth" / "observed"
@@ -103,9 +115,80 @@ def test_diversity_score_partial() -> None:
 
 
 def test_count_generic_default_matches_gutenberg() -> None:
-    """Only Gutenberg accents count; trivial grayscale does not."""
+    """Gutenberg accents count; trivial grayscale does not."""
     matches = count_generic_default_matches(["#007cba", "#006ba1", "#ffffff", "#000000"])
     assert matches == 2
+
+
+def test_count_generic_default_matches_all_four_cms() -> None:
+    """Each of Shopify Dawn / Squarespace / Webflow / Wix defaults counts as a hit."""
+    matches = count_generic_default_matches([
+        "#3898ec",  # Webflow blue
+        "#116dff",  # Wix Studio blue
+        "#0072e3",  # Squarespace link blue
+        "#121212",  # Shopify Dawn primary
+        "#ffffff",  # Trivial grayscale - excluded
+        "#aa1234",  # Real brand color - not a default
+    ])
+    assert matches == 4
+
+
+def test_identify_generic_default_matches_labels_each_cms() -> None:
+    """The identifier pairs each hit with its CMS label."""
+    pairs = identify_generic_default_matches([
+        "#007cba",
+        "#3898ec",
+        "#116dff",
+        "#0072e3",
+        "#121212",
+        "#aa1234",  # Not a default; not in output
+    ])
+    labels = {label for _hex, label in pairs}
+    assert "WP Gutenberg" in labels
+    assert "Webflow" in labels
+    assert "Wix" in labels
+    assert "Squarespace 7.1" in labels
+    assert "Shopify Dawn" in labels
+    assert len(pairs) == 5
+
+
+@pytest.mark.parametrize(
+    "hex_value,expected_label",
+    [
+        ("#007cba", "WP Gutenberg"),
+        ("#3898ec", "Webflow"),
+        ("#116dff", "Wix"),
+        ("#0072e3", "Squarespace 7.1"),
+        ("#121212", "Shopify Dawn"),
+        ("#aa1234", None),
+    ],
+)
+def test_identify_cms_match(hex_value: str, expected_label: str | None) -> None:
+    """``identify_cms_match`` resolves a hex to its CMS provenance label."""
+    assert identify_cms_match(hex_value) == expected_label
+
+
+@pytest.mark.parametrize(
+    "stack,expected_label",
+    [
+        ("system-ui", "WP Gutenberg / generic"),
+        ("assistant, sans-serif", "Shopify Dawn"),
+        ("lato, sans-serif", "Squarespace 7.1"),
+        ("madefor text, sans-serif", "Wix"),
+        ("dosis, sans-serif", None),
+    ],
+)
+def test_identify_cms_font_match(stack: str, expected_label: str | None) -> None:
+    """``identify_cms_font_match`` resolves a stack to its CMS provenance label."""
+    assert identify_cms_font_match(stack) == expected_label
+
+
+def test_all_cms_default_palettes_superset() -> None:
+    """The aggregate union contains every per-CMS frozenset."""
+    assert SHOPIFY_DAWN_DEFAULT_PALETTE <= ALL_CMS_DEFAULT_PALETTES
+    assert SQUARESPACE_DEFAULT_PALETTE <= ALL_CMS_DEFAULT_PALETTES
+    assert WEBFLOW_DEFAULT_PALETTE <= ALL_CMS_DEFAULT_PALETTES
+    assert WIX_DEFAULT_PALETTE <= ALL_CMS_DEFAULT_PALETTES
 
 
 def test_score_generic_defaults_zero_hits_is_one() -> None:
@@ -192,7 +275,7 @@ def test_rubric_synthetic_clean_brand() -> None:
     assert rubric["generic_default_match_count"] == 0
     assert rubric["palette_diversity_score"] == 1.0
     assert rubric["schema_version"] == SCHEMA_VERSION
-    assert "matches WP Gutenberg default accent" not in " ".join(rubric["flags"])
+    assert "matches WP Gutenberg default palette" not in " ".join(rubric["flags"])
 
 
 def test_rubric_synthetic_susann_pathology() -> None:
@@ -212,6 +295,69 @@ def test_rubric_synthetic_susann_pathology() -> None:
     assert rubric["composite_confidence"] < WARN_THRESHOLD
     assert any("font slots are generic" in flag or "every populated font" in flag for flag in rubric["flags"])
     assert any("screenshot palette missed" in flag for flag in rubric["flags"])
+
+
+def test_rubric_synthetic_shopify_dawn_stock() -> None:
+    """Stock Shopify Dawn install must trip the rubric below threshold."""
+    tokens = {
+        "bg": "#ffffff",
+        "text": "#121212",
+        "accent": "#1773b0",
+        "surface": "#fbfaf6",
+        "border": "#eeeeee",
+        "text_muted": "#34495e",
+        "font_body": "Assistant, sans-serif",
+        "font_display": "Assistant, sans-serif",
+    }
+    rubric = compute_confidence_rubric(tokens, palette_completeness_warning=[])
+    assert rubric["composite_confidence"] < WARN_THRESHOLD
+    assert any("Shopify Dawn" in flag for flag in rubric["flags"])
+
+
+def test_rubric_synthetic_webflow_stock() -> None:
+    """Stock Webflow project must trip the rubric below threshold."""
+    tokens = {
+        "bg": "#ffffff",
+        "text": "#333333",
+        "accent": "#3898ec",
+        "surface": "#f5f5f5",
+        "border": "#dddddd",
+        "font_body": "Inter, sans-serif",
+    }
+    rubric = compute_confidence_rubric(tokens, palette_completeness_warning=[])
+    assert rubric["composite_confidence"] < WARN_THRESHOLD
+    assert any("Webflow" in flag for flag in rubric["flags"])
+
+
+def test_rubric_synthetic_wix_studio_stock() -> None:
+    """Stock Wix Studio install must trip the rubric below threshold."""
+    tokens = {
+        "bg": "#ffffff",
+        "text": "#000000",
+        "accent": "#116dff",
+        "surface": "#f5f5f5",
+        "font_body": "Madefor Text, sans-serif",
+        "font_display": "Madefor Display, sans-serif",
+    }
+    rubric = compute_confidence_rubric(tokens, palette_completeness_warning=[])
+    assert rubric["composite_confidence"] < WARN_THRESHOLD
+    assert any("Wix" in flag for flag in rubric["flags"])
+
+
+def test_rubric_synthetic_squarespace_stock() -> None:
+    """Stock Squarespace 7.1 install must trip the rubric below threshold."""
+    tokens = {
+        "bg": "#ffffff",
+        "text": "#000000",
+        "accent": "#0072e3",
+        "surface": "#f5f5f5",
+        "text_strong": "#1a1a1a",
+        "font_body": "Lato, sans-serif",
+        "font_display": "Proxima Nova, sans-serif",
+    }
+    rubric = compute_confidence_rubric(tokens, palette_completeness_warning=[])
+    assert rubric["composite_confidence"] < WARN_THRESHOLD
+    assert any("Squarespace" in flag for flag in rubric["flags"])
 
 
 def test_rubric_empty_tokens() -> None:
@@ -239,7 +385,7 @@ def test_ground_truth_encexplorer_flags_gutenberg_default() -> None:
     rubric = compute_confidence_rubric(payload["tokens"], palette_completeness_warning=[])
     assert rubric["generic_default_match_count"] >= 1
     assert rubric["composite_confidence"] < WARN_THRESHOLD
-    assert any("Gutenberg" in flag for flag in rubric["flags"])
+    assert any("WP Gutenberg" in flag for flag in rubric["flags"])
 
 
 def test_ground_truth_stripe_clears_threshold() -> None:

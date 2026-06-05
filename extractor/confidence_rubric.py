@@ -30,16 +30,20 @@ from __future__ import annotations
 from typing import Final, Mapping, TypedDict
 
 from extractor.known_cms_defaults import (
+    ALL_CMS_DEFAULT_FONTS,
+    ALL_CMS_DEFAULT_PALETTES,
     GENERIC_SANS_FONTS,
     GUTENBERG_DEFAULT_ACCENTS,
     SCHEMA_VERSION as KNOWN_CMS_DEFAULTS_SCHEMA,
     TRIVIAL_GRAYSCALE,
+    identify_cms_font_match,
+    identify_cms_match,
     normalize_font_stack,
     normalize_hex,
 )
 
 
-SCHEMA_VERSION: Final[str] = "resemblio_confidence_rubric_v1@1.0"
+SCHEMA_VERSION: Final[str] = "resemblio_confidence_rubric_v1@1.1"
 
 # Color slots inspected for diversity / generic-default analysis. Aligned
 # with the slot set ``quality_heuristics.py`` uses, so the rubric and the
@@ -188,7 +192,7 @@ def score_palette_diversity(populated_hexes: list[str]) -> float:
     distinct_brand_hues = {
         hex_value
         for hex_value in populated_hexes
-        if hex_value not in TRIVIAL_GRAYSCALE and hex_value not in GUTENBERG_DEFAULT_ACCENTS
+        if hex_value not in TRIVIAL_GRAYSCALE and hex_value not in ALL_CMS_DEFAULT_PALETTES
     }
     count = len(distinct_brand_hues)
     if count >= DIVERSITY_FULL_AT:
@@ -202,14 +206,45 @@ def score_palette_diversity(populated_hexes: list[str]) -> float:
 
 
 def count_generic_default_matches(populated_hexes: list[str]) -> int:
-    """Count declared colors that match a Gutenberg-default accent.
+    """Count declared colors that match any registered CMS-default palette.
 
     Trivial grayscale is intentionally excluded from this count: a brand
     palette can legitimately include black and white. The presence of
-    ``#007cba`` or another Gutenberg slug, in contrast, is almost always
-    a stock theme.json signal.
+    ``#007cba`` (Gutenberg), ``#3898ec`` (Webflow), ``#116dff`` (Wix
+    Studio), ``#121212`` (Shopify Dawn), or ``#0072e3`` (Squarespace) in
+    the declared tokens is almost always a stock-theme signal rather than
+    a real brand choice.
+
+    Note: hexes that ALSO appear in ``TRIVIAL_GRAYSCALE`` (e.g. ``#f5f5f5``
+    which is both a Squarespace + Webflow + Wix default and a trivial
+    grayscale) are excluded here, so the dimension penalizes only the
+    "deliberate-looking default" hits, not the universal grayscale ones.
     """
-    return sum(1 for hex_value in populated_hexes if hex_value in GUTENBERG_DEFAULT_ACCENTS)
+    return sum(
+        1
+        for hex_value in populated_hexes
+        if hex_value in ALL_CMS_DEFAULT_PALETTES and hex_value not in TRIVIAL_GRAYSCALE
+    )
+
+
+def identify_generic_default_matches(populated_hexes: list[str]) -> list[tuple[str, str]]:
+    """Return ``(hex, cms_label)`` pairs for each CMS-default match.
+
+    Used by ``compute_confidence_rubric`` to render flag strings that name
+    which CMS triggered the match. Excludes trivial grayscale for the same
+    reason ``count_generic_default_matches`` does. Preserves input order;
+    duplicates in ``populated_hexes`` produce duplicate pairs (intended -
+    a palette with both ``accent`` and ``accent_2`` set to ``#3898ec``
+    is two distinct extraction failures, not one).
+    """
+    out: list[tuple[str, str]] = []
+    for hex_value in populated_hexes:
+        if hex_value in TRIVIAL_GRAYSCALE:
+            continue
+        label = identify_cms_match(hex_value)
+        if label is not None:
+            out.append((hex_value, label))
+    return out
 
 
 def score_generic_defaults(match_count: int) -> float:
@@ -230,7 +265,7 @@ def score_font_specificity(populated_fonts: list[str]) -> tuple[float, int]:
     """
     if not populated_fonts:
         return 0.0, 0
-    generic_hits = sum(1 for stack in populated_fonts if stack in GENERIC_SANS_FONTS)
+    generic_hits = sum(1 for stack in populated_fonts if stack in ALL_CMS_DEFAULT_FONTS)
     score = 1.0 - (generic_hits / len(populated_fonts)) * FONT_SPECIFICITY_GENERIC_PENALTY
     return max(0.0, min(1.0, score)), generic_hits
 
@@ -287,7 +322,8 @@ def compute_confidence_rubric(
     populated_fonts = _populated_fonts(tokens)
 
     diversity_score = score_palette_diversity(populated_hexes)
-    match_count = count_generic_default_matches(populated_hexes)
+    cms_matches = identify_generic_default_matches(populated_hexes)
+    match_count = len(cms_matches)
     generic_default_score = score_generic_defaults(match_count)
     font_score, generic_font_hits = score_font_specificity(populated_fonts)
     screenshot_score = score_screenshot_consistency(palette_completeness_warning)
@@ -298,7 +334,13 @@ def compute_confidence_rubric(
 
     flags: list[str] = []
     if match_count > 0:
-        flags.append(f"matches WP Gutenberg default accent ({match_count} hit(s))")
+        # Group matches by CMS label so the flag names each platform once
+        # with its hit count, rather than producing one flag per hex.
+        by_label: dict[str, int] = {}
+        for _hex, label in cms_matches:
+            by_label[label] = by_label.get(label, 0) + 1
+        for label, count in by_label.items():
+            flags.append(f"matches {label} default palette ({count} hit(s))")
     if not populated_hexes:
         flags.append("no color slots populated")
     elif diversity_score == 0.0:
