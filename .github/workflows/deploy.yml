@@ -178,7 +178,23 @@ jobs:
           echo "Git-SHA parity OK: prod at ${ACTUAL_SHA} (matches workflow trigger)."
 
           /opt/resemblio-api/venv/bin/pip install -q --upgrade pip
-          /opt/resemblio-api/venv/bin/pip install -q -e .
+          # Install with [browser] extra so Pillow + Playwright land in the prod
+          # venv. Without the extra, the screenshot raster pass silently degrades
+          # (Pillow missing -> PIL import fails -> raster fallback). Locked
+          # 2026-06-04 after A1.1 deploy (commit 570fe1b) landed but the prod
+          # venv was probed and Pillow was absent. The `[browser]` group is
+          # declared in pyproject.toml under [project.optional-dependencies].
+          # Quoting `".[browser]"` is required so the shell does not glob the
+          # bracket expression. Note: this step installs the Playwright Python
+          # package; the chromium browser binary itself is installed separately
+          # in the next step (idempotent; no-op when already present).
+          /opt/resemblio-api/venv/bin/pip install -q -e ".[browser]"
+
+          # Ensure the Chromium binary Playwright drives is present. Idempotent
+          # (Playwright skips download when the version is already on disk).
+          # Required for the screenshot raster pass to actually launch a browser
+          # after the Python package install above.
+          /opt/resemblio-api/venv/bin/playwright install chromium
 
           # Load RESEMBLIO_DB_URL from the production env file. Required so
           # alembic talks to the right database without inheriting whatever
