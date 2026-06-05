@@ -122,6 +122,14 @@ class ExtractionResponse(BaseModel):
     # is an ADDITIVE extension of `schema_version=2`; v1.1 R2 clients
     # parsing v2 must ignore unknown fields per the v1.1 brief.
     palette_completeness_warning: list[str] | None = None
+    # S20 confidence rubric (R3-downstream cycle #2, 2026-06-04). Per-extraction
+    # breakdown of palette diversity, generic-default match count, font
+    # specificity, screenshot consistency, and a composite confidence score
+    # with human-readable flags. ADDITIVE on schema_version=2; clients ignore
+    # unknown fields per the v1.1 R2 brief. Null on cached GET reads (the
+    # rubric is recomputed per extraction alongside the screenshot palette
+    # pass, not persisted on the row). Schema: ``resemblio_confidence_rubric_v1``.
+    confidence_rubric: dict[str, Any] | None = None
 
 
 class ExtractionListItem(BaseModel):

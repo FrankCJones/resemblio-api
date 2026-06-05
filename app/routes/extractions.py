@@ -373,6 +373,7 @@ def _response_for(
     extraction: Extraction,
     storage: R2Storage,
     palette_completeness_warning: list[str] | None = None,
+    confidence_rubric: dict[str, Any] | None = None,
 ) -> ExtractionResponse:
     """Convert an extraction row to the public response shape.
 
@@ -438,6 +439,7 @@ def _response_for(
         quality_score_components=_components_for(extraction),
         refunded=refunded,
         palette_completeness_warning=palette_completeness_warning,
+        confidence_rubric=confidence_rubric,
     )
 
 
@@ -785,6 +787,7 @@ def _create_extraction_inner(
                 extraction,
                 storage,
                 palette_completeness_warning=bundle.palette_completeness_warning,
+                confidence_rubric=bundle.confidence_rubric,
             )
         extraction.raw_quality_score = result.composite_score
         extraction.quality_score = penalty_result.penalized_score
@@ -832,6 +835,7 @@ def _create_extraction_inner(
         extraction,
         storage,
         palette_completeness_warning=bundle.palette_completeness_warning,
+        confidence_rubric=bundle.confidence_rubric,
     )
 
 

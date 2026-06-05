@@ -184,6 +184,11 @@ class ExtractionBundle:
     extracted_at: datetime
     schema_version: int
     palette_completeness_warning: list[str] | None = None
+    # S20 confidence rubric (R3-downstream cycle #2). Computed at bundle
+    # build time from the same tokens + palette warning the response carries,
+    # so the rubric values stay in sync with whatever the customer receives.
+    # See ``extractor.confidence_rubric`` for the schema.
+    confidence_rubric: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -261,6 +266,11 @@ def bundle_from_token_set(
     with ZipFile(zip_buffer, "w", ZIP_DEFLATED) as zip_file:
         zip_file.writestr("tokens.json", json.dumps(dtcg_json, indent=2, sort_keys=True))
         zip_file.writestr("manifest.json", json.dumps(manifest.as_json(), indent=2, sort_keys=True))
+    # Compute the S20 confidence rubric from the same inputs the response
+    # surface uses. Lazy import keeps the bridge module import-cheap for
+    # tests that patch out the extractor entirely.
+    from extractor.confidence_rubric import compute_confidence_rubric
+    rubric = compute_confidence_rubric(tokens_json, palette_completeness_warning)
     return ExtractionBundle(
         tokens_json=tokens_json,
         dtcg_json=dtcg_json,
@@ -268,6 +278,7 @@ def bundle_from_token_set(
         extracted_at=completed_at,
         schema_version=SCHEMA_VERSION,
         palette_completeness_warning=palette_completeness_warning,
+        confidence_rubric=dict(rubric),
     )
 
 
