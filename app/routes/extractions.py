@@ -369,7 +369,11 @@ def _components_for(extraction: Extraction) -> QualityScoreComponents | None:
     )
 
 
-def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionResponse:
+def _response_for(
+    extraction: Extraction,
+    storage: R2Storage,
+    palette_completeness_warning: list[str] | None = None,
+) -> ExtractionResponse:
     """Convert an extraction row to the public response shape.
 
     Includes S20 quality-scoring fields when the row has been scored. For
@@ -381,6 +385,13 @@ def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionRespo
     `schema_version` on the response is bumped to `SCHEMA_V1_1` regardless of
     the row's own `schema_version` column (which tracks the extractor output
     contract, not the API response contract). Old fields stay populated.
+
+    A1.1 (2026-06-04): ``palette_completeness_warning`` is threaded in from
+    the freshly-built ``ExtractionBundle`` on the POST create path; cached
+    GET reads pass None because the warning is not persisted on the row
+    (the rendered-palette pass runs per-extraction; the DB carries only
+    the final token set). Callers that need a historic warning re-run
+    extraction.
     """
     download_url = storage.sign_download_url(extraction.r2_zip_key) if extraction.r2_zip_key else None
     tokens_url = _tokens_url_for(extraction, storage)
@@ -426,6 +437,7 @@ def _response_for(extraction: Extraction, storage: R2Storage) -> ExtractionRespo
         raw_quality_score=extraction.raw_quality_score,
         quality_score_components=_components_for(extraction),
         refunded=refunded,
+        palette_completeness_warning=palette_completeness_warning,
     )
 
 
@@ -769,7 +781,11 @@ def _create_extraction_inner(
             extraction.error_log = f"quality scoring failed: {score_exc!r}"
             session.commit()
             session.refresh(extraction)
-            return _response_for(extraction, storage)
+            return _response_for(
+                extraction,
+                storage,
+                palette_completeness_warning=bundle.palette_completeness_warning,
+            )
         extraction.raw_quality_score = result.composite_score
         extraction.quality_score = penalty_result.penalized_score
         extraction.quality_dimension_scores = result.dimension_scores
@@ -812,7 +828,11 @@ def _create_extraction_inner(
                 )
         session.commit()
         session.refresh(extraction)
-    return _response_for(extraction, storage)
+    return _response_for(
+        extraction,
+        storage,
+        palette_completeness_warning=bundle.palette_completeness_warning,
+    )
 
 
 @router.get("/extractions", response_model=ExtractionListResponse)

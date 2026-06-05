@@ -1,4 +1,4 @@
-"""Capture rendered-pixel dominant colors via Playwright Canvas.
+"""Capture rendered-pixel dominant colors via Playwright + Pillow raster.
 
 The Resemblio extractor previously trusted declared CSS tokens (theme.json
 `dtcg.color`, `:root` custom properties, computed styles on a small
@@ -9,51 +9,67 @@ Divi / inline styles / SVG fills that the element census never samples.
 
 This module is the deterministic pre-LLM pass that closes the
 "missed actually-rendered brand colors" diagnostic class from the
-2026-06-04 ENC Explorer redesign bug report. Per the report's
-recommended Option A, it:
+2026-06-04 ENC Explorer redesign bug report.
 
-- Renders the page in headless Chromium (same Playwright runtime as
-  ``computed_styles``)
-- Captures a viewport screenshot via the in-page Canvas API
-  (``OffscreenCanvas`` + ``getImageData``) so no Pillow/PIL Python
-  dependency is required
-- Counts pixel colors quantized to a coarse grid (default 16 per channel,
-  i.e. 4096 buckets) to absorb anti-aliasing noise
-- Returns the top-N buckets above a pixel-count threshold as the
-  "rendered palette"
+Architecture (A1.1, 2026-06-04, supersedes the original Canvas/DOM-walk
+approach):
+
+- Navigate Chromium to the LIVE URL with ``page.goto(url,
+  wait_until='networkidle')``. The earlier ``page.set_content(html)``
+  path used ``about:blank`` as the base URL, so linked CSS + JS + font
+  + image assets never loaded. On WordPress / Elementor sites the DOM
+  the script then walked was UA-default-styled, which collapsed the
+  rendered-palette signal and let the LLM fall back to the stock
+  Gutenberg ``#007cba`` accent.
+- Capture a true viewport raster via ``page.screenshot(full_page=False,
+  type='png')`` and decode the PNG bytes with Pillow. Pixel colors are
+  quantized to ``QUANTIZATION_STEP`` per channel and counted by raw
+  pixel count. This is the pixel-perfect signal the JS DOM-walk pass
+  was trying to approximate.
+- Return ``report["colors"]`` in the SAME shape as before so
+  ``filter_against_declared`` + ``render_for_prompt`` keep working
+  unchanged.
 
 The output is passed to the LLM as a structured "rendered palette"
 signal block ALONGSIDE the existing declared-token signals. The LLM
 folds dominant rendered colors into the TokenSet slots (accent /
 surface / etc.) when they are not already represented by a declared
-token. This deliberately does NOT add a new field to the customer-
-facing API response envelope (which is RED per the R3.1 authority
-bundle); the cross-check lands inside the existing TokenSet shape.
+token. ``palette_completeness_warning`` is ALSO surfaced on the
+customer-facing API response envelope (additive field, default null)
+when one or more rendered-dominant colors survive declared-color
+filtering: callers can branch on it to flag suspected stock-default
+extractions even when the LLM did surface a plausible-looking token.
 
-Graceful degradation: if Playwright is not installed the helper returns
-a report with `status="unavailable"`. The extractor omits the prompt
-block and continues with declared-token-only reasoning. This keeps
-behavior identical to today's path on runtimes without the optional
-browser extra installed.
+Graceful degradation: if Playwright OR Pillow is not installed, the
+helper returns a report with ``status="unavailable"``. The extractor
+omits the prompt block and the API response carries
+``palette_completeness_warning=null``. Behavior is identical to
+today's path on runtimes without the optional browser extra.
 
 Throwaway: NO. Quality floor applies. Tests in
-tests/test_screenshot_palette.py exercise the pure-data report shape
-and the JS template; live-browser execution is opt-in via
+tests/test_screenshot_palette.py exercise the pure-data report shape,
+the dedup-against-declared filter, the prompt rendering, and the
+warning-payload helper. Live-browser execution is opt-in via
 RESEMBLIO_RUN_REAL_BROWSER=1.
 
 Source bug report:
     projects/Resemblio/_handoff/inbox/claude/2026-06-04-extraction-misses-rendered-colors-BUG.md
+Diagnosis (root cause class e):
+    projects/Resemblio/_handoff/inbox/claude/2026-06-04-A1-extractor-regression-DIAGNOSIS.md
 """
 from __future__ import annotations
 
-import json
 import logging
-import os
 from typing import Any, Literal, TypedDict
 
 LOG = logging.getLogger(__name__)
 
-SCHEMA_VERSION = 1
+# Bumped to 2 on 2026-06-04 (A1.1). The colors[] shape is unchanged but
+# ``pixel_count`` semantics flipped: v1 reported DOM-area weighted units
+# from the in-page walk, v2 reports actual screenshot pixel counts. Any
+# downstream consumer that compared counts across schema versions must
+# branch on this field.
+SCHEMA_VERSION = 2
 
 # Pixel-count threshold as a FRACTION of the captured viewport pixels.
 # Per PM recommendation in the bug report: a color must occupy at least
@@ -87,10 +103,17 @@ QUANTIZATION_STEP = 16
 COLOR_SIMILARITY_THRESHOLD = 8.0
 """Maximum Euclidean RGB distance for treating two colors as equivalent."""
 
-# Hard timeout for the whole render+screenshot+count step. Matches the
-# computed_styles budget so the two passes can share a render budget.
-DEFAULT_TIMEOUT_MS = 8_000
-"""Hard timeout for the entire render + screenshot + count step."""
+# Hard timeout for the whole render+screenshot+count step. The original
+# 8000ms budget was tuned for the in-page Canvas/DOM-walk pass against
+# already-fetched HTML loaded via ``page.set_content``. The A1.1 raster
+# path replaces that with a real ``page.goto(url, wait_until='networkidle')``
+# plus a PNG screenshot + Pillow decode, which now includes the full
+# external-asset network cycle (CSS, JS, fonts, hero images). 15000ms
+# gives modern WordPress + Elementor pages headroom for the networkidle
+# transition without sitting on the budget. The computed_styles pass
+# stays at 8000ms because it still uses set_content (cheap-HTML mode).
+DEFAULT_TIMEOUT_MS = 15_000
+"""Hard timeout for the entire navigate + screenshot + decode step."""
 
 # Capture viewport. The default matches a common desktop ICP viewport
 # and keeps the pixel count bounded so the JS counting pass stays fast.
@@ -158,7 +181,13 @@ def build_capture_script(
     pixel_fraction: float = DOMINANT_PIXEL_FRACTION,
     max_colors: int = MAX_DOMINANT_COLORS,
 ) -> str:
-    """Return the JS that renders the viewport to a canvas and counts colors.
+    """Return the legacy JS DOM-walk capture script (DEPRECATED after A1.1).
+
+    A1.1 (2026-06-04) replaced the in-page DOM-walk pseudo-screenshot
+    with a real ``page.screenshot()`` PNG raster decoded by Pillow.
+    This helper is kept for ``_coerce_payload`` symmetry and for the
+    legacy test that asserts the thresholds embed in the JS string;
+    ``capture_screenshot_palette`` no longer invokes the script.
 
     The script returns a JSON-serialisable dict ``{viewport, totalPixels, buckets}``
     where ``buckets`` is an array of ``{r, g, b, count}`` sorted by count
@@ -273,31 +302,48 @@ def capture_screenshot_palette(
     viewport_width: int = DEFAULT_VIEWPORT_WIDTH,
     viewport_height: int = DEFAULT_VIEWPORT_HEIGHT,
 ) -> ScreenshotPaletteReport:
-    """Render ``html`` (or navigate to ``url``) and return dominant colors.
+    """Navigate to ``url`` (or load ``html``) and return rendered dominant colors.
 
-    Exactly one of ``html`` or ``url`` must be provided. ``html`` is
-    preferred for the extraction path because the extractor has already
-    fetched the body and we avoid a second network round-trip.
+    Exactly one of ``html`` or ``url`` must be provided.
+
+    Architecture note (A1.1, 2026-06-04): ``url`` is the canonical
+    extraction path. ``page.goto(url, wait_until='networkidle')`` lets
+    Chromium fetch the same external assets (CSS, JS, web fonts, hero
+    images) the visible site loads, which is what the WordPress +
+    page-builder pathology demands. The earlier ``page.set_content(html)``
+    path used ``about:blank`` as the base URL, which broke every linked
+    asset; the resulting DOM the script walked was UA-default-styled,
+    and the LLM fell back to the stock Gutenberg ``#007cba`` accent.
+
+    The ``html`` mode is retained as a degraded fallback for callers
+    that lack the URL (it executes set_content with the same caveats
+    the diagnosis flagged). New code should always pass ``url``.
+
+    Capture uses ``page.screenshot(full_page=False, type='png')`` to
+    produce a true viewport raster, then Pillow decodes the PNG bytes
+    in-process. Pixels are quantized to ``QUANTIZATION_STEP`` per
+    channel and counted by raw pixel count.
 
     The function NEVER raises; the caller treats any non-"ok" status as
     "no rendered-palette signal available" and omits the prompt block.
 
     Args:
-        html: Rendered HTML to load via ``page.set_content``. Mutually
-            exclusive with ``url``.
+        html: Rendered HTML to load via ``page.set_content`` (degraded
+            mode; external assets will NOT load). Mutually exclusive
+            with ``url``.
         url: URL to navigate to via ``page.goto``. Mutually exclusive
-            with ``html``.
-        timeout_ms: Hard timeout for the whole render+capture step.
+            with ``html``. The preferred path.
+        timeout_ms: Hard timeout for the whole navigate + screenshot +
+            decode step. Default ``DEFAULT_TIMEOUT_MS`` (15000ms).
         viewport_width: Capture viewport width in CSS pixels.
         viewport_height: Capture viewport height in CSS pixels.
 
     Returns:
         - status="ok" with populated colors on success
-        - status="unavailable" when Playwright is not importable or its
-          Chromium binary is missing
+        - status="unavailable" when Playwright OR Pillow is not
+          importable, or when the Chromium binary is missing
         - status="error" with a short error message on runtime failure
-          (timeout, navigation failure, JS exception, JS-side error
-          returned from the capture script)
+          (timeout, navigation failure, decode failure)
     """
     if html is None and url is None:
         return empty_report("error", "neither html nor url supplied")
@@ -314,7 +360,19 @@ def capture_screenshot_palette(
     except ImportError:  # pragma: no cover - sync_api always ships Error
         PlaywrightError = Exception  # type: ignore[assignment,misc]
 
-    script = build_capture_script()
+    # Pillow is the second runtime dep introduced by the A1.1 fix. It is
+    # imported at call-time (not module-level) so installations without
+    # the optional [browser] extra still import this module cleanly and
+    # degrade to status="unavailable" at first use, matching the
+    # Playwright degradation pattern above.
+    try:
+        from PIL import Image  # type: ignore[import-not-found]
+    except ImportError:
+        return empty_report(
+            "unavailable",
+            "pillow is not installed in this runtime (required for screenshot decode)",
+        )
+
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -325,10 +383,13 @@ def capture_screenshot_palette(
                 page = context.new_page()
                 page.set_default_timeout(timeout_ms)
                 if html is not None:
+                    # Degraded fallback: linked assets will NOT load.
                     page.set_content(html, wait_until="domcontentloaded")
                 else:
-                    page.goto(url or "", wait_until="domcontentloaded")
-                raw = page.evaluate(script)
+                    # Canonical path. networkidle lets Elementor / Piotnet /
+                    # Divi JS finish injecting inline styles before we capture.
+                    page.goto(url or "", wait_until="networkidle")
+                png_bytes = page.screenshot(full_page=False, type="png")
             finally:
                 browser.close()
     except PlaywrightError as exc:
@@ -341,7 +402,96 @@ def capture_screenshot_palette(
     except Exception as exc:  # noqa: BLE001 - defensive: never raise to the caller
         return empty_report("error", f"capture failure: {type(exc).__name__}: {str(exc)[:200]}")
 
-    return _coerce_payload(raw)
+    return _decode_png_and_count(png_bytes, Image)
+
+
+def _decode_png_and_count(png_bytes: bytes, image_module: Any) -> ScreenshotPaletteReport:
+    """Decode raw PNG bytes via Pillow and bucket dominant colors.
+
+    ``image_module`` is the imported ``PIL.Image`` module (injected so
+    the call site keeps the import optional; this helper does not need
+    to repeat the ImportError dance).
+
+    Quantization: each RGB channel is rounded down to the nearest
+    multiple of ``QUANTIZATION_STEP`` (16 by default, giving 4096
+    buckets). This absorbs anti-aliasing variance so a single brand
+    color spread across a button + text + border still collapses into
+    one bucket. Pixels with alpha < 13 (5%) are skipped so transparent
+    overlay layers do not skew the palette toward "background underneath".
+
+    Edge cases handled:
+    - Empty PNG (0x0 viewport): returns status="ok" with no colors.
+    - Decode failure: returns status="error" with the exception class
+      and the first 200 chars of the message.
+    """
+    from io import BytesIO
+
+    try:
+        with image_module.open(BytesIO(png_bytes)) as raw_image:
+            # RGBA gives us alpha so we can skip transparent overlay pixels.
+            image = raw_image.convert("RGBA")
+            width, height = image.size
+            if width <= 0 or height <= 0:
+                return ScreenshotPaletteReport(
+                    status="ok",
+                    colors=[],
+                    viewport=(width, height),
+                    total_pixels=0,
+                    error=None,
+                    schema_version=SCHEMA_VERSION,
+                )
+            pixels = list(image.getdata())
+    except Exception as exc:  # noqa: BLE001 - defensive: never raise
+        return empty_report(
+            "error", f"png decode failure: {type(exc).__name__}: {str(exc)[:200]}"
+        )
+
+    total_pixels = width * height
+    # Alpha cutoff. Pillow alpha is 0..255; 13 == ~5% which mirrors the
+    # 0.05 cutoff the legacy JS path used on rgba() strings.
+    alpha_cutoff = 13
+    step = QUANTIZATION_STEP
+    counts: dict[tuple[int, int, int], int] = {}
+    for pixel in pixels:
+        r, g, b, a = pixel
+        if a < alpha_cutoff:
+            continue
+        # Floor-quantize so the bucket KEY is the channel midpoint base.
+        # This matches the legacy ``Math.round(v/step)*step`` close enough
+        # for dedup purposes (the COLOR_SIMILARITY_THRESHOLD pass handles
+        # the residual variance against declared tokens).
+        key = (
+            (r // step) * step,
+            (g // step) * step,
+            (b // step) * step,
+        )
+        counts[key] = counts.get(key, 0) + 1
+
+    colors: list[DominantColor] = []
+    fraction_floor = DOMINANT_PIXEL_FRACTION
+    for (rq, gq, bq), count in counts.items():
+        fraction = count / total_pixels if total_pixels > 0 else 0.0
+        if fraction < fraction_floor:
+            continue
+        colors.append(
+            DominantColor(
+                hex=f"#{rq:02x}{gq:02x}{bq:02x}",
+                rgb=(rq, gq, bq),
+                pixel_count=count,
+                pixel_fraction=fraction,
+            )
+        )
+    colors.sort(key=lambda c: c["pixel_count"], reverse=True)
+    colors = colors[:MAX_DOMINANT_COLORS]
+
+    return ScreenshotPaletteReport(
+        status="ok",
+        colors=colors,
+        viewport=(width, height),
+        total_pixels=total_pixels,
+        error=None,
+        schema_version=SCHEMA_VERSION,
+    )
 
 
 def _coerce_payload(raw: Any) -> ScreenshotPaletteReport:
@@ -517,6 +667,40 @@ def render_for_prompt(
     return "\n".join(lines)
 
 
+def palette_completeness_warning(
+    report: ScreenshotPaletteReport,
+    declared_hex_colors: list[str] | None,
+) -> list[str] | None:
+    """Return the warning list for the API response envelope, or None.
+
+    The warning lists every screenshot-dominant color (lowercase hex) that
+    SURVIVED filtering against the declared palette and computed-style
+    samples. A non-None return means the rendered page carries at least
+    one visually dominant color that the declared-token pipeline missed,
+    which on WordPress + page-builder sites is the classic stock-default
+    extraction smell.
+
+    Contract:
+    - Returns ``None`` (not ``[]``) when the report is unavailable, an
+      error, or has zero surviving colors. Downstream consumers branch
+      on truthiness so the absence of a warning and the absence of the
+      capability collapse to one shape on the wire.
+    - Returns a non-empty ``list[str]`` of lowercase ``#rrggbb`` hex
+      strings, in the same order ``filter_against_declared`` emitted
+      them (by descending pixel_count). Order is part of the contract:
+      the first entry is the strongest "missed accent" candidate.
+    - Never raises. A1.1 ENC regression locked this to additive
+      response-envelope semantics; a raise here would propagate into
+      the customer-facing extraction response.
+    """
+    if report["status"] != "ok" or not report["colors"]:
+        return None
+    surviving = filter_against_declared(report, declared_hex_colors or [])
+    if not surviving:
+        return None
+    return [color["hex"] for color in surviving]
+
+
 # ----------------------------------------------------------------------
 # Public re-exports for the extractor glue
 # ----------------------------------------------------------------------
@@ -537,6 +721,7 @@ __all__ = [
     "empty_report",
     "filter_against_declared",
     "hex_to_rgb",
+    "palette_completeness_warning",
     "render_for_prompt",
     "rgb_distance",
 ]

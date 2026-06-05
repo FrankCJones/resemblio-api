@@ -12,10 +12,13 @@ Source bug report:
 """
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from extractor.screenshot_palette import (
     COLOR_SIMILARITY_THRESHOLD,
+    DEFAULT_TIMEOUT_MS,
     DEFAULT_VIEWPORT_HEIGHT,
     DEFAULT_VIEWPORT_WIDTH,
     DOMINANT_PIXEL_FRACTION,
@@ -25,11 +28,13 @@ from extractor.screenshot_palette import (
     DominantColor,
     ScreenshotPaletteReport,
     _coerce_payload,
+    _decode_png_and_count,
     build_capture_script,
     capture_screenshot_palette,
     empty_report,
     filter_against_declared,
     hex_to_rgb,
+    palette_completeness_warning,
     render_for_prompt,
     rgb_distance,
 )
@@ -353,3 +358,178 @@ def test_dominance_threshold_is_a_fraction() -> None:
 def test_color_similarity_threshold_is_positive() -> None:
     """Distance threshold is a positive RGB delta."""
     assert COLOR_SIMILARITY_THRESHOLD > 0
+
+
+def test_default_timeout_lifted_for_a1_1_navigate_path() -> None:
+    """The A1.1 raster path needs networkidle headroom; 15s replaces 8s."""
+    # The screenshot pass now waits for networkidle then takes a real PNG
+    # screenshot and decodes via Pillow. The previous 8000ms budget was
+    # tuned for set_content+DOM-walk; the navigate path needs more room.
+    assert DEFAULT_TIMEOUT_MS >= 15_000
+
+
+# ---------------------------------------------------------------------------
+# A1.1 Part 1: Pillow-decoded raster path
+# ---------------------------------------------------------------------------
+
+
+def _make_solid_png(width: int, height: int, rgba: tuple[int, int, int, int]) -> bytes:
+    """Build a flat-color RGBA PNG for raster-path tests.
+
+    Pillow is imported lazily so the test module still loads on runtimes
+    without the [browser] extra installed; the test itself is skipped in
+    that case via the pytest.importorskip call below.
+    """
+    pil_image = pytest.importorskip("PIL.Image")
+    from io import BytesIO
+
+    image = pil_image.new("RGBA", (width, height), rgba)
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+def test_decode_png_and_count_buckets_solid_brand_color() -> None:
+    """A flat coral PNG bucketed by Pillow surfaces coral as the dominant color.
+
+    This is the unit-test seam for the A1.1 raster path: the helper
+    receives PNG bytes (what `page.screenshot()` returns), decodes via
+    Pillow, quantizes to QUANTIZATION_STEP, and produces a report whose
+    top color matches the input within the quantization step.
+    """
+    pil_image = pytest.importorskip("PIL.Image")
+    # Coral #f8485e is the ENC brand accent the A1 bug surfaces. Quantized
+    # to step=16 this collapses to (240, 64, 80) = #f04050; the test asserts
+    # the rounded bucket, not the original input.
+    png_bytes = _make_solid_png(64, 64, (248, 72, 94, 255))
+    report = _decode_png_and_count(png_bytes, pil_image)
+    assert report["status"] == "ok"
+    assert report["viewport"] == (64, 64)
+    assert report["total_pixels"] == 64 * 64
+    assert len(report["colors"]) >= 1
+    top = report["colors"][0]
+    # The bucket key floors each channel to a multiple of QUANTIZATION_STEP.
+    expected_r = (248 // QUANTIZATION_STEP) * QUANTIZATION_STEP
+    expected_g = (72 // QUANTIZATION_STEP) * QUANTIZATION_STEP
+    expected_b = (94 // QUANTIZATION_STEP) * QUANTIZATION_STEP
+    assert top["rgb"] == (expected_r, expected_g, expected_b)
+    # The fraction must be 1.0 for a flat-color image (all pixels one bucket).
+    assert top["pixel_fraction"] == pytest.approx(1.0)
+    assert top["pixel_count"] == 64 * 64
+
+
+def test_decode_png_skips_fully_transparent_pixels() -> None:
+    """Alpha < 13 (≈5%) is treated as overlay noise and excluded from counts.
+
+    Mirrors the legacy JS path's alpha-cutoff so transparent layers do
+    not skew the palette toward the background underneath.
+    """
+    pil_image = pytest.importorskip("PIL.Image")
+    png_bytes = _make_solid_png(32, 32, (248, 72, 94, 0))  # fully transparent
+    report = _decode_png_and_count(png_bytes, pil_image)
+    assert report["status"] == "ok"
+    # All pixels skipped: no color exceeds the dominance floor.
+    assert report["colors"] == []
+
+
+def test_decode_png_handles_bad_bytes_gracefully() -> None:
+    """A corrupt PNG payload surfaces as status=error without raising."""
+    pil_image = pytest.importorskip("PIL.Image")
+    report = _decode_png_and_count(b"\x89PNG\r\n\x1a\nnot really a png", pil_image)
+    assert report["status"] == "error"
+    assert "png decode failure" in (report["error"] or "")
+
+
+# ---------------------------------------------------------------------------
+# A1.1 Part 2: palette_completeness_warning helper
+# ---------------------------------------------------------------------------
+
+
+def test_palette_completeness_warning_none_when_report_unavailable() -> None:
+    """An unavailable / errored report carries no warning signal."""
+    assert palette_completeness_warning(empty_report("unavailable"), []) is None
+    assert palette_completeness_warning(empty_report("error", "boom"), []) is None
+    assert palette_completeness_warning(empty_report("skipped"), []) is None
+
+
+def test_palette_completeness_warning_none_when_palette_complete() -> None:
+    """All rendered-dominant colors covered by declared: no warning."""
+    colors: list[DominantColor] = [
+        DominantColor(hex="#ffffff", rgb=(255, 255, 255), pixel_count=900, pixel_fraction=0.9),
+        DominantColor(hex="#f8485e", rgb=(248, 72, 94), pixel_count=100, pixel_fraction=0.1),
+    ]
+    report = _make_report(colors)
+    declared = ["#ffffff", "#f8485e"]
+    assert palette_completeness_warning(report, declared) is None
+
+
+def test_palette_completeness_warning_lists_only_missed_colors() -> None:
+    """The warning carries the EXACT hex strings the declared pipeline missed.
+
+    This is the field the ENC fixture's
+    ``must_emit_palette_completeness_warning`` clause asserts against in
+    the live-extraction harness.
+    """
+    colors: list[DominantColor] = [
+        DominantColor(hex="#ffffff", rgb=(255, 255, 255), pixel_count=900, pixel_fraction=0.9),
+        DominantColor(hex="#f8485e", rgb=(248, 72, 94), pixel_count=50, pixel_fraction=0.05),
+        DominantColor(hex="#592a8a", rgb=(89, 42, 138), pixel_count=30, pixel_fraction=0.03),
+    ]
+    declared = ["#ffffff", "#007cba"]  # stock Gutenberg default
+    warning = palette_completeness_warning(_make_report(colors), declared)
+    assert warning is not None
+    assert "#f8485e" in warning
+    assert "#592a8a" in warning
+    assert "#ffffff" not in warning
+    # Order is part of the contract: pixel_count desc => coral before purple.
+    assert warning.index("#f8485e") < warning.index("#592a8a")
+
+
+def test_palette_completeness_warning_treats_none_declared_as_empty() -> None:
+    """A None declared list is treated as empty (no false negatives)."""
+    colors: list[DominantColor] = [
+        DominantColor(hex="#f8485e", rgb=(248, 72, 94), pixel_count=50, pixel_fraction=0.05),
+    ]
+    warning = palette_completeness_warning(_make_report(colors), None)
+    assert warning == ["#f8485e"]
+
+
+# ---------------------------------------------------------------------------
+# A1.1 LIVE integration: the test that would have caught the regression
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.skipif(
+    os.environ.get("RESEMBLIO_RUN_REAL_BROWSER") != "1",
+    reason="Live-browser test; opt in with RESEMBLIO_RUN_REAL_BROWSER=1",
+)
+def test_live_encexplorer_surfaces_brand_colors_via_real_navigate() -> None:
+    """The canonical ENC regression: real navigate + raster MUST surface brand colors.
+
+    Without the A1.1 fix this assertion fails because ``set_content``
+    loaded the HTML with about:blank base URL, every linked asset
+    failed, and the DOM-walk pass collapsed to UA defaults. With the
+    fix, page.goto + networkidle + PNG raster + Pillow decode produces
+    the actual rendered palette where #f8485e or #592a8a appear as
+    dominant buckets.
+    """
+    pytest.importorskip("playwright.sync_api")
+    pytest.importorskip("PIL.Image")
+    report = capture_screenshot_palette(url="https://encexplorer.com")
+    # If Chromium isn't installed the helper returns unavailable; treat
+    # that as a skip rather than a fail so the test stays useful in
+    # environments without the binary.
+    if report["status"] == "unavailable":
+        pytest.skip(f"playwright/chromium unavailable: {report['error']}")
+    assert report["status"] == "ok", report["error"]
+    hex_set = {c["hex"] for c in report["colors"]}
+    # The bucket center for coral (248, 72, 94) at step=16 is #f04050;
+    # for purple (89, 42, 138) is #582888. Accept either the bucket
+    # center or anything within COLOR_SIMILARITY_THRESHOLD of the brand.
+    coral_bucket_neighbors = {"#f04050", "#f8485e", "#f04060"}
+    purple_bucket_neighbors = {"#582888", "#582a8a", "#502888", "#592a8a"}
+    assert hex_set & (coral_bucket_neighbors | purple_bucket_neighbors), (
+        f"Neither coral nor purple bucket surfaced in screenshot palette; "
+        f"got {hex_set}. This is the A1 regression: real navigate failed "
+        f"to load brand assets."
+    )

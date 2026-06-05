@@ -164,13 +164,26 @@ def _load_extractor() -> ExtractorLoad:
 
 @dataclass(frozen=True)
 class ExtractionBundle:
-    """Successful extraction payload ready for persistence and R2 upload."""
+    """Successful extraction payload ready for persistence and R2 upload.
+
+    ``palette_completeness_warning`` is the A1.1 (2026-06-04) additive
+    field surfaced from the screenshot-palette pass. It is the list of
+    lowercase hex strings the rendered page shows but the declared-token
+    pipeline missed, or None when the screenshot pass was unavailable,
+    errored, or returned a fully covered palette. The route handler
+    threads this onto ``ExtractionResponse.palette_completeness_warning``
+    on the freshly-created response only; cached reads via ``_response_for``
+    return None because the warning is not persisted in the extraction
+    row (the rendered-palette report is recomputed per extraction; the
+    DB row carries only the final token set).
+    """
 
     tokens_json: dict[str, Any]
     dtcg_json: dict[str, Any]
     zip_bytes: bytes
     extracted_at: datetime
     schema_version: int
+    palette_completeness_warning: list[str] | None = None
 
 
 @dataclass(frozen=True)
@@ -193,21 +206,46 @@ class BundleManifest:
 
 
 def extract_design_tokens(url: str) -> ExtractionBundle:
-    """Run the existing extractor and package the result for the API."""
+    """Run the existing extractor and package the result for the API.
+
+    Reads ``last_palette_completeness_warning`` off the CodexExtractor
+    instance after ``extract()`` and forwards it onto the bundle so the
+    route handler can surface it on the API response. The warning is
+    a side-effect of the screenshot-palette pass and only fires when
+    that pass produced colors the declared pipeline missed; on
+    extractor instances where the pass was skipped or returned no gap,
+    the field is None.
+    """
     CodexExtractor, _SCHEMA_VERSION, _TokenSet, _to_dtcg_json = _load_extractor()
+    extractor_instance = CodexExtractor()
     with _without_extractor_db_url():
-        token_set, error = CodexExtractor().extract(url)
+        token_set, error = extractor_instance.extract(url)
     if error is not None or token_set is None:
         from app.failure_modes import FailureCode
         if error is not None:
             # Bridge classifies the extractor's stable free-text format.
             raise ExtractionBridgeError(error)
         raise ExtractionBridgeError("extractor returned no tokens", code=FailureCode.NO_TOKENS_FOUND)
-    return bundle_from_token_set(url, token_set)
+    warning: list[str] | None = getattr(
+        extractor_instance, "last_palette_completeness_warning", None
+    )
+    return bundle_from_token_set(url, token_set, palette_completeness_warning=warning)
 
 
-def bundle_from_token_set(url: str, token_set: "TokenSet", extracted_at: datetime | None = None) -> ExtractionBundle:
-    """Build DTCG JSON plus a ZIP bundle from a validated TokenSet."""
+def bundle_from_token_set(
+    url: str,
+    token_set: "TokenSet",
+    extracted_at: datetime | None = None,
+    palette_completeness_warning: list[str] | None = None,
+) -> ExtractionBundle:
+    """Build DTCG JSON plus a ZIP bundle from a validated TokenSet.
+
+    ``palette_completeness_warning`` is the optional A1.1 signal forwarded
+    from the screenshot-palette pass via the extractor instance. It is
+    additive and does NOT influence the DTCG payload or the ZIP bundle
+    (which remain the canonical, stable customer-facing artifacts); it
+    rides on the live extraction response only.
+    """
     _CodexExtractor, SCHEMA_VERSION, _TokenSet, to_dtcg_json = _load_extractor()
     completed_at = extracted_at or datetime.now(timezone.utc)
     tokens_json = dict(token_set)
@@ -229,6 +267,7 @@ def bundle_from_token_set(url: str, token_set: "TokenSet", extracted_at: datetim
         zip_bytes=zip_buffer.getvalue(),
         extracted_at=completed_at,
         schema_version=SCHEMA_VERSION,
+        palette_completeness_warning=palette_completeness_warning,
     )
 
 

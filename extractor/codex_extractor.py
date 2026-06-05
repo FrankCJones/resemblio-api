@@ -47,6 +47,7 @@ from extractor.screenshot_palette import (
     ScreenshotPaletteReport,
     capture_screenshot_palette,
     empty_report as empty_palette_report,
+    palette_completeness_warning as compute_palette_completeness_warning,
     render_for_prompt as render_palette_for_prompt,
 )
 
@@ -116,11 +117,32 @@ class CodexExtractor(ResemblioExtractor):
     """Concrete extractor. Satisfies ResemblioExtractor structurally."""
 
     def __init__(self, model: str = MODEL_ID) -> None:
-        """Create an extractor with the configured model id."""
+        """Create an extractor with the configured model id.
+
+        ``last_palette_completeness_warning`` is set as a side-effect of
+        the most recent ``extract()`` call. It is the list of lowercase
+        hex strings the screenshot-palette pass surfaced as visually
+        dominant but NOT covered by declared signals, or None when the
+        warning does not fire (palette complete, screenshot pass
+        unavailable, error, or extraction failed before it ran).
+
+        The bridge layer reads this field immediately after ``extract()``
+        and forwards it onto the API response envelope. Stashing on the
+        instance rather than changing the ``extract()`` return signature
+        keeps the existing ``(TokenSet|None, error|None)`` contract that
+        ``ResemblioExtractor`` callers + tests depend on.
+        """
         self.model = model
+        self.last_palette_completeness_warning: list[str] | None = None
 
     def extract(self, url: str) -> tuple[TokenSet | None, str | None]:
-        """Extract validated tokens and persist success or failure if configured."""
+        """Extract validated tokens and persist success or failure if configured.
+
+        Resets ``self.last_palette_completeness_warning`` to None at the
+        start of every call so a previous warning never leaks into a
+        subsequent extraction on a reused instance.
+        """
+        self.last_palette_completeness_warning = None
         tokens, error = self._extract_without_persist(url)
         if error is not None:
             insert_error = self._persist(url, None, "failed", error)
@@ -161,11 +183,31 @@ class CodexExtractor(ResemblioExtractor):
             # Second pre-LLM signal: render the page and surface dominant
             # colors the declared pipeline missed. Closes the WordPress +
             # page-builder pathology where theme.json declares Gutenberg
-            # defaults the visible site never uses. Failure is non-fatal:
-            # the report comes back status="unavailable" or "error" and
-            # `render_for_prompt` emits an empty block, so the extractor
-            # falls back cleanly to declared-token-only reasoning.
-            screenshot_palette = capture_screenshot_palette(html=decoded_html)
+            # defaults the visible site never uses.
+            #
+            # A1.1 (2026-06-04): pass `url=normalized_url` (not
+            # `html=decoded_html`). Loading already-fetched HTML via
+            # set_content sets the base URL to about:blank, so linked
+            # CSS + JS + fonts never load, the rendered palette
+            # collapses to UA defaults, and the WordPress + Elementor
+            # diagnosis class re-opens. Real navigation costs one extra
+            # HTTP round-trip per extraction; that is the budget the
+            # fix explicitly buys.
+            #
+            # Failure is non-fatal: the report comes back
+            # status="unavailable" or "error" and `render_for_prompt`
+            # emits an empty block, so the extractor falls back cleanly
+            # to declared-token-only reasoning.
+            screenshot_palette = capture_screenshot_palette(url=cast(str, normalized_url))
+            # A1.1 Part 2: stash the completeness warning so the bridge
+            # can surface it on the API response. Computed once here
+            # against the SAME declared-hex set the prompt-rendering
+            # path uses, so the LLM block and the customer-visible
+            # warning agree on what counts as "declared".
+            declared_hexes = _declared_hex_colors(root_props, computed_styles)
+            self.last_palette_completeness_warning = (
+                compute_palette_completeness_warning(screenshot_palette, declared_hexes)
+            )
 
         try:
             reply = self._dispatch_anthropic(

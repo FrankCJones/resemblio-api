@@ -110,6 +110,18 @@ class ExtractionResponse(BaseModel):
     # penalized result, threshold. Null when scoring did not run.
     quality_score_components: QualityScoreComponents | None = None
     refunded: bool | None = None
+    # A1.1 additive field (2026-06-04). When non-null, lists lowercase hex
+    # strings the rendered page shows but the declared-token + computed-
+    # style signals missed. A non-empty list flags a likely "stock default
+    # extraction" pathology on WordPress + page-builder sites where
+    # theme.json declares Gutenberg defaults the visible site never uses.
+    # Null when: the screenshot-palette pass was unavailable, the pass
+    # errored, the surviving-color set was empty (palette complete), the
+    # extraction was served from a cached row (the warning is computed
+    # per-extraction and not persisted), or the row predates A1.1. This
+    # is an ADDITIVE extension of `schema_version=2`; v1.1 R2 clients
+    # parsing v2 must ignore unknown fields per the v1.1 brief.
+    palette_completeness_warning: list[str] | None = None
 
 
 class ExtractionListItem(BaseModel):
