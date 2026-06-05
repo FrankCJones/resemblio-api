@@ -118,7 +118,7 @@ DEFAULT_WAIT_STRATEGY: Literal["domcontentloaded", "networkidle"] = "domcontentl
 # and keeps the per-brand contract internally consistent: an SPA brand
 # is an SPA brand whether or not we capture its CTA.
 BRAND_WAIT_STRATEGY_OVERRIDES: dict[str, Literal["domcontentloaded", "networkidle"]] = {
-    "openai": "networkidle",   # CTA pill hydrates client-side; SSR shell has only nav icon stubs
+    "openai": "domcontentloaded",   # 2026-06-05: openai.com never reaches networkidle within Playwright's 15s default; graceful 2s post-goto NETWORKIDLE_WAIT_MS fallback absorbs hydration
     "aeon": "networkidle",     # Vercel-gated; networkidle is harmless and keeps contract consistent
     "vercel": "networkidle",   # spot-checked: hero CTA hydrates client-side (Tailwind utility shell)
     "linear": "networkidle",   # spot-checked: same pattern as vercel
