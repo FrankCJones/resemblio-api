@@ -50,6 +50,11 @@ from extractor.screenshot_palette import (
     palette_completeness_warning as compute_palette_completeness_warning,
     render_for_prompt as render_palette_for_prompt,
 )
+from extractor.style_digest import (
+    StyleDigest,
+    build_style_digest,
+    render_digest_block,
+)
 
 MODEL_ID = "claude-sonnet-4-6"
 ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages"
@@ -173,6 +178,10 @@ class CodexExtractor(ResemblioExtractor):
         decoded_html = body.decode("utf-8", errors="replace")
         loaded_fonts = parse_loaded_fonts(decoded_html)
         root_props = parse_root_custom_properties(decoded_html)
+        # R3.1: build the style digest from the FULL HTML (before truncation) so
+        # a long body cannot truncate the brand signal out of the prompt. The
+        # digest reuses the already-parsed root_props to avoid a second CSS scan.
+        style_digest = build_style_digest(decoded_html, root_props=root_props)
         if os.environ.get("RESEMBLIO_DISABLE_BROWSER_PASS") == "1":
             computed_styles: ComputedStyleReport = empty_computed_report("skipped", "disabled by env")
             screenshot_palette: ScreenshotPaletteReport = empty_palette_report(
@@ -218,6 +227,7 @@ class CodexExtractor(ResemblioExtractor):
                     computed_styles=computed_styles,
                     root_props=root_props,
                     screenshot_palette=screenshot_palette,
+                    style_digest=style_digest,
                 )
             )
             tokens = coerce_token_set(extract_json_object(reply))
@@ -312,30 +322,32 @@ def build_prompt(
     computed_styles: ComputedStyleReport | None = None,
     root_props: RootCustomProperties | None = None,
     screenshot_palette: ScreenshotPaletteReport | None = None,
+    style_digest: StyleDigest | None = None,
 ) -> str:
     """Build the single extraction prompt sent to Sonnet.
 
-    `loaded_fonts`, `computed_styles`, `root_props`, and
-    `screenshot_palette` are the structured pre-LLM signals produced by
-    `parse_loaded_fonts` (R3.1 Phase B), `capture_computed_styles` (R3.1
-    Phase C), `parse_root_custom_properties` (R3.2), and
-    `capture_screenshot_palette` (rendered-color cross-check, A1 fix per
-    2026-06-04 ENC bug). When any is None or empty the prompt simply
-    omits that block, leaving the LLM to reason from the raw HTML the
-    way it always has.
+    ``loaded_fonts``, ``computed_styles``, ``root_props``,
+    ``screenshot_palette``, and ``style_digest`` are the structured
+    pre-LLM signals. When any is None or empty the prompt simply omits
+    that block, leaving the LLM to reason from the raw HTML.
 
-    Block order matters: `root_props` goes FIRST because brand-declared
-    `:root` custom properties outrank computed-style samples (intent
-    beats artifact). Computed styles come next, then loaded web fonts.
-    The rendered-palette cross-check goes LAST so the LLM sees it as a
-    "fill the gaps" signal after declared sources are exhausted; the
-    block is filtered to only colors NOT already present in the declared
-    or computed signals (closing the WordPress + page-builder pathology
-    without overpowering legitimately-declared brand tokens).
+    Block order:
+    1. ``root_props`` (declared ``:root`` custom properties - brand INTENT).
+    2. ``style_digest`` (VERIFIED cascade: var() resolved to literals for key
+       brand slots; R3.1 addition). Follows root_props so the LLM sees all raw
+       vars THEN the explicit resolved mapping.
+    3. ``computed_styles`` (Playwright computed values - rendered artifact).
+    4. ``loaded_fonts`` (detected web-font families from ``<link>`` tags).
+    5. ``screenshot_palette`` (rendered-color cross-check; "fill the gaps" signal
+       filtered to colors NOT already declared, closing the WP+page-builder gap).
     """
     signals_chunks: list[str] = []
     if root_props is not None:
         rendered = render_root_props_for_prompt(root_props)
+        if rendered:
+            signals_chunks.append(rendered)
+    if style_digest is not None:
+        rendered = render_digest_block(style_digest)
         if rendered:
             signals_chunks.append(rendered)
     if computed_styles is not None:
