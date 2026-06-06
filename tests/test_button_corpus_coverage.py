@@ -244,8 +244,26 @@ def _drl_corpus_brand_slugs() -> list[str]:
 # --- Tests -------------------------------------------------------------------
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "openai button capture impl pending - selector override + SPA wait exist "
+        "in extractor/computed_styles.py but the re-capture run has not been "
+        "executed yet (requires Playwright from parent shell, not a sub-agent). "
+        "Green ceremony: python -m scripts.capture_all_button_snapshots "
+        "--apply --single openai --force --drl-root /opt/resemblio-api/drl "
+        "then remove this xfail marker. Tracked as next-action in "
+        "projects/Resemblio/STATUS.md (openai+aeon button-capture follow-on)."
+    ),
+)
 def test_openai_button_capture_lands_real_styles() -> None:
     """Acceptance gate for Stage L4 openai re-capture.
+
+    TDD red-ceremony anchor (committed 5d36712, 2026-06-05). Marked
+    xfail(strict=True) until the re-capture run is executed. When the
+    run completes and the snapshot is populated, this test goes green
+    and the suite will XPASS (fail) to alert the developer to remove
+    the xfail marker. That XPASS failure is the intended signal.
 
     FAILS today: the 2026-06-02 corpus refresh left openai with the
     default-skip snapshot because the selector override + SPA wait

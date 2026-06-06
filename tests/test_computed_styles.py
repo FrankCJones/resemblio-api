@@ -263,22 +263,34 @@ def test_resolve_wait_strategy_unknown_falls_back(
 def test_brand_wait_strategy_overrides_cover_known_spa_brands() -> None:
     """openai + aeon (the 22/24 button-corpus gap brands) carry overrides.
 
-    openai's hero CTA pill hydrates client-side; aeon's whole DOM is
-    behind a Vercel security checkpoint. Both need ``networkidle`` rather
-    than ``domcontentloaded`` to give the page a chance to render before
-    capture. Without the override the default `domcontentloaded` returns
-    the SSR shell and `derive_button_tokens` gets nothing.
+    aeon's whole DOM is behind a Vercel security checkpoint and needs
+    ``networkidle`` to render before capture.
+
+    openai was revised to ``domcontentloaded`` on 2026-06-05 (commit 562d693):
+    openai.com never reaches networkidle within Playwright's 15s default;
+    a graceful 2s post-goto fallback absorbs hydration instead. The override
+    entry is kept (rather than removed) because the per-brand SPA selector
+    override also lives in this map and both maps must stay aligned per
+    ``test_brand_wait_overrides_align_with_selector_overrides``.
     """
-    assert BRAND_WAIT_STRATEGY_OVERRIDES["openai"] == "networkidle"
+    # 2026-06-05 correction (562d693): openai.com times out on networkidle;
+    # domcontentloaded + NETWORKIDLE_WAIT_MS graceful fallback is the fix.
+    assert BRAND_WAIT_STRATEGY_OVERRIDES["openai"] == "domcontentloaded"
     assert BRAND_WAIT_STRATEGY_OVERRIDES["aeon"] == "networkidle"
 
 
 def test_resolve_wait_strategy_brand_override_activates(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A known-SPA brand resolves to networkidle without env or explicit arg."""
+    """A brand-overridden strategy resolves without env or explicit arg.
+
+    openai's override is ``domcontentloaded`` (revised 2026-06-05 per
+    commit 562d693; openai.com never reaches networkidle within 15s).
+    The override map value is what resolve_wait_strategy must return.
+    """
     monkeypatch.delenv(WAIT_STRATEGY_ENV_VAR, raising=False)
-    assert resolve_wait_strategy(None, brand_slug="openai") == "networkidle"
+    # 2026-06-05 correction (562d693): openai override is now domcontentloaded.
+    assert resolve_wait_strategy(None, brand_slug="openai") == "domcontentloaded"
 
 
 def test_resolve_wait_strategy_unknown_brand_uses_default(
@@ -311,9 +323,17 @@ def test_resolve_wait_strategy_brand_override_beats_env(
     captured under an env-set ``domcontentloaded``, the brand-specific
     knowledge of "this site does not work without hydration wait"
     should still apply.
+
+    Uses ``aeon`` (networkidle override) rather than ``openai`` to keep
+    the invariant meaningful: after 562d693 openai's override is also
+    ``domcontentloaded``, making it indistinguishable from the env value
+    and unable to prove precedence. aeon's override is ``networkidle``
+    while the env is ``domcontentloaded`` -- clear, unambiguous proof
+    that the brand override wins.
     """
     monkeypatch.setenv(WAIT_STRATEGY_ENV_VAR, "domcontentloaded")
-    assert resolve_wait_strategy(None, brand_slug="openai") == "networkidle"
+    # aeon override is networkidle; env is domcontentloaded -> override wins.
+    assert resolve_wait_strategy(None, brand_slug="aeon") == "networkidle"
 
 
 def test_resolve_wait_strategy_no_brand_arg_preserves_v1_behavior(
