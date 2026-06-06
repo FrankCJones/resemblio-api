@@ -328,7 +328,7 @@ def test_resolve_wait_strategy_brand_override_beats_env(
     the invariant meaningful: after 562d693 openai's override is also
     ``domcontentloaded``, making it indistinguishable from the env value
     and unable to prove precedence. aeon's override is ``networkidle``
-    while the env is ``domcontentloaded`` -- clear, unambiguous proof
+    while the env is ``domcontentloaded`` - clear, unambiguous proof
     that the brand override wins.
     """
     monkeypatch.setenv(WAIT_STRATEGY_ENV_VAR, "domcontentloaded")

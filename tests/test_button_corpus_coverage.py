@@ -7,7 +7,7 @@ and SPA wait strategy already exist in
 ``extractor/computed_styles.py``; this file's tests are the TDD red
 ceremony declared in the Stage L4 Builder dispatch:
 
-1. ``test_openai_button_capture_lands_real_styles`` -- acceptance gate.
+1. ``test_openai_button_capture_lands_real_styles`` - acceptance gate.
    Asserts the openai snapshot file on disk carries non-default values
    for at least 4 of 6 CSS fields the override consumes (borderRadius,
    padding, fontFamily, backgroundColor, color, boxShadow / border-width).
@@ -16,7 +16,7 @@ ceremony declared in the Stage L4 Builder dispatch:
    re-capture (Jim runs from parent shell) populates the file and
    flips this test green.
 
-2. ``test_corpus_coverage_floor`` -- regression. Asserts that at least
+2. ``test_corpus_coverage_floor`` - regression. Asserts that at least
    23 of the 24 DRL brands have non-default button styles. aeon is the
    sole documented-skip per
    ``_handoff/inbox/claude/2026-06-02-openai-aeon-selector-revision.md``
