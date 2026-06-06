@@ -433,10 +433,7 @@ def test_openai_selector_captures_cta_via_set_content(openai_html: str) -> None:
     Skips cleanly when Playwright is not installed or chromium binary is missing.
     """
     try:
-        from extractor.computed_styles import (
-            DEFAULT_PLACEHOLDER_VALUES as _PLACEHOLDERS,
-            capture_computed_styles,
-        )
+        from extractor.computed_styles import capture_computed_styles
     except ImportError:
         pytest.skip("extractor.computed_styles not importable")
 
