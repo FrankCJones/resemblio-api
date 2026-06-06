@@ -69,10 +69,64 @@ composed HTML --> button_override.apply_button_tokens() --------------+
 - `button_tokens.derive_button_tokens()` returns `None` rather than raising on malformed input.
 - `button_override.inject_button_override()` is idempotent (uses `OVERRIDE_MARKER` to detect prior injection).
 
+## Button-capture subsystem
+
+The Hybrid Path B button-fidelity pipeline (`computed_styles.py`,
+`button_tokens.py`, `button_override.py`) computes per-brand `.b-btn` CSS
+overrides from Playwright-captured computed styles. Key contracts:
+
+### BRAND_SELECTOR_OVERRIDES (in `computed_styles.py`)
+
+Maps brand slug -> { signal_name -> CSS selector or None }. When a brand's
+primary CTA is not a `<button>` (openai: Tailwind-only `<a>` anchor) or the
+site is structurally uncapturable (aeon: Vercel challenge wall), an override
+entry replaces or skips the default census selector for that brand.
+
+A `None` value means "do not attempt to capture this slot for this brand and
+do not fall back to the default selector." It is the explicit-skip pattern.
+
+### BRAND_WAIT_STRATEGY_OVERRIDES (in `computed_styles.py`)
+
+Maps brand slug -> "domcontentloaded" | "networkidle". Modern marketing sites
+(SPA frameworks) render their primary CTA after the initial HTML load; the
+override layer sets the Playwright `wait_until` strategy per-brand.
+Every brand with a non-None cta override must have an entry here; the
+consistency guard in `tests/test_button_selector_fixtures.py` enforces this.
+
+### Documented-skip brands
+
+`DOCUMENTED_SKIP_BRANDS` in `tests/test_button_corpus_coverage.py` lists brands
+that cannot be captured for structural reasons, not selector or wait reasons.
+Currently only `aeon` (Vercel security-checkpoint challenge wall):
+
+- aeon.co serves a 33 KB Vercel challenge shell to all unauthenticated requests.
+- No real DOM; selector and wait fixes cannot help.
+- ADR: `projects/Resemblio/02-prd/2026-06-06-aeon-permanent-skip.md`.
+- Evidence fixture: `tests/fixtures/button_capture/aeon_challenge.html`.
+- Corpus-floor test allows exactly this one skip: floor is 23 of 24 brands.
+
+### openai
+
+openai.com's primary CTA is `<a href="https://chatgpt.com/">` (Tailwind-only
+styling; no BEM class). The default census selector (first `<button>`) returns
+a transparent icon-only nav toggle. The override uses an href-pattern selector.
+Evidence: `tests/fixtures/button_capture/openai_homepage.html`.
+Selector contract test: `tests/test_button_selector_fixtures.py::TestOpenaiSelectorContract`.
+
+The live re-capture (the green ceremony that flips `test_openai_button_capture_lands_real_styles`
+from skip to pass) runs from the parent shell via:
+
+    python -m scripts.capture_all_button_snapshots \
+        --apply --single openai --force --drl-root /opt/resemblio-api/drl
+
+See `code/api/OPS.md 8.11` for the full corpus-refresh procedure.
+
 ## Related decisions
 
 - R3.1 extractor surgery: `projects/OptSus Team/missions/resemblio-r3.1-extractor-surgery-v1.md` (strategic brief) and `projects/OptSus Team/missions/resemblio-r3.1-tdd-execution-plan-v1.md` (TDD execution plan).
+- L4 button-capture openai/aeon: `projects/OptSus Team/missions/resemblio-L4-button-capture-openai-aeon-tdd-plan-v1.md` (execution plan).
 - CTO 2026-06-02 "Resemblio button fidelity fix" packet: `projects/OptSus Team/cto-reviews/2026-06-02-resemblio-button-fidelity-fix.md`.
+- aeon permanent-skip ADR: `projects/Resemblio/02-prd/2026-06-06-aeon-permanent-skip.md`.
 
 ## Subsystem-level rules
 
