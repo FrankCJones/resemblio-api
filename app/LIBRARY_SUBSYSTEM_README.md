@@ -44,8 +44,12 @@ app/
 
   routes/
     library.py               - GET /v1/library/brands, /v1/library/brands/{slug}, etc.
-                               Exposes metadata_json.hub_capture_signal and
-                               missing_data_notice to the web BFF.
+                               Exposes manifest fields through two API surfaces:
+                               - HubFeaturedRow: captured_count + total_showcase_groups
+                                 (sourced from metadata_json.hub_capture_signal)
+                               - LibraryPageData: missing_groups + captured_groups
+                                 (sourced from metadata_json.missing_data_notice and
+                                 metadata_json.capture_manifest)
 
 deploy/systemd/
   resemblio-library-indexer.service  - One-shot systemd service: drains pending jobs.
@@ -96,8 +100,10 @@ library_indexer.drain_pending()
 
 library_pages table
         |
-GET /v1/library/brands  -> HubFeaturedRow (brand_slug, category_count, palette, ...)
-GET /v1/library/brands/{slug}  -> LibraryPageData (rendered_html, capture info)
+GET /v1/library/brands  -> HubFeaturedRow (brand_slug, category_count, palette,
+                           captured_count, total_showcase_groups, ...)
+GET /v1/library/brands/{slug}  -> LibraryPageData (rendered_html,
+                                   missing_groups, captured_groups, ...)
 GET /v1/library/brands/{slug}/categories/{cat}  -> per-category page
         |
 Next.js web BFF (library-data.ts)
