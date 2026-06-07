@@ -152,18 +152,25 @@ def test_resolve_census_unknown_brand_returns_default() -> None:
     assert resolve_census("does-not-exist") == ELEMENT_CENSUS
 
 
-def test_resolve_census_openai_override_replaces_cta_only() -> None:
-    """openai override swaps the cta selector but preserves all other slots."""
+def test_resolve_census_openai_none_override_removes_cta_slot() -> None:
+    """openai's None override drops the cta slot from the census entirely.
+
+    openai was a permanent documented skip as of L4 v3 (2026-06-07): openai.com
+    is gated by Cloudflare Turnstile (HTTP 403) and its CDN CSS chunks also return
+    HTTP 403, so no real button tokens are reachable offline or live. The cta
+    selector (formerly an href-pattern override) is retired to ``None``, identical
+    to aeon, so the slot is removed and no capture is attempted. All other default
+    slots are preserved in their original order.
+
+    ADR: 02-prd/2026-06-07-openai-permanent-skip.md.
+    """
+    assert BRAND_SELECTOR_OVERRIDES["openai"]["cta"] is None
     census = resolve_census("openai")
-    by_slot = {slot: selector for selector, slot in census}
-    default_by_slot = {slot: selector for selector, slot in ELEMENT_CENSUS}
-    assert by_slot["cta"] == BRAND_SELECTOR_OVERRIDES["openai"]["cta"]
-    assert by_slot["cta"] != default_by_slot["cta"]
-    # Non-overridden slots unchanged.
-    for slot in ("root", "body", "h1", "h2", "h3", "link"):
-        assert by_slot[slot] == default_by_slot[slot]
-    # Slot order preserved.
-    assert [slot for _, slot in census] == [slot for _, slot in ELEMENT_CENSUS]
+    slots = [slot for _, slot in census]
+    assert "cta" not in slots
+    # All other default slots are preserved in their original order.
+    expected = [slot for _, slot in ELEMENT_CENSUS if slot != "cta"]
+    assert slots == expected
 
 
 def test_resolve_census_aeon_none_override_removes_cta_slot() -> None:
@@ -210,11 +217,19 @@ def test_none_override_skips_runtime_fallback() -> None:
 
 
 def test_build_capture_script_uses_override_census_when_passed() -> None:
-    """Build script with an override census embeds the override selector."""
-    census = resolve_census("openai")
+    """Build script with an override census embeds the override selector.
+
+    Uses ``vercel`` (a live href-pattern override) rather than openai: openai's
+    cta override was retired to ``None`` in L4 v3 (permanent skip), so it no
+    longer embeds a string selector. vercel keeps a real string override and is
+    the meaningful case for this contract.
+    """
+    override_selector = BRAND_SELECTOR_OVERRIDES["vercel"]["cta"]
+    assert override_selector is not None
+    census = resolve_census("vercel")
     script = build_capture_script(census)
-    assert BRAND_SELECTOR_OVERRIDES["openai"]["cta"] in script
-    # Default cta selector for the OTHER slot is not present.
+    assert override_selector in script
+    # Default cta selector is replaced, not present alongside the override.
     default_cta = next(sel for sel, slot in ELEMENT_CENSUS if slot == "cta")
     assert default_cta not in script
 
