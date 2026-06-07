@@ -562,3 +562,195 @@ def test_related_excludes_current_category(
     assert not any(h == "/library/stripe-com/buttons/" for h in hrefs)
     # Sibling categories should be present.
     assert any("/palette/" in h for h in hrefs) or any("/cards/" in h for h in hrefs)
+
+
+# ----------------------------------------------------------------------
+# Library v2 manifest fields - Phase 4 shape contract
+# ----------------------------------------------------------------------
+# These tests verify that the manifest provenance fields written by the
+# Library v2 indexer (missing_data_notice, capture_manifest, hub_capture_signal)
+# are carried through the API payloads to the web BFF.
+#
+# Phase 4 contract:
+#   - Hub row: captured_count + total_showcase_groups
+#   - Page payload: missing_groups + captured_groups
+#   - Graceful degradation: empty lists / zero counts for pre-v2 metadata
+#
+# Companion to test_library_manifest_integration.py (which tests the pure
+# indexer functions); this module tests the route-level shape.
+
+
+def _v2_metadata(
+    *,
+    brand_slug: str = "stripe-com",
+    category_slug: str = "buttons",
+    captured_groups: list[str] | None = None,
+    missing_slugs: list[str] | None = None,
+    captured_count: int = 0,
+    total_showcase_groups: int = 5,
+) -> dict[str, Any]:
+    """Build a realistic Library v2 metadata_json envelope.
+
+    Mirrors the shape ``_metadata_for()`` in ``library_indexer.py`` writes.
+    Used by route shape tests that need real capture metadata without running
+    the full compose pipeline.
+    """
+    if captured_groups is None:
+        captured_groups = ["color", "typography", "spacing"]
+    if missing_slugs is None:
+        missing_slugs = ["badges", "buttons", "cards", "form-fields", "inputs"]
+    groups_dict: dict[str, Any] = {}
+    for g in captured_groups:
+        groups_dict[g] = {"captured": True, "present_source_fields": [], "absent_source_fields": []}
+    for g in ("button", "card", "badge", "input"):
+        if g not in groups_dict:
+            groups_dict[g] = {"captured": False, "present_source_fields": [], "absent_source_fields": [g]}
+    return {
+        "schema_version": 2,
+        "brand_slug": brand_slug,
+        "category_slug": category_slug,
+        "bg": "#ffffff",
+        "accent": "#635bff",
+        "text": "#0a2540",
+        "font_display": "Inter",
+        "font_body": "Inter",
+        "capture_manifest": {
+            "schema_version": "capture_manifest_v1",
+            "groups": groups_dict,
+        },
+        "hub_capture_signal": {
+            "schema_version": "hub_capture_signal_v1",
+            "captured_count": captured_count,
+            "total_showcase_groups": total_showcase_groups,
+        },
+        "missing_data_notice": {
+            "schema_version": "missing_data_notice_v1",
+            "missing_items": [
+                {"category_slug": s, "display_name": s.replace("-", " ").title()}
+                for s in missing_slugs
+            ],
+        },
+    }
+
+
+def test_hub_row_carries_captured_count_and_total(
+    client: TestClient, session: Session
+) -> None:
+    """Hub rows carry captured_count and total_showcase_groups from metadata_json."""
+    av = _make_asset_version(session, url="https://stripe.com/", version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="stripe-com",
+        category_slug="buttons",
+        metadata=_v2_metadata(captured_count=2, total_showcase_groups=5),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "stripe-com")
+    assert row["captured_count"] == 2
+    assert row["total_showcase_groups"] == 5
+
+
+def test_hub_row_capture_signal_defaults_when_no_metadata(
+    client: TestClient, session: Session
+) -> None:
+    """Hub rows carry captured_count=0 and total_showcase_groups=0 for pre-v2 rows."""
+    av = _make_asset_version(session, url="https://old.example/", version_label="2026-06")
+    _make_page(session, av, brand_slug="old-example", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "old-example")
+    # Pre-v2 metadata has no hub_capture_signal; safe defaults must apply.
+    assert row["captured_count"] == 0
+    assert row["total_showcase_groups"] == 0
+
+
+def test_page_payload_carries_missing_groups(
+    client: TestClient, session: Session
+) -> None:
+    """Brand canonical page carries missing_groups sourced from missing_data_notice."""
+    av = _make_asset_version(session, url="https://stripe.com/", version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="stripe-com",
+        category_slug="buttons",
+        is_canonical=True,
+        metadata=_v2_metadata(
+            missing_slugs=["badges", "buttons", "cards", "form-fields", "inputs"],
+        ),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/stripe-com")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert "missing_groups" in data
+    assert isinstance(data["missing_groups"], list)
+    assert set(data["missing_groups"]) == {
+        "badges", "buttons", "cards", "form-fields", "inputs",
+    }
+
+
+def test_page_payload_carries_captured_groups(
+    client: TestClient, session: Session
+) -> None:
+    """Brand canonical page carries captured_groups from capture_manifest."""
+    av = _make_asset_version(session, url="https://stripe.com/", version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="stripe-com",
+        category_slug="buttons",
+        is_canonical=True,
+        metadata=_v2_metadata(captured_groups=["color", "typography", "spacing"]),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/stripe-com")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert "captured_groups" in data
+    assert isinstance(data["captured_groups"], list)
+    # The three groups passed in must be in the captured set.
+    assert {"color", "typography", "spacing"}.issubset(set(data["captured_groups"]))
+
+
+def test_page_payload_manifest_fields_empty_for_pre_v2_metadata(
+    client: TestClient, session: Session
+) -> None:
+    """Page payload returns empty lists when metadata_json has no v2 manifest fields."""
+    av = _make_asset_version(session, url="https://old.example/", version_label="2026-06")
+    _make_page(session, av, brand_slug="old-brand",
+               category_slug="buttons", is_canonical=True)
+    session.commit()
+
+    resp = client.get("/v1/library/brands/old-brand")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["missing_groups"] == []
+    assert data["captured_groups"] == []
+
+
+def test_page_payload_missing_groups_empty_when_all_captured(
+    client: TestClient, session: Session
+) -> None:
+    """Page payload has empty missing_groups when every showcase category is captured."""
+    av = _make_asset_version(session, url="https://full.example/", version_label="2026-06")
+    _make_page_with_metadata(
+        session, av,
+        brand_slug="full-brand",
+        category_slug="buttons",
+        is_canonical=True,
+        metadata=_v2_metadata(missing_slugs=[]),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/full-brand")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["missing_groups"] == []

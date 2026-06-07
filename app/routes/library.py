@@ -142,6 +142,13 @@ class LibraryPageData(TypedDict, total=False):
     rendered_html: str
     related: list[RelatedItem]
     updated_at: str
+    # Library v2 D3 acknowledgment fields (Phase 4, 2026-06-07).
+    # Sourced from metadata_json.missing_data_notice and
+    # metadata_json.capture_manifest written by the indexer.
+    # Always present in responses; empty list when all showcase categories are
+    # captured or no capture metadata has been written yet for this page.
+    missing_groups: list[str]
+    captured_groups: list[str]
 
 
 class HubFeaturedRow(TypedDict, total=False):
@@ -158,9 +165,18 @@ class HubFeaturedRow(TypedDict, total=False):
     - ``display_font``: the ``font_display`` CSS family string from the same
       ``library_pages.metadata_json``. ``None`` when not present.
 
-    Old web clients ignore these fields; new ones consume them with a
-    fallback. Additive change; no envelope or data schema_version bump
-    required (web contract stays at ``library_data_v1``).
+    Library v2 fields (Phase 4, 2026-06-07):
+
+    - ``captured_count``: number of primary showcase component groups with
+      real captured geometry data (0-5). Sourced from
+      ``metadata_json.hub_capture_signal.captured_count``.
+    - ``total_showcase_groups``: total number of primary showcase component
+      groups (5 in the current corpus). Sourced from
+      ``metadata_json.hub_capture_signal.total_showcase_groups``.
+
+    Old web clients ignore additive fields; new ones consume them with a
+    fallback. No envelope or data schema_version bump required (web contract
+    stays at ``library_data_v1``).
     """
 
     brand_slug: str
@@ -168,6 +184,8 @@ class HubFeaturedRow(TypedDict, total=False):
     category_count: int
     palette: list[str]
     display_font: str | None
+    captured_count: int
+    total_showcase_groups: int
 
 
 class LibraryHubData(TypedDict):
@@ -303,17 +321,23 @@ def _source_url_for_brand(session: Session, brand_slug: str) -> str | None:
     return session.execute(stmt).scalar_one_or_none()
 
 
-def _palette_and_font_for_brand(
+class _BrandHubMeta(TypedDict):
+    """Aggregated brand metadata for hub card rendering (internal)."""
+
+    palette: list[str]
+    display_font: str | None
+    captured_count: int
+    total_showcase_groups: int
+
+
+def _hub_meta_for_brand(
     session: Session, brand_slug: str,
-) -> tuple[list[str], str | None]:
-    """Return (palette, display_font) for the brand's hub card.
+) -> _BrandHubMeta:
+    """Return visual identity + Library v2 capture signal for a hub card.
 
     Picks the brand's representative ``library_pages`` row (most recent
-    public, same selection rule as ``_source_url_for_brand``) and pulls
-    color slots + ``font_display`` from its ``metadata_json``. The library
-    indexer writes one row per (asset_version, category); any one row
-    for a given asset_version carries the same brand-level color/font
-    envelope, so picking the most recent is sufficient.
+    public) and pulls color slots, ``font_display``, and the Library v2
+    ``hub_capture_signal`` from its ``metadata_json``. One DB query per brand.
 
     Palette ordering: ``_HUB_PALETTE_SLOTS`` (accent first, per the web
     contract's "index 0 is canonical accent / primary"). Hex strings are
@@ -321,9 +345,14 @@ def _palette_and_font_for_brand(
     Non-hex values (rgb(), named colors, garbage) are silently dropped.
     Result is capped at ``_HUB_PALETTE_MAX``.
 
-    Returns ``([], None)`` when no public library_pages row exists for
-    the brand or the row's metadata is unusable. The web side handles
-    fallback placeholders for that case.
+    ``captured_count`` and ``total_showcase_groups`` come from
+    ``metadata_json.hub_capture_signal`` written by the Library v2 indexer.
+    Both default to 0 when no signal is present (pre-v2 rows or missing
+    metadata) so the hub card degrades to "0 of 0 captured" rather than
+    raising.
+
+    Returns a ``_BrandHubMeta`` with safe zero-valued defaults when no
+    public library_pages row exists or the row's metadata is unusable.
     """
     stmt = (
         select(LibraryPage.metadata_json)
@@ -335,7 +364,11 @@ def _palette_and_font_for_brand(
     )
     metadata = session.execute(stmt).scalar_one_or_none()
     if not isinstance(metadata, dict):
-        return [], None
+        return _BrandHubMeta(
+            palette=[], display_font=None, captured_count=0, total_showcase_groups=0
+        )
+
+    # --- Palette ---
     palette: list[str] = []
     seen: set[str] = set()
     for slot in _HUB_PALETTE_SLOTS:
@@ -352,9 +385,29 @@ def _palette_and_font_for_brand(
             continue
         seen.add(norm)
         palette.append(norm)
+
+    # --- Display font ---
     font_raw = metadata.get("font_display")
     display_font = font_raw if isinstance(font_raw, str) and font_raw.strip() else None
-    return palette, display_font
+
+    # --- Hub capture signal (Library v2) ---
+    signal_raw = metadata.get("hub_capture_signal")
+    captured_count = 0
+    total_showcase_groups = 0
+    if isinstance(signal_raw, dict):
+        cc = signal_raw.get("captured_count")
+        if isinstance(cc, int):
+            captured_count = cc
+        tsg = signal_raw.get("total_showcase_groups")
+        if isinstance(tsg, int):
+            total_showcase_groups = tsg
+
+    return _BrandHubMeta(
+        palette=palette,
+        display_font=display_font,
+        captured_count=captured_count,
+        total_showcase_groups=total_showcase_groups,
+    )
 
 
 def _related_for(session: Session, brand_slug: str,
@@ -435,6 +488,49 @@ def _isoformat(dt: datetime | None) -> str:
     return target.isoformat()
 
 
+def _extract_page_manifest_fields(
+    metadata_json: Any,
+) -> tuple[list[str], list[str]]:
+    """Extract ``(missing_groups, captured_groups)`` from a page's metadata_json.
+
+    ``missing_groups``: showcase category slugs that are NOT yet captured,
+    sourced from ``metadata_json.missing_data_notice.missing_items``.
+
+    ``captured_groups``: component group names that ARE captured, sourced
+    from ``metadata_json.capture_manifest.groups``.
+
+    Both return ``[]`` when the metadata is absent, malformed, or predates
+    the Library v2 indexer that writes these fields.
+    """
+    meta = metadata_json if isinstance(metadata_json, dict) else {}
+
+    # missing_groups from the missing_data_notice payload
+    missing_groups: list[str] = []
+    notice_raw = meta.get("missing_data_notice")
+    if isinstance(notice_raw, dict):
+        raw_items = notice_raw.get("missing_items")
+        if isinstance(raw_items, list):
+            missing_groups = [
+                item["category_slug"]
+                for item in raw_items
+                if isinstance(item, dict) and isinstance(item.get("category_slug"), str)
+            ]
+
+    # captured_groups from the capture_manifest payload
+    captured_groups: list[str] = []
+    manifest_raw = meta.get("capture_manifest")
+    if isinstance(manifest_raw, dict):
+        groups_raw = manifest_raw.get("groups")
+        if isinstance(groups_raw, dict):
+            captured_groups = sorted(
+                name
+                for name, detail in groups_raw.items()
+                if isinstance(detail, dict) and detail.get("captured") is True
+            )
+
+    return missing_groups, captured_groups
+
+
 def _page_to_data(
     page: LibraryPage,
     asset_version: AssetVersion,
@@ -447,6 +543,7 @@ def _page_to_data(
     related: list[RelatedItem],
 ) -> LibraryPageData:
     """Materialize the contract-shaped page payload from ORM rows."""
+    missing_groups, captured_groups = _extract_page_manifest_fields(page.metadata_json)
     return LibraryPageData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
         brand_slug=page.brand_slug,
@@ -461,6 +558,8 @@ def _page_to_data(
         rendered_html=page.rendered_html or "",
         related=related,
         updated_at=_isoformat(asset_version.fetched_at),
+        missing_groups=missing_groups,
+        captured_groups=captured_groups,
     )
 
 
@@ -522,13 +621,15 @@ def list_brands(
     featured: list[HubFeaturedRow] = []
     for brand_slug, category_count in rows:
         url = _source_url_for_brand(session, brand_slug) or ""
-        palette, display_font = _palette_and_font_for_brand(session, brand_slug)
+        meta = _hub_meta_for_brand(session, brand_slug)
         featured.append(HubFeaturedRow(
             brand_slug=brand_slug,
             source_url=url,
             category_count=int(category_count),
-            palette=palette,
-            display_font=display_font,
+            palette=meta["palette"],
+            display_font=meta["display_font"],
+            captured_count=meta["captured_count"],
+            total_showcase_groups=meta["total_showcase_groups"],
         ))
     payload = LibraryHubData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
