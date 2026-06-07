@@ -96,8 +96,9 @@ from app.constants import (
 # downstream operator can grep ``library_indexer.startup`` in journald to
 # confirm the load order on every CLI tick.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
-from app.brand_capture_manifest import build_capture_manifest
+from app.brand_capture_manifest import BrandCaptureManifest, build_capture_manifest
 from app.brand_names import pretty_brand_name
+from app.library_render_policy import evaluate_category_render
 from app.library_style_scope import scope_style_block
 from app.missing_data_notice import build_hub_capture_signal, build_missing_notice
 from app.library_web_fonts import (
@@ -565,6 +566,59 @@ def _compose_one_page(
     # is a no-op and the vendored DRL default ships untouched. Override is
     # retired when DRL upstream lands the `--ds-button-*` contract (Path A).
     return apply_button_tokens(fragment, button_tokens)
+
+
+def _compose_with_gate(
+    class_name: str,
+    *,
+    brand_slug: str,
+    tokens: dict[str, str],
+    button_tokens: ButtonTokens | None,
+    manifest: BrandCaptureManifest,
+) -> str:
+    """Apply the D2 render gate and compose the page HTML fragment.
+
+    This is the single call-site that enforces Library v2 Decision D2:
+
+    - **Page-pattern categories** (hero, navigation, footer, etc.) are NOT in
+      ``CATEGORY_CAPTURE_REQUIREMENTS`` and always pass the gate; their HTML
+      body is composed unconditionally. They demonstrate layout, not component
+      geometry, and the cascade-safety ``var()`` fallbacks in the ``:root``
+      block make every ``var(--ds-button-*)`` reference resolve to a defined
+      value even when the button group is uncaptured.
+
+    - **Showcase categories** (buttons, cards, badges, form-fields, inputs,
+      library) are gated: if the brand's manifest shows the required component
+      group is NOT captured, the body is omitted (``returned as ""``). An
+      uncaptured showcase category renders identically to any other uncaptured
+      brand at contract defaults; returning the empty string is the only way to
+      distinguish "brand chose these exact values" from "we have no data."
+
+    The web layer reads ``metadata_json.missing_data_notice`` to surface an
+    honest "Not yet captured" acknowledgment in place of the empty body.
+
+    Args:
+        class_name: the DRL template class name (e.g. 'buttons', 'hero').
+        brand_slug: canonical brand identifier (e.g. 'stripe').
+        tokens: flat ``{key: value}`` brand token dict from ``tokens_for_compose``.
+        button_tokens: R3.1 computed-style snapshot or ``None``.
+        manifest: pre-built ``BrandCaptureManifest`` from
+            ``build_capture_manifest``. Callers compute this ONCE per brand
+            and pass it here for every class in the loop (avoids N re-computations).
+
+    Returns:
+        HTML fragment string (the full ``<article>`` block) if the category
+        should render, or ``""`` if it is gated out.
+    """
+    decision = evaluate_category_render(class_name, manifest)
+    if not decision.should_render:
+        return ""
+    return _compose_one_page(
+        class_name,
+        brand_slug=brand_slug,
+        tokens=tokens,
+        button_tokens=button_tokens,
+    )
 
 
 # L-6 / L-13 text-only-fallback override CSS appended to every rendered
@@ -1112,12 +1166,29 @@ def _tokens_to_inline_css(tokens: dict[str, str]) -> str:
     return _emit_brand_root(tokens)
 
 
-def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -> dict[str, Any]:
+def _metadata_for(
+    class_name: str,
+    *,
+    brand_slug: str,
+    tokens: dict[str, str],
+    manifest: BrandCaptureManifest | None = None,
+) -> dict[str, Any]:
     """Return the OG-image + page-copy metadata envelope.
 
     Subset of tokens (bg, surface, text, accent, font_display, font_body)
     plus the schema-version tag, and the Library v2 provenance fields:
     ``capture_manifest``, ``hub_capture_signal``, and ``missing_data_notice``.
+
+    Args:
+        class_name: template class name (e.g. 'buttons').
+        brand_slug: canonical brand identifier.
+        tokens: flat brand token dict from ``tokens_for_compose``.
+        manifest: pre-built ``BrandCaptureManifest`` from ``_process_job``.
+            When provided, the manifest is reused rather than recomputed,
+            saving one ``build_capture_manifest`` call per template class
+            (the manifest is per-brand, not per-class). When ``None`` (e.g.
+            in unit tests that call ``_metadata_for`` directly), a fresh
+            manifest is computed from ``tokens``.
 
     Key normalization mirrors the ``_tokens_to_inline_css`` /
     ``_ds_var_name`` fix shipped in commit ``066f503``: DRL-seeded brands
@@ -1154,12 +1225,13 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
             return value
         return tokens.get(f"ds-{dashed}")
 
-    # Build the per-brand provenance signal once per call. The manifest is
-    # pure-data and deterministic; the same token bag produces the same result
-    # every time regardless of which category is being indexed.
-    manifest = build_capture_manifest(tokens)
-    hub_signal = build_hub_capture_signal(manifest)
-    notice = build_missing_notice(manifest)
+    # Use the caller-supplied manifest when available (avoids recomputing once
+    # per template class when called from _process_job, which builds the
+    # manifest once for the whole brand). Fall back to computing from tokens
+    # for callers (unit tests) that invoke _metadata_for directly.
+    _manifest = manifest if manifest is not None else build_capture_manifest(tokens)
+    hub_signal = build_hub_capture_signal(_manifest)
+    notice = build_missing_notice(_manifest)
 
     return {
         "schema_version": LIBRARY_PAGE_METADATA_SCHEMA_VERSION,
@@ -1173,14 +1245,14 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
         "font_body": _lookup("font_body"),
         # Library v2 provenance fields (2026-06-07, plan Phase 4).
         "capture_manifest": {
-            "schema_version": manifest["schema_version"],
+            "schema_version": _manifest["schema_version"],
             "groups": {
                 group: {
                     "captured": detail["captured"],
                     "present_source_fields": list(detail["present_source_fields"]),
                     "absent_source_fields": list(detail["absent_source_fields"]),
                 }
-                for group, detail in manifest["groups"].items()
+                for group, detail in _manifest["groups"].items()
             },
         },
         "hub_capture_signal": {
@@ -1285,15 +1357,21 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
     # Hybrid Path B button-fidelity override (CTO 2026-06-02). One disk
     # read per asset version (None for the common no-snapshot case).
     button_tokens = _load_button_tokens(brand_slug)
+    # Library v2 D2 gate: compute the manifest ONCE per brand (not per class).
+    # _compose_with_gate uses it to decide whether each showcase category
+    # should be composed (captured) or omitted (empty string, not fabricated).
+    # _metadata_for receives the same manifest so it does not recompute.
+    brand_manifest = build_capture_manifest(tokens, button_tokens=button_tokens)
     written = 0
     for class_name in _all_template_classes():
-        rendered = _compose_one_page(
+        rendered = _compose_with_gate(
             class_name,
             brand_slug=brand_slug,
             tokens=tokens,
             button_tokens=button_tokens,
+            manifest=brand_manifest,
         )
-        metadata = _metadata_for(class_name, brand_slug=brand_slug, tokens=tokens)
+        metadata = _metadata_for(class_name, brand_slug=brand_slug, tokens=tokens, manifest=brand_manifest)
         page = LibraryPage(
             asset_version_id=asset_version.id,
             category_slug=class_name,

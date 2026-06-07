@@ -79,12 +79,14 @@ library_indexer.drain_pending()
     |       -> BrandCaptureManifest (per-group captured/absent)
     |
     |--> For each DRL template class:
-    |       evaluate_category_render(class, manifest)  [Phase 2]
+    |       _compose_with_gate(class, manifest)  [Phase 2 gate]
     |       |
-    |       |--> should_render=True:  _compose_one_page() -> rendered HTML
-    |       |                         (faithful brand-specific rendering)
-    |       |
-    |       +--> should_render=False: rendered_html = "" (omit body, record gap)
+    |       |-- evaluate_category_render(class, manifest)
+    |       |       |
+    |       |       |--> should_render=True:  _compose_one_page() -> full HTML fragment
+    |       |       |                         (faithful brand-specific rendering)
+    |       |       |
+    |       |       +--> should_render=False: returns "" (omit body, record gap)
     |
     |--> _metadata_for()  [Phase 4]
     |       -> { schema_version, bg, accent, ...,
@@ -116,7 +118,7 @@ Two things happen with uncaptured component groups:
 **Component body fabrication (FORBIDDEN):**
 Rendering the full HTML body of the `buttons` template when the brand has no real button geometry data. That body, rendered at contract defaults, looks like a brand-design representation but is entirely generic - every uncaptured brand would render identically. This is what D2 prohibits.
 
-`evaluate_category_render` is the gating function. The test `TestD2Invariant.test_uncaptured_button_decision_is_no_render` pins this line.
+`_compose_with_gate` is the function wired into `_process_job` that enforces this. It calls `evaluate_category_render` and returns `""` when `should_render=False`. The test `TestD2RenderGate.test_uncaptured_button_compose_with_gate_is_empty` pins this invariant end-to-end (gate decision AND resulting empty `rendered_html`).
 
 ---
 
