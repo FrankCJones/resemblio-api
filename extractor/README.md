@@ -97,29 +97,35 @@ consistency guard in `tests/test_button_selector_fixtures.py` enforces this.
 
 `DOCUMENTED_SKIP_BRANDS` in `tests/test_button_corpus_coverage.py` lists brands
 that cannot be captured for structural reasons, not selector or wait reasons.
-Currently only `aeon` (Vercel security-checkpoint challenge wall):
+Currently `aeon` and `openai`:
 
+**aeon** (Vercel security-checkpoint challenge wall):
 - aeon.co serves a 33 KB Vercel challenge shell to all unauthenticated requests.
 - No real DOM; selector and wait fixes cannot help.
 - ADR: `projects/Resemblio/02-prd/2026-06-06-aeon-permanent-skip.md`.
 - Evidence fixture: `tests/fixtures/button_capture/aeon_challenge.html`.
-- Corpus-floor test allows exactly this one skip: floor is 23 of 24 brands.
 
-### openai
+**openai** (Cloudflare Turnstile + CDN CSS 403, L4 v3 2026-06-07):
+- Live capture: openai.com returns HTTP 403 + Cloudflare Turnstile challenge.
+- Fixture capture: `openai_homepage.html` has 0 inline `<style>` tags; all CSS
+  is in external Next.js chunks that also return HTTP 403 from the CDN.
+- Button styling is in Tailwind utility classes that require the unreachable CSS.
+- ADR: `projects/Resemblio/02-prd/2026-06-07-openai-permanent-skip.md`.
+- Evidence fixture: `tests/fixtures/button_capture/openai_homepage.html`.
+- Selector contracts in `TestOpenaiSelectorContract` remain as historical evidence.
+
+Corpus-floor test allows these two skips: floor is 22 of 24 brands.
+
+### openai (historical evidence)
 
 openai.com's primary CTA is `<a href="https://chatgpt.com/">` (Tailwind-only
 styling; no BEM class). The default census selector (first `<button>`) returns
-a transparent icon-only nav toggle. The override uses an href-pattern selector.
-Evidence: `tests/fixtures/button_capture/openai_homepage.html`.
-Selector contract test: `tests/test_button_selector_fixtures.py::TestOpenaiSelectorContract`.
+a transparent icon-only nav toggle. An href-pattern selector override was
+derived during L4 v2 but is now retired to `None` (permanent structural skip).
 
-The live re-capture (the green ceremony that flips `test_openai_button_capture_lands_real_styles`
-from skip to pass) runs from the parent shell via:
-
-    python -m scripts.capture_all_button_snapshots \
-        --apply --single openai --force --drl-root /opt/resemblio-api/drl
-
-See `code/api/OPS.md 8.11` for the full corpus-refresh procedure.
+Evidence of the markup structure: `tests/fixtures/button_capture/openai_homepage.html`.
+Selector evidence tests (historical): `tests/test_button_selector_fixtures.py::TestOpenaiSelectorContract`.
+Structural-skip proof: `tests/test_button_selector_fixtures.py::TestOpenaiStructuralSkip`.
 
 ## Related decisions
 
