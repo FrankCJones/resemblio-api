@@ -60,6 +60,21 @@ SYNTHETIC_PALETTE: dict[str, str] = {
     "ds-accent-2": "#004E89",
     "ds-border": "#D9CFC0",
     "ds-hairline": "#D9CFC0",
+    # D2 geometry tokens so Library v2 showcase categories (badges, buttons,
+    # cards, form-fields, inputs) pass the capture gate and render
+    # non-empty HTML. Without these, brand_capture_manifest returns
+    # should_render=False for those categories (correct D2 behavior), but
+    # this fixture's purpose is to verify palette propagation across ALL
+    # pages, so we supply the minimum required geometry.
+    "ds-badge-padding-y": "4px",
+    "ds-badge-padding-x": "10px",
+    "ds-button-padding-y": "12px",
+    "ds-button-padding-x": "22px",
+    "ds-button-border-width": "1px",
+    "ds-card-padding": "24px",
+    "ds-card-border-width": "1px",
+    "ds-input-padding-y": "12px",
+    "ds-input-border-width": "1px",
 }
 """Distinct synthetic palette used as the End-to-end contract input.
 
@@ -258,7 +273,14 @@ def test_missing_palette_renders_contract_defaults_without_crash(
     default_text = BRAND_TOKEN_CONTRACT["slots"]["ds-text"]["default"]
     default_accent = BRAND_TOKEN_CONTRACT["slots"]["ds-accent"]["default"]
 
-    for page in pages:
+    # D2-gated showcase categories (badges, buttons, cards, etc.) correctly
+    # return empty rendered_html when the brand has no geometry tokens. That
+    # is correct, non-crashing behavior - this test only asserts non-crash,
+    # not that all categories render. Non-showcase categories always render
+    # and are the surface this test covers.
+    rendered_pages = [p for p in pages if p.rendered_html]
+    assert rendered_pages, "no pages rendered - all categories empty; quality gate or compose failure"
+    for page in rendered_pages:
         rendered = page.rendered_html
         # Every color slot's contract default must appear as a literal
         # declaration, proving graceful fall-through.

@@ -471,7 +471,14 @@ def test_brand_with_allowlisted_font_renders_google_fonts_link_tag(session: Sess
 
     pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
     assert pages, "no library_pages rows persisted"
-    for page in pages:
+    # D2-gated showcase categories (badges, buttons, cards, etc.) return
+    # empty rendered_html when the brand lacks geometry tokens. This fixture
+    # intentionally carries only font tokens to isolate the font-injection
+    # path. Skip empty pages; non-showcase categories always render and
+    # are the surface this test covers.
+    rendered_pages = [p for p in pages if p.rendered_html]
+    assert rendered_pages, "no rendered pages - all categories D2-gated empty"
+    for page in rendered_pages:
         assert "fonts.googleapis.com/css2" in page.rendered_html, (
             f"page {page.category_slug}: missing Google Fonts <link> tag for "
             f"a brand whose stack carries allowlisted families. L-20 fix "
