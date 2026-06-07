@@ -4,12 +4,17 @@ This module bridges the gap between the pure ``evaluate_deploy_state``
 evaluator (which takes a ``DeployCheckState`` struct and has no I/O) and
 the live system. It provides:
 
-1. ``parse_systemctl_output`` - a pure function that maps raw ``systemctl``
-   stdout/exit-code pairs to booleans. Pure, no I/O, fully testable.
+1. A set of pure parser functions - ``parse_timer_enabled``,
+   ``parse_timer_active``, ``parse_service_active_from_exec_status``, and
+   ``parse_unit_file_present`` - that map raw ``systemctl`` stdout (and a
+   filesystem path) to booleans. Pure, no I/O, fully testable.
 
 2. ``gather_deploy_state`` - the thin live caller. Accepts an injected
    command-runner so it is testable with a fake runner and only shells
    out when called from an operator session.
+
+3. ``probe_and_evaluate`` - the single operator entry point that chains
+   ``gather_deploy_state`` into ``evaluate_deploy_state``.
 
 Together they form the pipeline:
   gather_deploy_state(runner) -> DeployCheckState
