@@ -96,8 +96,10 @@ from app.constants import (
 # downstream operator can grep ``library_indexer.startup`` in journald to
 # confirm the load order on every CLI tick.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
+from app.brand_capture_manifest import build_capture_manifest
 from app.brand_names import pretty_brand_name
 from app.library_style_scope import scope_style_block
+from app.missing_data_notice import build_hub_capture_signal, build_missing_notice
 from app.library_web_fonts import (
     build_font_alternative_root_block,
     build_font_disclosure_payload,
@@ -1114,9 +1116,8 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
     """Return the OG-image + page-copy metadata envelope.
 
     Subset of tokens (bg, surface, text, accent, font_display, font_body)
-    plus the schema-version tag. Downstream consumers may add fields; we
-    keep the v1 shape intentionally small so the OG image generator can
-    render off this payload alone.
+    plus the schema-version tag, and the Library v2 provenance fields:
+    ``capture_manifest``, ``hub_capture_signal``, and ``missing_data_notice``.
 
     Key normalization mirrors the ``_tokens_to_inline_css`` /
     ``_ds_var_name`` fix shipped in commit ``066f503``: DRL-seeded brands
@@ -1126,6 +1127,19 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
     returned ``None`` for every field on DRL-seeded input, which is the
     bug 11 cause from the 2026-06-02 failure trail. Look up each
     envelope field under both the bare and the ``ds-``-prefixed name.
+
+    Library v2 fields (2026-06-07)
+    --------------------------------
+    ``capture_manifest`` carries the full per-group provenance signal so the
+    render-real-or-hide decision (Phase 2) and the honest acknowledgment
+    (Phase 3) can be driven from a single stored payload per page row.
+
+    ``hub_capture_signal`` carries the coarse N-of-M count consumed by the
+    hub card grid without requiring the full manifest deserialization.
+
+    ``missing_data_notice`` carries the structured missing-item list for
+    the brand page's acknowledgment section. Stored alongside the page row
+    so the web can render the notice without a separate API call.
     """
     def _lookup(field: str) -> str | None:
         # Underscore -> dash so ``font_display`` and ``font-display``
@@ -1140,6 +1154,13 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
             return value
         return tokens.get(f"ds-{dashed}")
 
+    # Build the per-brand provenance signal once per call. The manifest is
+    # pure-data and deterministic; the same token bag produces the same result
+    # every time regardless of which category is being indexed.
+    manifest = build_capture_manifest(tokens)
+    hub_signal = build_hub_capture_signal(manifest)
+    notice = build_missing_notice(manifest)
+
     return {
         "schema_version": LIBRARY_PAGE_METADATA_SCHEMA_VERSION,
         "brand_slug": brand_slug,
@@ -1150,6 +1171,30 @@ def _metadata_for(class_name: str, *, brand_slug: str, tokens: dict[str, str]) -
         "accent": _lookup("accent"),
         "font_display": _lookup("font_display"),
         "font_body": _lookup("font_body"),
+        # Library v2 provenance fields (2026-06-07, plan Phase 4).
+        "capture_manifest": {
+            "schema_version": manifest["schema_version"],
+            "groups": {
+                group: {
+                    "captured": detail["captured"],
+                    "present_source_fields": list(detail["present_source_fields"]),
+                    "absent_source_fields": list(detail["absent_source_fields"]),
+                }
+                for group, detail in manifest["groups"].items()
+            },
+        },
+        "hub_capture_signal": {
+            "schema_version": hub_signal.schema_version,
+            "captured_count": hub_signal.captured_count,
+            "total_showcase_groups": hub_signal.total_showcase_groups,
+        },
+        "missing_data_notice": {
+            "schema_version": notice.schema_version,
+            "missing_items": [
+                {"category_slug": item.category_slug, "display_name": item.display_name}
+                for item in notice.missing_items
+            ],
+        },
     }
 
 
