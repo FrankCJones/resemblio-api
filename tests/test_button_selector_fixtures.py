@@ -25,7 +25,6 @@ where needed, named constants, no bare dicts, no magic strings.
 from __future__ import annotations
 
 import json
-import os
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Final
@@ -35,25 +34,20 @@ import pytest
 # ---------------------------------------------------------------------------
 # Import shared helpers from the corpus coverage test.
 #
-# Intentional cross-test import: these helpers are the exact predicates the
-# acceptance test uses; testing them here in isolation proves the Phase 1
-# self-healing contract without duplicating logic. The import is safe because
+# Intentional cross-test import: _brand_has_real_button_styles is the exact
+# predicate the acceptance helper uses; testing it here in isolation proves the
+# Phase 1 self-healing contract without duplicating logic. DOCUMENTED_SKIP_BRANDS
+# is cross-checked against the override map. The import is safe because
 # test_button_corpus_coverage.py is pure module-level code (no session
 # fixtures, no class tests).
 # ---------------------------------------------------------------------------
 from tests.test_button_corpus_coverage import (
-    DEFAULT_PLACEHOLDER_VALUES,
     DOCUMENTED_SKIP_BRANDS,
-    OPENAI_REQUIRED_NON_DEFAULT_FIELDS,
-    TRACKED_BUTTON_FIELDS,
     _brand_has_real_button_styles,
-    _candidate_snapshot_dirs,
-    _load_cta_properties,
 )
 from extractor.computed_styles import (
     BRAND_SELECTOR_OVERRIDES,
     BRAND_WAIT_STRATEGY_OVERRIDES,
-    resolve_census,
 )
 
 # ---------------------------------------------------------------------------
@@ -74,11 +68,7 @@ AEON_CHALLENGE_ID: Final[str] = "fix-text"
 """Element id of the challenge page's primary action link."""
 
 CHATGPT_HREF_PREFIX: Final[str] = "https://chatgpt.com"
-"""Defining feature of the openai primary CTA anchor href."""
-
-# Minimum non-default fields a well-captured openai snapshot must carry.
-# Mirrors OPENAI_REQUIRED_NON_DEFAULT_FIELDS from the corpus test.
-_OPENAI_FIELD_FLOOR: Final[int] = OPENAI_REQUIRED_NON_DEFAULT_FIELDS
+"""Defining feature of the openai primary CTA anchor href (historical evidence)."""
 
 # A synthetic ButtonTokens-shaped cta properties dict with clearly non-default
 # values used by acceptance-helper contract tests.
