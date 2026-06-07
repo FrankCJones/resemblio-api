@@ -320,18 +320,21 @@ are operator-side verification.
 curl -s -o /dev/null -w "%{http_code}\n" https://api.resemblio.com/v1/healthz
 
 # 2. Hub returns >0 brands.
-curl -s https://api.resemblio.com/v1/library/hub | python -c \
-  "import sys, json; d=json.load(sys.stdin); print('hub_total:', d.get('total'))"
+# Correct route: GET /v1/library/brands (not /v1/library/hub).
+curl -s https://api.resemblio.com/v1/library/brands | python -c \
+  "import sys, json; d=json.load(sys.stdin); print('hub_total:', d['data'].get('total'))"
 
 # 3. One canonical brand renders (Aeon).
+# Correct route: GET /v1/library/brands/{brand_slug}.
 curl -s -o /dev/null -w "%{http_code}\n" \
-  https://api.resemblio.com/v1/library/aeon/categories
+  https://api.resemblio.com/v1/library/brands/aeon
 
 # 4. A category page body contains the CSS variable that proves token
 #    composition fired. Body fragment, no <html> wrapper.
-curl -s "https://api.resemblio.com/v1/library/aeon/<known-category-slug>/page" \
-  | grep -c -- '--ds-bg:'
-# Expect exactly 1.
+# Correct route: GET /v1/library/brands/{brand_slug}/categories/{category_slug}.
+curl -s "https://api.resemblio.com/v1/library/brands/aeon/categories/alphabet" \
+  | python -c "import sys,json; d=json.load(sys.stdin); print('has_ds_bg:', '--ds-bg:' in d['data'].get('rendered_html',''))"
+# Expect: has_ds_bg: True
 
 # 5. Alembic parity (over SSH after deploy):
 ssh ...  '/opt/resemblio-api/venv/bin/alembic -c /opt/resemblio-api/app/alembic.ini current'
