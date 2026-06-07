@@ -88,6 +88,26 @@ DEFAULT_PLACEHOLDER_VALUES: Final[frozenset[str]] = frozenset({
     "auto",
 })
 
+# Browser-default values that appear on anchor elements when no CSS is loaded.
+# These are never legitimate brand design tokens and must be treated as defaults.
+# Root cause: anchor border-color defaults to the link color (rgb(0, 0, 238)),
+# not black (rgb(0, 0, 0)), so the existing "0px none rgb(0, 0, 0)" sentinel in
+# DEFAULT_PLACEHOLDER_VALUES missed link-blue borders. Discovered during L4 v2
+# Phase 3 STOP analysis (2026-06-07) when a CSS-less openai fixture render
+# slipped through with 4 "non-default" fields that were all browser defaults.
+_ANCHOR_DEFAULT_MARKERS: Final[frozenset[str]] = frozenset({
+    "0px none rgb(0, 0, 238)",  # border shorthand: browser default for anchors (link-blue)
+    "rgb(0, 0, 238)",           # color: browser link blue (never a real brand CTA color)
+    '"Times New Roman"',        # font-family: browser default serif (never a real brand font)
+})
+
+# background-color for anchor elements defaults to rgba(0, 0, 0, 0) (transparent).
+# This IS a legitimate value for ghost-button brands (intentional design token).
+# It is treated as a browser default only when another _ANCHOR_DEFAULT_MARKER value
+# co-occurs in the same captured set, indicating a CSS-less render rather than an
+# intentional ghost-button design.
+_ANCHOR_TRANSPARENT_BG: Final[str] = "rgba(0, 0, 0, 0)"
+
 
 # --- Path resolution ---------------------------------------------------------
 
@@ -162,13 +182,42 @@ def _load_cta_properties(snapshot_path: Path) -> dict[str, str] | None:
 
 
 def _count_non_default_fields(properties: dict[str, str]) -> int:
-    """Count how many of TRACKED_BUTTON_FIELDS carry a non-default value."""
+    """Count how many of TRACKED_BUTTON_FIELDS carry a non-default value.
+
+    Two-tier default detection:
+
+    1. Blanket sentinel values (DEFAULT_PLACEHOLDER_VALUES): always treated as
+       default regardless of context. Covers the capture-path placeholder outputs
+       and universal CSS defaults (0px, none, auto, etc.).
+
+    2. Browser-default anchor markers (_ANCHOR_DEFAULT_MARKERS + cluster guard):
+       Values that appear on ``<a>`` elements when no CSS is loaded. Three are
+       unambiguously non-brand (link-blue color/border, default serif). One
+       (transparent background) is legitimate for ghost buttons but is still a
+       browser default for anchor elements - it is only counted as a default when
+       another _ANCHOR_DEFAULT_MARKER value co-occurs (cluster guard), indicating
+       a CSS-less render rather than an intentional design choice.
+    """
+    # Pre-scan: is any anchor-default marker value present in the tracked fields?
+    # A single co-occurring marker is enough to flag transparent bg as a default too.
+    anchor_marker_present = any(
+        properties.get(field, "").strip() in _ANCHOR_DEFAULT_MARKERS
+        for field in TRACKED_BUTTON_FIELDS
+    )
+
     count = 0
     for field_name in TRACKED_BUTTON_FIELDS:
         value = properties.get(field_name, "").strip()
         if not value:
             continue
         if value in DEFAULT_PLACEHOLDER_VALUES:
+            continue
+        if value in _ANCHOR_DEFAULT_MARKERS:
+            continue
+        # Cluster guard: transparent bg is a browser default for anchors.
+        # Count as real only when no other anchor-default markers are present
+        # (i.e., this looks like a real ghost-button brand, not a CSS-less render).
+        if value == _ANCHOR_TRANSPARENT_BG and anchor_marker_present:
             continue
         count += 1
     return count

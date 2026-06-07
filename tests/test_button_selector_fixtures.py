@@ -288,6 +288,45 @@ class TestAcceptanceHelperContract:
 
         assert passed, f"expected success for populated cta; got passed=False, reason={reason!r}"
 
+    def test_browser_default_anchor_cta_counts_as_zero_real_fields(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A CSS-less anchor-element render must count as 0 real fields, not 4.
+
+        Root cause: anchor elements default border-color to the link color
+        (rgb(0, 0, 238) in most browsers). The DEFAULT_PLACEHOLDER_VALUES sentinel
+        set catches rgb(0, 0, 0) (black-default border) but not rgb(0, 0, 238)
+        (link-blue-default border). All 6 tracked fields on a CSS-less anchor carry
+        browser defaults; none should count as real brand tokens.
+
+        This test pins the exact browser-default values the openai fixture-capture
+        produced via page.set_content on the CSS-less openai_homepage.html fixture
+        (2026-06-07 L4 v2 Phase 3 STOP evidence). The gate must reject this snapshot.
+        """
+        # Exact browser-default values from a CSS-less anchor render.
+        # Source: L4 v2 Phase 3 STOP analysis (STATUS.md 2026-06-07 section).
+        browser_default_cta_props: dict[str, str] = {
+            "border-radius": "0px",               # in DEFAULT_PLACEHOLDER_VALUES (correct)
+            "padding": "0px",                      # in DEFAULT_PLACEHOLDER_VALUES (correct)
+            "font-family": '"Times New Roman"',    # browser default serif - slips old gate
+            "background-color": "rgba(0, 0, 0, 0)",  # transparent anchor bg - slips old gate
+            "color": "rgb(0, 0, 238)",             # browser link blue - slips old gate
+            "border": "0px none rgb(0, 0, 238)",   # link-blue border default - slips old gate
+        }
+        cs_dir = tmp_path / "computed_styles"
+        monkeypatch.setenv("RESEMBLIO_RUNTIME_DATA_ROOT", str(tmp_path))
+        _write_snapshot(
+            cs_dir, "openai", _make_computed_style_snapshot(browser_default_cta_props)
+        )
+
+        passed, reason = _brand_has_real_button_styles("openai")
+
+        assert not passed, (
+            "Browser-default anchor render must not pass the real-styles gate. "
+            "All 6 tracked fields carry browser defaults; none are real brand tokens. "
+            f"reason={reason!r}"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Phase 2a: openai selector contract (dep-free, always-on CI)
