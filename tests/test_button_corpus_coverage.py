@@ -1,40 +1,36 @@
 """Acceptance + regression tests for the button-fidelity capture corpus.
 
-Stage L4 (Resemblio Library Phase B; CTO pass 2 plan
-``projects/OptSus Team/cto-reviews/2026-06-05-resemblio-library-priority-revised-plan.md``
-Section F) closes the openai button-capture gap. The selector override
-and SPA wait strategy already exist in
-``extractor/computed_styles.py``; this file's tests are the TDD red
-ceremony declared in the Stage L4 Builder dispatch:
+Stage L4 (Resemblio Library Phase B) produced the button-capture pipeline.
+22 of 24 DRL brands now have real button styles captured. Two brands are
+permanent structural skips (L4 v3, 2026-06-07):
 
-1. ``test_openai_button_capture_lands_real_styles`` - acceptance gate.
-   Asserts the openai snapshot file on disk carries non-default values
-   for at least 4 of 6 CSS fields the override consumes (borderRadius,
-   padding, fontFamily, backgroundColor, color, boxShadow / border-width).
-   Initially FAILS because the 2026-06-02 22-of-24 capture run left
-   openai with default-skip placeholder values; the green-ceremony
-   re-capture (Jim runs from parent shell) populates the file and
-   flips this test green.
+1. ``test_openai_permanent_structural_skip`` - asserts openai is in
+   ``DOCUMENTED_SKIP_BRANDS``. openai.com is gated by Cloudflare Turnstile
+   (HTTP 403 on live capture); the saved fixture has 0 inline ``<style>``
+   tags; CDN CSS chunks also return HTTP 403. No honest offline path exists.
+   ADR: ``02-prd/2026-06-07-openai-permanent-skip.md``.
 
-2. ``test_corpus_coverage_floor`` - regression. Asserts that at least
-   23 of the 24 DRL brands have non-default button styles. aeon is the
-   sole documented-skip per
-   ``_handoff/inbox/claude/2026-06-02-openai-aeon-selector-revision.md``
-   (structurally uncapturable behind Vercel security checkpoint). Any
-   future capture-loss regression on a third brand trips this.
+2. ``test_corpus_coverage_floor`` - regression. Asserts at least 22 of 24
+   DRL brands have non-default button styles. aeon (Vercel checkpoint) and
+   openai (Cloudflare Turnstile + CDN CSS 403) are the two documented skips.
+   Any additional capture-loss regression trips this.
+
+Browser-default gate hardening (L4 v3 Phase 1): ``_count_non_default_fields``
+uses a two-tier check: blanket sentinel values (DEFAULT_PLACEHOLDER_VALUES) and
+anchor-default markers (_ANCHOR_DEFAULT_MARKERS + cluster guard for transparent
+background). Discovered when a CSS-less anchor render slipped through with 4
+"non-default" fields that were all browser defaults (link-blue color/border,
+Times New Roman, transparent bg).
 
 Snapshot location resolution mirrors what production reads via
 ``app.runtime_data.resolve_read_path``: runtime root first
 (``RESEMBLIO_RUNTIME_DATA_ROOT`` env, defaulting to ``/var/lib/resemblio``
 on prod), in-tree seed root as fallback
 (``_vendored/drl/drl/_data/computed_styles/``). Tests honor both so the
-same assertion works whether the green-ceremony capture writes to the
-runtime root (prod) or the seed root (local dev with
-``--write-into-seed`` rescue).
+same assertion works whether a capture wrote to the runtime root (prod)
+or the seed root (local dev with ``--write-into-seed`` rescue).
 
-These tests are pure-file inspection: no network, no Playwright. The
-capture itself is run out-of-band from the parent shell per Stage L4
-authority (sub-agents cannot reach Playwright).
+These tests are pure-file inspection: no network, no Playwright.
 """
 from __future__ import annotations
 
@@ -66,14 +62,24 @@ TRACKED_BUTTON_FIELDS: Final[tuple[str, ...]] = (
 OPENAI_REQUIRED_NON_DEFAULT_FIELDS: Final[int] = 4
 
 # Regression floor: at least this many of the 24 DRL brands must have
-# non-default button styles. aeon is the documented-skip allowlist.
-CORPUS_COVERAGE_FLOOR: Final[int] = 23
+# non-default button styles. aeon and openai are the documented-skip allowlist.
+CORPUS_COVERAGE_FLOOR: Final[int] = 22
 
 # Brands explicitly allowed to ship without a populated button snapshot
-# (structurally uncapturable). aeon: Vercel security checkpoint serves a
-# 33 KB challenge page to every non-cookied request; see handoff at
-# `_handoff/inbox/claude/2026-06-02-openai-aeon-selector-revision.md`.
-DOCUMENTED_SKIP_BRANDS: Final[frozenset[str]] = frozenset({"aeon"})
+# (structurally uncapturable).
+#
+# aeon: Vercel security checkpoint serves a 33 KB challenge page to every
+# non-cookied request. No real DOM; selector and wait fixes cannot help.
+# Handoff: `_handoff/inbox/claude/2026-06-02-openai-aeon-selector-revision.md`.
+# ADR: 02-prd/2026-06-06-aeon-permanent-skip.md.
+#
+# openai: Cloudflare Turnstile blocks live capture (HTTP 403). The saved
+# fixture (openai_homepage.html, 419 KB) has 0 inline <style> tags and 12
+# external Next.js CSS chunks that also return HTTP 403 from the CDN. All
+# button styling is in Tailwind utility classes that require the unreachable
+# CSS to resolve. There is no honest offline path to real button tokens.
+# ADR: 02-prd/2026-06-07-openai-permanent-skip.md.
+DOCUMENTED_SKIP_BRANDS: Final[frozenset[str]] = frozenset({"aeon", "openai"})
 
 # Sentinel values the capture path writes when a slot was skipped, the
 # selector matched nothing, or the property came back empty. A field
@@ -293,66 +299,43 @@ def _drl_corpus_brand_slugs() -> list[str]:
 # --- Tests -------------------------------------------------------------------
 
 
-def test_openai_button_capture_lands_real_styles() -> None:
-    """Acceptance gate for the Stage L4 openai re-capture.
+def test_openai_permanent_structural_skip() -> None:
+    """openai is a documented permanent structural skip, identical in tier to aeon.
 
-    Self-healing design (L4 Phase 1, 2026-06-06): the prior xfail(strict=True)
-    marker was a footgun - it would XPASS the instant the re-capture ran, turning
-    the suite RED and potentially triggering the post-deploy auto-rollback gate
-    before anyone could remove the marker. The replacement is a skip/assert:
+    Evidence chain (all verified 2026-06-07, see ADR
+    ``02-prd/2026-06-07-openai-permanent-skip.md``):
 
-    - When the openai snapshot is ABSENT or carries only default/placeholder
-      values for the cta slot, the test SKIPs with the green-ceremony command.
-      The skip is self-documenting and does not block CI.
+    1. openai.com serves HTTP 403 + Cloudflare Turnstile challenge shell to
+       headless Playwright. No selector or wait fix helps.
+    2. The saved fixture (openai_homepage.html, 419 KB) has 0 inline ``<style>``
+       tags and 12 external Next.js CSS chunks (``/_next/static/chunks/*.css``).
+       ``page.set_content`` cannot fetch relative-path subresources without a server.
+    3. The CDN CSS chunks also return HTTP 403 Forbidden. The deployment hash in
+       the URLs is rotated and the chunks are gated by Cloudflare.
+    4. All button styling lives in Tailwind utility classes (``rounded-full``,
+       ``border-primary-12``, etc.) that require exactly the unreachable CSS to
+       resolve. There is no honest offline path to openai's real button tokens.
 
-    - When the snapshot is POPULATED with real captured styles, the test
-      ASSERTS the acceptance criterion. A future capture regression (snapshot
-      deleted, overwritten with defaults) surfaces as a test FAILURE rather
-      than a silent miss.
-
-    Green ceremony (Jim runs from parent shell; sub-agents lack Playwright):
-
-        python -m scripts.capture_all_button_snapshots \\
-            --apply --single openai --force \\
-            --drl-root /opt/resemblio-api/drl
-
-    Then run the suite; this test will PASS automatically with no code change.
-
-    Acceptance criterion: at least OPENAI_REQUIRED_NON_DEFAULT_FIELDS (4) of 6
-    TRACKED_BUTTON_FIELDS carry non-default values. 4 of 6 (not 6 of 6)
-    accommodates openai's palette: their primary CTA does not set an explicit
-    ``border`` shorthand, and ``box-shadow`` is not in the capture census.
-    A perfectly-captured openai button lands ~4 fields.
-
-    Selector contract + evidence: tests/test_button_selector_fixtures.py pins
-    the openai override selector to the real saved markup.
+    Revisit trigger: openai drops Turnstile OR a real-browser capture pipeline exists.
+    Evidence fixture: ``tests/fixtures/button_capture/openai_homepage.html``.
     """
-    passed, reason = _brand_has_real_button_styles("openai")
-    if not passed:
-        # Snapshot is absent, has no cta slot, or carries only default values.
-        # Skip rather than fail so the suite stays clean while the re-capture
-        # is pending. The test becomes an assert automatically once the snapshot
-        # is populated by the green ceremony above.
-        pytest.skip(
-            f"openai snapshot not yet populated with real styles ({reason}). "
-            "Run the green ceremony: "
-            "python -m scripts.capture_all_button_snapshots "
-            "--apply --single openai --force --drl-root /opt/resemblio-api/drl"
-        )
-    assert passed, (
-        "openai button snapshot must carry real captured styles after "
-        "Stage L4 re-capture. " + reason
+    assert "openai" in DOCUMENTED_SKIP_BRANDS, (
+        "'openai' must be in DOCUMENTED_SKIP_BRANDS. "
+        "openai.com is gated by Cloudflare Turnstile (HTTP 403); its CDN CSS "
+        "chunks also return HTTP 403, making fixture-capture impossible offline. "
+        "See 02-prd/2026-06-07-openai-permanent-skip.md."
     )
 
 
 def test_corpus_coverage_floor() -> None:
-    """Regression: 23 of 24 DRL brands must have real button styles.
+    """Regression: 22 of 24 DRL brands must have real button styles.
 
-    aeon is the lone documented-skip (Vercel security checkpoint). Any
-    third brand losing capture coverage trips this test. New brands
-    added to the corpus inherit the floor automatically: they must
-    capture or be added to ``DOCUMENTED_SKIP_BRANDS`` with a handoff
-    note explaining the structural reason.
+    Two documented structural skips (aeon: Vercel checkpoint; openai: Cloudflare
+    Turnstile + CDN CSS 403) reduce the floor from 24 to 22. Any additional
+    brand losing capture coverage trips this test. New brands added to the corpus
+    inherit the floor automatically: they must capture or be added to
+    ``DOCUMENTED_SKIP_BRANDS`` with a handoff note explaining the structural
+    reason.
     """
     slugs = _drl_corpus_brand_slugs()
     if not slugs:

@@ -424,89 +424,79 @@ class TestOpenaiSelectorContract:
             "openai may have adopted semantic class names - revisit the override."
         )
 
-    def test_resolve_census_returns_href_based_cta_for_openai(self) -> None:
-        """resolve_census('openai') uses the href-pattern selector for the cta slot.
+    def test_openai_cta_override_is_retired_to_none(self) -> None:
+        """openai cta override must be None (retired; permanent structural skip).
 
-        Ties the override map entry to the fixture evidence without hardcoding
-        the selector string twice. If the map changes to a class-based selector,
-        this test fails, prompting a re-derivation from real markup.
+        The href-based selector was correct for openai's markup but the live
+        capture is permanently blocked (Cloudflare Turnstile + CDN 403 on CSS
+        chunks - see ADR 02-prd/2026-06-07-openai-permanent-skip.md). The
+        selector is retired to None, identical to aeon, so no capture attempt
+        is made and no fallback to the default selector runs.
+
+        The four tests above (test_primary_cta_is_href_based_anchor, etc.) remain
+        as historical evidence that the override WAS derived from real markup and
+        that a future openai redesign breaking those structural facts would be
+        detectable. They do not assert the selector is live.
         """
-        census = resolve_census("openai")
-        cta_entries = [(sel, slot) for sel, slot in census if slot == "cta"]
-
-        assert cta_entries, "resolve_census('openai') must include a 'cta' slot"
-        cta_selector = cta_entries[0][0]
-
-        # The selector must use href matching (href^= or href*=), not class-based.
-        assert "href" in cta_selector, (
-            f"openai cta selector {cta_selector!r} must be href-based, not class-based. "
-            "Re-derive from openai_homepage.html if openai redesigned the site."
-        )
-        assert CHATGPT_HREF_PREFIX in cta_selector, (
-            f"openai cta selector {cta_selector!r} must reference chatgpt.com. "
-            f"Expected '{CHATGPT_HREF_PREFIX}' in the selector."
+        openai_override = BRAND_SELECTOR_OVERRIDES.get("openai", {})
+        assert openai_override.get("cta") is None, (
+            "BRAND_SELECTOR_OVERRIDES['openai']['cta'] must be None (retired selector). "
+            "openai is a permanent structural skip: Cloudflare Turnstile blocks live "
+            "capture and CDN CSS chunks also return HTTP 403. "
+            "See 02-prd/2026-06-07-openai-permanent-skip.md."
         )
 
 
 # ---------------------------------------------------------------------------
-# Phase 2b: opt-in real-browser proof (RESEMBLIO_RUN_REAL_BROWSER=1 only)
+# Phase 2b: openai structural-skip proof
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(
-    not os.environ.get("RESEMBLIO_RUN_REAL_BROWSER"),
-    reason="opt-in: set RESEMBLIO_RUN_REAL_BROWSER=1 to run the Playwright set_content proof",
-)
-def test_openai_selector_captures_cta_via_set_content(openai_html: str) -> None:
-    """Playwright set_content proof: override selector finds the real CTA in the fixture.
+class TestOpenaiStructuralSkip:
+    """Prove openai is a documented permanent skip for structural reasons.
 
-    Uses page.set_content (no network) to evaluate the override selector
-    against the saved openai_homepage.html. If the cta slot is populated
-    with >= OPENAI_REQUIRED_NON_DEFAULT_FIELDS non-default values, the
-    override is proven correct against the real markup.
+    openai.com is gated by Cloudflare Turnstile (HTTP 403 on live capture)
+    and its CDN CSS chunks also return HTTP 403, making fixture-capture
+    impossible offline. The saved openai_homepage.html is evidence of WHAT the
+    site looks like and WHY an href-based override was needed; the absence of
+    inline CSS is evidence of WHY fixture-capture cannot work.
 
-    This test is kept out of the CI-green bar (opt-in) because it requires
-    Playwright + chromium binary. Run it when chromium is available to get
-    the true querySelector proof.
-
-    Skips cleanly when Playwright is not installed or chromium binary is missing.
+    ADR: projects/Resemblio/02-prd/2026-06-07-openai-permanent-skip.md.
     """
-    try:
-        from extractor.computed_styles import capture_computed_styles
-    except ImportError:
-        pytest.skip("extractor.computed_styles not importable")
 
-    report = capture_computed_styles(html=openai_html, brand_slug="openai")
+    def test_openai_fixture_has_no_inline_style_tags(self, openai_html: str) -> None:
+        """The openai fixture has zero inline <style> tags.
 
-    if report["status"] == "unavailable":
-        pytest.skip(
-            f"Playwright unavailable: {report.get('error', 'no chromium binary')}. "
-            "Install playwright[chromium] to run this proof."
+        This is the structural property that makes fixture-capture impossible:
+        all CSS is in external Next.js chunks that cannot be fetched offline
+        (and also return HTTP 403 from the CDN). Without inline styles, a
+        page.set_content render produces only browser defaults, not real brand
+        tokens.
+        """
+        assert "<style" not in openai_html.lower(), (
+            "openai_homepage.html must have no inline <style> tags. "
+            "If openai adds inline CSS, re-evaluate whether fixture-capture "
+            "can extract real button tokens (see v3 plan for the gate criteria)."
         )
 
-    assert report["status"] == "ok", (
-        f"capture_computed_styles returned status={report['status']!r} "
-        f"with error={report.get('error')!r}"
-    )
+    def test_openai_code_decision_matches_fixture_evidence(self) -> None:
+        """The code's openai override and skip decisions match the fixture evidence.
 
-    cta_signals = [s for s in report.get("signals", []) if s.get("slot") == "cta"]
-    assert cta_signals, (
-        "No 'cta' slot in ComputedStyleReport signals. "
-        "The override selector may not match the saved openai fixture. "
-        f"Signals present: {[s.get('slot') for s in report.get('signals', [])]!r}"
-    )
-
-    cta_props = cta_signals[0].get("properties", {})
-    non_default = sum(
-        1 for field in TRACKED_BUTTON_FIELDS
-        if cta_props.get(field, "").strip()
-        and cta_props[field].strip() not in DEFAULT_PLACEHOLDER_VALUES
-    )
-    assert non_default >= _OPENAI_FIELD_FLOOR, (
-        f"set_content proof: only {non_default} of {len(TRACKED_BUTTON_FIELDS)} "
-        f"tracked fields carry non-default values (required >= {_OPENAI_FIELD_FLOOR}). "
-        f"Captured cta properties: {cta_props!r}"
-    )
+        Cross-checks that BRAND_SELECTOR_OVERRIDES['openai']['cta'] is None
+        (retired selector) and 'openai' is in DOCUMENTED_SKIP_BRANDS. If either
+        is changed while the fixture still shows a CSS-less page, the decision
+        and evidence are out of sync and this test will fail.
+        """
+        openai_override = BRAND_SELECTOR_OVERRIDES.get("openai", {})
+        assert openai_override.get("cta") is None, (
+            "BRAND_SELECTOR_OVERRIDES['openai']['cta'] must be None (retired selector). "
+            "openai is gated by Cloudflare Turnstile; no CSS available offline. "
+            "See openai_homepage.html and 02-prd/2026-06-07-openai-permanent-skip.md."
+        )
+        assert "openai" in DOCUMENTED_SKIP_BRANDS, (
+            "'openai' must be in DOCUMENTED_SKIP_BRANDS. "
+            "The corpus-floor test (floor 22) allows aeon and openai as documented skips."
+        )
 
 
 # ---------------------------------------------------------------------------

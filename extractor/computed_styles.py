@@ -58,7 +58,16 @@ SCHEMA_VERSION = 1
 # discovered on each site. See
 # `_handoff/inbox/claude/2026-06-02-openai-aeon-capture-diagnosis.md`.
 BRAND_SELECTOR_OVERRIDES: dict[str, dict[str, str | None]] = {
-    "openai": {"cta": "a[href^='https://chatgpt.com'], header a[href*='chatgpt.com']"},
+    # openai: selector retired to None (permanent structural skip, matching aeon).
+    # The href-based selector (a[href^='https://chatgpt.com']) was correct for the
+    # markup but the live capture is blocked: openai.com serves HTTP 403 +
+    # Cloudflare Turnstile to headless Playwright, and the CDN CSS chunks also
+    # return HTTP 403. The saved fixture has 0 inline <style> tags; all styling is
+    # in Tailwind utility classes that require the unreachable CSS to resolve.
+    # Evidence: tests/fixtures/button_capture/openai_homepage.html.
+    # ADR: 02-prd/2026-06-07-openai-permanent-skip.md.
+    # Revisit: when openai drops Turnstile OR a real-browser capture pipeline exists.
+    "openai": {"cta": None},
     "aeon": {"cta": None},  # Vercel security-checkpoint gated; capture not possible headlessly
     # spot-check confirmed broader brands need href-pattern overrides too:
     "vercel": {"cta": "a[href*='vercel.com/signup'], header a[href*='/new'], main a.button"},
