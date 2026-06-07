@@ -245,6 +245,93 @@ sudo systemctl restart resemblio-library-indexer.timer
 sudo systemctl status resemblio-api --no-pager
 ```
 
+### 4.6 Install the library indexer systemd units (one-time; YELLOW gate)
+
+The indexer timer and service unit files ship in the repo at
+``code/api/deploy/systemd/``. They must be copied to
+``/etc/systemd/system/`` before ``enable --now`` makes them persistent.
+This is a one-time step per server; subsequent unit edits use 4.5 above.
+
+Authorization: ``install_configure`` GREEN per ``infra/box-resemblio-prod-01.yaml``;
+batched with the Phase 5 seed op for Frank/Jim go.
+
+```bash
+# Copy both unit files from the checked-out repo.
+sudo cp /opt/resemblio-api/app/deploy/systemd/resemblio-library-indexer.service \
+        /opt/resemblio-api/app/deploy/systemd/resemblio-library-indexer.timer \
+        /etc/systemd/system/
+
+sudo systemctl daemon-reload
+
+# Enable and start the timer in one step.
+sudo systemctl enable --now resemblio-library-indexer.timer
+
+# Wait ~70s (one tick + jitter) then verify.
+sudo systemctl status resemblio-library-indexer.timer --no-pager
+journalctl -u resemblio-library-indexer.service --since "5 min ago"
+
+# Confirm via the deploy probe pipeline (from the API working dir):
+/opt/resemblio-api/venv/bin/python -c "
+from app.library_deploy_probe import probe_and_evaluate, live_runner
+result = probe_and_evaluate(
+    live_runner,
+    unit_file_path='/etc/systemd/system/resemblio-library-indexer.timer',
+    drl_templates_importable=True,  # set to actual importability probe result
+    library_pages_count=0,           # fill from DB if available
+)
+print('ok:', result.ok)
+print('failing:', result.failing_checks)
+"
+```
+
+Rollback (instant, no data loss):
+
+```bash
+sudo systemctl disable --now resemblio-library-indexer.timer
+```
+
+The timer unit does not own any data. Disabling it stops future ticks but
+does not remove existing ``library_pages`` rows or pending ``library_index_jobs``.
+The pending jobs drain on the next enable.
+
+### 4.7 Phase 5 full install/seed/drain/verify sequence
+
+The complete sequence for a from-scratch library boot on a fresh box.
+On resemblio-prod-01 the library is already partially seeded; use the
+individual sections above for targeted ops.
+
+```bash
+# Step 1: Install timer units (Section 4.6; YELLOW/GREEN gate)
+# Step 2: Seed the 24-brand DRL corpus (Sections 4.2)
+cd /opt/resemblio-api/app
+set -a && . /opt/resemblio-api/.env && set +a
+# Staged first (3 brands); confirm no errors before full run.
+/opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library \
+    --apply --limit 3 --drl-root /opt/resemblio-api/drl
+# Then full run (idempotent; 3 already-seeded brands dedup).
+/opt/resemblio-api/venv/bin/python -m scripts.bootstrap_drl_library \
+    --apply --drl-root /opt/resemblio-api/drl
+
+# Step 3: Drain pending jobs. The timer fires every 60s automatically.
+# For a catch-up run after a large batch:
+while true; do
+  OUT=$(/opt/resemblio-api/venv/bin/python -m app.cli.library_indexer 2>&1)
+  echo "$OUT" | tail -n1
+  echo "$OUT" | grep -q 'jobs_run=0' && break
+done
+
+# Step 4: Verify (Section 4.4)
+/opt/resemblio-api/venv/bin/python -m scripts.verify_drl_bootstrap
+
+# Step 5: Probe the live API (Section 7)
+curl -s https://api.resemblio.com/v1/library/brands | \
+  python3 -c "import sys,json; d=json.load(sys.stdin); print('brands:', len(d['data'].get('featured',[])))"
+```
+
+Rollback consideration: seed rows are additive and idempotent. The safe
+response to a bad seed run is fix-forward (re-run with corrected args).
+Deleting prod rows requires an explicitly authorized DB op - never auto.
+
 ---
 
 ## 5. Module names
