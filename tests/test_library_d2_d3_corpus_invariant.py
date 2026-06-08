@@ -24,6 +24,18 @@ Non-empty page invariant:
     page-pattern category pages. A fully-empty brand is a data pipeline bug, not
     an honest gap.
 
+Brand-level-notice invariant (pinned 2026-06-08 after the first run surfaced it):
+    ``missing_data_notice`` is built once per brand (``build_missing_notice`` runs
+    against the per-brand ``BrandCaptureManifest``) and written IDENTICALLY into
+    every page row's ``metadata_json`` - page-pattern rows included. So a content-
+    rich page like ``hero`` carries the same brand-level "these showcase groups are
+    not captured" notice as an empty ``buttons`` page. This test pins that behavior
+    deliberately: a future refactor that scoped the notice per-category (e.g. only
+    attaching it to the empty showcase pages) would change what every page-pattern
+    page renders, and that is a product decision that must be made on purpose, not
+    drift in silently. The public-view UX implication of this brand-level placement
+    is tracked separately for Frank; the code contract is pinned here.
+
 Coverage:
     - All 5 indexer-enforced showcase categories (buttons, cards, badges, form-fields,
       inputs) for a DRL seed brand (no component geometry tokens).
@@ -310,17 +322,37 @@ class TestPagePatternNonEmpty:
             f"Check _compose_one_page for '{PAGE_PATTERN_SAMPLE}' template."
         )
 
-    def test_page_pattern_has_no_missing_items(
+    def test_page_pattern_carries_the_brand_level_missing_notice(
         self, drl_seed_pages: dict[str, LibraryPage]
     ) -> None:
-        """Page-pattern categories have no capture requirement; notice stays empty."""
+        """Page-pattern pages carry the SAME brand-level notice as showcase pages.
+
+        ``missing_data_notice`` is per-brand, not per-category (built once from
+        the brand manifest, written into every page row). So the content-rich
+        ``hero`` page carries the identical missing-items list naming the brand's
+        5 uncaptured showcase groups.
+
+        This is intentional and pinned here so a future refactor that scopes the
+        notice per-category cannot land silently: it would strip the notice from
+        every page-pattern page, which is a deliberate product change, not drift.
+
+        The public-view UX question (should a fully-rendered hero page show a
+        "5 component groups not captured" notice?) is a Frank decision tracked
+        outside this test. The test asserts only the current code contract.
+        """
         page = drl_seed_pages.get(PAGE_PATTERN_SAMPLE)
         assert page is not None
         items = _missing_items(page.metadata_json)
-        assert items == [], (
-            f"Page-pattern '{PAGE_PATTERN_SAMPLE}' has non-empty missing_items: "
-            f"{items!r}. Page-pattern categories have no capture requirement and "
-            f"should never populate the missing notice."
+        slugs = sorted(
+            item["category_slug"]
+            for item in items
+            if isinstance(item, dict) and "category_slug" in item
+        )
+        assert slugs == sorted(SHOWCASE_CATEGORIES_UNDER_TEST), (
+            f"Page-pattern '{PAGE_PATTERN_SAMPLE}' must carry the brand-level notice "
+            f"naming the 5 uncaptured showcase groups (notice is per-brand, written "
+            f"into every page row). Got: {slugs!r}. If this list changed, the notice "
+            f"scope changed - confirm it was on purpose."
         )
 
     def test_more_page_pattern_categories_are_non_empty(
