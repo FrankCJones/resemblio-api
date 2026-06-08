@@ -17,9 +17,10 @@ Feature flag
 flip via systemd ``Environment=`` + restart takes effect immediately on the
 next request, without code change. When unset or anything other than the
 literal string ``"true"`` (case-insensitive), the route returns 503 with
-``error="billing_ui_disabled"``. Frank flips this only after his own LIVE
-Stripe own-card smoke succeeds (see the 2026-06-02 Wave 2c handoff for the
-seven-step flip sequence).
+``error="billing_ui_disabled"``. The flag ships without a manual card test;
+the first real customer transaction serves as the live test. Structured logs
+at every failure path are the monitoring instrument for first-transaction
+issues (see ``Resemblio_BUILD_LOG.md`` 2026-06-07 unvalidated-path entry).
 
 Stripe Checkout success URL convention
 --------------------------------------
@@ -129,8 +130,8 @@ def create_checkout_session(
 
     Edge cases:
         - 503 ``billing_ui_disabled`` when ``RESEMBLIO_BILLING_UI_ENABLED``
-          is not the literal string "true". Frank flips this AFTER his own
-          LIVE Stripe own-card smoke succeeds.
+          is not the literal string "true". The flag ships without a manual
+          card test; first real transaction = live test.
         - 503 ``internal_auth_unconfigured`` when the API process has no
           ``RESEMBLIO_INTERNAL_AUTH_SECRET`` configured (fail-closed).
         - 401 ``internal_auth_invalid`` when the secret header is missing
@@ -145,14 +146,27 @@ def create_checkout_session(
           ``tools/resemblio_customer_reconcile.sh`` to fix).
     """
     if not _billing_ui_enabled():
+        # No log: expected state when flag is off; would generate noise on
+        # every request during normal pre-flip operations.
         return _error(503, "billing_ui_disabled")
     settings = get_settings()
     if settings.internal_auth_secret is None:
+        # Operator config error; log at ERROR so it surfaces in the alert
+        # channel even before the first real transaction attempts.
+        logger.error("billing_checkout: internal_auth_unconfigured")
         return _error(503, "internal_auth_unconfigured")
     if not _internal_secret_ok(x_internal_auth, settings):
+        # Security-relevant: log at WARNING but include NO header values to
+        # avoid leaking the probing party's attempt token into the log stream.
+        logger.warning("billing_checkout: internal_auth_invalid")
         return _error(401, "internal_auth_invalid")
 
     if payload.amount_cents not in TOPUP_BUNDLE_ACCEPTED_PAID_CENTS:
+        # Tampered request or a BFF bug; log the attempted amount for forensics.
+        logger.warning(
+            "billing_checkout: amount_not_in_bundle_set amount=%s",
+            payload.amount_cents,
+        )
         return _error(
             400,
             "amount_not_in_bundle_set",
@@ -161,8 +175,14 @@ def create_checkout_session(
 
     db_user = session.get(User, payload.user_id)
     if db_user is None:
+        # Should not happen in normal BFF flow; log user_id for reconciliation.
+        logger.warning("billing_checkout: user_not_found user_id=%s", payload.user_id)
         return _error(404, "user_not_found")
     if not db_user.stripe_customer_id:
+        # Signup is supposed to populate this; log for reconciliation.
+        logger.warning(
+            "billing_checkout: stripe_customer_missing user_id=%s", db_user.id
+        )
         return _error(409, "stripe_customer_missing")
 
     try:
@@ -174,6 +194,9 @@ def create_checkout_session(
         # reconciliation script (see the typed exception's docstring for
         # the incident reference) to fix; surface a 409 so the BFF can
         # render a stable copy line rather than a 500.
+        logger.error(
+            "billing_checkout: customer_mode_mismatch user_id=%s", db_user.id
+        )
         return _error(409, "customer_mode_mismatch")
 
     # Bind the Stripe session id to (user_id, amount) via TopupSession BEFORE
