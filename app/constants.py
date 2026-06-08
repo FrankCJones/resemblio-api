@@ -288,15 +288,23 @@ LIBRARY_PAGE_METADATA_SCHEMA_VERSION: int = 1
 """Schema-version tag stamped onto every ``library_pages.metadata_json``."""
 
 
-# DRL bootstrap orchestration (mission Phase 8). The DRL ships TWO data
-# surfaces: ``corpus.json`` at the DRL root (41 systems, 955 component-level
-# assets - the seed_from_drl source) and ``_extractions/<brand>/`` directories
-# (24 brands actually pre-composed into per-category renders). The
-# orchestrator anchors brand discovery on ``_extractions/`` because that is
-# the set the indexer can immediately compose into library pages; corpus
-# systems without an ``_extractions/`` row require a separate compose pass.
+# DRL bootstrap orchestration (mission Phase 8).
+#
+# Discovery anchor change (DRL reconciliation Phase 1, 2026-06-08):
+# The orchestrator previously anchored brand discovery on ``_extractions/``
+# directories (24 dirs). Discovery is now corpus-driven: all system slugs
+# from ``corpus.json`` that do not start with ``_`` are treated as real
+# brands. ``_extractions/`` directories are NOT the discovery source.
+#
+# The DRL ships TWO data surfaces:
+# - ``corpus.json`` (41 systems, 955 assets) - the NEW discovery source
+# - ``_extractions/<brand>/`` (24 brands, pre-composed renders) - legacy only
 DRL_EXTRACTIONS_DIRNAME = "_extractions"
-"""Subdirectory of the DRL root that contains per-brand pre-composed renders."""
+"""Subdirectory of the DRL root that contains per-brand pre-composed renders.
+
+No longer the discovery anchor. Retained because ``verify_drl_bootstrap``
+still reads this dir for post-seed verification reporting.
+"""
 
 DRL_BOOTSTRAP_REPORT_SCHEMA_VERSION = 1
 """Schema version stamped onto the verify harness Markdown report."""
@@ -310,10 +318,15 @@ about-page, article-page). Verify harness warns rather than fails on
 brands that fall under this floor; the indexer may legitimately skip
 categories the brand's extraction lacks."""
 
-DRL_BOOTSTRAP_MIN_EXPECTED_BRANDS = 19
-"""Mission target floor: '19+ pre-extracted brands'. Verify harness exits
-non-zero when the asset_versions DRL-tagged count corresponds to fewer
-than this many distinct brand slugs."""
+DRL_BOOTSTRAP_MIN_EXPECTED_BRANDS = 38
+"""Verify harness floor: exits non-zero when the asset_versions DRL-tagged
+count corresponds to fewer than this many distinct brand slugs.
+
+Updated from 19 to 38 after the DRL reconciliation Phase 1 fix (2026-06-08)
+that changed discovery from ``_extractions/``-anchored (24 dirs) to
+corpus-driven (40 real brands). 38 = 40 brands minus 2 tolerance for brands
+that may legitimately fail to seed (e.g. missing tokens_path files).
+"""
 
 
 # Stage O1 anonymous-extraction constants. Source: CTO respec

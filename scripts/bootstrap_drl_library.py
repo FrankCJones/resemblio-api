@@ -2,16 +2,27 @@
 
 The DRL ships two surfaces:
 
-- ``corpus.json`` at the DRL root (41 systems, 955 component-level assets)
-- ``_extractions/<brand>/`` (24 brand directories pre-composed into per-category
-  renders by the upstream compose pipeline)
+- ``corpus.json`` at the DRL root (41 systems, 955 component-level assets).
+  This is the authoritative brand discovery source.
+- ``_extractions/<brand>/`` (24 brand directories pre-composed by the upstream
+  pipeline). These are NOT the discovery source; they exist for 24 of the 40
+  real brands and must not be used as the discovery anchor.
 
-This orchestrator anchors brand discovery on ``_extractions/`` because those
-are the brands the indexer can immediately compose into library pages. For
-each discovered brand it invokes ``scripts.seed_from_drl.apply_seed`` with a
-``--source-system <slug>`` filter so the seed writes only that brand's
-component assets. The seed step is idempotent (``content_hash`` dedup on
-``asset_versions``); re-running is safe.
+Discovery anchor change (DRL reconciliation Phase 1, 2026-06-08):
+    The original implementation anchored brand discovery on ``_extractions/``
+    directories (24 dirs). This silently dropped the 16 DRL brands that were
+    authored in corpus.json with full ``assets/alphabets/<slug>/tokens.css``
+    data but had never been run through the ``_extractions/`` pipeline.
+
+    The fix: ``discover_brand_dirs`` now reads all system slugs from
+    ``corpus.json`` and filters out pseudo-systems (slugs starting with ``_``
+    such as ``_shared``). The result is 40 real brands regardless of whether
+    an ``_extractions/`` directory exists for each one.
+
+For each discovered brand the orchestrator invokes
+``scripts.seed_from_drl.apply_seed`` with a ``--source-system <slug>`` filter
+so the seed writes only that brand's component assets. The seed step is
+idempotent (``content_hash`` dedup on ``asset_versions``); re-running is safe.
 
 The library indexer (mission Phase 4, separate worker) consumes the
 ``asset_versions`` rows enqueued by the seed and writes ``library_pages``.
@@ -59,7 +70,6 @@ if _path_text not in sys.path:
 from app.constants import (
     ASSET_VERSIONS_SEED_SOURCE_LABEL,
     DRL_BOOTSTRAP_MIN_EXPECTED_BRANDS,
-    DRL_EXTRACTIONS_DIRNAME,
 )
 from scripts.seed_from_drl import (  # noqa: E402 - sys.path mutation above
     DEFAULT_BATCH_SIZE,
@@ -90,7 +100,7 @@ EXIT_ERROR = 1
 class BrandOutcome(TypedDict):
     """Per-brand outcome after one orchestrator pass."""
 
-    brand_dir: str
+    brand_slug: str
     library_slug: str
     corpus_system_slug: str
     asset_count_planned: int
@@ -145,27 +155,42 @@ def normalize_library_slug(brand_dir_name: str) -> str:
 
 # --- DRL discovery -----------------------------------------------------------
 
-def discover_brand_dirs(drl_root: Path) -> list[Path]:
-    """List every brand directory under ``<drl_root>/_extractions/``.
+def discover_brand_dirs(drl_root: Path) -> list[str]:
+    """Return every real brand slug from ``corpus.json``, sorted alphabetically.
 
-    Returns the directories sorted alphabetically for deterministic output.
-    Hidden dirs and the ``_INBOX`` staging area are filtered out so the
-    orchestrator never tries to seed a half-authored brand.
+    Discovery is corpus-driven: every system slug in ``corpus.json`` that does
+    NOT start with ``_`` is treated as a real brand. This includes brands with
+    no corresponding ``_extractions/`` directory - the original source of the
+    16-brand gap where ``discover_brand_dirs`` anchored on ``_extractions/``
+    (24 dirs) and silently skipped the 16 brands authored in corpus.json only.
+
+    Pseudo-systems start with ``_`` (e.g. ``_shared`` for cross-brand atoms).
+    They are filtered out so the orchestrator never tries to seed non-brand
+    entries.
+
+    Args:
+        drl_root: Path to the DRL project root (must contain ``corpus.json``).
+
+    Returns:
+        Sorted list of brand slugs discovered from corpus.json.
+
+    Raises:
+        FileNotFoundError: When ``corpus.json`` is absent from ``drl_root``.
     """
-    extractions_root = drl_root / DRL_EXTRACTIONS_DIRNAME
-    if not extractions_root.exists():
+    corpus_path = drl_root / "corpus.json"
+    if not corpus_path.exists():
         raise FileNotFoundError(
-            f"DRL extractions root not found at {extractions_root!s}. "
-            f"Pass --drl-root."
+            f"corpus.json not found at {corpus_path!s}. Pass --drl-root "
+            f"pointing at the DRL root."
         )
-    dirs = []
-    for child in sorted(extractions_root.iterdir()):
-        if not child.is_dir():
-            continue
-        if child.name.startswith("_") or child.name.startswith("."):
-            continue
-        dirs.append(child)
-    return dirs
+    import json as _json
+    corpus = _json.loads(corpus_path.read_text(encoding="utf-8"))
+    slugs = [
+        str(system.get("slug", "")).strip()
+        for system in corpus.get("systems", []) or []
+        if system.get("slug") and not str(system["slug"]).startswith("_")
+    ]
+    return sorted(slugs)
 
 
 # --- CLI ---------------------------------------------------------------------
@@ -228,18 +253,18 @@ def parse_args(argv: list[str] | None = None) -> BootstrapArgs:
 
 
 def select_brands(
-    brand_dirs: list[Path],
+    brand_slugs: list[str],
     single: str | None,
     limit: int | None,
-) -> list[Path]:
-    """Apply ``--single`` and ``--limit`` filters to the discovered brand list."""
-    selected = brand_dirs
+) -> list[str]:
+    """Apply ``--single`` and ``--limit`` filters to the discovered brand slug list."""
+    selected = brand_slugs
     if single is not None:
-        selected = [p for p in selected if p.name == single]
+        selected = [s for s in selected if s == single]
         if not selected:
-            available = ", ".join(p.name for p in brand_dirs)
+            available = ", ".join(brand_slugs)
             raise ValueError(
-                f"--single {single!r} matched no brand dir. Available: {available}"
+                f"--single {single!r} matched no brand slug. Available: {available}"
             )
     if limit is not None:
         selected = selected[:limit]
@@ -249,22 +274,29 @@ def select_brands(
 # --- Per-brand orchestration -------------------------------------------------
 
 def process_brand_dry_run(
-    brand_dir: Path,
+    brand_slug: str,
     drl_root: Path,
     corpus: dict[str, object],
 ) -> BrandOutcome:
     """Build the per-brand plan WITHOUT writing anything.
 
     Returns a ``BrandOutcome`` with ``status='dry-run'`` and the count of
-    assets the seed would touch.
+    assets the seed would touch. Safe to call without a DB connection.
+
+    Args:
+        brand_slug: The DRL system slug (e.g. ``"aeon"`` or ``"linear"``).
+            Does NOT need a corresponding ``_extractions/`` directory.
+        drl_root: Path to the DRL root. Used to resolve ``tokens_path``
+            values from corpus.json assets.
+        corpus: Loaded corpus.json dict from ``load_corpus(drl_root)``.
     """
-    library_slug = normalize_library_slug(brand_dir.name)
-    pairs = list(filter_assets(iter_assets(corpus), brand_dir.name, None))
+    library_slug = normalize_library_slug(brand_slug)
+    pairs = list(filter_assets(iter_assets(corpus), brand_slug, None))
     plan = plan_only(iter(pairs), drl_root, None)
     return BrandOutcome(
-        brand_dir=brand_dir.name,
+        brand_slug=brand_slug,
         library_slug=library_slug,
-        corpus_system_slug=brand_dir.name,
+        corpus_system_slug=brand_slug,
         asset_count_planned=len(plan),
         inserted=0,
         updated=0,
@@ -275,7 +307,7 @@ def process_brand_dry_run(
 
 
 def process_brand_apply(
-    brand_dir: Path,
+    brand_slug: str,
     drl_root: Path,
     corpus: dict[str, object],
     session: "Session",
@@ -283,15 +315,27 @@ def process_brand_apply(
     seed_user_id: int,
     batch_size: int,
 ) -> BrandOutcome:
-    """Run the seed for one brand and return the per-brand counts."""
-    library_slug = normalize_library_slug(brand_dir.name)
+    """Run the seed for one brand and return the per-brand counts.
+
+    Args:
+        brand_slug: The DRL system slug (e.g. ``"aeon"`` or ``"linear"``).
+            Does NOT need a corresponding ``_extractions/`` directory; the
+            seed reads tokens directly from ``corpus.json`` asset paths.
+        drl_root: Path to the DRL root.
+        corpus: Loaded corpus.json dict from ``load_corpus(drl_root)``.
+        session: SQLAlchemy session for DB writes.
+        storage: R2-compatible storage client for ZIP uploads.
+        seed_user_id: DB user id that owns seed rows.
+        batch_size: Rows per DB transaction.
+    """
+    library_slug = normalize_library_slug(brand_slug)
     captured_date = str(corpus.get("generated") or "unknown")
-    pairs = list(filter_assets(iter_assets(corpus), brand_dir.name, None))
+    pairs = list(filter_assets(iter_assets(corpus), brand_slug, None))
     if not pairs:
         return BrandOutcome(
-            brand_dir=brand_dir.name,
+            brand_slug=brand_slug,
             library_slug=library_slug,
-            corpus_system_slug=brand_dir.name,
+            corpus_system_slug=brand_slug,
             asset_count_planned=0,
             inserted=0,
             updated=0,
@@ -310,11 +354,11 @@ def process_brand_apply(
             captured_date=captured_date,
         )
     except Exception as exc:  # surface and continue with next brand
-        LOG.exception("seed failed for brand %s", brand_dir.name)
+        LOG.exception("seed failed for brand %s", brand_slug)
         return BrandOutcome(
-            brand_dir=brand_dir.name,
+            brand_slug=brand_slug,
             library_slug=library_slug,
-            corpus_system_slug=brand_dir.name,
+            corpus_system_slug=brand_slug,
             asset_count_planned=len(pairs),
             inserted=0,
             updated=0,
@@ -323,9 +367,9 @@ def process_brand_apply(
             error=str(exc),
         )
     return BrandOutcome(
-        brand_dir=brand_dir.name,
+        brand_slug=brand_slug,
         library_slug=library_slug,
-        corpus_system_slug=brand_dir.name,
+        corpus_system_slug=brand_slug,
         asset_count_planned=len(pairs),
         inserted=counts["inserted"],
         updated=counts["updated"],
@@ -352,7 +396,7 @@ def aggregate_report(
         report.totals_updated += outcome["updated"]
         report.totals_skipped += outcome["skipped"]
         if outcome["status"] == "failed":
-            report.failed_brands.append(outcome["brand_dir"])
+            report.failed_brands.append(outcome["brand_slug"])
     return report
 
 
@@ -434,7 +478,7 @@ def log_report(report: BootstrapReport, mode: str) -> None:
     for outcome in report.outcomes:
         LOG.info(
             "  brand=%s slug=%s status=%s planned=%d inserted=%d updated=%d skipped=%d err=%s",
-            outcome["brand_dir"],
+            outcome["brand_slug"],
             outcome["library_slug"],
             outcome["status"],
             outcome["asset_count_planned"],
@@ -475,20 +519,20 @@ def main(argv: list[str] | None = None) -> int:
             )
         return EXIT_OK
 
-    brand_dirs = discover_brand_dirs(args.drl_root)
-    selected = select_brands(brand_dirs, args.single, args.limit)
+    brand_slugs = discover_brand_dirs(args.drl_root)
+    selected = select_brands(brand_slugs, args.single, args.limit)
     LOG.info(
-        "discovered %d brand dir(s); selected %d after filters",
-        len(brand_dirs),
+        "discovered %d brand(s) from corpus.json; selected %d after filters",
+        len(brand_slugs),
         len(selected),
     )
     corpus = load_corpus(args.drl_root)
 
     outcomes: list[BrandOutcome] = []
     if not args.apply:
-        for brand_dir in selected:
-            outcomes.append(process_brand_dry_run(brand_dir, args.drl_root, corpus))
-        report = aggregate_report(args.drl_root, len(brand_dirs), outcomes)
+        for brand_slug in selected:
+            outcomes.append(process_brand_dry_run(brand_slug, args.drl_root, corpus))
+        report = aggregate_report(args.drl_root, len(brand_slugs), outcomes)
         log_report(report, mode="DRY RUN")
         return EXIT_OK if not report.failed_brands else EXIT_ERROR
 
@@ -500,10 +544,10 @@ def main(argv: list[str] | None = None) -> int:
 
     storage = _R2SeedAdapter(get_settings())
     with SessionLocal() as session:
-        for brand_dir in selected:
+        for brand_slug in selected:
             outcomes.append(
                 process_brand_apply(
-                    brand_dir,
+                    brand_slug,
                     args.drl_root,
                     corpus,
                     session,
@@ -512,7 +556,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.batch_size,
                 )
             )
-    report = aggregate_report(args.drl_root, len(brand_dirs), outcomes)
+    report = aggregate_report(args.drl_root, len(brand_slugs), outcomes)
     log_report(report, mode="APPLY")
     return EXIT_OK if not report.failed_brands else EXIT_ERROR
 

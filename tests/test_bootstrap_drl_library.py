@@ -7,9 +7,13 @@ Covers:
 - ``--limit`` cap
 - ``--verify-only`` is read-only
 - verify harness output schema + Markdown rendering
+- corpus-driven discovery: brands in corpus.json are found even without
+  a corresponding ``_extractions/`` directory (the 16-brand gap fix)
 
-Uses a synthetic DRL fixture (``corpus.json`` + ``_extractions/<brand>/`` +
-per-asset ``tokens.css`` files). No dependency on the real DRL on disk.
+Uses a synthetic DRL fixture (``corpus.json`` + per-asset ``tokens.css``
+files). No longer requires or creates ``_extractions/`` directories; the
+fixture verifies the old path was removed from discovery so the test
+coverage is honest about the new behaviour.
 """
 from __future__ import annotations
 
@@ -52,55 +56,76 @@ _TOKENS_CSS = """
 _BRAND_SLUGS = ["aeon", "aesop", "airtable", "apple", "cloudflare"]
 """Five brands; lets us exercise --limit=3 and >1 brand counts."""
 
+# One brand that has NO _extractions/ dir in the fixture - the key test for
+# the corpus-driven discovery change (Phase 1 of the DRL reconciliation).
+_CORPUS_ONLY_SLUG = "linear"
+
+
+def _build_system_entry(slug: str) -> dict:
+    """Return a minimal corpus.json system entry for one brand."""
+    return {
+        "slug": slug,
+        "name": slug.title(),
+        "tier": "A",
+        "category": "editorial",
+        "asset_count": 1,
+        "assets": [
+            {
+                "slug": f"{slug}-asset-001",
+                "class": "buttons",
+                "kind": "atom",
+                "path": f"assets/atoms/buttons/{slug}",
+                "tokens_path": f"assets/atoms/buttons/{slug}/tokens.css",
+                "tldr": "primary",
+                "patterns": ["primary-square"],
+                "mood": ["confident"],
+                "applicable_to": ["saas"],
+                "tags": ["buttons"],
+                "provenance_score": "A",
+            }
+        ],
+    }
+
 
 def _write_synthetic_drl(root: Path) -> None:
-    """Write a corpus.json + per-brand _extractions/<slug>/ + tokens.css tree."""
-    systems = []
-    for slug in _BRAND_SLUGS:
-        systems.append(
-            {
-                "slug": slug,
-                "name": slug.title(),
-                "tier": "A",
-                "category": "editorial",
-                "asset_count": 1,
-                "assets": [
-                    {
-                        "slug": f"{slug}-asset-001",
-                        "class": "buttons",
-                        "kind": "atom",
-                        "path": f"assets/atoms/buttons/{slug}",
-                        "tokens_path": f"assets/atoms/buttons/{slug}/tokens.css",
-                        "tldr": "primary",
-                        "patterns": ["primary-square"],
-                        "mood": ["confident"],
-                        "applicable_to": ["saas"],
-                        "tags": ["buttons"],
-                        "provenance_score": "A",
-                    }
-                ],
-            }
-        )
+    """Write corpus.json + tokens.css files for the synthetic brand set.
+
+    The fixture includes both ``_BRAND_SLUGS`` (five brands) and
+    ``_CORPUS_ONLY_SLUG`` (one additional brand with NO ``_extractions/``
+    directory). This intentional asymmetry lets the corpus-driven discovery
+    tests prove that brands without ``_extractions/`` dirs are discovered
+    correctly.
+
+    No ``_extractions/`` directories are written for ``_CORPUS_ONLY_SLUG``.
+    The five standard brands DO get ``_extractions/`` dirs (legacy state that
+    the new discovery logic ignores, present only to confirm the old path is
+    truly bypassed).
+    """
+    all_slugs = _BRAND_SLUGS + [_CORPUS_ONLY_SLUG]
     corpus = {
         "schema_version": 1,
         "generated": "2026-05-21",
-        "asset_count": len(_BRAND_SLUGS),
-        "system_count": len(_BRAND_SLUGS),
-        "systems": systems,
+        "asset_count": len(all_slugs),
+        "system_count": len(all_slugs),
+        "systems": [_build_system_entry(slug) for slug in all_slugs],
     }
     (root / "corpus.json").write_text(json.dumps(corpus), encoding="utf-8")
+
+    # Write tokens.css for every brand (including the corpus-only one).
+    for slug in all_slugs:
+        css_path = root / "assets" / "atoms" / "buttons" / slug / "tokens.css"
+        css_path.parent.mkdir(parents=True, exist_ok=True)
+        css_path.write_text(_TOKENS_CSS, encoding="utf-8")
+
+    # Write _extractions/ dirs ONLY for the five standard brands (NOT linear).
+    # This simulates the real DRL state: 24 of 40 brands had _extractions/ dirs.
+    # The presence of these dirs must NOT affect discovery (corpus is the anchor).
     extractions_root = root / "_extractions"
     extractions_root.mkdir(parents=True, exist_ok=True)
     for slug in _BRAND_SLUGS:
         brand_dir = extractions_root / slug
         brand_dir.mkdir(parents=True, exist_ok=True)
         (brand_dir / "extraction.json").write_text("{}", encoding="utf-8")
-        css_path = root / "assets" / "atoms" / "buttons" / slug / "tokens.css"
-        css_path.parent.mkdir(parents=True, exist_ok=True)
-        css_path.write_text(_TOKENS_CSS, encoding="utf-8")
-    # Also drop a hidden + underscore-prefixed dir; discover_brand_dirs must skip both.
-    (extractions_root / "_INBOX").mkdir(parents=True, exist_ok=True)
-    (extractions_root / ".cache").mkdir(parents=True, exist_ok=True)
 
 
 class _FakeStorage:
@@ -116,7 +141,14 @@ class _FakeStorage:
 
 @pytest.fixture
 def drl_root(tmp_path: Path) -> Path:
-    """Return a populated synthetic DRL root with 5 brands."""
+    """Return a populated synthetic DRL root.
+
+    Contains 5 standard brands (all with _extractions/ dirs) plus one
+    corpus-only brand (``linear``) with NO ``_extractions/`` dir. This
+    asymmetry is deliberate: tests that rely on ``_BRAND_SLUGS`` work on
+    the 5-brand set; tests that cover corpus-driven discovery use the full
+    6-brand set (``_BRAND_SLUGS + [_CORPUS_ONLY_SLUG]``).
+    """
     _write_synthetic_drl(tmp_path)
     return tmp_path
 
@@ -132,7 +164,70 @@ def _seed_user(session: Session) -> int:
     return user.id
 
 
-# --- Unit tests --------------------------------------------------------------
+# --- Unit tests: corpus-driven discovery (Phase 1 regression tests) ----------
+
+def test_discover_brand_dirs_includes_brands_without_extractions_dir(
+    drl_root: Path,
+) -> None:
+    """Brands in corpus.json are discovered even without an _extractions/ dir.
+
+    This is the primary regression test for the 16-brand discovery gap. The
+    old implementation anchored discovery on ``_extractions/`` directories
+    (24 dirs in the real DRL). The correct implementation reads all system
+    slugs from ``corpus.json`` so all 40 DRL brands are discovered regardless
+    of whether a pre-composed ``_extractions/<slug>/`` directory exists.
+
+    The fixture has ``linear`` in corpus.json but NO ``_extractions/linear/``
+    directory. This test FAILS under the old implementation and PASSES after
+    the corpus-driven fix.
+    """
+    slugs = discover_brand_dirs(drl_root)
+    assert _CORPUS_ONLY_SLUG in slugs, (
+        f"{_CORPUS_ONLY_SLUG!r} has no _extractions/ dir but must still be "
+        "discovered via corpus.json (root cause of the 16-brand gap)"
+    )
+
+
+def test_discover_brand_dirs_returns_all_corpus_brands(drl_root: Path) -> None:
+    """All brands in corpus.json are returned - including corpus-only brands."""
+    expected = sorted(_BRAND_SLUGS + [_CORPUS_ONLY_SLUG])
+    slugs = discover_brand_dirs(drl_root)
+    assert slugs == expected
+
+
+def test_discover_brand_dirs_excludes_underscore_pseudo_systems(tmp_path: Path) -> None:
+    """System slugs starting with ``_`` (e.g. ``_shared``) are filtered out.
+
+    The real DRL corpus has a ``_shared`` pseudo-system for cross-brand atoms.
+    Discovery must skip it so we never try to seed a pseudo-brand.
+    """
+    corpus = {
+        "schema_version": 1,
+        "generated": "2026-05-21",
+        "asset_count": 2,
+        "system_count": 2,
+        "systems": [
+            _build_system_entry("aeon"),
+            {**_build_system_entry("_shared"), "slug": "_shared"},
+        ],
+    }
+    (tmp_path / "corpus.json").write_text(json.dumps(corpus), encoding="utf-8")
+    css_path = tmp_path / "assets" / "atoms" / "buttons" / "aeon" / "tokens.css"
+    css_path.parent.mkdir(parents=True, exist_ok=True)
+    css_path.write_text(_TOKENS_CSS, encoding="utf-8")
+
+    slugs = discover_brand_dirs(tmp_path)
+    assert slugs == ["aeon"]
+    assert "_shared" not in slugs
+
+
+def test_discover_brand_dirs_raises_when_corpus_missing(tmp_path: Path) -> None:
+    """A DRL root without ``corpus.json`` is operator error and surfaces fast."""
+    with pytest.raises(FileNotFoundError, match="corpus.json"):
+        discover_brand_dirs(tmp_path)
+
+
+# --- Unit tests: slug normalization ------------------------------------------
 
 def test_normalize_library_slug_lowercases_and_replaces_underscores() -> None:
     """The library URL slug normalisation rule is documented + reversible."""
@@ -142,41 +237,29 @@ def test_normalize_library_slug_lowercases_and_replaces_underscores() -> None:
     assert normalize_library_slug("  Padded ") == "padded"
 
 
-def test_discover_brand_dirs_lists_only_visible_subdirs(drl_root: Path) -> None:
-    """Hidden + underscore-prefixed dirs are filtered out."""
-    dirs = discover_brand_dirs(drl_root)
-    names = [d.name for d in dirs]
-    assert names == sorted(_BRAND_SLUGS)
-    assert "_INBOX" not in names
-    assert ".cache" not in names
-
-
-def test_discover_brand_dirs_raises_when_missing(tmp_path: Path) -> None:
-    """A DRL root without ``_extractions/`` is operator error and surfaces fast."""
-    with pytest.raises(FileNotFoundError):
-        discover_brand_dirs(tmp_path)
-
+# --- Unit tests: brand selection filters -------------------------------------
 
 def test_select_brands_single(drl_root: Path) -> None:
-    """``--single aeon`` returns exactly the aeon dir."""
-    dirs = discover_brand_dirs(drl_root)
-    selected = select_brands(dirs, single="aeon", limit=None)
-    assert [p.name for p in selected] == ["aeon"]
+    """``--single aeon`` returns exactly the aeon slug."""
+    slugs = discover_brand_dirs(drl_root)
+    selected = select_brands(slugs, single="aeon", limit=None)
+    assert selected == ["aeon"]
 
 
 def test_select_brands_single_unknown_raises(drl_root: Path) -> None:
-    """A ``--single`` value that matches no dir surfaces with the available list."""
-    dirs = discover_brand_dirs(drl_root)
-    with pytest.raises(ValueError, match="matched no brand dir"):
-        select_brands(dirs, single="not-a-brand", limit=None)
+    """A ``--single`` value that matches no slug surfaces with the available list."""
+    slugs = discover_brand_dirs(drl_root)
+    with pytest.raises(ValueError, match="matched no brand slug"):
+        select_brands(slugs, single="not-a-brand", limit=None)
 
 
 def test_select_brands_limit(drl_root: Path) -> None:
     """``--limit 3`` caps the selection to the first three brands."""
-    dirs = discover_brand_dirs(drl_root)
-    selected = select_brands(dirs, single=None, limit=3)
+    slugs = discover_brand_dirs(drl_root)
+    selected = select_brands(slugs, single=None, limit=3)
     assert len(selected) == 3
-    assert [p.name for p in selected] == sorted(_BRAND_SLUGS)[:3]
+    # Alphabetical: aeon, aesop, airtable (first 3 of the 6-brand sorted set)
+    assert selected == sorted(_BRAND_SLUGS + [_CORPUS_ONLY_SLUG])[:3]
 
 
 def test_parse_args_defaults_to_dry_run() -> None:
@@ -197,13 +280,43 @@ def test_bootstrap_dry_run_reports_brand_list(drl_root: Path) -> None:
 
 
 def test_bootstrap_dry_run_outcomes_have_planned_counts(drl_root: Path) -> None:
-    """``process_brand_dry_run`` returns one outcome per asset planned."""
+    """``process_brand_dry_run`` returns one outcome per asset planned per brand."""
     corpus = load_corpus(drl_root)
-    dirs = discover_brand_dirs(drl_root)
-    outcomes = [process_brand_dry_run(d, drl_root, corpus) for d in dirs]
-    assert len(outcomes) == len(_BRAND_SLUGS)
+    slugs = discover_brand_dirs(drl_root)
+    outcomes = [process_brand_dry_run(slug, drl_root, corpus) for slug in slugs]
+    all_slugs = sorted(_BRAND_SLUGS + [_CORPUS_ONLY_SLUG])
+    assert len(outcomes) == len(all_slugs)
     assert all(o["status"] == "dry-run" for o in outcomes)
     assert all(o["asset_count_planned"] == 1 for o in outcomes)
+
+
+def test_bootstrap_corpus_only_brand_seeds_correctly(
+    drl_root: Path, session: Session
+) -> None:
+    """A brand with no ``_extractions/`` dir seeds from corpus.json successfully.
+
+    This is the apply-mode companion to the discovery regression test: not
+    only must corpus-only brands be discovered, they must also seed without
+    error and produce real DB rows.
+    """
+    user_id = _seed_user(session)
+    session.commit()
+    corpus = load_corpus(drl_root)
+    storage = _FakeStorage()
+    outcome = process_brand_apply(
+        _CORPUS_ONLY_SLUG,
+        drl_root,
+        corpus,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=25,
+    )
+    assert outcome["status"] == "ok", f"corpus-only seed failed: {outcome['error']}"
+    assert outcome["inserted"] == 1
+    extractions = session.execute(select(Extraction)).scalars().all()
+    assert len(extractions) == 1
+    assert extractions[0].source_id.startswith(f"{_CORPUS_ONLY_SLUG}/")
 
 
 def test_bootstrap_single_brand_only_processes_aeon(
@@ -215,7 +328,7 @@ def test_bootstrap_single_brand_only_processes_aeon(
     corpus = load_corpus(drl_root)
     storage = _FakeStorage()
     outcome = process_brand_apply(
-        drl_root / "_extractions" / "aeon",
+        "aeon",
         drl_root,
         corpus,
         session,
@@ -239,11 +352,11 @@ def test_bootstrap_limit_caps_processed_brands(
     session.commit()
     corpus = load_corpus(drl_root)
     storage = _FakeStorage()
-    dirs = discover_brand_dirs(drl_root)
-    selected = select_brands(dirs, single=None, limit=3)
+    slugs = discover_brand_dirs(drl_root)
+    selected = select_brands(slugs, single=None, limit=3)
     outcomes = [
-        process_brand_apply(d, drl_root, corpus, session, storage, user_id, 25)
-        for d in selected
+        process_brand_apply(slug, drl_root, corpus, session, storage, user_id, 25)
+        for slug in selected
     ]
     assert len(outcomes) == 3
     assert all(o["status"] == "ok" for o in outcomes)
@@ -261,7 +374,7 @@ def test_bootstrap_verify_only_no_state_change(
     corpus = load_corpus(drl_root)
     storage = _FakeStorage()
     process_brand_apply(
-        drl_root / "_extractions" / "aeon",
+        "aeon",
         drl_root,
         corpus,
         session,
@@ -285,7 +398,7 @@ def test_aggregate_report_rolls_totals() -> None:
     """``aggregate_report`` sums inserted/updated/skipped and tracks failures."""
     outcomes: list[orch.BrandOutcome] = [
         {
-            "brand_dir": "aeon",
+            "brand_slug": "aeon",
             "library_slug": "aeon",
             "corpus_system_slug": "aeon",
             "asset_count_planned": 2,
@@ -296,7 +409,7 @@ def test_aggregate_report_rolls_totals() -> None:
             "error": None,
         },
         {
-            "brand_dir": "aesop",
+            "brand_slug": "aesop",
             "library_slug": "aesop",
             "corpus_system_slug": "aesop",
             "asset_count_planned": 1,
@@ -324,22 +437,23 @@ def test_verify_drl_bootstrap_reports_structure(
     session.commit()
     corpus = load_corpus(drl_root)
     storage = _FakeStorage()
-    # Seed all 5 brands so we have a populated state.
-    for d in discover_brand_dirs(drl_root):
-        process_brand_apply(d, drl_root, corpus, session, storage, user_id, 25)
+    # Seed all brands (including the corpus-only one) to prove full discovery works.
+    for slug in discover_brand_dirs(drl_root):
+        process_brand_apply(slug, drl_root, corpus, session, storage, user_id, 25)
     session.commit()
 
+    all_slugs = _BRAND_SLUGS + [_CORPUS_ONLY_SLUG]
     result = collect_state(session)
     assert result["schema_version"] == 1
-    assert result["extractions_drl"] == len(_BRAND_SLUGS)
-    assert result["distinct_brand_slugs"] == len(_BRAND_SLUGS)
+    assert result["extractions_drl"] == len(all_slugs)
+    assert result["distinct_brand_slugs"] == len(all_slugs)
     assert set(result["jobs_by_status"].keys()) == {
         "pending",
         "running",
         "complete",
         "failed",
     }
-    # 5 brands < expected floor (19); expectations should fail loudly.
+    # 6 brands < expected floor (38); expectations should fail loudly.
     assert result["expectations_met"] is False
     assert any("below floor" in failure for failure in result["expectation_failures"])
 
@@ -357,11 +471,11 @@ def test_verify_passes_when_brand_count_meets_floor(
     session.commit()
     corpus = load_corpus(drl_root)
     storage = _FakeStorage()
-    for d in discover_brand_dirs(drl_root):
-        process_brand_apply(d, drl_root, corpus, session, storage, user_id, 25)
+    for slug in discover_brand_dirs(drl_root):
+        process_brand_apply(slug, drl_root, corpus, session, storage, user_id, 25)
     session.commit()
 
-    # Patch the floor down to 3 (our fixture has 5 brands).
+    # Patch the floor down to 3 (our fixture has 6 brands).
     monkeypatch.setattr(verifier, "DRL_BOOTSTRAP_MIN_EXPECTED_BRANDS", 3)
     result = collect_state(session)
     assert result["expectations_met"] is True
