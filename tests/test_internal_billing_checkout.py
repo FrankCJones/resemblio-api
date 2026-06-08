@@ -14,8 +14,10 @@ existing ``get_stripe_service`` dependency-override pattern (see
 """
 from __future__ import annotations
 
+import contextlib
 import logging
 from dataclasses import dataclass
+from typing import Iterator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -287,21 +289,81 @@ def test_create_checkout_session_returns_404_when_user_missing(
 # --- Logging tests (Phase A2) ------------------------------------------------
 #
 # Every non-success path in billing.py now emits a structured log line so
-# operators can monitor first-transaction behavior via journald. The tests
-# below use ``caplog`` to assert those lines appear without leaking secrets.
+# operators can monitor first-transaction behavior via journald. The success
+# path logs ``internal_checkout_created`` with the session id masked to
+# ``<first-12-chars>***``; the raw id must NOT appear anywhere.
 #
-# The success path logs ``internal_checkout_created`` with the session id
-# masked to ``<first-12-chars>***``; the raw id must NOT appear anywhere.
+# These tests deliberately do NOT use pytest's ``caplog`` fixture. caplog
+# captures via a handler on the ROOT logger and relies on the app's module
+# logger propagating to it. The CI suite runs alembic migration tests whose
+# ``fileConfig(disable_existing_loggers=True)`` call disables every existing
+# module logger (including ``app.routes.billing``) for the rest of the
+# process, so caplog silently captures nothing and the assertions fail in CI
+# while passing locally (the migration tests need alembic, which is absent
+# from the local dev env). See the investigation note at
+# projects/OptSus Team/queue/pending/2026-05-31-resemblio-ci-caplog-investigation.md.
 #
-# Convention: the logger name is ``app.routes.billing``; caplog is scoped
-# to that logger at the appropriate level to avoid noise from other modules.
+# ``capture_logs`` below sidesteps the whole class of problem: it attaches a
+# recording handler directly to the named logger, force-enables it, and clears
+# any process-wide ``logging.disable`` left active by another test. That makes
+# capture deterministic under any test ordering.
 
 
 _BILLING_LOGGER = "app.routes.billing"
 
 
+class _RecordingHandler(logging.Handler):
+    """In-memory log handler that retains every record it receives.
+
+    Attached directly to the target logger rather than the root so capture
+    does not depend on propagation (which CI breaks; see the section comment
+    above). ``text`` joins the fully-formatted messages, mirroring what an
+    operator would grep for in journald.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.DEBUG)
+        self.records: list[logging.LogRecord] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.records.append(record)
+
+    @property
+    def text(self) -> str:
+        """Space-joined formatted messages (args substituted via getMessage)."""
+        return " ".join(r.getMessage() for r in self.records)
+
+
+@contextlib.contextmanager
+def capture_logs(logger_name: str) -> Iterator[_RecordingHandler]:
+    """Capture records from ``logger_name`` regardless of global logging state.
+
+    Forces the named logger enabled + DEBUG level, clears any process-wide
+    ``logging.disable`` a prior test left active, and attaches a recording
+    handler. All mutated state is restored on exit. Deterministic under any
+    test ordering, including after alembic's ``disable_existing_loggers`` runs
+    earlier in the CI session.
+    """
+    logger = logging.getLogger(logger_name)
+    handler = _RecordingHandler()
+    prev_disabled = logger.disabled
+    prev_level = logger.level
+    prev_global_disable = logging.root.manager.disable
+    logger.disabled = False
+    logger.setLevel(logging.DEBUG)
+    logging.disable(logging.NOTSET)
+    logger.addHandler(handler)
+    try:
+        yield handler
+    finally:
+        logger.removeHandler(handler)
+        logger.disabled = prev_disabled
+        logger.setLevel(prev_level)
+        logging.disable(prev_global_disable)
+
+
 def test_success_path_logs_masked_session_id(
-    client: TestClient, session: Session, enable_billing_flag: None, caplog: pytest.LogCaptureFixture
+    client: TestClient, session: Session, enable_billing_flag: None
 ) -> None:
     """Success path emits info log with masked session id and no raw secret.
 
@@ -311,14 +373,14 @@ def test_success_path_logs_masked_session_id(
     """
     user, _api_key, _plaintext = seed_user(session)
     fake = _install_fake_stripe()
-    with caplog.at_level(logging.INFO, logger=_BILLING_LOGGER):
+    with capture_logs(_BILLING_LOGGER) as logs:
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers=_internal_headers(),
             json={"user_id": user.id, "amount_cents": TOPUP_BUNDLE_20_CENTS_PAID},
         )
     assert response.status_code == 200
-    log_text = " ".join(r.message for r in caplog.records)
+    log_text = logs.text
     assert "internal_checkout_created" in log_text, f"expected event in log: {log_text}"
     # First 12 chars of "cs_live_fake_billing_123" is "cs_live_fake".
     expected_masked = f"{fake.session_id[:12]}***"
@@ -336,20 +398,20 @@ def test_success_path_logs_masked_session_id(
 
 
 def test_internal_auth_invalid_logs_warning(
-    client: TestClient, session: Session, enable_billing_flag: None, caplog: pytest.LogCaptureFixture
+    client: TestClient, session: Session, enable_billing_flag: None
 ) -> None:
     """Wrong ``X-Internal-Auth`` header emits a WARNING without the header value."""
     user, _api_key, _plaintext = seed_user(session)
     _install_fake_stripe()
     wrong_secret = "not-the-real-secret-xxxxx"
-    with caplog.at_level(logging.WARNING, logger=_BILLING_LOGGER):
+    with capture_logs(_BILLING_LOGGER) as logs:
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers={"X-Internal-Auth": wrong_secret},
             json={"user_id": user.id, "amount_cents": TOPUP_BUNDLE_20_CENTS_PAID},
         )
     assert response.status_code == 401
-    log_text = " ".join(r.message for r in caplog.records)
+    log_text = logs.text
     assert "internal_auth_invalid" in log_text, f"expected log line: {log_text}"
     # Neither the supplied wrong secret nor the configured secret should appear.
     assert wrong_secret not in log_text, f"header value must not appear in log: {log_text}"
@@ -357,44 +419,44 @@ def test_internal_auth_invalid_logs_warning(
 
 
 def test_amount_not_in_bundle_set_logs_warning_with_amount(
-    client: TestClient, session: Session, enable_billing_flag: None, caplog: pytest.LogCaptureFixture
+    client: TestClient, session: Session, enable_billing_flag: None
 ) -> None:
     """Off-bundle amount emits a WARNING carrying the attempted amount for forensics."""
     user, _api_key, _plaintext = seed_user(session)
     _install_fake_stripe()
     bad_amount = 9999
-    with caplog.at_level(logging.WARNING, logger=_BILLING_LOGGER):
+    with capture_logs(_BILLING_LOGGER) as logs:
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers=_internal_headers(),
             json={"user_id": user.id, "amount_cents": bad_amount},
         )
     assert response.status_code == 400
-    log_text = " ".join(r.message for r in caplog.records)
+    log_text = logs.text
     assert "amount_not_in_bundle_set" in log_text, f"expected log line: {log_text}"
     assert str(bad_amount) in log_text, f"expected amount {bad_amount} in log: {log_text}"
 
 
 def test_user_not_found_logs_warning_with_user_id(
-    client: TestClient, session: Session, enable_billing_flag: None, caplog: pytest.LogCaptureFixture
+    client: TestClient, session: Session, enable_billing_flag: None
 ) -> None:
     """Missing user emits a WARNING carrying the attempted user_id for reconciliation."""
     _install_fake_stripe()
     missing_user_id = 999_888
-    with caplog.at_level(logging.WARNING, logger=_BILLING_LOGGER):
+    with capture_logs(_BILLING_LOGGER) as logs:
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers=_internal_headers(),
             json={"user_id": missing_user_id, "amount_cents": TOPUP_BUNDLE_20_CENTS_PAID},
         )
     assert response.status_code == 404
-    log_text = " ".join(r.message for r in caplog.records)
+    log_text = logs.text
     assert "user_not_found" in log_text, f"expected log line: {log_text}"
     assert str(missing_user_id) in log_text, f"expected user_id {missing_user_id} in log: {log_text}"
 
 
 def test_stripe_customer_missing_logs_warning(
-    client: TestClient, session: Session, enable_billing_flag: None, caplog: pytest.LogCaptureFixture
+    client: TestClient, session: Session, enable_billing_flag: None
 ) -> None:
     """User without a stripe_customer_id emits a WARNING with user_id for reconciliation."""
     user, _api_key, _plaintext = seed_user(session)
@@ -403,7 +465,7 @@ def test_stripe_customer_missing_logs_warning(
     session.add(user)
     session.commit()
     _install_fake_stripe()
-    with caplog.at_level(logging.WARNING, logger=_BILLING_LOGGER):
+    with capture_logs(_BILLING_LOGGER) as logs:
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers=_internal_headers(),
@@ -411,7 +473,7 @@ def test_stripe_customer_missing_logs_warning(
         )
     assert response.status_code == 409
     assert response.json()["error"] == "stripe_customer_missing"
-    log_text = " ".join(r.message for r in caplog.records)
+    log_text = logs.text
     assert "stripe_customer_missing" in log_text, f"expected log line: {log_text}"
     assert str(user.id) in log_text, f"expected user_id in log: {log_text}"
 
@@ -432,13 +494,13 @@ class _FakeMismatchStripe(_FakeStripeService):
 
 
 def test_customer_mode_mismatch_logs_error(
-    client: TestClient, session: Session, enable_billing_flag: None, caplog: pytest.LogCaptureFixture
+    client: TestClient, session: Session, enable_billing_flag: None
 ) -> None:
     """StripeCustomerModeError emits an ERROR log so the operator alert fires."""
     user, _api_key, _plaintext = seed_user(session)
     mismatch_fake = _FakeMismatchStripe()
     app.dependency_overrides[get_stripe_service] = _bind_fake(mismatch_fake)
-    with caplog.at_level(logging.ERROR, logger=_BILLING_LOGGER):
+    with capture_logs(_BILLING_LOGGER) as logs:
         response = client.post(
             "/v1/internal/billing/create_checkout_session",
             headers=_internal_headers(),
@@ -446,6 +508,6 @@ def test_customer_mode_mismatch_logs_error(
         )
     assert response.status_code == 409
     assert response.json()["error"] == "customer_mode_mismatch"
-    log_text = " ".join(r.message for r in caplog.records)
+    log_text = logs.text
     assert "customer_mode_mismatch" in log_text, f"expected log line: {log_text}"
     assert str(user.id) in log_text, f"expected user_id in log: {log_text}"
