@@ -177,6 +177,26 @@ class HubFeaturedRow(TypedDict, total=False):
     Old web clients ignore additive fields; new ones consume them with a
     fallback. No envelope or data schema_version bump required (web contract
     stays at ``library_data_v1``).
+
+    KNOWN GAP (Library v3 D8, documented 2026-06-08): the web hub's
+    ``visibleHubCategories`` (``app/app/lib/library-categories.ts``) consumes a
+    per-row ``captured_groups`` LIST to decide which showcase CHIPS to reveal.
+    This hub row deliberately does NOT yet emit ``captured_groups`` - only the
+    coarse ``captured_count``. At launch this is correct: every DRL seed brand
+    has ``captured_count == 0``, so no showcase chip should appear regardless,
+    and the web normalizes the absent field to ``[]`` (see ``mapApiHubRow``).
+    The showcase-chip REVEAL is therefore dormant-by-design until showcase
+    geometry capture ships (post-v1). When wiring it, two things are required,
+    not one: (1) emit ``captured_groups`` here from ``capture_manifest.groups``
+    where ``captured is True`` (the per-PAGE path already does this in
+    ``_extract_page_manifest_fields``); AND (2) map the manifest GROUP names
+    (singular: ``button``, ``card``, ``badge``, ``input``, plus the token
+    groups ``color``/``typography``/``spacing``) to the showcase category SLUGS
+    the web matches on (plural: ``buttons``, ``cards``, ``badges``, ``inputs``,
+    ``form-fields``, ``library``). A raw copy of the per-page field would NOT
+    work - ``"button" != "buttons"`` - so the reveal would silently never fire.
+    The mapping is the real work; ``captured_count`` alone is insufficient
+    because the web needs to know WHICH groups, not how many.
     """
 
     brand_slug: str
