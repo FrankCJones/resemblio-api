@@ -1,7 +1,8 @@
 # Library Subsystem - README
 
-**Version:** v2 (2026-06-07)
-**Plan:** `projects/OptSus Team/missions/resemblio-library-public-launch-tdd-plan-v2.md`
+**Version:** v3 (2026-06-08)
+**v2 plan:** `projects/OptSus Team/missions/resemblio-library-public-launch-tdd-plan-v2.md`
+**v3 plan:** `projects/OptSus Team/missions/resemblio-library-public-view-readiness-tdd-plan-v3.md`
 
 ---
 
@@ -9,7 +10,9 @@
 
 The Library subsystem takes a brand's DTCG token payload and produces per-template rendered HTML pages that demonstrate the brand's design system. It is the backend for the `/library/` route tree on resemblio.com.
 
-The v2 addition (this README's scope): **contract-first presentation with honest graceful degradation.** Every page binds to the full `BRAND_TOKEN_CONTRACT` slot set. Where a brand has REAL captured data for a component group, the component renders faithfully. Where it does not, the component is HIDDEN and a factual notice names the gap. No fabricated placeholders; no silently-empty pages.
+The v2 addition: **contract-first presentation with honest graceful degradation.** Every page binds to the full `BRAND_TOKEN_CONTRACT` slot set. Where a brand has REAL captured data for a component group, the component renders faithfully. Where it does not, the component is HIDDEN and a factual notice names the gap. No fabricated placeholders; no silently-empty pages.
+
+The v3 addition: **hub chip integrity and public-view readiness.** The hub's category-filter chip strip only surfaces showcase chips when at least one brand has that group captured (D8). The web BFF is the single source of truth for which chips are visible; pure TypeScript logic (`visibleHubCategories`) makes this testable without a real API call. All 24 brands render on the hub (no completeness threshold, D4). CSS for the chip strip, sort form, capture signal, and missing notice is now shipped.
 
 ---
 
@@ -182,6 +185,73 @@ The Phase 5 prod-ops gate flips this to `api` after seeding + drain verification
 3. Let the indexer timer drain: `journalctl -u resemblio-library-indexer.service -f`
 4. Run `python -m scripts.verify_drl_bootstrap` for count verification.
 5. For a full re-seed: `python -m scripts.bootstrap_drl_library --apply`.
+
+---
+
+## Web-side file map (Next.js)
+
+```
+code/web/app/
+  lib/
+    library-categories.ts      - LIBRARY_CATEGORIES array (18 entries, kind=page-pattern|showcase).
+                                  visibleHubCategories(featured): pure function that gates showcase
+                                  chips on real capture data from the API hub response.
+                                  LIBRARY_CATEGORIES_SCHEMA_VERSION = 'resemblio_library_categories_v1'.
+    library-data.ts            - BFF: fetches /v1/library/brands, /v1/library/brands/{slug},
+                                  /v1/library/brands/{slug}/categories/{cat} from the FastAPI API.
+                                  Switches between mock and live via RESEMBLIO_LIBRARY_DATA_SOURCE env.
+
+  library/
+    page.tsx                   - Hub page. Chip strip driven by visibleHubCategories(hub.featured).
+                                  data-block="category-chips" for CI targeting.
+
+    _components/
+      MissingDataNotice.tsx    - Renders the "Not yet captured" honest-gap notice per brand page.
+                                  Returns null when missingGroups is empty.
+                                  aria-label="Component data not yet captured" for a11y.
+      BrandCard.tsx            - Hub brand card. captureSignalLabel() returns null when
+                                  total_showcase_groups===0 (pre-v2 rows); uses
+                                  data-testid="brand-card-capture-signal".
+
+tests/
+  library-hub-showcase-degradation.test.ts  - SHOWCASE_SLUGS integrity, visibleHubCategories
+                                               pure-function coverage, hub page render.
+  library-contract-parity.test.ts           - Export boundary: every field the API sends
+                                               is typed end-to-end; no bare dicts.
+```
+
+---
+
+## D8: showcase chip gating (v3 decision)
+
+Hub filter chips are split into two kinds in `library-categories.ts`:
+
+- **page-pattern** (12 categories): hero, navigation, footer, alphabet, article-layout,
+  cta-block, feature-grid, news-list, pricing-table, process-steps, testimonials, about-team.
+  These ALWAYS render for all brands unconditionally (layout demo, not component geometry).
+  Their chips always appear on the hub.
+
+- **showcase** (6 categories): badges, buttons, cards, form-fields, inputs, library.
+  These gate on real component geometry capture. Their chips only appear when the API
+  reports >= 1 brand with that group captured.
+
+`visibleHubCategories(featured)` implements this:
+
+```typescript
+// page-pattern chips: always show
+// showcase chips: only show if captured_count >= 1 across the hub
+```
+
+The `featured` field from `GET /v1/library/brands` drives this. Currently the API's
+`HubFeaturedRow` emits `captured_count` (a coarse count of showcase groups captured
+per brand) but NOT `captured_groups` (the per-brand group list). This means
+`visibleHubCategories` cannot yet resolve which showcase slugs are live, so all
+showcase chips are dormant at launch. This is **intentional and documented** - the
+chip gating is wired but dormant by design until showcase geometry capture ships
+post-v1. When the API adds `captured_groups` to `HubFeaturedRow`, the chips activate
+automatically with no web-side code change needed.
+
+See `library-categories.ts` line comment: "D8 known producer gap".
 
 ---
 
