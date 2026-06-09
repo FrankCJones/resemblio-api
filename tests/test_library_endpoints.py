@@ -787,6 +787,8 @@ def _make_av_with_curated_metadata(
             "category": "saas",
             "design_principles": ["confident", "minimal", "system-ui"],
             "commercial_signal": "product-led-growth",
+            "mood": ["confident", "technical"],
+            "applicable_to": ["saas", "developer-tools"],
             "tokens": {"bg": "#0a0a0b", "accent": "#5e6ad2"},
         },
         manifest_schema_version=SCHEMA_V1,
@@ -852,6 +854,46 @@ def test_brand_page_exposes_commercial_signal(
     assert data["commercial_signal"] == "product-led-growth"
 
 
+def test_brand_page_exposes_mood(
+    client: TestClient, session: Session
+) -> None:
+    """Brand-page payload carries the ``mood`` list from ``dtcg_json``.
+
+    ``mood`` is part of Frank's locked D-C metadata set. It has always been
+    written into ``dtcg_json`` by ``build_bundle`` (sourced from the DRL asset's
+    curated mood tags) but was not surfaced by the route until Phase 4. The
+    web UI renders mood tags alongside design principles on the brand page.
+    """
+    av = _make_av_with_curated_metadata(session)
+    _make_page(session, av, brand_slug="meta-example", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands/meta-example")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["mood"] == ["confident", "technical"]
+
+
+def test_brand_page_exposes_applicable_to(
+    client: TestClient, session: Session
+) -> None:
+    """Brand-page payload carries the ``applicable_to`` list from ``dtcg_json``.
+
+    ``applicable_to`` is part of Frank's locked D-C metadata set (the
+    "Used for" industries/contexts a design system suits). Like ``mood``, it
+    was already written to ``dtcg_json`` by ``build_bundle`` but not exposed
+    by the route until Phase 4.
+    """
+    av = _make_av_with_curated_metadata(session)
+    _make_page(session, av, brand_slug="meta-example", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands/meta-example")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["applicable_to"] == ["saas", "developer-tools"]
+
+
 def test_brand_page_metadata_fields_absent_when_not_in_dtcg(
     client: TestClient, session: Session
 ) -> None:
@@ -879,3 +921,5 @@ def test_brand_page_metadata_fields_absent_when_not_in_dtcg(
     assert data.get("category") is None
     assert data.get("design_principles") is None
     assert data.get("commercial_signal") is None
+    assert data.get("mood") is None
+    assert data.get("applicable_to") is None

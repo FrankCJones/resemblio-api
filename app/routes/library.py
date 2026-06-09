@@ -149,16 +149,21 @@ class LibraryPageData(TypedDict, total=False):
     # captured or no capture metadata has been written yet for this page.
     missing_groups: list[str]
     captured_groups: list[str]
-    # Phase 3 curated metadata (2026-06-08 - DRL reconciliation Gap C fix).
+    # Curated metadata (2026-06-08 - DRL reconciliation Gap C fix).
     # Sourced from asset_versions.dtcg_json, written by the seeder after
     # reading corpus.json (tier, category) and systems/<slug>/system.json
-    # (design_principles, commercial_signal). Fields are absent (not None)
-    # when the seed row predates Phase 3 or the asset is an organic extraction.
-    # Web consumers must treat a missing key the same as None.
+    # (design_principles, commercial_signal); mood + applicable_to are curated
+    # design-behaviour tags always written by build_bundle. Fields are absent
+    # (key not present) when the seed row predates the seeder or the asset is
+    # an organic extraction. Web consumers must treat a missing key as None.
+    # Phase 3 added tier/category/design_principles/commercial_signal; Phase 4
+    # added mood/applicable_to to complete Frank's locked D-C set.
     tier: str | None
     category: str | None
     design_principles: list[str] | None
     commercial_signal: str | None
+    mood: list[str] | None
+    applicable_to: list[str] | None
 
 
 class HubFeaturedRow(TypedDict, total=False):
@@ -561,47 +566,89 @@ def _extract_page_manifest_fields(
     return missing_groups, captured_groups
 
 
-def _extract_curated_metadata(
-    dtcg_json: Any,
-) -> tuple[str | None, str | None, list[str] | None, str | None]:
-    """Extract curated metadata fields from an ``asset_versions.dtcg_json`` blob.
+class CuratedMetadata(TypedDict, total=False):
+    """Curated brand metadata extracted from an ``asset_versions.dtcg_json`` blob.
 
-    Returns ``(tier, category, design_principles, commercial_signal)``.
+    Every field is optional: a key is present only when the DTCG envelope
+    actually carried a usable value. A missing key means "not available for
+    this row" (the envelope predates the Phase 3 seeder, or it is an organic
+    extraction that was never enriched). Consumers must treat a missing key
+    the same as ``None`` and degrade gracefully.
 
-    All four fields are ``None`` when the DTCG envelope predates the Phase 3
-    seeder (2026-06-08) or is an organic extraction that was never enriched.
-    The caller must treat ``None`` as "not available" rather than crashing.
+    Returned as a ``TypedDict`` rather than a positional tuple so that adding a
+    field (Phase 4 added ``mood`` + ``applicable_to`` to the original four) does
+    not silently shift positional unpacking at the call site.
 
-    Field sources (set at seed time by ``build_bundle``):
+    Field sources (all set at seed time by ``scripts/seed_from_drl.build_bundle``):
 
-    - ``tier``: from ``StrippedEntry.tier`` which reads ``corpus.json``.
-    - ``category``: from ``StrippedEntry.category`` which reads ``corpus.json``.
-    - ``design_principles``: from ``systems/<slug>/system.json``. Absent when
-      ``system.json`` did not exist at seed time for this brand.
-    - ``commercial_signal``: from ``systems/<slug>/system.json``. Same caveat.
+    - ``tier`` / ``category``: from ``StrippedEntry`` which reads ``corpus.json``.
+    - ``design_principles`` / ``commercial_signal``: from
+      ``systems/<slug>/system.json`` (Phase 3, 2026-06-08). Absent when that
+      file did not exist at seed time for the brand.
+    - ``mood`` / ``applicable_to``: curated design-behaviour tags from the DRL
+      asset; always written by ``build_bundle`` but only surfaced from Phase 4
+      (2026-06-08) onward. Part of Frank's locked D-C metadata set.
     """
+
+    tier: str
+    category: str
+    design_principles: list[str]
+    commercial_signal: str
+    mood: list[str]
+    applicable_to: list[str]
+
+
+def _clean_str(raw: Any) -> str | None:
+    """Return a non-empty stripped string, or ``None`` for any other input."""
+    return str(raw) if isinstance(raw, str) and raw.strip() else None
+
+
+def _clean_str_list(raw: Any) -> list[str] | None:
+    """Return a list of the string members of ``raw``, or ``None`` when ``raw``
+    is not a list. An all-non-string list collapses to ``[]`` (present but
+    empty), which is distinct from ``None`` (key was absent on the wire)."""
+    if not isinstance(raw, list):
+        return None
+    return [str(item) for item in raw if isinstance(item, str)]
+
+
+def _extract_curated_metadata(dtcg_json: Any) -> CuratedMetadata:
+    """Extract curated brand metadata from an ``asset_versions.dtcg_json`` blob.
+
+    Returns a ``CuratedMetadata`` carrying only the keys that resolved to a
+    usable value; absent keys signal "not available" (see ``CuratedMetadata``).
+    Never raises on malformed input: a non-dict ``dtcg_json`` yields an empty
+    result so a single bad row cannot 500 the brand page.
+    """
+    result: CuratedMetadata = {}
     if not isinstance(dtcg_json, dict):
-        return None, None, None, None
+        return result
 
-    raw_tier = dtcg_json.get("tier")
-    tier: str | None = str(raw_tier) if isinstance(raw_tier, str) and raw_tier else None
+    tier = _clean_str(dtcg_json.get("tier"))
+    if tier is not None:
+        result["tier"] = tier
 
-    raw_cat = dtcg_json.get("category")
-    category: str | None = str(raw_cat) if isinstance(raw_cat, str) and raw_cat else None
+    category = _clean_str(dtcg_json.get("category"))
+    if category is not None:
+        result["category"] = category
 
-    raw_dp = dtcg_json.get("design_principles")
-    design_principles: list[str] | None = (
-        [str(p) for p in raw_dp if isinstance(p, str)]
-        if isinstance(raw_dp, list)
-        else None
-    )
+    design_principles = _clean_str_list(dtcg_json.get("design_principles"))
+    if design_principles is not None:
+        result["design_principles"] = design_principles
 
-    raw_cs = dtcg_json.get("commercial_signal")
-    commercial_signal: str | None = (
-        str(raw_cs) if isinstance(raw_cs, str) and raw_cs else None
-    )
+    commercial_signal = _clean_str(dtcg_json.get("commercial_signal"))
+    if commercial_signal is not None:
+        result["commercial_signal"] = commercial_signal
 
-    return tier, category, design_principles, commercial_signal
+    mood = _clean_str_list(dtcg_json.get("mood"))
+    if mood is not None:
+        result["mood"] = mood
+
+    applicable_to = _clean_str_list(dtcg_json.get("applicable_to"))
+    if applicable_to is not None:
+        result["applicable_to"] = applicable_to
+
+    return result
 
 
 def _page_to_data(
@@ -617,9 +664,6 @@ def _page_to_data(
 ) -> LibraryPageData:
     """Materialize the contract-shaped page payload from ORM rows."""
     missing_groups, captured_groups = _extract_page_manifest_fields(page.metadata_json)
-    tier, category, design_principles, commercial_signal = _extract_curated_metadata(
-        asset_version.dtcg_json
-    )
     payload = LibraryPageData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
         brand_slug=page.brand_slug,
@@ -637,17 +681,13 @@ def _page_to_data(
         missing_groups=missing_groups,
         captured_groups=captured_groups,
     )
-    # Add curated metadata only when present; omitting the key (rather than
-    # setting None) lets web consumers distinguish "not seeded" from "seeded
-    # but empty". TypedDict with total=False allows absent keys.
-    if tier is not None:
-        payload["tier"] = tier
-    if category is not None:
-        payload["category"] = category
-    if design_principles is not None:
-        payload["design_principles"] = design_principles
-    if commercial_signal is not None:
-        payload["commercial_signal"] = commercial_signal
+    # Merge curated metadata. ``_extract_curated_metadata`` returns ONLY the
+    # keys that resolved to a usable value, so omitting an absent key (rather
+    # than setting it to None) flows through naturally: web consumers can
+    # distinguish "not seeded" (key absent) from "seeded but empty" (key
+    # present, value []). Both TypedDicts use total=False so the update is type
+    # safe and the merged keys are a subset of LibraryPageData's optional keys.
+    payload.update(_extract_curated_metadata(asset_version.dtcg_json))
     return payload
 
 
