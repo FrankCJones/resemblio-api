@@ -240,9 +240,42 @@ def load_tokens_for_asset(drl_root: Path, asset: DrlAssetDict) -> dict[str, str]
     return parse_tokens_css(tokens_path.read_text(encoding="utf-8"))
 
 
+def load_system_json(drl_root: Path, brand_slug: str) -> dict[str, Any] | None:
+    """Read ``systems/<brand_slug>/system.json`` from the DRL root.
+
+    Returns the parsed JSON dict when the file exists, or ``None`` when it is
+    absent. The caller treats ``None`` as "curated metadata not yet authored
+    for this brand" and simply omits the optional fields from the bundle.
+
+    Why a separate file from ``corpus.json``?
+    ``corpus.json`` is the flat catalogue used for asset iteration; it carries
+    ``tier`` and ``category`` but NOT ``design_principles`` or
+    ``commercial_signal`` (those are authored per-system on the DRL side and
+    live only in the per-system ``system.json``). This function is the seam
+    that bridges both sources.
+
+    Args:
+        drl_root: Filesystem root of the Design Reference Library checkout.
+        brand_slug: DRL system slug (e.g. ``"linear"``, ``"stripe"``).
+
+    Returns:
+        Parsed ``system.json`` dict, or ``None`` if the file does not exist.
+    """
+    system_path = drl_root / "systems" / brand_slug / "system.json"
+    if not system_path.exists():
+        return None
+    return json.loads(system_path.read_text(encoding="utf-8"))
+
+
 # --- Bundle assembly (mirrors ``app.extractor_bridge.bundle_from_token_set``) -
 
-def build_bundle(stripped: StrippedEntry, tokens: dict[str, str]) -> SeedBundle:
+def build_bundle(
+    stripped: StrippedEntry,
+    tokens: dict[str, str],
+    *,
+    design_principles: list[str] | None = None,
+    commercial_signal: str | None = None,
+) -> SeedBundle:
     """Construct the per-asset bundle persisted to Postgres + R2.
 
     Mirrors the structure produced for organic extractions
@@ -251,6 +284,17 @@ def build_bundle(stripped: StrippedEntry, tokens: dict[str, str]) -> SeedBundle:
     Seeded rows additionally embed the stripped entry's metadata so the
     public corpus surfaces the design-behaviour fields (``patterns``,
     ``mood``, ``applicable_to``, ``tags``) the DRL curated.
+
+    Phase 3 (2026-06-08): ``tier`` and ``category`` from ``StrippedEntry``,
+    plus ``design_principles`` and ``commercial_signal`` from
+    ``systems/<slug>/system.json``, are now embedded in ``dtcg_json`` so the
+    library route layer can surface them without a separate DB lookup.
+
+    Args:
+        stripped: Brand-stripped DRL entry (from ``brand_strip``).
+        tokens: Flat ``{name: value}`` token dict (from ``load_tokens_for_asset``).
+        design_principles: Optional list from ``system.json``; omitted when None.
+        commercial_signal: Optional string from ``system.json``; omitted when None.
     """
     tokens_json: dict[str, Any] = dict(tokens)
     dtcg_json: dict[str, Any] = {
@@ -264,8 +308,19 @@ def build_bundle(stripped: StrippedEntry, tokens: dict[str, str]) -> SeedBundle:
         "mood": list(stripped.mood),
         "applicable_to": list(stripped.applicable_to),
         "tags": list(stripped.tags),
+        # Curated metadata (Phase 3): sourced from StrippedEntry + system.json.
+        # ``tier`` and ``category`` always present (corpus.json carries them).
+        # ``design_principles`` and ``commercial_signal`` present only when
+        # system.json was found on disk; omitting the key (rather than storing
+        # None) lets consumers distinguish "not authored yet" from "empty list".
+        "tier": stripped.tier,
+        "category": stripped.category,
         "tokens": tokens_json,
     }
+    if design_principles is not None:
+        dtcg_json["design_principles"] = design_principles
+    if commercial_signal is not None:
+        dtcg_json["commercial_signal"] = commercial_signal
 
     tokens_bytes = json.dumps(dtcg_json, sort_keys=True, separators=(",", ":")).encode("utf-8")
     manifest = {
@@ -525,6 +580,9 @@ def apply_seed(
     """
     counts = {"inserted": 0, "updated": 0, "skipped": 0}
     batch_since_commit = 0
+    # Cache system.json loads so a multi-asset brand (e.g. a brand with
+    # alphabets + buttons + wholes) only reads disk once per slug.
+    _system_json_cache: dict[str, dict[str, Any] | None] = {}
     for system, asset in pairs:
         try:
             stripped = brand_strip(system, asset)
@@ -537,7 +595,28 @@ def apply_seed(
             LOG.warning("skipping %s: no tokens.css on disk", stripped.source_id)
             counts["skipped"] += 1
             continue
-        bundle = build_bundle(stripped, tokens)
+        # Load system.json for curated metadata (Phase 3 - Gap C fix).
+        # The brand slug is the first segment of the source_id path (e.g.
+        # "linear/buttons/linear-btn-001" -> "linear"). Using the system dict
+        # directly is safer than parsing source_id, and the slug is always
+        # present in a valid DRL system dict.
+        brand_slug = str(system.get("slug") or "")
+        if brand_slug not in _system_json_cache:
+            _system_json_cache[brand_slug] = load_system_json(drl_root, brand_slug)
+        system_meta = _system_json_cache[brand_slug] or {}
+        raw_dp = system_meta.get("design_principles")
+        design_principles: list[str] | None = (
+            [str(p) for p in raw_dp] if isinstance(raw_dp, list) else None
+        )
+        raw_cs = system_meta.get("commercial_signal")
+        commercial_signal: str | None = (
+            str(raw_cs) if isinstance(raw_cs, str) and raw_cs else None
+        )
+        bundle = build_bundle(
+            stripped, tokens,
+            design_principles=design_principles,
+            commercial_signal=commercial_signal,
+        )
         r2_key = R2_KEY_TEMPLATE.format(source_id=stripped.source_id)
         storage.put_object_at_key(r2_key, bundle.zip_bytes, "application/zip")
         _row, operation = upsert_extraction(

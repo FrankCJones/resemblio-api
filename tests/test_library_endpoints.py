@@ -754,3 +754,128 @@ def test_page_payload_missing_groups_empty_when_all_captured(
     assert resp.status_code == 200
     data = resp.json()["data"]
     assert data["missing_groups"] == []
+
+
+# =============================================================================
+# Phase 3 - Curated metadata: tier, category, design_principles, commercial_signal
+# =============================================================================
+#
+# Gap C closed (2026-06-08): ``tier``, ``category``, ``design_principles``, and
+# ``commercial_signal`` are now embedded in ``asset_versions.dtcg_json`` by the
+# seeder and surfaced by the brand-page endpoint via ``_page_to_data``.
+
+
+def _make_av_with_curated_metadata(
+    session: Session,
+    *,
+    url: str = "https://meta.example/",
+    version_label: str = "2026-06",
+) -> AssetVersion:
+    """Insert an ``asset_versions`` row whose ``dtcg_json`` carries curated metadata.
+
+    Mirrors the shape written by ``build_bundle`` after the Phase 3 fix:
+    ``tier``, ``category``, ``design_principles``, and ``commercial_signal``
+    are embedded directly in the DTCG envelope alongside the token dict.
+    """
+    av = AssetVersion(
+        url=url,
+        content_hash=f"meta-hash-{url}",
+        dtcg_json={
+            "schema_version": 1,
+            "slug": "meta-example",
+            "tier": "A",
+            "category": "saas",
+            "design_principles": ["confident", "minimal", "system-ui"],
+            "commercial_signal": "product-led-growth",
+            "tokens": {"bg": "#0a0a0b", "accent": "#5e6ad2"},
+        },
+        manifest_schema_version=SCHEMA_V1,
+        is_public=True,
+        version_label=version_label,
+        fetched_at=None,
+    )
+    session.add(av)
+    session.flush()
+    return av
+
+
+def test_brand_page_exposes_tier_and_category(
+    client: TestClient, session: Session
+) -> None:
+    """Brand-page payload carries ``tier`` and ``category`` from ``dtcg_json``.
+
+    Both fields are sourced from ``StrippedEntry`` at seed time and stored in
+    the DTCG envelope. The route must surface them verbatim so the Next.js
+    brand-page component can render the category chip and tier badge.
+    """
+    av = _make_av_with_curated_metadata(session)
+    _make_page(session, av, brand_slug="meta-example", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands/meta-example")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["tier"] == "A"
+    assert data["category"] == "saas"
+
+
+def test_brand_page_exposes_design_principles(
+    client: TestClient, session: Session
+) -> None:
+    """Brand-page payload carries ``design_principles`` list from ``dtcg_json``.
+
+    ``design_principles`` are sourced from ``systems/<slug>/system.json`` at
+    seed time, embedded in the DTCG envelope, and forwarded verbatim by the
+    route. The web UI renders these as editorial copy on the brand detail page.
+    """
+    av = _make_av_with_curated_metadata(session)
+    _make_page(session, av, brand_slug="meta-example", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands/meta-example")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["design_principles"] == ["confident", "minimal", "system-ui"]
+
+
+def test_brand_page_exposes_commercial_signal(
+    client: TestClient, session: Session
+) -> None:
+    """Brand-page payload carries ``commercial_signal`` from ``dtcg_json``."""
+    av = _make_av_with_curated_metadata(session)
+    _make_page(session, av, brand_slug="meta-example", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands/meta-example")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["commercial_signal"] == "product-led-growth"
+
+
+def test_brand_page_metadata_fields_absent_when_not_in_dtcg(
+    client: TestClient, session: Session
+) -> None:
+    """When ``dtcg_json`` lacks curated metadata, the response fields are absent (not None).
+
+    Pre-Phase-3 seed rows (and organic extractions) do not carry ``tier``,
+    ``category``, ``design_principles``, or ``commercial_signal`` in their
+    ``dtcg_json``. The route must not raise; the fields are simply omitted
+    from the payload so old web clients keep working and new ones can
+    distinguish "not seeded" from "seeded as empty".
+    """
+    av = _make_asset_version(session, url="https://plain.example/",
+                             version_label="2026-06")
+    _make_page(session, av, brand_slug="plain-brand", category_slug="buttons")
+    session.commit()
+
+    resp = client.get("/v1/library/brands/plain-brand")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    # Fields must be absent (None serialises to null in JSON, which is
+    # technically present; we want the key absent OR null - either is fine,
+    # but the key must NOT raise or produce garbage).
+    # Asserting None-or-absent covers both legal forms.
+    assert data.get("tier") is None
+    assert data.get("category") is None
+    assert data.get("design_principles") is None
+    assert data.get("commercial_signal") is None

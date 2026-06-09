@@ -39,6 +39,7 @@ from scripts.seed_from_drl import (
     build_bundle,
     iter_assets,
     load_corpus,
+    load_system_json,
     load_tokens_for_asset,
     parse_tokens_css,
     plan_only,
@@ -675,3 +676,208 @@ def test_seed_is_idempotent_on_asset_versions(session: Session, drl_root: Path) 
     assert len(second_av_count) == first_count, (
         f"re-run duplicated asset_versions: {first_count} -> {len(second_av_count)}"
     )
+
+
+# =============================================================================
+# Phase 3 - Curated metadata: design_principles + commercial_signal
+# =============================================================================
+#
+# Gap C: ``design_principles`` and ``commercial_signal`` live in
+# ``systems/<slug>/system.json`` on disk but were never loaded by the seeder.
+# They never appeared in ``dtcg_json`` and therefore never surfaced to the
+# library API. These tests pin the fix end-to-end.
+#
+# Fixture helpers:
+#
+# ``_write_system_jsons`` - writes ``systems/<slug>/system.json`` for every
+#   synthetic brand, mimicking the real DRL layout.
+# ``drl_root_with_system_jsons`` - extends ``drl_root`` by also calling
+#   ``_write_system_jsons``; existing tests remain on the plain ``drl_root``
+#   fixture so they are not widened unintentionally.
+
+
+def _write_system_jsons(root: Path) -> None:
+    """Write synthetic ``systems/<slug>/system.json`` files for both DRL brands.
+
+    Mirrors the real DRL layout: each system slug gets a directory under
+    ``systems/`` containing a ``system.json`` with ``design_principles`` (list)
+    and ``commercial_signal`` (string). These fields exist ONLY in ``system.json``
+    and are absent from ``corpus.json``; the seeder must load them separately.
+    """
+    entries = [
+        (
+            "acme",
+            {
+                "slug": "acme",
+                "design_principles": ["editorial", "warm-cinema-black"],
+                "commercial_signal": "magazine",
+            },
+        ),
+        (
+            "globex",
+            {
+                "slug": "globex",
+                "design_principles": ["confident", "minimal"],
+                "commercial_signal": "saas-b2b",
+            },
+        ),
+    ]
+    for slug, data in entries:
+        system_dir = root / "systems" / slug
+        system_dir.mkdir(parents=True, exist_ok=True)
+        (system_dir / "system.json").write_text(json.dumps(data), encoding="utf-8")
+
+
+@pytest.fixture
+def drl_root_with_system_jsons(tmp_path: Path) -> Path:
+    """Synthetic DRL root with both ``corpus.json`` and ``systems/<slug>/system.json``.
+
+    Extends the plain ``drl_root`` fixture without modifying it so the broader
+    test suite is not widened. Only Phase 3 tests that need ``design_principles``
+    and ``commercial_signal`` should use this fixture.
+    """
+    _write_corpus(tmp_path)
+    _write_system_jsons(tmp_path)
+    return tmp_path
+
+
+# --- load_system_json ---------------------------------------------------------
+
+
+def test_load_system_json_reads_system_json(
+    drl_root_with_system_jsons: Path,
+) -> None:
+    """``load_system_json`` returns the parsed ``systems/<slug>/system.json`` dict.
+
+    The returned dict carries ``design_principles`` and ``commercial_signal``
+    so the seeder can embed them in the DTCG bundle.
+    """
+    data = load_system_json(drl_root_with_system_jsons, "acme")
+    assert data is not None
+    assert data["design_principles"] == ["editorial", "warm-cinema-black"]
+    assert data["commercial_signal"] == "magazine"
+
+
+def test_load_system_json_returns_none_when_file_absent(drl_root: Path) -> None:
+    """``load_system_json`` returns ``None`` when the file does not exist.
+
+    The real DRL has system.json for every brand, but a partial corpus
+    (e.g., a newly added brand before its system.json is authored) must not
+    crash the seeder. The caller handles None by omitting the optional fields.
+    """
+    result = load_system_json(drl_root, "acme")
+    assert result is None
+
+
+def test_load_system_json_returns_none_for_unknown_slug(
+    drl_root_with_system_jsons: Path,
+) -> None:
+    """``load_system_json`` returns ``None`` for a slug not present in ``systems/``."""
+    result = load_system_json(drl_root_with_system_jsons, "nonexistent-brand")
+    assert result is None
+
+
+# --- build_bundle curated-metadata contract ----------------------------------
+
+
+def test_build_bundle_stores_tier_and_category_in_dtcg(drl_root: Path) -> None:
+    """``build_bundle`` embeds ``tier`` and ``category`` in ``dtcg_json``.
+
+    These fields come from ``StrippedEntry`` (read from ``corpus.json`` via
+    ``brand_strip``). They must land in ``dtcg_json`` so ``_page_to_data`` can
+    surface them to the library API without a second DB lookup.
+    """
+    corpus = load_corpus(drl_root)
+    system, asset = next(iter_assets(corpus))
+    stripped = brand_strip(system, asset)
+    tokens = load_tokens_for_asset(drl_root, asset)
+    bundle = build_bundle(stripped, tokens)
+    assert bundle.dtcg_json["tier"] == "A"
+    assert bundle.dtcg_json["category"] == "editorial-publication"
+
+
+def test_build_bundle_stores_design_principles_when_provided(
+    drl_root: Path,
+) -> None:
+    """``build_bundle`` includes ``design_principles`` in ``dtcg_json`` when supplied.
+
+    The caller (``apply_seed``) loads ``system.json`` and passes the list
+    explicitly; ``build_bundle`` embeds it verbatim so the DTCG envelope is
+    the single source of truth for the downstream route layer.
+    """
+    corpus = load_corpus(drl_root)
+    system, asset = next(iter_assets(corpus))
+    stripped = brand_strip(system, asset)
+    tokens = load_tokens_for_asset(drl_root, asset)
+    bundle = build_bundle(stripped, tokens, design_principles=["editorial", "warm-cinema"])
+    assert bundle.dtcg_json["design_principles"] == ["editorial", "warm-cinema"]
+
+
+def test_build_bundle_stores_commercial_signal_when_provided(
+    drl_root: Path,
+) -> None:
+    """``build_bundle`` includes ``commercial_signal`` in ``dtcg_json`` when supplied."""
+    corpus = load_corpus(drl_root)
+    system, asset = next(iter_assets(corpus))
+    stripped = brand_strip(system, asset)
+    tokens = load_tokens_for_asset(drl_root, asset)
+    bundle = build_bundle(stripped, tokens, commercial_signal="magazine")
+    assert bundle.dtcg_json["commercial_signal"] == "magazine"
+
+
+def test_build_bundle_omits_design_principles_when_none(drl_root: Path) -> None:
+    """``build_bundle`` does NOT emit the ``design_principles`` key when None.
+
+    Consumers of ``dtcg_json`` must be able to distinguish "not captured yet"
+    (key absent) from "captured as empty list" (key present, value []). Omitting
+    the key when None preserves that distinction.
+    """
+    corpus = load_corpus(drl_root)
+    system, asset = next(iter_assets(corpus))
+    stripped = brand_strip(system, asset)
+    tokens = load_tokens_for_asset(drl_root, asset)
+    bundle = build_bundle(stripped, tokens)
+    assert "design_principles" not in bundle.dtcg_json
+    assert "commercial_signal" not in bundle.dtcg_json
+
+
+# --- apply_seed end-to-end enrichment ----------------------------------------
+
+
+def test_apply_seed_enriches_dtcg_with_system_json_metadata(
+    session: Session, drl_root_with_system_jsons: Path
+) -> None:
+    """``apply_seed`` reads ``system.json`` per brand and stores its metadata in ``dtcg_json``.
+
+    End-to-end: the ``asset_versions.dtcg_json`` column written to Postgres must
+    carry ``design_principles`` and ``commercial_signal`` sourced from
+    ``systems/acme/system.json`` for the acme brand. This closes Gap C from the
+    Phase 0 forensic audit (2026-06-08).
+    """
+    user_id = _seed_user(session)
+    session.commit()
+    storage = _FakeStorage()
+    apply_seed(
+        iter_assets(load_corpus(drl_root_with_system_jsons)),
+        drl_root_with_system_jsons,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+    )
+    av_rows = session.execute(select(AssetVersion)).scalars().all()
+    # Locate the acme asset_version by its source_id fragment in the URL.
+    acme_av = next(
+        av for av in av_rows if "acme/alphabets/acme" in (av.url or "")
+    )
+    dtcg = acme_av.dtcg_json
+    assert isinstance(dtcg, dict), "dtcg_json must be a dict"
+    assert dtcg.get("design_principles") == ["editorial", "warm-cinema-black"], (
+        f"design_principles missing or wrong: {dtcg.get('design_principles')!r}"
+    )
+    assert dtcg.get("commercial_signal") == "magazine", (
+        f"commercial_signal missing or wrong: {dtcg.get('commercial_signal')!r}"
+    )
+    # tier + category must also be present (were missing before Phase 3)
+    assert dtcg.get("tier") == "A"
+    assert dtcg.get("category") == "editorial-publication"

@@ -149,6 +149,16 @@ class LibraryPageData(TypedDict, total=False):
     # captured or no capture metadata has been written yet for this page.
     missing_groups: list[str]
     captured_groups: list[str]
+    # Phase 3 curated metadata (2026-06-08 - DRL reconciliation Gap C fix).
+    # Sourced from asset_versions.dtcg_json, written by the seeder after
+    # reading corpus.json (tier, category) and systems/<slug>/system.json
+    # (design_principles, commercial_signal). Fields are absent (not None)
+    # when the seed row predates Phase 3 or the asset is an organic extraction.
+    # Web consumers must treat a missing key the same as None.
+    tier: str | None
+    category: str | None
+    design_principles: list[str] | None
+    commercial_signal: str | None
 
 
 class HubFeaturedRow(TypedDict, total=False):
@@ -551,6 +561,49 @@ def _extract_page_manifest_fields(
     return missing_groups, captured_groups
 
 
+def _extract_curated_metadata(
+    dtcg_json: Any,
+) -> tuple[str | None, str | None, list[str] | None, str | None]:
+    """Extract curated metadata fields from an ``asset_versions.dtcg_json`` blob.
+
+    Returns ``(tier, category, design_principles, commercial_signal)``.
+
+    All four fields are ``None`` when the DTCG envelope predates the Phase 3
+    seeder (2026-06-08) or is an organic extraction that was never enriched.
+    The caller must treat ``None`` as "not available" rather than crashing.
+
+    Field sources (set at seed time by ``build_bundle``):
+
+    - ``tier``: from ``StrippedEntry.tier`` which reads ``corpus.json``.
+    - ``category``: from ``StrippedEntry.category`` which reads ``corpus.json``.
+    - ``design_principles``: from ``systems/<slug>/system.json``. Absent when
+      ``system.json`` did not exist at seed time for this brand.
+    - ``commercial_signal``: from ``systems/<slug>/system.json``. Same caveat.
+    """
+    if not isinstance(dtcg_json, dict):
+        return None, None, None, None
+
+    raw_tier = dtcg_json.get("tier")
+    tier: str | None = str(raw_tier) if isinstance(raw_tier, str) and raw_tier else None
+
+    raw_cat = dtcg_json.get("category")
+    category: str | None = str(raw_cat) if isinstance(raw_cat, str) and raw_cat else None
+
+    raw_dp = dtcg_json.get("design_principles")
+    design_principles: list[str] | None = (
+        [str(p) for p in raw_dp if isinstance(p, str)]
+        if isinstance(raw_dp, list)
+        else None
+    )
+
+    raw_cs = dtcg_json.get("commercial_signal")
+    commercial_signal: str | None = (
+        str(raw_cs) if isinstance(raw_cs, str) and raw_cs else None
+    )
+
+    return tier, category, design_principles, commercial_signal
+
+
 def _page_to_data(
     page: LibraryPage,
     asset_version: AssetVersion,
@@ -564,7 +617,10 @@ def _page_to_data(
 ) -> LibraryPageData:
     """Materialize the contract-shaped page payload from ORM rows."""
     missing_groups, captured_groups = _extract_page_manifest_fields(page.metadata_json)
-    return LibraryPageData(
+    tier, category, design_principles, commercial_signal = _extract_curated_metadata(
+        asset_version.dtcg_json
+    )
+    payload = LibraryPageData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
         brand_slug=page.brand_slug,
         source_url=asset_version.url,
@@ -581,6 +637,18 @@ def _page_to_data(
         missing_groups=missing_groups,
         captured_groups=captured_groups,
     )
+    # Add curated metadata only when present; omitting the key (rather than
+    # setting None) lets web consumers distinguish "not seeded" from "seeded
+    # but empty". TypedDict with total=False allows absent keys.
+    if tier is not None:
+        payload["tier"] = tier
+    if category is not None:
+        payload["category"] = category
+    if design_principles is not None:
+        payload["design_principles"] = design_principles
+    if commercial_signal is not None:
+        payload["commercial_signal"] = commercial_signal
+    return payload
 
 
 # ---------------------------------------------------------------------------
