@@ -1,8 +1,9 @@
 # Library Subsystem - README
 
-**Version:** v3 (2026-06-08)
+**Version:** v4 (2026-06-10)
 **v2 plan:** `projects/OptSus Team/missions/resemblio-library-public-launch-tdd-plan-v2.md`
 **v3 plan:** `projects/OptSus Team/missions/resemblio-library-public-view-readiness-tdd-plan-v3.md`
+**v4 plan:** `projects/OptSus Team/missions/resemblio-library-public-view-readiness-tdd-plan-v4.md`
 
 ---
 
@@ -13,6 +14,8 @@ The Library subsystem takes a brand's DTCG token payload and produces per-templa
 The v2 addition: **contract-first presentation with honest graceful degradation.** Every page binds to the full `BRAND_TOKEN_CONTRACT` slot set. Where a brand has REAL captured data for a component group, the component renders faithfully. Where it does not, the component is HIDDEN and a factual notice names the gap. No fabricated placeholders; no silently-empty pages.
 
 The v3 addition: **hub chip integrity and public-view readiness.** The hub's category-filter chip strip only surfaces showcase chips when at least one brand has that group captured (D8). The web BFF is the single source of truth for which chips are visible; pure TypeScript logic (`visibleHubCategories`) makes this testable without a real API call. All 24 brands render on the hub (no completeness threshold, D4). CSS for the chip strip, sort form, capture signal, and missing notice is now shipped.
+
+The v4 addition: **DRL-reconcile initiative - curated metadata panel + 40-brand expansion.** The corpus expanded from 24 to 40 brands (commit `93e23d8`). A curated "About this system" panel was added to every brand page, sourcing tier, category, commercial signal, design principles, mood, and used-for from the DRL corpus. The panel degrades gracefully by absence (D11): no panel and no notice when data is missing, in contrast to component groups which get a `MissingDataNotice`. Slug-shaped values are title-cased for display (D12); tier is the one exception - it is a grade letter and renders verbatim. The producer/consumer seam is a single-sourced named constant (D13) so the three ends (seeder, route extractor, panel) cannot silently drift. The gated prod re-seed (D14) is the final step.
 
 ---
 
@@ -61,16 +64,69 @@ deploy/systemd/
 scripts/
   bootstrap_drl_library.py   - Seeds library_index_jobs from the DRL corpus.
   verify_drl_bootstrap.py    - Verify the seeding + drain completed cleanly.
+  seed_from_drl.py           - Bulk-seeds asset_versions from the DRL corpus.
+                               Also enriches dtcg_json with curated metadata
+                               (tier, category, design_principles,
+                               commercial_signal, mood, applicable_to). See
+                               SEED_FROM_DRL_DESIGN.md for the idempotency
+                               contract (UPSERT on seed_source partial index).
 ```
+
+---
+
+## Two-seeder architecture (v4, critical for re-seed operations)
+
+The Library backend has TWO separate seeders that feed different tables and
+must be understood independently before any re-seed operation:
+
+```
+Seeder A: bootstrap_drl_library.py
+  Input:  DRL corpus (tokens.css per brand)
+  Writes: library_index_jobs table (status=pending)
+  Output: library_pages.metadata_json (capture signals, missing notices,
+          hub signals) via the indexer timer
+
+Seeder B: seed_from_drl.py (build_bundle)
+  Input:  DRL corpus.json (tier, category) + systems/<slug>/system.json
+          (design_principles, commercial_signal) + StrippedEntry (mood,
+          applicable_to)
+  Writes: asset_versions.dtcg_json (the 6 curated fields)
+  Output: the curated panel on the brand page
+
+Join at read time: routes/library._page_to_data() joins LibraryPage to
+AssetVersion on asset_version_id (filtered is_public=True) and calls
+_extract_curated_metadata(asset_version.dtcg_json) to add the 6 curated
+fields to LibraryPageData.
+```
+
+**Re-seed ordering:**
+1. Run `seed_from_drl --apply` (Seeder B) first - enriches dtcg_json and calls
+   `enqueue_for_asset_version` which queues a re-index for each brand.
+2. Let the indexer timer drain - picks up new brands and re-processes existing
+   ones so library_pages rows are current.
+3. If new brands need library_pages rows for the first time, the indexer creates
+   them automatically when it processes the enqueued jobs.
+
+**Idempotency (D14):** `seed_from_drl` UPSERTs on the `(seed_source, source_id)`
+partial unique index. Running it twice is safe - the second run produces all-UPDATE
+rows with no duplicate INSERTs. Dry-run twice before any apply; both plans must
+show the same row counts (the idempotency check per SEED_FROM_DRL_DESIGN.md).
 
 ---
 
 ## Data flow
 
 ```
-DRL corpus (tokens.css per brand)
+DRL corpus (corpus.json + tokens.css + systems/<slug>/system.json per brand)
         |
-bootstrap_drl_library.py
+        |---------- Seeder B: seed_from_drl.py (build_bundle) ------------|
+        |                                                                   |
+        |           Writes 6 curated fields to asset_versions.dtcg_json:   |
+        |           tier, category, design_principles, commercial_signal,   |
+        |           mood, applicable_to                                     |
+        |           (Phase 3/4 of DRL-reconcile, 2026-06-08)               |
+        |                                                                   |
+        |---------- Seeder A: bootstrap_drl_library.py ------------------|
         |
 library_index_jobs table (status=pending)
         |
@@ -101,18 +157,27 @@ library_indexer.drain_pending()
     |
     +--> LibraryPage row (rendered_html + metadata_json) -> library_pages table
 
-library_pages table
+At read time: routes/library._page_to_data()
+    LibraryPage JOIN AssetVersion on asset_version_id (is_public=True)
+    + _extract_curated_metadata(asset_version.dtcg_json)
+        |
+        +--> 6 curated fields merged into LibraryPageData
+
+library_pages table + asset_versions.dtcg_json
         |
 GET /v1/library/brands  -> HubFeaturedRow (brand_slug, category_count, palette,
                            captured_count, total_showcase_groups, ...)
 GET /v1/library/brands/{slug}  -> LibraryPageData (rendered_html,
-                                   missing_groups, captured_groups, ...)
+                                   missing_groups, captured_groups,
+                                   tier, category, design_principles,
+                                   commercial_signal, mood, applicable_to)
 GET /v1/library/brands/{slug}/categories/{cat}  -> per-category page
         |
-Next.js web BFF (library-data.ts)
+Next.js web BFF (library-data.ts -> buildBrandMetadata -> BrandMetadataPanel)
         |
-/library/ hub page   - All 24 brands (no threshold; D4)
-/library/{slug}/     - Brand page with honest missing-data notice
+/library/ hub page   - All 40 brands (no threshold; D4)
+/library/{slug}/     - Brand page with honest missing-data notice + curated
+                       metadata panel where available
 ```
 
 ---
@@ -252,6 +317,107 @@ post-v1. When the API adds `captured_groups` to `HubFeaturedRow`, the chips acti
 automatically with no web-side code change needed.
 
 See `library-categories.ts` line comment: "D8 known producer gap".
+
+---
+
+## D11: curated panel degrades by absence (v4 decision)
+
+Unlike component groups (which degrade by showing a `MissingDataNotice`), a brand
+with NO curated metadata shows NO panel and NO notice. The page silently returns to
+its pre-panel shape. This is the correct behavior because:
+
+- Curated metadata is editorial enrichment, not a structural component the visitor
+  expects. Its absence is an authoring state, not a data gap to apologize for.
+- `MissingDataNotice` (D3) governs component groups because a visitor landing on
+  a "buttons" category page with nothing rendered would be confused. The panel's
+  containing block is not visible at all when the panel returns null.
+
+Implementation: `BrandMetadataPanel` returns `null` when all 6 fields are absent
+(or empty arrays). No notice is shown. No CSS placeholder. No div.
+
+**Contrast with D3:** D3 governs component groups. D11 governs the curated panel.
+They are NOT the same rule; do not apply D3 reasoning to the panel.
+
+---
+
+## D12: slug hygiene invariant (v4 decision)
+
+No raw kebab or snake_case slug may appear in user-facing copy. Every curated field
+value that is slug-shaped is title-cased for display:
+
+- `product-led-growth` renders as "Product Led Growth"
+- `warm-cinema-black` renders as "Warm Cinema Black"
+- `saas-marketing` renders as "Saas Marketing"
+
+**Exception: `tier` is a grade letter, not a slug.** It renders verbatim ("A", "B",
+"C"). Title-casing "A" would produce "A" anyway, but the semantic distinction matters
+for future grades. Do not apply `titleize()` to the tier field.
+
+Implementation: `titleize()` in `BrandMetadataPanel.tsx`. The `tier` field bypasses
+it and is rendered directly in the `<dd>`.
+
+---
+
+## D13: producer/consumer seam (v4 decision)
+
+The curated-metadata seam spans three independently-maintained systems:
+
+1. **Producer:** `scripts/seed_from_drl.build_bundle` writes to `asset_versions.dtcg_json`
+2. **Reader:** `app/routes/library._extract_curated_metadata` reads from `dtcg_json`
+3. **Consumer:** `BrandMetadataPanel` props (via `buildBrandMetadata` in `build-context.ts`)
+
+A field added to the producer but not the reader = silent dead field (no error, no panel row).
+A field added to the reader but not the producer = always-absent panel row (no data ever loads it).
+A field added to the producer and reader but not mapped in `buildBrandMetadata` = dropped at the call site.
+
+**The guard:** `CURATED_METADATA_FIELDS` (named constant in `routes/library.py`) is the single
+source of truth for the field set. A seam test (`tests/test_library_curated_seam.py`, Phase 2)
+asserts that `build_bundle`, `_extract_curated_metadata`, and the `BrandMetadataPanelProps`
+interface all agree on the same 6 field names. Adding a 7th field means touching all three
+ends AND this constant AND the test.
+
+### Curated metadata lineage table (verified 2026-06-10)
+
+| Producer key (dtcg_json) | Route reader key | Web BFF (buildBrandMetadata) | Panel prop |
+|---|---|---|---|
+| `tier` (corpus.json via StrippedEntry) | `dtcg_json.get("tier")` | `data.tier` -> `props.tier` | `tier?: string` (verbatim) |
+| `category` (corpus.json via StrippedEntry) | `dtcg_json.get("category")` | `data.category` -> `props.category` | `category?: string` (title-cased) |
+| `design_principles` (system.json; conditional) | `dtcg_json.get("design_principles")` | `data.design_principles` -> `props.designPrinciples` | `designPrinciples?: string[]` (title-cased) |
+| `commercial_signal` (system.json; conditional) | `dtcg_json.get("commercial_signal")` | `data.commercial_signal` -> `props.commercialSignal` | `commercialSignal?: string` (title-cased) |
+| `mood` (StrippedEntry; always written) | `dtcg_json.get("mood")` | `data.mood` -> `props.mood` | `mood?: string[]` (title-cased) |
+| `applicable_to` (StrippedEntry; always written) | `dtcg_json.get("applicable_to")` | `data.applicable_to` -> `props.applicableTo` | `applicableTo?: string[]` (title-cased) |
+
+Notes:
+- `design_principles` and `commercial_signal` are omitted from `dtcg_json` when `system.json` was
+  not found for a brand (no key at all, not an empty string/list). `_extract_curated_metadata`
+  handles absent keys correctly via `.get()`.
+- `mood` and `applicable_to` are always written by `build_bundle` (from `StrippedEntry`), even if
+  empty lists. An empty list passes `_clean_str_list` as `[]` (present but empty). `BrandMetadataPanel`'s
+  `presentList` guard requires `length > 0` before rendering a row, so `[]` degrades identically
+  to an absent key from the visitor's perspective.
+
+---
+
+## Web-side file map additions (v4)
+
+```
+code/web/app/
+  library/
+    _components/
+      BrandMetadataPanel.tsx     - Curated "About this system" panel. Returns null
+                                    when all 6 curated fields are absent or empty
+                                    (D11). Title-cases slug values (D12); tier is
+                                    verbatim exception. data-testid on every row.
+                                    Placed inside .library-header by LibraryPageShell,
+                                    preserving the L-16 sticky-CTA containing block.
+      build-context.ts           - buildBrandMetadata(): maps LibraryPageData's 6
+                                    snake_case curated fields to BrandMetadataPanelProps
+                                    camelCase. Returns undefined when none are present.
+
+  tests/
+    library-brand-metadata.test.ts  - 292 tests for BrandMetadataPanel: present/absent/
+                                       partial/empty/slug-hygiene/tier-verbatim invariants.
+```
 
 ---
 

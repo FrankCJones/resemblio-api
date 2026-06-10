@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import os
 from collections.abc import Callable, Generator
+from datetime import datetime, timezone
 from typing import Any
 
 import pytest
@@ -18,12 +19,12 @@ os.environ.setdefault("STRIPE_WEBHOOK_SECRET_RESEMBLIO_TEST", "whsec_resemblio_d
 from app import db  # noqa: E402
 from app import extractor_bridge as _extractor_bridge  # noqa: E402
 from app.config import reset_settings_cache  # noqa: E402
-from app.constants import DEFAULT_API_SCOPE, ONBOARDING_GRANT_CENTS  # noqa: E402
+from app.constants import DEFAULT_API_SCOPE, ONBOARDING_GRANT_CENTS, SCHEMA_V1  # noqa: E402
 from app.crypto import generate_api_key, hash_password  # noqa: E402
 from app.db import Base  # noqa: E402
 from app.extractor_bridge import ExtractionBundle, bundle_from_token_set  # noqa: E402
 from app.main import app  # noqa: E402
-from app.models import ApiKey, CreditLedger, User  # noqa: E402
+from app.models import ApiKey, AssetVersion, CreditLedger, LibraryPage, User  # noqa: E402
 from app.rate_limit import reset_rate_limiter  # noqa: E402
 from app.routes.extractions import get_extractor  # noqa: E402
 from app.storage import get_storage  # noqa: E402
@@ -190,3 +191,59 @@ def seed_user(session: Session, email: str = "frank@optsus.com", balance: int = 
 def auth_headers(plaintext: str) -> dict[str, str]:
     """Build bearer auth headers for tests."""
     return {"Authorization": f"Bearer {plaintext}"}
+
+
+@pytest.fixture
+def seed_library_page(session: Session) -> Callable[..., tuple[str, LibraryPage]]:
+    """Factory fixture: create an AssetVersion + canonical LibraryPage row.
+
+    Returns a callable with signature::
+
+        seed_library_page(
+            brand_slug: str,
+            dtcg_json: dict,
+            *,
+            category_slug: str = "buttons",
+            is_public: bool = True,
+        ) -> tuple[str, LibraryPage]
+
+    Commits the row before returning so TestClient requests see the data.
+    Used by ``test_library_curated_seam.py`` endpoint integration tests to
+    control exactly what ``asset_versions.dtcg_json`` carries per scenario.
+    """
+    def _factory(
+        brand_slug: str,
+        dtcg_json: dict[str, Any],
+        *,
+        category_slug: str = "buttons",
+        is_public: bool = True,
+    ) -> tuple[str, LibraryPage]:
+        av = AssetVersion(
+            url=f"https://{brand_slug}.example/",
+            content_hash=f"seam-test-hash-{brand_slug}",
+            dtcg_json=dtcg_json,
+            manifest_schema_version=SCHEMA_V1,
+            is_public=is_public,
+            version_label="2026-06",
+            fetched_at=datetime.now(timezone.utc),
+        )
+        session.add(av)
+        session.flush()
+        page = LibraryPage(
+            asset_version_id=av.id,
+            category_slug=category_slug,
+            brand_slug=brand_slug,
+            version_label="2026-06",
+            rendered_html="<p>seam test</p>",
+            metadata_json={
+                "schema_version": 1,
+                "brand_slug": brand_slug,
+                "category_slug": category_slug,
+            },
+            is_canonical=True,
+        )
+        session.add(page)
+        session.commit()
+        return brand_slug, page
+
+    return _factory

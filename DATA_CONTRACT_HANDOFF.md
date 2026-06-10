@@ -315,3 +315,79 @@ defaults when the brand has no real geometry data.** Better to show a factual
 
 Populating the source_fields above turns that notice into a faithful brand rendering.
 That is the upgrade path.
+
+---
+
+## Curated metadata contract (v4 addition, 2026-06-10)
+
+This section covers the SEPARATE curated "About this system" panel - independent
+of the component-showcase contract above. The panel shows editorial metadata about
+a brand's design system: tier, category, commercial posture, design principles,
+mood, and context of use.
+
+### How it works
+
+`scripts/seed_from_drl.build_bundle` reads two DRL sources per brand at seed time:
+
+1. **`corpus.json`** (via `StrippedEntry`): `tier` and `category` are always present
+   when a brand has a corpus entry.
+2. **`systems/<brand-slug>/system.json`**: `design_principles` and `commercial_signal`
+   when the file exists. Absent when the DRL curator has not yet authored it for a brand.
+
+The seeder also reads `applicable_to` and `mood` from the DRL asset entry (always
+present in the corpus; may be empty lists for brands with sparse DRL data).
+
+All 6 fields are embedded in `asset_versions.dtcg_json` at seed time. The route
+layer reads them back via `_extract_curated_metadata` and the web panel
+(`BrandMetadataPanel`) renders them with title-casing and graceful row-by-row
+degradation. The panel returns null entirely when no field has a usable value (D11).
+
+### What to populate to enrich the panel
+
+**To add `tier` or `category`**: update the brand's entry in `corpus.json`
+(the DRL repository) and re-run the seeder. Both fields come from `corpus.json`
+and are always written when present.
+
+**To add `design_principles`**: create or update
+`systems/<brand-slug>/system.json` in the DRL repository with:
+```json
+{
+  "design_principles": ["principle-one", "principle-two"]
+}
+```
+Values are slug-shaped strings (kebab, lowercase). The panel title-cases them
+for display. Re-run the seeder after authoring.
+
+**To add `commercial_signal`**: same `system.json` file:
+```json
+{
+  "commercial_signal": "product-led-growth"
+}
+```
+Single string. The panel title-cases it for display.
+
+**`mood` and `applicable_to`** come from the DRL asset entry in `corpus.json`
+and are already populated for all brands. Update them in the corpus if the
+curation changes; re-run the seeder.
+
+### Current prod state (as of 2026-06-10 probe)
+
+| Field | Prod state |
+|---|---|
+| `mood` | LIVE - rendered in panel for all 24 current brands |
+| `applicable_to` | LIVE - rendered in panel for all 24 current brands |
+| `tier` | ABSENT - not yet in prod dtcg_json (requires re-seed with v4 seeder) |
+| `category` | ABSENT - not yet in prod dtcg_json (requires re-seed with v4 seeder) |
+| `commercial_signal` | ABSENT - requires system.json authoring + re-seed |
+| `design_principles` | ABSENT - requires system.json authoring + re-seed |
+
+The Phase 6 re-seed (v4 plan) will add `tier` and `category` to all existing 24
+brands, add all 6 fields for the 16 new brands, and enrich with `commercial_signal`
+and `design_principles` for any brand that has `system.json` authored in the DRL.
+
+### The seam test (D13)
+
+`tests/test_library_curated_seam.py` (Phase 2 of v4 plan) pins the producer/consumer
+contract. If you add a 7th curated field, the test will fail until all three ends
+are updated together: seeder, reader, panel. This is intentional - silent field drift
+ships a dead panel row with no error, which is worse than a failing test.

@@ -566,6 +566,25 @@ def _extract_page_manifest_fields(
     return missing_groups, captured_groups
 
 
+# Single source of truth for the curated-metadata field names (D13).
+#
+# Every component of the seam must agree on this exact set:
+#   - PRODUCER: ``scripts/seed_from_drl.build_bundle`` writes these keys.
+#   - READER:   ``_extract_curated_metadata`` (below) reads these keys.
+#   - PANEL:    ``BrandMetadataPanel`` (web) renders props mapped from these keys.
+#
+# Adding a 7th field requires touching ALL THREE ends plus this constant and
+# the ``CURATED_METADATA_FIELDS`` alignment test in ``tests/test_library_curated_seam.py``.
+CURATED_METADATA_FIELDS: frozenset[str] = frozenset({
+    "tier",
+    "category",
+    "design_principles",
+    "commercial_signal",
+    "mood",
+    "applicable_to",
+})
+
+
 class CuratedMetadata(TypedDict, total=False):
     """Curated brand metadata extracted from an ``asset_versions.dtcg_json`` blob.
 
