@@ -881,3 +881,247 @@ def test_apply_seed_enriches_dtcg_with_system_json_metadata(
     # tier + category must also be present (were missing before Phase 3)
     assert dtcg.get("tier") == "A"
     assert dtcg.get("category") == "editorial-publication"
+
+
+# =============================================================================
+# Phase 3 - 40-brand real-DRL coverage proof
+# =============================================================================
+#
+# These tests use the REAL DRL corpus on disk and are skipped automatically
+# when it is not present (CI without the DRL checkout). They prove that:
+#
+#   (a) Every brand in the DRL is coverable by the seeder (no skips).
+#   (b) Every brand's dtcg_json carries all 6 curated fields after apply.
+#   (c) Re-running apply is idempotent at full-corpus scale.
+#
+# The real DRL root is resolved relative to this test file:
+#   code/api/tests/test_seed_from_drl.py
+#   -> code/api/
+#   -> code/
+#   -> Resemblio/      (or wherever the workspace root is)
+#   -> ../Design Reference Library/
+#
+# The actual path is four parents up from this file then into the sibling
+# "Design Reference Library" directory.
+
+_REAL_DRL_ROOT = Path(__file__).resolve().parents[4] / "Design Reference Library"
+_REAL_DRL_CORPUS = _REAL_DRL_ROOT / "corpus.json"
+
+# Expected real brand count (40 brands + 1 _shared entry = 41 system entries;
+# the seeder skips _shared because it has no assets of its own).
+_EXPECTED_BRAND_COUNT = 40
+
+
+def _real_drl_available() -> bool:
+    """Return True if the real DRL corpus is present and readable."""
+    return _REAL_DRL_CORPUS.exists()
+
+
+def _load_real_brand_slugs() -> list[str]:
+    """Return the list of real (non-_shared) brand slugs from the real corpus."""
+    data = json.loads(_REAL_DRL_CORPUS.read_text(encoding="utf-8"))
+    return [
+        s["slug"]
+        for s in data.get("systems", [])
+        if not s["slug"].startswith("_")
+    ]
+
+
+def _fake_storage_for_coverage() -> _FakeStorage:
+    """Return a fresh _FakeStorage for 40-brand coverage tests."""
+    return _FakeStorage()
+
+
+@pytest.mark.skipif(
+    not _real_drl_available(),
+    reason="Real DRL corpus not on disk - skip 40-brand coverage proof",
+)
+def test_40_brand_coverage_all_brands_seeded(session: Session) -> None:
+    """Every brand in the real DRL corpus produces at least one asset_versions row.
+
+    This is the coverage-proof gate for Phase 3: after apply_seed runs against
+    the full 955-asset corpus, every one of the 40 brand slugs must appear in
+    at least one ``asset_versions.url`` value. A brand that was silently skipped
+    (e.g. missing tokens.css for every asset) would not appear and would fail
+    this assertion.
+
+    Slow: ~60 seconds on a cold run loading 955 assets. Skipped in CI without
+    the DRL checkout. Run locally before gating Phase 6 (D14 re-seed).
+    """
+    corpus = load_corpus(_REAL_DRL_ROOT)
+    brand_slugs = _load_real_brand_slugs()
+    assert len(brand_slugs) == _EXPECTED_BRAND_COUNT, (
+        f"DRL has {len(brand_slugs)} brands; expected {_EXPECTED_BRAND_COUNT}. "
+        "Update _EXPECTED_BRAND_COUNT if the DRL grew or shrunk."
+    )
+
+    user_id = _seed_user(session)
+    session.commit()
+    storage = _fake_storage_for_coverage()
+
+    counts = apply_seed(
+        iter_assets(corpus),
+        _REAL_DRL_ROOT,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+    )
+
+    # No brand should be entirely skipped.
+    assert counts["skipped"] == 0, (
+        f"Seeder skipped {counts['skipped']} assets; expected 0 for a clean DRL corpus."
+    )
+    assert counts["inserted"] > 0, "Expected at least one inserted row."
+
+    # Every brand slug must appear in at least one seeded URL.
+    av_rows = session.execute(select(AssetVersion)).scalars().all()
+    seeded_urls = {av.url for av in av_rows}
+    missing_brands = [
+        slug for slug in brand_slugs
+        if not any(f"/{slug}/" in url for url in seeded_urls)
+    ]
+    assert not missing_brands, (
+        f"These {len(missing_brands)} brands produced no asset_versions row:\n"
+        + "\n".join(f"  - {s}" for s in sorted(missing_brands))
+        + "\nCheck that their tokens.css files exist on disk."
+    )
+
+
+@pytest.mark.skipif(
+    not _real_drl_available(),
+    reason="Real DRL corpus not on disk - skip 40-brand curated-field proof",
+)
+def test_40_brand_coverage_all_dtcg_carry_curated_fields(session: Session) -> None:
+    """Real brand rows carry all curated fields; gaps match known data state.
+
+    After apply_seed, asset_versions rows for the 40 real brands must carry:
+
+      Unconditional (always written by build_bundle):
+        - ``tier``, ``category`` - from corpus.json via StrippedEntry
+        - ``mood``, ``applicable_to`` - from DRL asset entry
+        - ``design_principles`` - from systems/<slug>/system.json (list, may be [])
+
+      Conditional (written only when system.json has a non-null value):
+        - ``commercial_signal`` - absent for 4 known-uncurated brands
+          (``are-na``, ``pitch``, ``the-markup``, ``the-pudding``), present
+          for the other 36. The upstream DRL notes for those 4 brands say
+          "manual review needed to set commercial_signal."
+
+    ``_shared`` rows are excluded: ``_shared`` is a cross-brand grouping with no
+    system.json; its rows correctly carry only the 4 asset-level fields.
+
+    Any failure on the unconditional fields is a seeder bug. A failure on
+    ``commercial_signal`` for a brand NOT in the known-uncurated set indicates
+    a new data gap that needs investigation.
+    """
+    # 4 brands whose system.json explicitly has commercial_signal=null.
+    # These are known-uncurated; their absence in dtcg_json is correct.
+    _KNOWN_NO_CS: frozenset[str] = frozenset({
+        "are-na", "pitch", "the-markup", "the-pudding"
+    })
+
+    corpus = load_corpus(_REAL_DRL_ROOT)
+    user_id = _seed_user(session)
+    session.commit()
+    storage = _fake_storage_for_coverage()
+
+    apply_seed(
+        iter_assets(corpus),
+        _REAL_DRL_ROOT,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+    )
+
+    av_rows = session.execute(select(AssetVersion)).scalars().all()
+    assert av_rows, "No asset_versions rows found after apply_seed."
+
+    # unconditional: always present for non-_shared real brand rows
+    _UNCONDITIONAL = ("tier", "category", "mood", "applicable_to", "design_principles")
+
+    missing_report: list[str] = []
+    for av in av_rows:
+        # Skip _shared rows - cross-brand grouping, no system.json by design.
+        if "/_shared/" in (av.url or ""):
+            continue
+        dtcg = av.dtcg_json
+        if not isinstance(dtcg, dict):
+            missing_report.append(f"{av.url}: dtcg_json is not a dict ({type(dtcg).__name__})")
+            continue
+        for field in _UNCONDITIONAL:
+            if field not in dtcg:
+                missing_report.append(f"{av.url}: missing unconditional field '{field}'")
+        # commercial_signal is conditional; only require it for the 36 curated brands.
+        # URL shape: resemblio://seed/drl_v1/<brand>/<category>/<asset>
+        # split("/") yields ["resemblio:", "", "seed", "drl_v1", <brand>, <category>, <asset>]
+        # Index 4 is the brand slug.
+        brand_slug_in_url = (av.url or "").split("/")[4] if "/" in (av.url or "") else ""
+        if brand_slug_in_url not in _KNOWN_NO_CS and "commercial_signal" not in dtcg:
+            missing_report.append(
+                f"{av.url}: missing 'commercial_signal' "
+                f"(brand '{brand_slug_in_url}' is not in the known-uncurated set)"
+            )
+
+    assert not missing_report, (
+        f"{len(missing_report)} curated-field gaps found:\n"
+        + "\n".join(f"  {line}" for line in sorted(missing_report)[:30])
+        + ("\n  ... (truncated)" if len(missing_report) > 30 else "")
+    )
+
+
+@pytest.mark.skipif(
+    not _real_drl_available(),
+    reason="Real DRL corpus not on disk - skip 40-brand idempotency proof",
+)
+def test_40_brand_coverage_apply_is_idempotent(session: Session) -> None:
+    """Re-running apply_seed on the 40-brand corpus does not duplicate rows.
+
+    The partial unique index on ``(seed_source, source_id)`` must dedup every
+    row on the second run. This test verifies the dedup key is stable across
+    two identical seed runs (same DRL, same content hash).
+
+    After run 1: ``inserted=N, updated=0, skipped=0``.
+    After run 2: ``inserted=0, updated=N, skipped=0``.
+    Row count before and after run 2 must be identical.
+    """
+    corpus = load_corpus(_REAL_DRL_ROOT)
+    user_id = _seed_user(session)
+    session.commit()
+    storage = _fake_storage_for_coverage()
+
+    # First run: all inserts.
+    counts_1 = apply_seed(
+        iter_assets(corpus),
+        _REAL_DRL_ROOT,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+    )
+    assert counts_1["inserted"] > 0, "First run produced no inserts."
+    assert counts_1["skipped"] == 0, f"First run had unexpected skips: {counts_1['skipped']}"
+
+    av_count_after_run1 = len(session.execute(select(AssetVersion)).scalars().all())
+
+    # Second run: all updates (no new rows).
+    counts_2 = apply_seed(
+        iter_assets(corpus),
+        _REAL_DRL_ROOT,
+        session,
+        storage,
+        seed_user_id=user_id,
+        batch_size=DEFAULT_BATCH_SIZE,
+    )
+    assert counts_2["inserted"] == 0, (
+        f"Second run inserted {counts_2['inserted']} new rows; expected 0. "
+        "The dedup key (seed_source, source_id) is not stable across runs."
+    )
+    assert counts_2["skipped"] == 0, f"Second run had unexpected skips: {counts_2['skipped']}"
+
+    av_count_after_run2 = len(session.execute(select(AssetVersion)).scalars().all())
+    assert av_count_after_run2 == av_count_after_run1, (
+        f"Row count changed from {av_count_after_run1} to {av_count_after_run2} "
+        "after the second run; idempotency violated."
+    )
