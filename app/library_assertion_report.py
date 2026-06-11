@@ -162,7 +162,7 @@ def build_brand_assertion(response: dict[str, Any]) -> BrandAssertion:
     -------------
     1. ``page_broken`` - ``data.brand_slug`` is absent or empty.  Any other
        structural problem (null data, missing schema_version) also lands here.
-    2. ``panel_faithfully`` - ``data.curated_metadata`` is present AND contains
+    2. ``panel_faithful`` - ``data.curated_metadata`` is present AND contains
        at least ``tier`` and ``category``.
     3. ``panel_cleanly_absent`` - ``data.curated_metadata`` is absent or empty,
        but the page itself is structurally sound.
