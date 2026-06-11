@@ -43,6 +43,19 @@ from typing import TypedDict
 from app.library_assertion_report import LibraryAssertionReport
 
 # ---------------------------------------------------------------------------
+# Gate label constants (Phase B)
+# ---------------------------------------------------------------------------
+
+#: Human-readable label for the backup-verified gate.
+_GATE_BACKUP_VERIFIED: str = "backup_verified"
+
+#: Human-readable label for the dry-run-stable gate.
+_GATE_DRYRUN_STABLE: str = "dryrun_stable"
+
+#: Human-readable label for the preflight-all-pass gate.
+_GATE_PREFLIGHT_ALL_PASS: str = "preflight_all_pass"
+
+# ---------------------------------------------------------------------------
 # TypedDicts - reconciliation (Phase A)
 # ---------------------------------------------------------------------------
 
@@ -209,4 +222,108 @@ def reconcile_reports(
         missing_in_actual=missing_in_actual,
         unexpected_in_actual=unexpected_in_actual,
         notes="",
+    )
+
+
+# ---------------------------------------------------------------------------
+# TypedDicts - ceremony gate (Phase B)
+# ---------------------------------------------------------------------------
+
+
+class CeremonyGateInputs(TypedDict):
+    """Inputs to the pre-apply ceremony gate chain.
+
+    Fields
+    ------
+    backup_verified:
+        ``True`` when the pre-op ``pg_dump`` was verified clean via
+        ``pg_restore --list``.
+    dryrun_stable:
+        ``True`` when two sequential dry-runs of ``seed_from_drl`` produced
+        identical summary diffs (idempotency confirmed).
+    preflight_all_pass:
+        ``True`` when ``preflight_corpus`` returned a ``LibraryAssertionReport``
+        with ``all_pass: True``.
+    """
+
+    backup_verified: bool
+    dryrun_stable: bool
+    preflight_all_pass: bool
+
+
+class CeremonyGoNoGo(TypedDict):
+    """Schema-versioned go/no-go record for the re-seed apply step.
+
+    Fields
+    ------
+    schema_version:
+        Fixed string ``"ceremony_gate_v1"``.
+    generated_at:
+        UTC ISO-8601 timestamp.
+    go:
+        ``True`` iff all three gate inputs are ``True``.
+    failed_gates:
+        List of human-readable gate labels that were ``False``.  Empty when
+        ``go=True``.
+    notes:
+        Free-text context; empty string when ``go=True``.
+    """
+
+    schema_version: str
+    generated_at: str
+    go: bool
+    failed_gates: list[str]
+    notes: str
+
+
+# ---------------------------------------------------------------------------
+# evaluate_ceremony_gates - Phase B core function
+# ---------------------------------------------------------------------------
+
+
+def evaluate_ceremony_gates(inputs: CeremonyGateInputs) -> CeremonyGoNoGo:
+    """Evaluate the three pre-apply ceremony gates and return a go/no-go record.
+
+    This is a pure, tested decision function.  Its value is not the boolean AND
+    logic (trivial) but the named-gate output: a future agent cannot silently
+    skip a gate because the failure record explicitly names which gate failed.
+
+    Gates (all must be True for ``go=True``):
+    1. ``backup_verified`` - pre-op pg_dump verified clean.
+    2. ``dryrun_stable``   - two sequential dry-runs produced identical diffs.
+    3. ``preflight_all_pass`` - offline preflight corpus ``all_pass: True``.
+
+    Parameters
+    ----------
+    inputs:
+        Boolean values for each of the three gates.
+
+    Returns
+    -------
+    CeremonyGoNoGo
+        Schema-versioned go/no-go record.
+    """
+    now = datetime.now(tz=timezone.utc).isoformat()
+
+    gate_map: list[tuple[str, bool]] = [
+        (_GATE_BACKUP_VERIFIED, inputs["backup_verified"]),
+        (_GATE_DRYRUN_STABLE, inputs["dryrun_stable"]),
+        (_GATE_PREFLIGHT_ALL_PASS, inputs["preflight_all_pass"]),
+    ]
+
+    failed_gates = [label for label, passed in gate_map if not passed]
+    go = len(failed_gates) == 0
+
+    notes = (
+        ""
+        if go
+        else f"Failed gates: {', '.join(failed_gates)}"
+    )
+
+    return CeremonyGoNoGo(
+        schema_version="ceremony_gate_v1",
+        generated_at=now,
+        go=go,
+        failed_gates=failed_gates,
+        notes=notes,
     )
