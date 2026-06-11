@@ -450,6 +450,50 @@ tests/
 
 ---
 
+## Re-seed verification (v4, Phases A+B)
+
+Added to support pre-apply gate enforcement and post-re-seed reconciliation proof.
+
+```
+app/
+  library_reseed_verification.py   - Two pure functions:
+                                      reconcile_reports(predicted, actual) ->
+                                        ReconciliationResult
+                                        Diffs two LibraryAssertionReport instances.
+                                        reconciled=True iff schema versions match,
+                                        no verdict drift, no missing brands, no
+                                        unexpected brands.
+                                        schema_version="library_reconciliation_v1"
+                                      evaluate_ceremony_gates(inputs) ->
+                                        CeremonyGoNoGo
+                                        Encodes the three pre-apply gates as a
+                                        named, auditable go/no-go record.
+                                        go=True iff backup_verified AND
+                                        dryrun_stable AND preflight_all_pass.
+                                        Failed gates are named explicitly.
+                                        schema_version="ceremony_gate_v1"
+
+tests/
+  test_library_reseed_verification.py  - 32 tests covering all divergence cases
+                                          (perfect match, verdict drift, missing
+                                          brand, extra brand, count mismatch,
+                                          schema-version guard) plus ceremony gate
+                                          (all pass, each single failure, all fail,
+                                          output shape). No network, no DB.
+```
+
+**Usage in Phase C (ceremony):** call `evaluate_ceremony_gates` with the three
+boolean gate results before applying any prod mutation.  `go=False` is a hard
+stop; `failed_gates` names the exact failure(s).
+
+**Usage in Phase D (post-re-seed proof):** call `reconcile_reports(predicted, actual)`
+where `predicted` is the saved preflight report and `actual` is the live assertion
+report.  `reconciled=False` means the live library diverged from what preflight
+predicted; `verdict_drift` / `missing_in_actual` / `unexpected_in_actual` name
+the exact discrepancies.
+
+---
+
 ## Schema versions
 
 | Schema | Version | File |
@@ -462,3 +506,5 @@ tests/
 | LibraryPage.metadata_json | `library_page_meta_v1` | app/constants.py (LIBRARY_PAGE_METADATA_SCHEMA_VERSION) |
 | LibraryHubData | `library_data_v1` | app/routes/library.py |
 | LibraryAssertionReport | `library_assertion_report_v1` | app/library_assertion_report.py |
+| ReconciliationResult | `library_reconciliation_v1` | app/library_reseed_verification.py |
+| CeremonyGoNoGo | `ceremony_gate_v1` | app/library_reseed_verification.py |
