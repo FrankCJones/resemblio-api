@@ -275,3 +275,126 @@ class TestReconcileReportsOutputShape:
         }
         for key in required:
             assert key in result, f"ReconciliationResult missing key: {key!r}"
+
+
+# ---------------------------------------------------------------------------
+# Phase B - Import gate functions (RED until Phase B symbols added to module)
+# ---------------------------------------------------------------------------
+
+from app.library_reseed_verification import (  # noqa: E402
+    CeremonyGateInputs,
+    CeremonyGoNoGo,
+    evaluate_ceremony_gates,
+)
+
+
+# ---------------------------------------------------------------------------
+# Phase B - evaluate_ceremony_gates
+# ---------------------------------------------------------------------------
+
+
+class TestEvaluateCeremonyGatesAllPass:
+    """All three inputs True -> go=True, empty failed_gates."""
+
+    def test_go_true(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=True,
+            dryrun_stable=True,
+            preflight_all_pass=True,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert result["go"] is True
+
+    def test_failed_gates_empty(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=True,
+            dryrun_stable=True,
+            preflight_all_pass=True,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert result["failed_gates"] == []
+
+
+class TestEvaluateCeremonyGatesSingleFailure:
+    """Each single False gate -> go=False, exactly that gate named."""
+
+    def test_backup_not_verified(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=False,
+            dryrun_stable=True,
+            preflight_all_pass=True,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert result["go"] is False
+        assert len(result["failed_gates"]) == 1
+        assert any("backup" in g.lower() for g in result["failed_gates"])
+
+    def test_dryrun_not_stable(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=True,
+            dryrun_stable=False,
+            preflight_all_pass=True,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert result["go"] is False
+        assert len(result["failed_gates"]) == 1
+        assert any("dry" in g.lower() or "dryrun" in g.lower() or "dry-run" in g.lower()
+                   for g in result["failed_gates"])
+
+    def test_preflight_not_passed(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=True,
+            dryrun_stable=True,
+            preflight_all_pass=False,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert result["go"] is False
+        assert len(result["failed_gates"]) == 1
+        assert any("preflight" in g.lower() for g in result["failed_gates"])
+
+
+class TestEvaluateCeremonyGatesAllFail:
+    """All three inputs False -> go=False, all three gates listed."""
+
+    def test_go_false(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=False,
+            dryrun_stable=False,
+            preflight_all_pass=False,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert result["go"] is False
+
+    def test_all_three_gates_listed(self):
+        inputs = CeremonyGateInputs(
+            backup_verified=False,
+            dryrun_stable=False,
+            preflight_all_pass=False,
+        )
+        result = evaluate_ceremony_gates(inputs)
+        assert len(result["failed_gates"]) == 3
+
+
+class TestEvaluateCeremonyGatesOutputShape:
+    """CeremonyGoNoGo carries schema_version and generated_at."""
+
+    def _all_pass_inputs(self) -> CeremonyGateInputs:
+        return CeremonyGateInputs(
+            backup_verified=True,
+            dryrun_stable=True,
+            preflight_all_pass=True,
+        )
+
+    def test_schema_version_present(self):
+        result = evaluate_ceremony_gates(self._all_pass_inputs())
+        assert result["schema_version"] == "ceremony_gate_v1"
+
+    def test_generated_at_is_utc_iso(self):
+        result = evaluate_ceremony_gates(self._all_pass_inputs())
+        assert re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", result["generated_at"])
+
+    def test_typeddict_keys_complete(self):
+        result = evaluate_ceremony_gates(self._all_pass_inputs())
+        required = {"schema_version", "generated_at", "go", "failed_gates", "notes"}
+        for key in required:
+            assert key in result, f"CeremonyGoNoGo missing key: {key!r}"
