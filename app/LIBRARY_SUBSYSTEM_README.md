@@ -347,7 +347,7 @@ value that is slug-shaped is title-cased for display:
 
 - `product-led-growth` renders as "Product Led Growth"
 - `warm-cinema-black` renders as "Warm Cinema Black"
-- `saas-marketing` renders as "Saas Marketing"
+- `saas-marketing` renders as "SaaS Marketing" (acronym-aware; see Phase 2 titleizer)
 
 **Exception: `tier` is a grade letter, not a slug.** It renders verbatim ("A", "B",
 "C"). Title-casing "A" would produce "A" anyway, but the semantic distinction matters
@@ -421,6 +421,35 @@ code/web/app/
 
 ---
 
+## Assertion-report engine (v4, Phase 3)
+
+Added to support the pre-re-seed preflight (Phase 4) and the post-re-seed proof (Phase 7).
+
+```
+app/
+  library_assertion_report.py     - Pure assertion engine. Classifies brand API responses
+                                     into panel_faithful / panel_cleanly_absent / page_broken.
+                                     Exports: BRAND_VERDICT, BrandAssertion, LibraryAssertionReport,
+                                     build_brand_assertion(), build_report(), render_markdown().
+                                     Imports CURATED_METADATA_FIELDS from routes.library (NOT
+                                     a second hardcoded copy). No DB, no network, no filesystem.
+
+scripts/
+  generate_library_assertion_report.py  - CLI: fetch all brands from the live API, run the
+                                           engine, write JSON + Markdown to --out-dir.
+                                           Exit 0 = all_pass, Exit 1 = broken pages found,
+                                           Exit 2 = network/IO error. Retries with backoff.
+
+tests/
+  test_library_assertion_report.py      - 35 tests across all 5 canonical states (full-panel,
+                                           scalar-light, absent-panel, broken-page, v3-chip-gating)
+                                           plus report aggregation + markdown rendering. No network.
+```
+
+**Acceptance gate for Phase 7:** `all_pass: True` in the JSON output.
+
+---
+
 ## Schema versions
 
 | Schema | Version | File |
@@ -432,3 +461,4 @@ code/web/app/
 | DeployCheckResult | `library_deploy_selfcheck_v1` | app/library_deploy_selfcheck.py |
 | LibraryPage.metadata_json | `library_page_meta_v1` | app/constants.py (LIBRARY_PAGE_METADATA_SCHEMA_VERSION) |
 | LibraryHubData | `library_data_v1` | app/routes/library.py |
+| LibraryAssertionReport | `library_assertion_report_v1` | app/library_assertion_report.py |
