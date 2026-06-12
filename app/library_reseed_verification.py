@@ -37,10 +37,14 @@ Run the tests (from ``code/api/``):
 """
 from __future__ import annotations
 
+from collections import Counter
 from datetime import datetime, timezone
 from typing import TypedDict
 
-from app.library_assertion_report import LibraryAssertionReport
+from app.library_assertion_report import (
+    LIBRARY_ASSERTION_SCHEMA_VERSION as _KNOWN_ASSERTION_SCHEMA_VERSION,
+    LibraryAssertionReport,
+)
 
 # ---------------------------------------------------------------------------
 # Gate label constants (Phase B)
@@ -89,8 +93,9 @@ class ReconciliationResult(TypedDict):
     generated_at:
         UTC ISO-8601 timestamp of reconciliation.
     reconciled:
-        ``True`` iff schema versions match AND no verdict drift AND no missing
-        brands AND no unexpected brands.
+        ``True`` iff schema versions match AND the version is the known v1 AND
+        no verdict drift AND no missing brands AND no unexpected brands AND no
+        duplicate brand_slugs in either report.
     predicted_count:
         Brand count from the predicted (preflight) report.
     actual_count:
@@ -103,9 +108,15 @@ class ReconciliationResult(TypedDict):
     unexpected_in_actual:
         Brand slugs present in actual but absent from predicted (unexpected new
         rows).
+    duplicate_in_predicted:
+        Brand slugs that appear more than once in the predicted report's
+        assertions list (sorted, deduplicated).  Non-empty -> ``reconciled=False``.
+    duplicate_in_actual:
+        Brand slugs that appear more than once in the actual report's assertions
+        list (sorted, deduplicated).  Non-empty -> ``reconciled=False``.
     notes:
         Free-text explanation when ``reconciled=False`` for the schema-mismatch
-        case; empty string otherwise.
+        or schema-unknown cases; empty string otherwise.
     """
 
     schema_version: str
@@ -116,6 +127,8 @@ class ReconciliationResult(TypedDict):
     verdict_drift: list[ReconciliationDivergence]
     missing_in_actual: list[str]
     unexpected_in_actual: list[str]
+    duplicate_in_predicted: list[str]
+    duplicate_in_actual: list[str]
     notes: str
 
 
@@ -134,11 +147,15 @@ def reconcile_reports(
     refuses to compare them and returns ``reconciled=False`` with a
     ``schema_mismatch`` note.
 
-    Reconciliation is a boolean AND of four conditions:
-    1. Schema versions match.
-    2. No verdict drift on any brand in the intersection of both slug sets.
-    3. No brands present in predicted but absent from actual.
-    4. No brands present in actual but absent from predicted.
+    Reconciliation is a boolean AND of six conditions:
+    1. Schema versions of the two reports match each other (relative guard).
+    2. The matching version equals the known ``library_assertion_report_v1``
+       (absolute guard - prevents silent mis-read of future report shapes).
+    3. No duplicate ``brand_slug`` values in the predicted assertions list.
+    4. No duplicate ``brand_slug`` values in the actual assertions list.
+    5. No verdict drift on any brand in the intersection of both slug sets.
+    6. No brands present in predicted but absent from actual.
+    7. No brands present in actual but absent from predicted.
 
     Count mismatch (``predicted_count != actual_count``) is reported explicitly
     via the ``predicted_count`` / ``actual_count`` fields even when the set-diff
@@ -160,7 +177,7 @@ def reconcile_reports(
     """
     now = datetime.now(tz=timezone.utc).isoformat()
 
-    # Schema-version guard: refuse to diff incompatible shapes.
+    # Relative schema-version guard: refuse to diff incompatible shapes.
     if predicted.get("schema_version") != actual.get("schema_version"):
         return ReconciliationResult(
             schema_version="library_reconciliation_v1",
@@ -171,18 +188,65 @@ def reconcile_reports(
             verdict_drift=[],
             missing_in_actual=[],
             unexpected_in_actual=[],
+            duplicate_in_predicted=[],
+            duplicate_in_actual=[],
             notes=(
                 f"schema_mismatch: predicted={predicted.get('schema_version')!r} "
                 f"vs actual={actual.get('schema_version')!r} - cannot diff incompatible shapes"
             ),
         )
 
+    # Absolute schema-version guard: refuse to apply v1 logic to an unknown shape.
+    # Two future-v2 reports would pass the relative guard above and then be read
+    # with v1 assumptions; this guard catches that case.
+    matched_version = predicted.get("schema_version")
+    if matched_version != _KNOWN_ASSERTION_SCHEMA_VERSION:
+        return ReconciliationResult(
+            schema_version="library_reconciliation_v1",
+            generated_at=now,
+            reconciled=False,
+            predicted_count=predicted.get("brand_count", 0),
+            actual_count=actual.get("brand_count", 0),
+            verdict_drift=[],
+            missing_in_actual=[],
+            unexpected_in_actual=[],
+            duplicate_in_predicted=[],
+            duplicate_in_actual=[],
+            notes=(
+                f"schema_unknown: both reports carry version {matched_version!r} "
+                f"which this reconciler does not know how to read "
+                f"(expected {_KNOWN_ASSERTION_SCHEMA_VERSION!r})"
+            ),
+        )
+
+    # Detect duplicates BEFORE building the verdict maps.  A DB defect could
+    # produce two library_pages rows for one brand, giving two BrandAssertion
+    # entries with the same slug.  The dict comprehension below would silently
+    # collapse them; detect first so the caller sees the real defect.
+    predicted_assertions = predicted.get("assertions", [])
+    actual_assertions = actual.get("assertions", [])
+
+    predicted_slug_counts: Counter[str] = Counter(
+        a["brand_slug"] for a in predicted_assertions
+    )
+    actual_slug_counts: Counter[str] = Counter(
+        a["brand_slug"] for a in actual_assertions
+    )
+
+    duplicate_in_predicted = sorted(
+        slug for slug, count in predicted_slug_counts.items() if count > 1
+    )
+    duplicate_in_actual = sorted(
+        slug for slug, count in actual_slug_counts.items() if count > 1
+    )
+
     # Build per-brand verdict maps keyed by brand_slug.
+    # Note: dict comprehension silently dedupes; duplicates are already detected above.
     predicted_verdicts: dict[str, str] = {
-        a["brand_slug"]: a["verdict"] for a in predicted.get("assertions", [])
+        a["brand_slug"]: a["verdict"] for a in predicted_assertions
     }
     actual_verdicts: dict[str, str] = {
-        a["brand_slug"]: a["verdict"] for a in actual.get("assertions", [])
+        a["brand_slug"]: a["verdict"] for a in actual_assertions
     }
 
     predicted_slugs = set(predicted_verdicts)
@@ -207,7 +271,9 @@ def reconcile_reports(
             )
 
     reconciled = (
-        not verdict_drift
+        not duplicate_in_predicted
+        and not duplicate_in_actual
+        and not verdict_drift
         and not missing_in_actual
         and not unexpected_in_actual
     )
@@ -221,6 +287,8 @@ def reconcile_reports(
         verdict_drift=verdict_drift,
         missing_in_actual=missing_in_actual,
         unexpected_in_actual=unexpected_in_actual,
+        duplicate_in_predicted=duplicate_in_predicted,
+        duplicate_in_actual=duplicate_in_actual,
         notes="",
     )
 

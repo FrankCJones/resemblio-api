@@ -63,6 +63,16 @@ from app.routes.library import CURATED_METADATA_FIELDS
 _CURATED_FIELDS_FROM_SEAM: frozenset[str] = CURATED_METADATA_FIELDS
 
 # ---------------------------------------------------------------------------
+# Schema version constant - single source of truth for the report shape name.
+# Import this in any module that needs to validate report shapes (e.g.
+# library_reseed_verification._KNOWN_ASSERTION_SCHEMA_VERSION).  Do NOT
+# hardcode the string "library_assertion_report_v1" in a second place.
+# ---------------------------------------------------------------------------
+
+#: Fixed schema-version string for LibraryAssertionReport.
+LIBRARY_ASSERTION_SCHEMA_VERSION: str = "library_assertion_report_v1"
+
+# ---------------------------------------------------------------------------
 # Verdict constants
 # ---------------------------------------------------------------------------
 
@@ -265,7 +275,7 @@ def build_report(
         verdict_counts[a["verdict"]] = verdict_counts.get(a["verdict"], 0) + 1
 
     return LibraryAssertionReport(
-        schema_version="library_assertion_report_v1",
+        schema_version=LIBRARY_ASSERTION_SCHEMA_VERSION,
         generated_at=datetime.now(tz=timezone.utc).isoformat(),
         source=source,
         brand_count=len(assertions),

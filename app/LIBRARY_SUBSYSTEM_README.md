@@ -429,7 +429,10 @@ Added to support the pre-re-seed preflight (Phase 4) and the post-re-seed proof 
 app/
   library_assertion_report.py     - Pure assertion engine. Classifies brand API responses
                                      into panel_faithful / panel_cleanly_absent / page_broken.
-                                     Exports: BRAND_VERDICT, BrandAssertion, LibraryAssertionReport,
+                                     Exports: BRAND_VERDICT, LIBRARY_ASSERTION_SCHEMA_VERSION
+                                     (single-source constant; imported by
+                                     library_reseed_verification as _KNOWN_ASSERTION_SCHEMA_VERSION),
+                                     BrandAssertion, LibraryAssertionReport,
                                      build_brand_assertion(), build_report(), render_markdown().
                                      Imports CURATED_METADATA_FIELDS from routes.library (NOT
                                      a second hardcoded copy). No DB, no network, no filesystem.
@@ -456,13 +459,19 @@ Added to support pre-apply gate enforcement and post-re-seed reconciliation proo
 
 ```
 app/
-  library_reseed_verification.py   - Two pure functions:
+  library_reseed_verification.py   - Two pure functions + a markdown renderer:
                                       reconcile_reports(predicted, actual) ->
                                         ReconciliationResult
                                         Diffs two LibraryAssertionReport instances.
-                                        reconciled=True iff schema versions match,
-                                        no verdict drift, no missing brands, no
-                                        unexpected brands.
+                                        reconciled=True iff (a) schema versions
+                                        match AND equal the known v1 (absolute
+                                        guard closes the two-future-v2 gap), (b)
+                                        no duplicate brand_slugs in either report,
+                                        (c) no verdict drift, (d) no missing brands,
+                                        (e) no unexpected brands.
+                                        New fields (v4 hardening):
+                                          duplicate_in_predicted: list[str]
+                                          duplicate_in_actual: list[str]
                                         schema_version="library_reconciliation_v1"
                                       evaluate_ceremony_gates(inputs) ->
                                         CeremonyGoNoGo
@@ -472,25 +481,44 @@ app/
                                         dryrun_stable AND preflight_all_pass.
                                         Failed gates are named explicitly.
                                         schema_version="ceremony_gate_v1"
+                                      render_reconciliation_markdown(result) -> str
+                                        Human-readable Markdown summary of a
+                                        ReconciliationResult. Mirrors render_markdown
+                                        in library_assertion_report.py in purpose.
+
+scripts/
+  reconcile_library_reports.py     - CLI: read two saved assertion-report JSON files
+                                      (predicted + actual), run the engine, write
+                                      reconciliation.json + reconciliation.md to
+                                      --out-dir.
+                                      Exit 0 = reconciled, Exit 1 = divergence found,
+                                      Exit 2 = IO/JSON error.
 
 tests/
-  test_library_reseed_verification.py  - 32 tests covering all divergence cases
+  test_library_reseed_verification.py  - 42+ tests covering all divergence cases
                                           (perfect match, verdict drift, missing
                                           brand, extra brand, count mismatch,
-                                          schema-version guard) plus ceremony gate
-                                          (all pass, each single failure, all fail,
-                                          output shape). No network, no DB.
+                                          schema-version relative guard, schema-
+                                          version absolute guard, duplicate-slug in
+                                          predicted/actual) plus ceremony gate (all
+                                          pass, each single failure, all fail, output
+                                          shape) plus render_reconciliation_markdown.
+                                          No network, no DB.
+  test_reconcile_library_reports_cli.py - CLI I/O boundary tests: reconciled pair
+                                           -> exit 0, divergent pair -> exit 1,
+                                           missing file -> exit 2, malformed JSON ->
+                                           exit 2, markdown written. tmp_path only.
 ```
 
 **Usage in Phase C (ceremony):** call `evaluate_ceremony_gates` with the three
 boolean gate results before applying any prod mutation.  `go=False` is a hard
 stop; `failed_gates` names the exact failure(s).
 
-**Usage in Phase D (post-re-seed proof):** call `reconcile_reports(predicted, actual)`
-where `predicted` is the saved preflight report and `actual` is the live assertion
-report.  `reconciled=False` means the live library diverged from what preflight
-predicted; `verdict_drift` / `missing_in_actual` / `unexpected_in_actual` name
-the exact discrepancies.
+**Usage in Phase D (post-re-seed proof):** run `scripts/reconcile_library_reports.py`
+with the saved preflight predicted report and the live assertion report.  Exit code
+0 means `reconciled=True`; exit code 1 means divergence - inspect
+`reconciliation.json` for `verdict_drift` / `missing_in_actual` / `unexpected_in_actual` /
+`duplicate_in_actual`.
 
 ---
 
