@@ -395,3 +395,75 @@ def evaluate_ceremony_gates(inputs: CeremonyGateInputs) -> CeremonyGoNoGo:
         failed_gates=failed_gates,
         notes=notes,
     )
+
+
+# ---------------------------------------------------------------------------
+# render_reconciliation_markdown - human-readable summary of ReconciliationResult
+# ---------------------------------------------------------------------------
+
+
+def render_reconciliation_markdown(result: ReconciliationResult) -> str:
+    """Render a ``ReconciliationResult`` as a Markdown contact-sheet summary.
+
+    Mirrors ``app.library_assertion_report.render_markdown`` in purpose: produces
+    a human-readable string suitable for pasting into STATUS.md or a PR description.
+    Only sections that carry data are emitted (verdict drift, missing, unexpected,
+    and duplicate lists are omitted when empty so a clean result stays terse).
+
+    Parameters
+    ----------
+    result:
+        A completed ``ReconciliationResult`` as returned by ``reconcile_reports``.
+
+    Returns
+    -------
+    str
+        Markdown-formatted reconciliation summary.
+    """
+    lines: list[str] = [
+        "# Library Reconciliation Report",
+        "",
+        f"**schema_version:** {result['schema_version']}",
+        f"**generated_at:** {result['generated_at']}",
+        f"**reconciled:** {result['reconciled']}",
+        f"**predicted_count:** {result['predicted_count']}",
+        f"**actual_count:** {result['actual_count']}",
+    ]
+
+    if result.get("notes"):
+        lines += ["", f"**note:** {result['notes']}"]
+
+    if result["verdict_drift"]:
+        lines += [
+            "",
+            "## Verdict drift",
+            "",
+            "| brand_slug | predicted_verdict | actual_verdict |",
+            "|---|---|---|",
+        ]
+        for d in result["verdict_drift"]:
+            lines.append(
+                f"| {d['brand_slug']} | {d['predicted_verdict']} | {d['actual_verdict']} |"
+            )
+
+    if result["missing_in_actual"]:
+        lines += ["", "## Missing in actual", ""]
+        for slug in result["missing_in_actual"]:
+            lines.append(f"- {slug}")
+
+    if result["unexpected_in_actual"]:
+        lines += ["", "## Unexpected in actual", ""]
+        for slug in result["unexpected_in_actual"]:
+            lines.append(f"- {slug}")
+
+    if result["duplicate_in_predicted"]:
+        lines += ["", "## Duplicate slugs in predicted", ""]
+        for slug in result["duplicate_in_predicted"]:
+            lines.append(f"- {slug}")
+
+    if result["duplicate_in_actual"]:
+        lines += ["", "## Duplicate slugs in actual", ""]
+        for slug in result["duplicate_in_actual"]:
+            lines.append(f"- {slug}")
+
+    return "\n".join(lines)
