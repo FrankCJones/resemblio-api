@@ -143,11 +143,17 @@ def reconcile_reports(
 ) -> ReconciliationResult:
     """Diff a predicted (offline preflight) report against an actual (live) report.
 
-    Both reports must share ``schema_version``.  If they differ the function
-    refuses to compare them and returns ``reconciled=False`` with a
-    ``schema_mismatch`` note.
+    Two schema-version guards run before any diffing:
+    - Relative guard: the two reports must share the same ``schema_version``.
+      If they differ the function refuses to compare them and returns
+      ``reconciled=False`` with a ``schema_mismatch`` note.
+    - Absolute guard: the shared version must equal the known
+      ``library_assertion_report_v1`` this reconciler is written against.  Two
+      future-v2 reports would pass the relative guard yet be mis-read with v1
+      assumptions; the absolute guard returns ``reconciled=False`` with a
+      ``schema_unknown`` note instead.
 
-    Reconciliation is a boolean AND of six conditions:
+    Reconciliation is a boolean AND of seven conditions:
     1. Schema versions of the two reports match each other (relative guard).
     2. The matching version equals the known ``library_assertion_report_v1``
        (absolute guard - prevents silent mis-read of future report shapes).
