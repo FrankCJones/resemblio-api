@@ -1159,6 +1159,7 @@ def test_font_family_assertion_extracts_includes_token(tmp_path: pathlib.Path) -
 
 def test_dominant_color_buckets_top_n_bound(tmp_path: pathlib.Path) -> None:
     """top_n caps the returned bucket list length."""
+    pytest.importorskip("PIL.Image")  # skip cleanly when Pillow absent (CI [test] extra)
     from PIL import Image
     img_path = tmp_path / "swatch.png"
     # Build a 4-color stripe so we have a known small palette.
@@ -1396,6 +1397,7 @@ def test_schema_version_is_v2() -> None:
 
 def test_color_bucket_overlap_self_compare_max(tmp_path: pathlib.Path) -> None:
     """An image overlaps itself at top_n."""
+    pytest.importorskip("PIL.Image")  # skip cleanly when Pillow absent (CI [test] extra)
     from PIL import Image
     img_path = tmp_path / "swatch.png"
     img = Image.new("RGB", (8, 8), color=(120, 60, 200))
