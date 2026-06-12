@@ -560,3 +560,153 @@ class TestRenderReconciliationMarkdown:
         md = render_reconciliation_markdown(result)
         assert "Verdict drift" not in md
         assert "Missing" not in md
+
+
+# ---------------------------------------------------------------------------
+# Phase A (this handoff) - Malformed-report minimum-shape guard
+# RED until Phase A GREEN commit adds _validate_assertion_report_shape and
+# _REQUIRED_ASSERTION_KEYS to the engine and wires the guard into reconcile_reports.
+# ---------------------------------------------------------------------------
+
+
+class TestReconcileReportsMalformedShapeGuard:
+    """Wrong-shape inputs (valid JSON, not a LibraryAssertionReport) -> named failure, no crash.
+
+    Guards the ceremony from the realistic 'operator pointed --actual at the wrong file'
+    error.  After Phase A, reconcile_reports returns reconciled=False with a
+    malformed_report note instead of raising KeyError or TypeError.
+
+    Seam choice: engine-level guard (preferred per handoff Phase A design note).
+    The CLI maps a notes value starting with 'malformed_report:' to exit 2.
+    """
+
+    def test_required_keys_constant_importable(self):
+        """_REQUIRED_ASSERTION_KEYS must be a named frozenset constant (no drift)."""
+        from app.library_reseed_verification import _REQUIRED_ASSERTION_KEYS  # noqa: PLC0415
+        assert isinstance(_REQUIRED_ASSERTION_KEYS, frozenset)
+        assert "brand_slug" in _REQUIRED_ASSERTION_KEYS
+        assert "verdict" in _REQUIRED_ASSERTION_KEYS
+
+    def test_missing_assertions_key_reconciled_false(self):
+        """Valid JSON with no assertions key -> reconciled=False, not silent wrong result."""
+        no_assertions = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 0,
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(no_assertions, well_formed)
+        assert result["reconciled"] is False
+
+    def test_missing_assertions_key_note_names_problem(self):
+        """The note starts with malformed_report: and names the problem."""
+        no_assertions = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 0,
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(no_assertions, well_formed)
+        assert "malformed_report" in result["notes"]
+
+    def test_missing_assertions_key_names_predicted_side(self):
+        """When predicted is malformed, the note names 'predicted'."""
+        bad_predicted = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 0,
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(bad_predicted, well_formed)
+        assert "predicted" in result["notes"]
+
+    def test_assertions_not_a_list_reconciled_false(self):
+        """assertions is a dict instead of a list -> named failure, no crash."""
+        bad_actual = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 1,
+            "assertions": {"brand_slug": "stripe", "verdict": "panel_faithful"},
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(well_formed, bad_actual)
+        assert result["reconciled"] is False
+
+    def test_assertions_not_a_list_note_names_problem(self):
+        """assertions is a string -> note contains malformed_report."""
+        bad_actual = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 0,
+            "assertions": "not-a-list",
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(well_formed, bad_actual)
+        assert "malformed_report" in result["notes"]
+
+    def test_assertions_not_a_list_names_actual_side(self):
+        """When actual has non-list assertions, the note names 'actual'."""
+        bad_actual = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 0,
+            "assertions": "not-a-list",
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(well_formed, bad_actual)
+        assert "actual" in result["notes"]
+
+    def test_assertion_entry_missing_brand_slug(self):
+        """assertions present, one entry missing brand_slug -> named failure, no crash."""
+        bad_actual = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 1,
+            "assertions": [{"verdict": "panel_faithful"}],
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(well_formed, bad_actual)
+        assert result["reconciled"] is False
+        assert "malformed_report" in result["notes"]
+
+    def test_assertion_entry_missing_brand_slug_names_actual_side(self):
+        """Note names 'actual' when actual assertions entry is missing brand_slug."""
+        bad_actual = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 1,
+            "assertions": [{"verdict": "panel_faithful"}],
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(well_formed, bad_actual)
+        assert "actual" in result["notes"]
+
+    def test_assertion_entry_missing_verdict(self):
+        """assertions present, one entry missing verdict -> named failure, no crash."""
+        bad_actual = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 1,
+            "assertions": [{"brand_slug": "stripe"}],
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(well_formed, bad_actual)
+        assert result["reconciled"] is False
+        assert "malformed_report" in result["notes"]
+
+    def test_malformed_predicted_with_entry_missing_verdict(self):
+        """Malformed predicted (entry missing verdict) names 'predicted' in note."""
+        bad_predicted = {
+            "schema_version": "library_assertion_report_v1",
+            "brand_count": 1,
+            "assertions": [{"brand_slug": "stripe"}],
+        }
+        well_formed = _make_report([("stripe", True)])
+        result = reconcile_reports(bad_predicted, well_formed)
+        assert "malformed_report" in result["notes"]
+        assert "predicted" in result["notes"]
+
+    def test_well_formed_reports_still_reconcile(self):
+        """Regression guard: well-formed reports must still pass the new shape guard."""
+        brands = [("stripe", True), ("figma", True)]
+        predicted = _make_report(brands)
+        actual = _make_report(brands)
+        result = reconcile_reports(predicted, actual)
+        assert result["reconciled"] is True
+
+    def test_well_formed_reports_no_malformed_note(self):
+        """Clean result must not have a malformed_report note."""
+        brands = [("stripe", True)]
+        result = reconcile_reports(_make_report(brands), _make_report(brands))
+        assert "malformed_report" not in result["notes"]
