@@ -130,9 +130,10 @@ def _fetch_json(url: str) -> dict:
 def _fetch_all_brands(base_url: str) -> list[dict]:
     """Fetch every brand from the library hub and return individual brand responses.
 
-    First calls ``GET /v1/library/brands`` to get the hub list (``data.featured``),
-    then fetches ``GET /v1/library/brands/{slug}`` for each brand individually
-    so the assertion engine receives the full per-brand response shape.
+    Paginates through all pages of ``GET /v1/library/brands`` (``data.total`` /
+    ``data.page_size`` drives the page count), then fetches
+    ``GET /v1/library/brands/{slug}`` for each brand individually so the assertion
+    engine receives the full per-brand response shape.
 
     Parameters
     ----------
@@ -143,20 +144,33 @@ def _fetch_all_brands(base_url: str) -> list[dict]:
     -------
     list[dict]
         One response dict per brand (the full ``GET /v1/library/brands/{slug}``
-        response), in hub-list order.
+        response), in hub-list order across all pages.
     """
-    hub_url = f"{base_url.rstrip('/')}/v1/library/brands"
-    logger.info("Fetching hub brand list from %s", hub_url)
-    hub = _fetch_json(hub_url)
+    base = base_url.rstrip("/")
+    slugs: list[str] = []
+    page = 1
+    while True:
+        hub_url = f"{base}/v1/library/brands?page={page}"
+        logger.info("Fetching hub brand list page %d from %s", page, hub_url)
+        hub = _fetch_json(hub_url)
+        data = hub.get("data", {})
+        featured = data.get("featured", []) if isinstance(data, dict) else []
+        page_slugs = [b["brand_slug"] for b in featured if isinstance(b, dict) and b.get("brand_slug")]
+        slugs.extend(page_slugs)
 
-    data = hub.get("data", {})
-    featured = data.get("featured", []) if isinstance(data, dict) else []
-    slugs = [b["brand_slug"] for b in featured if isinstance(b, dict) and b.get("brand_slug")]
-    logger.info("Hub lists %d brands", len(slugs))
+        total = data.get("total", 0) if isinstance(data, dict) else 0
+        # Stop when this page was empty (defensive against a bad total) or we
+        # have collected at least `total` slugs.  page_size is not needed for
+        # termination - len(slugs) >= total is the authoritative stop.
+        if not page_slugs or len(slugs) >= total:
+            break
+        page += 1
+
+    logger.info("Hub lists %d brands across all pages", len(slugs))
 
     responses: list[dict] = []
     for slug in slugs:
-        url = f"{base_url.rstrip('/')}/v1/library/brands/{slug}"
+        url = f"{base}/v1/library/brands/{slug}"
         logger.info("Fetching brand %s", slug)
         responses.append(_fetch_json(url))
 
