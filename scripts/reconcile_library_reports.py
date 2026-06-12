@@ -111,6 +111,13 @@ def main(argv: list[str] | None = None) -> int:
     # Run the reconciliation engine.
     result = reconcile_reports(predicted, actual)
 
+    # A malformed_report note signals a wrong-shape input file (IO-class problem),
+    # not a genuine divergence.  Map it to exit 2 to distinguish from verdicts and
+    # to avoid a confusing "exit 1 / diverged" message for an operator mistake.
+    if result["notes"].startswith("malformed_report:"):
+        logger.error("Malformed report shape: %s", result["notes"])
+        return 2
+
     # Write outputs.
     out_dir = Path(args.out_dir)
     try:

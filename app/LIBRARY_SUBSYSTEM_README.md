@@ -492,22 +492,27 @@ scripts/
                                       reconciliation.json + reconciliation.md to
                                       --out-dir.
                                       Exit 0 = reconciled, Exit 1 = divergence found,
-                                      Exit 2 = IO/JSON error.
+                                      Exit 2 = IO/JSON error OR malformed-report shape.
+                                      (A notes value starting with "malformed_report:"
+                                      maps to exit 2 so wrong-shape inputs are
+                                      distinguishable from genuine verdict divergences.)
 
 tests/
-  test_library_reseed_verification.py  - 42+ tests covering all divergence cases
+  test_library_reseed_verification.py  - 55+ tests covering all divergence cases
                                           (perfect match, verdict drift, missing
                                           brand, extra brand, count mismatch,
                                           schema-version relative guard, schema-
                                           version absolute guard, duplicate-slug in
-                                          predicted/actual) plus ceremony gate (all
-                                          pass, each single failure, all fail, output
-                                          shape) plus render_reconciliation_markdown.
+                                          predicted/actual, malformed-report shape
+                                          guard) plus ceremony gate (all pass, each
+                                          single failure, all fail, output shape)
+                                          plus render_reconciliation_markdown.
                                           No network, no DB.
   test_reconcile_library_reports_cli.py - CLI I/O boundary tests: reconciled pair
                                            -> exit 0, divergent pair -> exit 1,
                                            missing file -> exit 2, malformed JSON ->
-                                           exit 2, markdown written. tmp_path only.
+                                           exit 2, wrong-shape file -> exit 2,
+                                           markdown written. tmp_path only.
 ```
 
 **Usage in Phase C (ceremony):** call `evaluate_ceremony_gates` with the three
@@ -518,7 +523,10 @@ stop; `failed_gates` names the exact failure(s).
 with the saved preflight predicted report and the live assertion report.  Exit code
 0 means `reconciled=True`; exit code 1 means divergence - inspect
 `reconciliation.json` for `verdict_drift` / `missing_in_actual` / `unexpected_in_actual` /
-`duplicate_in_actual`.
+`duplicate_in_actual`.  Exit code 2 means an IO-class error (missing file, malformed
+JSON, or wrong-shape input).  If exit 2 fires during the ceremony, check you pointed
+`--predicted` and `--actual` at the correct `LibraryAssertionReport` files (not a
+`reconciliation.json` or `ceremony.json` by mistake).
 
 ---
 

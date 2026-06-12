@@ -47,6 +47,68 @@ from app.library_assertion_report import (
 )
 
 # ---------------------------------------------------------------------------
+# Minimum-shape guard constants + helper
+# ---------------------------------------------------------------------------
+
+#: Keys every entry in a LibraryAssertionReport assertions list must carry.
+#: Tests import this constant so the implementation and tests share one source.
+_REQUIRED_ASSERTION_KEYS: frozenset[str] = frozenset({"brand_slug", "verdict"})
+
+
+def _validate_assertion_report_shape(
+    report: dict,
+    *,
+    side: str,
+) -> str | None:
+    """Validate the minimum shape of a report before accessing per-entry keys.
+
+    Guards ``reconcile_reports`` against the realistic ceremony error where an
+    operator points ``--actual`` at a ``reconciliation.json`` or ``ceremony.json``
+    by mistake.  Those are valid JSON but not ``LibraryAssertionReport`` shapes;
+    without this guard they raise an uncaught ``KeyError`` or ``TypeError``.
+
+    Checks:
+    1. ``assertions`` key is present.
+    2. ``assertions`` value is a list.
+    3. Every entry in the list is a dict carrying every key in
+       ``_REQUIRED_ASSERTION_KEYS`` (``brand_slug`` and ``verdict``).
+
+    Parameters
+    ----------
+    report:
+        The report dict to validate.  Expected to have already passed the two
+        schema-version guards.
+    side:
+        ``"predicted"`` or ``"actual"`` - embedded in the returned error string
+        so the caller knows which input was malformed.
+
+    Returns
+    -------
+    str | None
+        A human-readable error string starting with ``malformed_report:`` if the
+        shape is invalid; ``None`` if the shape is valid.
+    """
+    assertions = report.get("assertions")
+    if assertions is None:
+        return f"malformed_report: {side} report is missing the 'assertions' key"
+    if not isinstance(assertions, list):
+        return (
+            f"malformed_report: {side} report 'assertions' is "
+            f"{type(assertions).__name__!r}, expected a list"
+        )
+    for i, entry in enumerate(assertions):
+        if not isinstance(entry, dict):
+            return f"malformed_report: {side} report assertions[{i}] is not a dict"
+        for key in _REQUIRED_ASSERTION_KEYS:
+            if key not in entry:
+                return (
+                    f"malformed_report: {side} report assertions[{i}] "
+                    f"missing required key {key!r}"
+                )
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Gate label constants (Phase B)
 # ---------------------------------------------------------------------------
 
@@ -115,8 +177,10 @@ class ReconciliationResult(TypedDict):
         Brand slugs that appear more than once in the actual report's assertions
         list (sorted, deduplicated).  Non-empty -> ``reconciled=False``.
     notes:
-        Free-text explanation when ``reconciled=False`` for the schema-mismatch
-        or schema-unknown cases; empty string otherwise.
+        Free-text explanation when ``reconciled=False`` for the schema-mismatch,
+        schema-unknown, or malformed-report cases; empty string otherwise.
+        A value starting with ``malformed_report:`` signals a wrong-shape input
+        (the CLI maps this to exit 2, not exit 1).
     """
 
     schema_version: str
@@ -143,7 +207,8 @@ def reconcile_reports(
 ) -> ReconciliationResult:
     """Diff a predicted (offline preflight) report against an actual (live) report.
 
-    Two schema-version guards run before any diffing:
+    Three guards run before any diffing:
+
     - Relative guard: the two reports must share the same ``schema_version``.
       If they differ the function refuses to compare them and returns
       ``reconciled=False`` with a ``schema_mismatch`` note.
@@ -152,16 +217,23 @@ def reconcile_reports(
       future-v2 reports would pass the relative guard yet be mis-read with v1
       assumptions; the absolute guard returns ``reconciled=False`` with a
       ``schema_unknown`` note instead.
+    - Shape guard: each report must carry an ``assertions`` list whose entries
+      are dicts with ``brand_slug`` and ``verdict`` keys.  A wrong-shape input
+      (e.g. an operator points ``--actual`` at ``reconciliation.json`` by mistake)
+      returns ``reconciled=False`` with a ``malformed_report:`` note instead of
+      raising ``KeyError`` or ``TypeError``.  The CLI maps a ``malformed_report:``
+      note to exit 2 (IO-class error) rather than exit 1 (divergence).
 
-    Reconciliation is a boolean AND of seven conditions:
+    Reconciliation is a boolean AND of eight conditions:
     1. Schema versions of the two reports match each other (relative guard).
     2. The matching version equals the known ``library_assertion_report_v1``
        (absolute guard - prevents silent mis-read of future report shapes).
-    3. No duplicate ``brand_slug`` values in the predicted assertions list.
-    4. No duplicate ``brand_slug`` values in the actual assertions list.
-    5. No verdict drift on any brand in the intersection of both slug sets.
-    6. No brands present in predicted but absent from actual.
-    7. No brands present in actual but absent from predicted.
+    3. Both reports pass the minimum-shape guard (shape guard).
+    4. No duplicate ``brand_slug`` values in the predicted assertions list.
+    5. No duplicate ``brand_slug`` values in the actual assertions list.
+    6. No verdict drift on any brand in the intersection of both slug sets.
+    7. No brands present in predicted but absent from actual.
+    8. No brands present in actual but absent from predicted.
 
     Count mismatch (``predicted_count != actual_count``) is reported explicitly
     via the ``predicted_count`` / ``actual_count`` fields even when the set-diff
@@ -223,6 +295,44 @@ def reconcile_reports(
                 f"which this reconciler does not know how to read "
                 f"(expected {_KNOWN_ASSERTION_SCHEMA_VERSION!r})"
             ),
+        )
+
+    # Minimum-shape guard: validate assertions structure before accessing per-entry
+    # keys.  This protects the ceremony from the realistic error of pointing
+    # --actual at a reconciliation.json or ceremony.json by mistake.  Those files
+    # are valid JSON but not LibraryAssertionReport shapes; without this guard they
+    # crash with KeyError or TypeError.  The CLI maps the malformed_report: note
+    # prefix to exit 2 (IO-class error), not exit 1 (genuine divergence).
+    predicted_shape_error = _validate_assertion_report_shape(predicted, side="predicted")
+    if predicted_shape_error is not None:
+        return ReconciliationResult(
+            schema_version="library_reconciliation_v1",
+            generated_at=now,
+            reconciled=False,
+            predicted_count=predicted.get("brand_count", 0),
+            actual_count=actual.get("brand_count", 0),
+            verdict_drift=[],
+            missing_in_actual=[],
+            unexpected_in_actual=[],
+            duplicate_in_predicted=[],
+            duplicate_in_actual=[],
+            notes=predicted_shape_error,
+        )
+
+    actual_shape_error = _validate_assertion_report_shape(actual, side="actual")
+    if actual_shape_error is not None:
+        return ReconciliationResult(
+            schema_version="library_reconciliation_v1",
+            generated_at=now,
+            reconciled=False,
+            predicted_count=predicted.get("brand_count", 0),
+            actual_count=actual.get("brand_count", 0),
+            verdict_drift=[],
+            missing_in_actual=[],
+            unexpected_in_actual=[],
+            duplicate_in_predicted=[],
+            duplicate_in_actual=[],
+            notes=actual_shape_error,
         )
 
     # Detect duplicates BEFORE building the verdict maps.  A DB defect could
