@@ -83,6 +83,17 @@ def _make_report(
     return report  # type: ignore[return-value]
 
 
+def _make_report_with_dup_slug(*slugs: str) -> LibraryAssertionReport:
+    """Build a report whose assertions list contains the same brand_slug more than once.
+
+    Each positional argument produces one BrandAssertion (faithful panel).  Pass
+    the same slug twice to create a duplicate-slug condition.  This exercises the
+    silent-dedup bug that the Phase-A hardening closes.
+    """
+    responses = [_brand_response(slug, faithful=True) for slug in slugs]
+    return build_report(responses, source="fixture")
+
+
 # ---------------------------------------------------------------------------
 # Phase A - Import the module under test (will fail RED until module exists)
 # ---------------------------------------------------------------------------
@@ -271,10 +282,103 @@ class TestReconcileReportsOutputShape:
             "schema_version", "generated_at", "reconciled",
             "predicted_count", "actual_count",
             "verdict_drift", "missing_in_actual", "unexpected_in_actual",
-            "notes",
+            "notes", "duplicate_in_predicted", "duplicate_in_actual",
         }
         for key in required:
             assert key in result, f"ReconciliationResult missing key: {key!r}"
+
+
+# ---------------------------------------------------------------------------
+# Phase A hardening - absolute schema-version guard + duplicate-slug detection
+# (RED until Phase A GREEN commit hardens reconcile_reports)
+# ---------------------------------------------------------------------------
+
+
+class TestReconcileReportsAbsoluteSchemaVersion:
+    """Both reports agree on a version that is NOT the known v1 -> reconciled=False.
+
+    The predecessor spec only guarded relative mismatch (predicted vs actual).
+    This closes the gap: two future-v2 reports would pass the relative guard and
+    be read with v1 assumptions.  The absolute guard refuses them both.
+    """
+
+    def test_unknown_matching_versions_rejected(self):
+        brands = [("stripe", True)]
+        predicted = _make_report(brands, schema_version="library_assertion_report_v2")
+        actual = _make_report(brands, schema_version="library_assertion_report_v2")
+        result = reconcile_reports(predicted, actual)
+        assert result["reconciled"] is False
+
+    def test_notes_contain_schema_unknown_signal(self):
+        brands = [("stripe", True)]
+        predicted = _make_report(brands, schema_version="library_assertion_report_v2")
+        actual = _make_report(brands, schema_version="library_assertion_report_v2")
+        result = reconcile_reports(predicted, actual)
+        assert "schema_unknown" in result["notes"] or "unknown" in result["notes"].lower()
+
+    def test_known_version_constant_importable(self):
+        """_KNOWN_ASSERTION_SCHEMA_VERSION must be a named constant in the module."""
+        from app.library_reseed_verification import _KNOWN_ASSERTION_SCHEMA_VERSION  # noqa: PLC0415
+        assert _KNOWN_ASSERTION_SCHEMA_VERSION == "library_assertion_report_v1"
+
+    def test_known_v1_still_passes_absolute_guard(self):
+        """Reports carrying library_assertion_report_v1 must still reconcile cleanly."""
+        brands = [("stripe", True)]
+        predicted = _make_report(brands)  # default schema_version from build_report
+        actual = _make_report(brands)
+        result = reconcile_reports(predicted, actual)
+        assert result["reconciled"] is True
+
+
+class TestReconcileReportsDuplicateSlug:
+    """Duplicate brand_slug in either report -> reconciled=False + slug named.
+
+    A DB defect or seeder bug could produce two library_pages rows for one brand,
+    causing two BrandAssertion entries with the same slug.  The dict-comprehension
+    verdict map silently dedupes them, so the count fields would disagree but
+    ``reconciled`` would stay True.  The hardened engine detects this before
+    building the maps.
+    """
+
+    def test_duplicate_in_actual_reconciled_false(self):
+        predicted = _make_report([("stripe", True)])
+        actual = _make_report_with_dup_slug("stripe", "stripe")
+        result = reconcile_reports(predicted, actual)
+        assert result["reconciled"] is False
+
+    def test_duplicate_in_actual_slug_named(self):
+        predicted = _make_report([("stripe", True)])
+        actual = _make_report_with_dup_slug("stripe", "stripe")
+        result = reconcile_reports(predicted, actual)
+        assert "stripe" in result["duplicate_in_actual"]
+
+    def test_duplicate_in_predicted_reconciled_false(self):
+        actual = _make_report([("stripe", True)])
+        predicted = _make_report_with_dup_slug("stripe", "stripe")
+        result = reconcile_reports(predicted, actual)
+        assert result["reconciled"] is False
+
+    def test_duplicate_in_predicted_slug_named(self):
+        actual = _make_report([("stripe", True)])
+        predicted = _make_report_with_dup_slug("stripe", "stripe")
+        result = reconcile_reports(predicted, actual)
+        assert "stripe" in result["duplicate_in_predicted"]
+
+    def test_clean_reports_have_empty_duplicate_lists(self):
+        brands = [("stripe", True), ("figma", True)]
+        predicted = _make_report(brands)
+        actual = _make_report(brands)
+        result = reconcile_reports(predicted, actual)
+        assert result["duplicate_in_actual"] == []
+        assert result["duplicate_in_predicted"] == []
+
+    def test_multiple_dupes_all_named(self):
+        """Two different slugs that each appear twice -> both in the list."""
+        actual = _make_report_with_dup_slug("stripe", "stripe", "figma", "figma")
+        predicted = _make_report([("stripe", True)])
+        result = reconcile_reports(predicted, actual)
+        assert "stripe" in result["duplicate_in_actual"]
+        assert "figma" in result["duplicate_in_actual"]
 
 
 # ---------------------------------------------------------------------------
