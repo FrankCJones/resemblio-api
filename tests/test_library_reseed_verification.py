@@ -502,3 +502,61 @@ class TestEvaluateCeremonyGatesOutputShape:
         required = {"schema_version", "generated_at", "go", "failed_gates", "notes"}
         for key in required:
             assert key in result, f"CeremonyGoNoGo missing key: {key!r}"
+
+
+# ---------------------------------------------------------------------------
+# Phase B - render_reconciliation_markdown (RED until function added to engine)
+# Local imports used so existing tests remain runnable during the RED window.
+# ---------------------------------------------------------------------------
+
+
+class TestRenderReconciliationMarkdown:
+    """render_reconciliation_markdown produces a human-readable Markdown summary.
+
+    The function lives in ``app.library_reseed_verification`` next to the engine.
+    Tests use local imports so the rest of this file can still be collected when
+    the function does not yet exist.
+    """
+
+    def test_function_importable(self):
+        from app.library_reseed_verification import render_reconciliation_markdown  # noqa: PLC0415
+        assert callable(render_reconciliation_markdown)
+
+    def test_reconciled_verdict_present(self):
+        from app.library_reseed_verification import render_reconciliation_markdown  # noqa: PLC0415
+        brands = [("stripe", True)]
+        result = reconcile_reports(_make_report(brands), _make_report(brands))
+        md = render_reconciliation_markdown(result)
+        assert "reconciled" in md.lower()
+        assert "True" in md
+
+    def test_schema_version_present(self):
+        from app.library_reseed_verification import render_reconciliation_markdown  # noqa: PLC0415
+        brands = [("stripe", True)]
+        result = reconcile_reports(_make_report(brands), _make_report(brands))
+        md = render_reconciliation_markdown(result)
+        assert "library_reconciliation_v1" in md
+
+    def test_brand_slug_present_on_verdict_drift(self):
+        from app.library_reseed_verification import render_reconciliation_markdown  # noqa: PLC0415
+        predicted = _make_report([("stripe", True)])
+        actual = _make_report([("stripe", False)])
+        result = reconcile_reports(predicted, actual)
+        md = render_reconciliation_markdown(result)
+        assert "stripe" in md
+
+    def test_missing_brand_present_in_output(self):
+        from app.library_reseed_verification import render_reconciliation_markdown  # noqa: PLC0415
+        predicted = _make_report([("stripe", True), ("figma", True)])
+        actual = _make_report([("stripe", True)])
+        result = reconcile_reports(predicted, actual)
+        md = render_reconciliation_markdown(result)
+        assert "figma" in md
+
+    def test_clean_result_contains_no_error_sections(self):
+        from app.library_reseed_verification import render_reconciliation_markdown  # noqa: PLC0415
+        brands = [("stripe", True)]
+        result = reconcile_reports(_make_report(brands), _make_report(brands))
+        md = render_reconciliation_markdown(result)
+        assert "Verdict drift" not in md
+        assert "Missing" not in md
