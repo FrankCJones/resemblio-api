@@ -793,22 +793,33 @@ def get_brand_canonical(
     brand_slug: str,
     session: Session = Depends(get_db),
 ) -> JSONResponse:
-    """Return the canonical brand page (latest pull, no category filter).
+    """Return the canonical brand page (latest pull, alphabet type-specimen).
 
-    Picks the most-recently-fetched canonical page for the brand as the
-    representative row. 404 when no canonical page exists.
+    Prefers category_slug='alphabet' per D19: the type-specimen is the intended
+    featured artifact. All 18 template classes share identical fetched_at within
+    one asset_version, so LIMIT 1 without this filter returns an arbitrary class.
+    Falls back to any canonical page when no alphabet page exists (pre-v5 corpora,
+    lightweight test fixtures). 404 only when no canonical page of any kind exists.
     """
     _validate_brand_slug(brand_slug)
-    stmt = (
-        select(LibraryPage, AssetVersion)
-        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.is_canonical.is_(True))
-        .where(AssetVersion.is_public.is_(True))
-        .order_by(AssetVersion.fetched_at.desc())
-        .limit(1)
-    )
-    row = session.execute(stmt).first()
+
+    def _canonical_stmt(*, category_slug: str | None) -> any:
+        base = (
+            select(LibraryPage, AssetVersion)
+            .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
+            .where(LibraryPage.brand_slug == brand_slug)
+            .where(LibraryPage.is_canonical.is_(True))
+            .where(AssetVersion.is_public.is_(True))
+            .order_by(AssetVersion.fetched_at.desc())
+            .limit(1)
+        )
+        if category_slug is not None:
+            base = base.where(LibraryPage.category_slug == category_slug)
+        return base
+
+    row = session.execute(_canonical_stmt(category_slug="alphabet")).first()
+    if row is None:
+        row = session.execute(_canonical_stmt(category_slug=None)).first()
     if row is None:
         raise HTTPException(status_code=404, detail="brand_not_found")
     page, asset_version = row

@@ -498,11 +498,6 @@ ARTICLE_LAYOUT_BODY = """\
     <span class="al__kicker">{kicker}</span>
     <h1 class="al__title">{title}</h1>
     <p class="al__dek">{dek}</p>
-    <div class="al__byline">
-      <span>{author}</span>
-      <span>·</span>
-      <time>{date}</time>
-    </div>
   </header>
   <div class="al__body">
     <p>{lead}</p>
@@ -1383,7 +1378,7 @@ PROCESS_STEPS_PLACEHOLDERS = (
     "step_4_title", "step_4_dek",
 )
 ARTICLE_LAYOUT_PLACEHOLDERS = (
-    "kicker", "title", "dek", "author", "date",
+    "kicker", "title", "dek",
     "lead", "section_2_title", "section_2_body",
     "pull_quote", "section_3_title", "section_3_body",
 )

@@ -143,8 +143,9 @@ def test_canonical_page_is_type_specimen_v5_d19a(session: Session) -> None:
     assert written > 0, f"drain wrote {written} pages - quality gate or compose failure"
 
     response = get_brand_canonical("aeon", session=session)
-    data = json.loads(response.body)
-    rendered = data.get("rendered_html", "")
+    # Route wraps in {"schema_version": ..., "data": {...page...}}
+    body = json.loads(response.body)
+    rendered = body.get("data", {}).get("rendered_html", "")
 
     assert _ALPHABET_HTML_SIGNATURE in rendered, (
         "D19a: canonical page must be the alphabet type-specimen "

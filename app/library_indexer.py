@@ -1053,8 +1053,8 @@ def _brand_placeholder(
         "member_4_role": "Audit and discovery",
         # Article-layout slots (ARTICLE_LAYOUT template). Brand-aware
         # specimen body for editorial pages; never reads as filler.
-        "author": "Studio team",
-        "date": "March 2026",
+        # D19: "author" and "date" removed - al__byline div removed from
+        # ARTICLE_LAYOUT_BODY so these slots are no longer rendered.
         "lead": (
             "A short editorial lead establishes the reading rhythm for the "
             "article and demonstrates how body type sets at the default size."
