@@ -180,8 +180,10 @@ Pre-existing non-blocking failures: corpus_coverage_floor (no local snapshots). 
 ```
 
 **Full offline suite (2026-06-13 UTC):**
-Command: `python -m pytest -q --tb=no --ignore=tests/render`
-Result: [pending - suite in progress at time of PRD draft]
+Command: `python -m pytest tests/ --ignore=tests/render --ignore=tests/test_synthetic_probe.py --tb=no -q`
+Result: `1 failed, 1839 passed, 26 skipped, 2 xfailed, 2 warnings in 142.74s`
+Plus: `test_synthetic_probe.py`: `24 passed in 190.89s` (run separately due to length)
+Total passing: 1863. The 1 failure is `test_corpus_coverage_floor` (pre-existing; no local DRL snapshots).
 
 **Pre-existing dev-only non-pass (not regressions):**
 - `test_corpus_coverage_floor`: no local DRL snapshots; self-skips on CI. Unchanged from baseline.
@@ -206,7 +208,7 @@ Result: [pending - suite in progress at time of PRD draft]
 - [x] Monitoring subsystem tests passing; README exists at `app/monitoring/README.md`
 - [x] Three stale docs reconciled; RED grep for stale strings returns nothing
 - [x] `git status --porcelain` clean
-- [ ] Offline suite green (pending run completion)
+- [x] Offline suite green: 1863 passed (1839 + 24 probe), 26 skipped, 2 xfailed, 1 pre-existing fail
 - [x] PRD written (this document)
 - [x] No bare assertions; every number traces to a command + UTC
 - [x] STATUS.md updated (failures list reconciled)
