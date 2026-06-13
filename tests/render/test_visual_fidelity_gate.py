@@ -1443,6 +1443,17 @@ def test_linear_font_spec_matches_actual_live_disclosure() -> None:
         '<aside ...><strong>Linear uses Inter.</strong> Rendered here with
         <a href="...">Inter</a> (free, designed by Rasmus Andersson).</aside>'
     """
+    # Self-skip on the standalone resemblio-api CI checkout, where the
+    # workspace _verification/ spec tree (SPECS_DIR) is not present. Matches
+    # the self-skip discipline every other test in this module follows
+    # (load_tolerance / load_manifest call pytest.skip on missing files).
+    # Without this guard, font_family_assertion_from_spec returns None on a
+    # missing spec file and the assert below turns the CI deploy red - which
+    # is exactly the regression that blocked deploys 2026-06-13. The test
+    # still runs in full wherever the specs exist (dev + the gate run box).
+    if not SPECS_DIR.exists():
+        pytest.skip(f"reference specs dir not found at {SPECS_DIR}")
+
     # Canonical live HTML for linear: Inter is the display font in DRL tokens.
     live_html = (
         '<aside class="rs-font-attribution" data-rs-class="font-attribution">'
@@ -1454,6 +1465,9 @@ def test_linear_font_spec_matches_actual_live_disclosure() -> None:
     )
 
     for category in ("alphabet", "about-team"):
+        spec_path = SPECS_DIR / f"linear_{category}.json"
+        if not spec_path.exists():
+            pytest.skip(f"linear_{category} spec not found at {spec_path}")
         assertion = font_family_assertion_from_spec(SPECS_DIR, "linear", category)
         assert assertion is not None, (
             f"linear_{category} spec must have at least one assertion with "
