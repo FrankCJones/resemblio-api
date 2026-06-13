@@ -174,6 +174,102 @@ class TestApplyMetadataOverrides:
         assert corrected.applicable_to.count("consumer-dtc") == 1
 
 
+class TestAppleMetadataRegressionPin:
+    """Phase 4.1a regression pin (D17 + D20-Option-B).
+
+    This is a REGRESSION PIN, not a failing-first TDD test. The overlay
+    already exists, so the assertions pass immediately. The purpose is to
+    enforce "the seeder produces the corrected Apple payload" as a CI-
+    enforced invariant: a future corpus refresh that re-introduces the wrong
+    DRL tokens will fail here before the Phase 4 drain can propagate the
+    regression to prod.
+
+    Reads DRL read-only (no DB, no network, no Pillow). Skips cleanly when
+    the real DRL corpus is not present (CI without a DRL checkout).
+    """
+
+    @staticmethod
+    def _drl_root() -> "Path":
+        from pathlib import Path
+
+        return Path(__file__).resolve().parents[4] / "Design Reference Library"
+
+    def test_every_apple_asset_carries_corrected_metadata(self) -> None:
+        """Every Apple asset in the DRL corpus must carry corrected category +
+        applicable_to + tags after the overlay is applied - end-to-end through
+        build_bundle, exactly as the Phase 4 re-seed will materialise it.
+
+        Pin contract (D20-Option-B):
+        - category == "marketing-modern" (not "consumer-dtc")
+        - "consumer-dtc" in dtcg_json["applicable_to"]
+        - "saas-marketing" NOT in dtcg_json["applicable_to"]
+        - "editorial-publication" NOT in dtcg_json["applicable_to"]
+        - "saas-marketing" NOT in dtcg_json["tags"]
+        - "editorial-publication" NOT in dtcg_json["tags"]
+        """
+        import pytest
+        from pathlib import Path
+        from scripts.seed_from_drl import (
+            build_bundle,
+            iter_assets,
+            load_corpus,
+            load_tokens_for_asset,
+        )
+        from transformer import brand_strip
+        from app.metadata_overrides import apply_metadata_overrides
+
+        drl_root = self._drl_root()
+        if not (drl_root / "corpus.json").exists():
+            pytest.skip("Real DRL corpus not present; pin runs on-box only")
+
+        corpus = load_corpus(drl_root)
+        apple_results: list[dict] = []
+        for system, asset in iter_assets(corpus):
+            if str(system.get("slug") or "") != "apple":
+                continue
+            try:
+                stripped = brand_strip(system, asset)
+            except ValueError:
+                continue
+            stripped = apply_metadata_overrides(
+                stripped, brand_slug="apple"
+            )
+            tokens = load_tokens_for_asset(drl_root, asset)
+            if not tokens:
+                continue
+            bundle = build_bundle(stripped, tokens)
+            apple_results.append(bundle.dtcg_json)
+
+        assert apple_results, (
+            "No apple assets found in DRL corpus with tokens.css - "
+            "corpus path or structure may have changed"
+        )
+
+        for dtcg in apple_results:
+            src = dtcg.get("slug", "?")
+            assert dtcg["category"] == "marketing-modern", (
+                f"apple asset {src!r}: category must be 'marketing-modern', "
+                f"got {dtcg['category']!r}"
+            )
+            applicable_to = dtcg["applicable_to"]
+            assert "consumer-dtc" in applicable_to, (
+                f"apple asset {src!r}: 'consumer-dtc' missing from applicable_to={applicable_to}"
+            )
+            assert "saas-marketing" not in applicable_to, (
+                f"apple asset {src!r}: 'saas-marketing' still present in applicable_to={applicable_to}"
+            )
+            assert "editorial-publication" not in applicable_to, (
+                f"apple asset {src!r}: 'editorial-publication' still present in applicable_to={applicable_to}"
+            )
+            tags = dtcg["tags"]
+            assert "saas-marketing" not in tags, (
+                f"apple asset {src!r}: 'saas-marketing' still present in tags={tags}"
+            )
+            assert "editorial-publication" not in tags, (
+                f"apple asset {src!r}: 'editorial-publication' still present in tags={tags}"
+            )
+
+
 class TestLoadMetadataOverrides:
     def test_shipped_json_loads_and_corrects_apple(self) -> None:
         overrides = load_metadata_overrides()
