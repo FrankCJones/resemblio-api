@@ -1,0 +1,112 @@
+# Resemblio site classifier - signal pattern config.
+#
+# schema_version: site_classifier_signals_v1
+#
+# Tunable signal patterns for `app.site_classifier.classify_url`. Editing
+# this file does NOT require a code redeploy provided the loader is invoked
+# at request time; the loader is mtime-keyed (`_load_signals`).
+#
+# Classes (locked 2026-06-03 per
+# `projects/OptSus Team/cto-reviews/2026-06-03-resemblio-url-first-onboarding-respec.md`
+# Decision 3):
+#
+#   - html_first  : SUPPORTED  (floor 0.60)
+#   - js_rendered : SUPPORTED  (floor 0.40)
+#   - wix_class   : OUT-OF-SCOPE (auto-refund / notify-when-supported capture)
+#   - waf_blocked : OUT-OF-SCOPE (auto-refund)
+#   - unknown     : OUT-OF-SCOPE (auto-refund + tuning signal)
+#
+# Per-class precedence: wix_class > waf_blocked > js_rendered > html_first.
+# Out-of-scope classes resolve first so we never burn a Playwright slot on
+# something we cannot extract.
+#
+# Each signal block:
+#   patterns_body    : substrings or regex (regex marked with leading "re:")
+#   patterns_headers : (header_name, substring_or_regex) pairs
+#   status_codes     : HTTP statuses that trigger this signal
+#   min_signals      : how many signals must match to claim the class
+#   confidence_base  : starting confidence when min_signals is met
+#   confidence_step  : added per signal above the minimum (capped at 1.0)
+#
+# Tuning workflow: edit a pattern, save, restart the API process (or wait
+# for the mtime cache to refresh on the next call). New signal classes
+# MUST come with a CLASS_PRECEDENCE update in code; the YAML alone cannot
+# introduce a new label.
+
+schema_version: site_classifier_signals_v1
+
+classes:
+
+  wix_class:
+    min_signals: 2
+    confidence_base: 0.80
+    confidence_step: 0.05
+    patterns_body:
+      - 're:<meta\s+name=["'']generator["'']\s+content=["'']Wix\.com Website Builder'
+      - "static.parastorage.com"
+      - "_partials/wix"
+      - 're:<script[^>]+src=["'']https?://static\.parastorage\.com'
+      - "X-Wix-Published-Version"
+    patterns_headers:
+      - ["x-wix-request-id", ""]
+      - ["x-wix-published-version", ""]
+    status_codes: []
+
+  waf_blocked:
+    min_signals: 1
+    confidence_base: 0.75
+    confidence_step: 0.10
+    patterns_body:
+      - "Cloudflare Ray ID"
+      - "Akamai"
+      - 're:cf[-_]turnstile'
+      - 're:hcaptcha\.com'
+      - 're:recaptcha/api\.js'
+      - "Attention Required! | Cloudflare"
+      - "Just a moment..."
+    patterns_headers:
+      - ["cf-mitigated", "challenge"]
+      - ["cf-ray", ""]
+      - ["server", "akamai"]
+      - ["x-akamai", ""]
+    # 401 / 407 only count outside a basic-auth context; the caller
+    # is responsible for passing trusted_auth_context=True for private
+    # extractions where the caller provided HTTP basic auth.
+    status_codes: [403, 503, 401, 407]
+
+  js_rendered:
+    min_signals: 2
+    confidence_base: 0.55
+    confidence_step: 0.10
+    patterns_body:
+      - 're:<div\s+id=["'']root["'']\s*>\s*</div>'
+      - 're:<div\s+id=["'']__next["'']\s*>'
+      - 're:<div\s+id=["'']app["'']\s*>\s*</div>'
+      - 're:<noscript[^>]*>[^<]*enable JavaScript'
+      - 're:<script[^>]+type=["'']module["'']'
+      - "/_next/static/"
+      - "react-dom"
+      - "vue.runtime"
+      - "ng-version"
+      - 're:window\.__NUXT__'
+    patterns_headers:
+      - ["x-powered-by", "next.js"]
+    status_codes: []
+
+  html_first:
+    # Default-ish bucket. We require at least 2 substantive markup signals
+    # AND a body size above HTML_FIRST_MIN_BODY_BYTES (see code). This
+    # keeps tiny "hello world" pages from auto-classifying as supported.
+    min_signals: 2
+    confidence_base: 0.65
+    confidence_step: 0.05
+    patterns_body:
+      - 're:<article[\s>]'
+      - 're:<main[\s>]'
+      - 're:<section[\s>]'
+      - 're:<h[1-6][\s>][^<]+</h[1-6]>'
+      - 're:<style[\s>]'
+      - 're:<link[^>]+rel=["'']stylesheet["'']'
+      - 're:<p[\s>][^<]{40,}</p>'
+    patterns_headers: []
+    status_codes: []
