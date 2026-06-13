@@ -241,6 +241,54 @@ passed + 26 probe = 1865 passing, 1 pre-existing fail (`corpus_coverage_floor`).
 
 ---
 
+## Post-push: CI deploy was red since Phase 5 - root-caused + fixed (Opus, 2026-06-13)
+
+After pushing the Phase 6 commits, the GitHub Actions deploy for `81f0f25`
+**failed**. Investigation via the Actions API showed deploys had been red since the
+**Phase 5 push** (`fcc737f`, 18:28 UTC) - the last green deploy was `b22e6ae` (16:14),
+which is exactly where prod git HEAD was stuck. So Phase 5's render/spec commits never
+reached prod either; the silent-partial-deploy gate (`git reset --hard origin/main` only
+after `pytest -q` passes) correctly held prod back.
+
+**Root cause:** `tests/render/test_visual_fidelity_gate.py::test_linear_font_spec_matches_actual_live_disclosure`
+(added in Phase 5.2) hard-asserts `assertion is not None`, but
+`font_family_assertion_from_spec` returns None when the spec file is absent - the normal
+state on the standalone `resemblio-api` CI checkout, where the workspace
+`_verification/` spec tree (`SPECS_DIR`) is not present. Every other test in that module
+self-skips in that case; this one did not, so `pytest -q` went red.
+
+**Why it slipped through Phase 5 sign-off AND Phase 6:** both ran the offline suite with
+`--ignore=tests/render`, diverging from CI's plain `pytest -q`. The excluded directory
+held the exact failing test.
+
+**Fix (commit `03afa8e`, pushed):** add the standard self-skip guard - skip when
+`SPECS_DIR` / the specific `linear_<category>.json` is absent. The test still runs in
+full wherever the specs exist (dev + the gate-run box).
+
+**Verification (2026-06-13 UTC):**
+- CI deploy for `03afa8e`: **completed success** (Actions API).
+- Prod git HEAD advanced `b22e6ae -> 03afa8e` (SSH `git rev-parse HEAD`).
+- `app/site_classifier_signals.yml` now on prod at the correct nested path
+  (`/opt/resemblio-api/app/app/`), md5 `b0d461e25fa5ad1b04d3be19cca22724` - **byte-identical**
+  to the committed blob. The latent broken-on-prod landmine (see below) is defused.
+- `GET /v1/healthz` -> 200.
+- As a side effect, the Phase 5 render/spec commits stuck since 18:28 also reached prod
+  via this deploy's `git reset --hard origin/main`.
+
+### Severity note on the broken-on-clone dependency (Phase 6.1)
+
+The review confirmed the missing `site_classifier_signals.yml` was **not** merely a
+dev-clone inconvenience. `app/site_classifier.py` is imported by the live
+`routes/extractions_anonymous.py` and the YAML loads lazily via `target.stat()`. The
+YAML was genuinely **absent on prod**. It did not cause an active outage only because
+`RESEMBLIO_ANON_EXTRACT_ENABLED` is unset on prod (live probe of
+`POST /v1/anonymous/extractions` returns **503 feature_disabled** before reaching
+`classify_url`). So the bug was a **latent landmine**: it would have detonated the
+instant the anonymous-extract feature flag was flipped without the YAML present. Phase 6
+tracked the YAML and this deploy landed it on prod, de-risking that future flag flip.
+
+---
+
 ## Definition of done checklist
 
 - [x] Every untracked prod-adjacent file tracked, gitignored, or deleted with recorded reason
