@@ -1406,3 +1406,130 @@ def test_color_bucket_overlap_self_compare_max(tmp_path: pathlib.Path) -> None:
         img_path, img_path, top_n=3, quantization_bits=4,
     )
     assert overlap == 1  # Only one distinct color in the image.
+
+
+# ---------------------------------------------------------------------------
+# Phase 5.1 RED tests: Option A gate-basis rebasis (D-5.1, 2026-06-13)
+#
+# These tests are RED under the v2 gate and GREEN once evaluate_tuple is
+# rebased on structural dims as the primary gate (SSIM demoted to
+# informational). See handoff _HANDOFF_2026-06-13_library-v5-phase5-*.md
+# ---------------------------------------------------------------------------
+
+
+def test_schema_version_is_v3_option_a_gate_rebasis() -> None:
+    """Gate report schema_version reflects the Option A (D-5.1) rebasis bump.
+
+    D-5.1 decision (2026-06-13, Opus/Jim locked): demote raw full-page SSIM to
+    informational; make structural dimensions (color-bucket overlap + font-family
+    match) the primary gate. Inspirado-no-copiado rationale: Resemblio renders
+    brand-stripped type specimens, not copies of the real brand site. A render
+    scoring high SSIM against the real site would contradict the product's legal
+    and brand posture. Regressing to v2 reintroduces the SSIM-primary gate.
+    """
+    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v3"
+
+
+def test_compat_schema_version_is_v2_after_option_a_bump() -> None:
+    """One-cycle compat schema covers prior v2 gate consumers.
+
+    Per the file's established deprecation discipline: compat covers one cycle,
+    removed when the next bump lands. Dated note: demoted 2026-06-13 (D-5.1).
+    """
+    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v2"
+
+
+def test_ssim_above_floor_not_sole_pass_path_option_a(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Under Option A, SSIM >= ssim_floor alone does not cause a PASS.
+
+    D-5.1 decision (2026-06-13, Opus/Jim locked): structural dims are the
+    primary gate; SSIM is informational only.
+
+    Scenario: SSIM = 0.90 (above 0.65 floor), color_overlap = 1 (below min 3),
+    no font spec for this synthetic brand (dominant_font_family_required=True
+    -> font_ok=False).
+
+    Under the v2 gate (prior): PASS via the SSIM primary gate.
+    Under the v3 gate (Option A): FAIL via structural primary gate
+    (color_ok=False, font_ok=False).
+
+    Verifies that the structural gate is checked regardless of SSIM, and
+    that SSIM is still recorded in the outcome as an informational field.
+    This test is RED under v2 and GREEN under v3.
+    """
+    import sys as _sys
+
+    requests = pytest.importorskip("requests")
+    pytest.importorskip("PIL.Image")
+    from PIL import Image
+
+    ref_path = tmp_path / "ref_option_a_test.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(ref_path)
+    live_path = tmp_path / "live_option_a_test.png"
+    Image.new("RGB", (16, 16), color=(200, 100, 50)).save(live_path)
+
+    record = ReferenceRecord(
+        tuple_id="x__alphabet__1440x900",
+        brand="x",
+        category="alphabet",
+        viewport="1440x900",
+        source_url="https://example.test/",
+        reference_path=ref_path,
+        capture_mode="full_page",
+    )
+    tolerance = ToleranceConfig(
+        ssim_floor=0.65,
+        color_bucket_overlap_min=3,
+        color_bucket_top_n=5,
+        color_quantization_bits=4,
+        dominant_font_family_required=True,
+        brand_x_category_pass_minimum=3,
+        skip_on_missing_live_url=True,
+        url_pattern="https://resemblio.com/library/{brand}/{category}",
+        basic_auth_env="LIBRARY_BASIC_AUTH_UNSET",
+        timeout_ms=30000,
+        wait_until="networkidle",
+    )
+
+    class _OK:
+        status_code = 200
+
+    monkeypatch.setattr(requests, "head", lambda url, **kwargs: _OK())
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "capture_live_render",
+        lambda **kwargs: LiveRender(
+            png_path=live_path,
+            html="<html><body>no font disclosure here</body></html>",
+        ),
+    )
+    # Force SSIM above the floor so the v2 ssim-primary gate would PASS.
+    monkeypatch.setattr(
+        _sys.modules[__name__], "compute_ssim", lambda ref, live: 0.90,
+    )
+    # Force color overlap below min so structural fails.
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "color_bucket_overlap",
+        lambda ref_path, live_path, **kwargs: 1,
+    )
+
+    outcome = evaluate_tuple(record, tolerance, tmp_path, DEFAULT_RESEMBLIO_BASE)
+
+    # Under v3 (Option A): structural is primary; color_ok=False -> FAIL.
+    assert outcome.status == "FAIL", (
+        f"Expected FAIL (structural primary gate), got {outcome.status}. "
+        "Under Option A SSIM >= floor is not a pass path; only structural dims gate. "
+        "Likely evaluate_tuple still has the v2 SSIM-primary gate."
+    )
+    # SSIM must still be computed and stored (informational field).
+    assert outcome.ssim == pytest.approx(0.90), (
+        "SSIM must be computed and stored even when structural determines the outcome."
+    )
+    # Gate path must NOT be 'ssim' (that path is removed in v3).
+    assert outcome.gate != "ssim", (
+        f"gate='ssim' indicates the SSIM primary gate is still active; got {outcome.gate!r}"
+    )
