@@ -1,4 +1,4 @@
-"""Phase 5.2 visual-fidelity gate test.
+"""Phase 5 visual-fidelity gate test.
 
 Compares the live Resemblio library page render at
 ``https://resemblio.com/library/<brand>/<category>`` against the reference
@@ -6,28 +6,46 @@ capture from the real brand site under
 ``_verification/library-inspirado-correction-20260604/reference_captures/``,
 for every (brand, category, viewport) tuple in the reference manifest.
 
-Gate logic (Jim-locked tolerances; see tolerance_config.yml provenance):
+Gate logic (D-5.1 Option A, 2026-06-13, Opus/Jim locked):
 
-  1. SSIM(live, reference) >= ssim_floor (0.65)           -> PASS pixel-gate
-  2. Otherwise structural fallback:
+  Inspirado-no-copiado rationale: Resemblio renders brand-stripped type
+  specimens inspired by real brand design systems, not copies of the real
+  brand site. A full-page SSIM comparison between a Resemblio specimen
+  (single-template, brand-stripped) and a real brand marketing page
+  (photo-rich, multi-section) cannot clear 0.65 by construction - and a
+  score that high would *contradict* the product's legal and brand posture.
+  The thing the product actually promises is token fidelity: faithful color,
+  typography, and spacing extraction, which is exactly what the structural
+  dimensions measure. Therefore:
+
+  1. Structural gate (PRIMARY):
        - color_bucket_overlap (top-N quantized buckets)   >= 3 buckets match
        AND dominant_font_family_match (per-spec assertion) is satisfied
-                                                          -> PASS fallback
-  3. Otherwise                                            -> FAIL
+                                                          -> PASS
+  2. Otherwise                                            -> FAIL
 
-Acceptance per Phase 5.2: at least 3 distinct (brand, category)
-combinations pass on ALL their viewports. Below that the test fails and
-points at which dimension drifted (color / font / structure).
+  Raw SSIM is computed and stored in every TupleOutcome as an informational
+  field (useful for debugging drift) but does NOT gate the tuple's verdict.
+
+Acceptance: at least 3 distinct (brand, category) combinations pass on ALL
+their viewports. Below that the test fails and points at which dimension
+drifted (color / font).
+
+Prior gate logic (v2, RZ-A, superseded by D-5.1):
+  SSIM >= ssim_floor was the primary gate; structural was the fallback.
+  All 5 passes in the 2026-06-13 baseline run were via structural fallback
+  (SSIM 0.000-0.539, never clearing 0.65). D-5.1 promotes the actual
+  gating dimension to primary and retires the SSIM gate.
 
 Schema versions
 ---------------
 in  : reference_capture_manifest_v1 (reference_captures/manifest.json)
 in  : visual_fidelity_tolerance_v1   (tolerance_config.yml)
 in  : fidelity_spec_v2               (reference_captures/specs/*.json)
-out : library_visual_fidelity_gate_report_v2 (gate_report.json + .md)
-      compat_schema_version=v1 written alongside for one cycle so
-      Phase 7 diagnostic v7 (the prior consumer) keeps reading until
-      its own bump. Deprecation date: re-evaluate after RZ-G lands.
+out : library_visual_fidelity_gate_report_v3 (gate_report.json + .md)
+      compat_schema_version=v2 written alongside for one cycle so
+      prior v2 consumers keep reading until their own bump.
+      Deprecation date: re-evaluate after Phase 6 lands (2026-06-13).
 
 HEAD pre-flight (added 2026-06-05 per RZ-A)
 -------------------------------------------
@@ -75,8 +93,11 @@ import pytest
 # Test sub-package conftest exports REFERENCE_ROOT + WORKSPACE_ROOT.
 from .conftest import REFERENCE_ROOT, WORKSPACE_ROOT
 
-SCHEMA_VERSION = "library_visual_fidelity_gate_report_v2"
-COMPAT_SCHEMA_VERSION = "library_visual_fidelity_gate_report_v1"
+# D-5.1 (2026-06-13): bumped v2->v3 for Option A gate-basis rebasis.
+# SSIM demoted to informational; structural dims are now the primary gate.
+SCHEMA_VERSION = "library_visual_fidelity_gate_report_v3"
+# One-cycle compat for v2 consumers. Remove when Phase 6 lands.
+COMPAT_SCHEMA_VERSION = "library_visual_fidelity_gate_report_v2"
 
 # HEAD pre-flight constants (RZ-A). Status >= 400 short-circuits SSIM and
 # marks the tuple as route_missing. Timeout is the HEAD budget only; the
@@ -755,34 +776,19 @@ def evaluate_tuple(
             live_status_code=live_status,
         )
 
-    # Primary gate: SSIM
+    # Compute SSIM for informational purposes only (D-5.1 Option A).
+    # SSIM is NOT a gating dimension under the v3 semantics; it is stored
+    # in the TupleOutcome so the operator can track it over time without it
+    # affecting the PASS/FAIL verdict. See module docstring for rationale.
     try:
-        ssim = compute_ssim(record.reference_path, live.png_path)
+        ssim: Optional[float] = compute_ssim(record.reference_path, live.png_path)
     except Exception as exc:  # pragma: no cover - environment dependent
-        return TupleOutcome(
-            tuple_id=record.tuple_id,
-            brand=record.brand,
-            category=record.category,
-            viewport=record.viewport,
-            status="SKIP",
-            gate="skip",
-            error_message=f"ssim computation failed: {exc}",
-            live_status_code=live_status,
-        )
+        _log.warning("ssim computation failed for %s: %s", record.tuple_id, exc)
+        ssim = None
 
-    if ssim >= tolerance.ssim_floor:
-        return TupleOutcome(
-            tuple_id=record.tuple_id,
-            brand=record.brand,
-            category=record.category,
-            viewport=record.viewport,
-            status="PASS",
-            gate="ssim",
-            ssim=ssim,
-            live_status_code=live_status,
-        )
-
-    # Structural fallback.
+    # Primary gate (D-5.1 Option A): structural dimensions.
+    # color_bucket_overlap >= min AND dominant_font_family assertion passes
+    # -> PASS regardless of SSIM. Both must pass; either failing -> FAIL.
     overlap = color_bucket_overlap(
         record.reference_path,
         live.png_path,
@@ -806,13 +812,7 @@ def evaluate_tuple(
             font_assertion, live.html,
         )
 
-    drift: List[str] = []
-    if not color_ok:
-        drift.append("color")
-    if not font_ok:
-        drift.append("font")
-    if ssim < tolerance.ssim_floor and color_ok and font_ok:
-        # Structural fallback rescues the tuple.
+    if color_ok and font_ok:
         return TupleOutcome(
             tuple_id=record.tuple_id,
             brand=record.brand,
@@ -826,7 +826,11 @@ def evaluate_tuple(
             live_status_code=live_status,
         )
 
-    drift.append("structure")  # SSIM gate failed; structure-level miss
+    drift: List[str] = []
+    if not color_ok:
+        drift.append("color")
+    if not font_ok:
+        drift.append("font")
     return TupleOutcome(
         tuple_id=record.tuple_id,
         brand=record.brand,
@@ -1386,13 +1390,14 @@ def test_rz_a_dry_run_vercel_tuples_now_fail_route_missing(
         )
 
 
-def test_schema_version_is_v2() -> None:
-    """The gate report schema_version is the v2 bump from RZ-A.
+def test_schema_version_is_v3() -> None:
+    """The gate report schema_version is the v3 bump from D-5.1 (Option A rebasis).
 
-    Pins the bump. Regressing to v1 reintroduces the false-PASS bug.
+    Pins the bump. Regressing to v2 reintroduces the SSIM-primary gate.
+    v2 introduced the RZ-A HEAD pre-flight (still present in v3).
     """
-    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v2"
-    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v1"
+    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v3"
+    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v2"
 
 
 def test_color_bucket_overlap_self_compare_max(tmp_path: pathlib.Path) -> None:
