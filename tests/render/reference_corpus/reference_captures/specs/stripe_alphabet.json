@@ -1,0 +1,54 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "stripe",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['sohne'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=stripe].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "Sohne",
+    "free_alternative_name": "Inter",
+    "rationale": "Stripe's display face Sohne maps to Inter in BRAND_FONT_REGISTRY. Primary display element on the alphabet template is h1.a-display-1. The :root override forces --ds-font-display to Inter. Negative assertion scans for slug=stripe strip targets plus universal forbidden patterns.",
+    "gaps": [
+      "Stripe's signature indigo (#635BFF) lives only in the category_fidelity_spec.md fixture bag; no production registry pins it per-brand for the alphabet category, so an --ds-accent computed_css assertion is deferred."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "stripe-alphabet-display-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('h1.a-display-1'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "stripe-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('stripe'); })()",
+      "expected": true
+    },
+    {
+      "id": "stripe-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Sohne",
+      "match_mode": "contains"
+    },
+    {
+      "id": "stripe-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "stripe-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['stripe.com/img/v3/home/twitter.png', 'stripe-logo', 'stripe-wordmark', '/img/stripe', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "stripe-alphabet-body-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-body'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    }
+  ]
+}

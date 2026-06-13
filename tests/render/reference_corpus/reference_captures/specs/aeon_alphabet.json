@@ -1,0 +1,55 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "aeon",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['pp right grotesk wide'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=aeon].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "PP Right Grotesk Wide",
+    "free_alternative_name": "Plus Jakarta Sans",
+    "rationale": "Aeon's display face PP Right Grotesk Wide maps to Plus Jakarta Sans in BRAND_FONT_REGISTRY. The alphabet template's primary display element is h1.a-display-1 (DRL ALPHABET_BODY line 91); .a-row carries the body specimen. The :root override from build_root_font_face_override sets --ds-font-display to the free-alternative family, so getComputedStyle(h1.a-display-1).fontFamily must contain 'Plus Jakarta Sans'. Negative assertion scans the rendered HTML for the forbidden image substrings declared for slug=aeon (no aeon.co/logo, aeon-logo, aeon-wordmark).",
+    "gaps": [
+      "No source-of-truth file pins a per-brand --ds-accent hex for aeon; computed_css color assertion deferred to avoid fabrication.",
+      "No spacing or section-padding value is declared per-brand for alphabet; spacing assertion deferred."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "aeon-alphabet-display-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('h1.a-display-1'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('plus jakarta sans'); })()",
+      "expected": true
+    },
+    {
+      "id": "aeon-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('aeon'); })()",
+      "expected": true
+    },
+    {
+      "id": "aeon-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "PP Right Grotesk Wide",
+      "match_mode": "contains"
+    },
+    {
+      "id": "aeon-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Plus Jakarta Sans",
+      "match_mode": "contains"
+    },
+    {
+      "id": "aeon-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['aeon.co/logo', 'aeon-logo', 'aeon-wordmark', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "aeon-alphabet-body-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-body'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('plus jakarta sans'); })()",
+      "expected": true
+    }
+  ]
+}

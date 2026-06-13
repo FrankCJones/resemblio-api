@@ -1,0 +1,55 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "aeon",
+    "category": "about-team",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['pp right grotesk wide'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=aeon].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ABOUT_TEAM_BODY + ABOUT_TEAM_STYLES)"
+    ],
+    "brand_font_name": "PP Right Grotesk Wide",
+    "free_alternative_name": "Plus Jakarta Sans",
+    "rationale": "About-team primary display element is .at__title (ABOUT_TEAM_BODY line 546); .at__avatar carries the radius slot. The :root override forces --ds-font-display to Plus Jakarta Sans. Phase 3.2 strips photo avatars so avatars must render as the surface-2 circle stub (no <img>). Negative trademark assertion mirrors slug=aeon strip targets.",
+    "gaps": [
+      "No source-of-truth file pins per-brand --ds-radius-full or surface-2 hex; computed_css palette assertion deferred.",
+      "Avatar-strip assertion is bounded to absence of <img> children inside .at__member; richer photo-strip checks live in the Phase 3.2 test (out of fidelity-gate scope)."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "aeon-about-team-title-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.at__title'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('plus jakarta sans'); })()",
+      "expected": true
+    },
+    {
+      "id": "aeon-about-team-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('section.at') || document.body; return (root.textContent || '').toLowerCase().includes('aeon'); })()",
+      "expected": true
+    },
+    {
+      "id": "aeon-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "PP Right Grotesk Wide",
+      "match_mode": "contains"
+    },
+    {
+      "id": "aeon-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Plus Jakarta Sans",
+      "match_mode": "contains"
+    },
+    {
+      "id": "aeon-about-team-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['aeon.co/logo', 'aeon-logo', 'aeon-wordmark', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "aeon-about-team-avatars-photo-stripped",
+      "evaluate": "(() => { const members = document.querySelectorAll('.at__member'); if (members.length === 0) return false; for (const m of members) { if (m.querySelector('img')) return false; } return true; })()",
+      "expected": true
+    }
+  ]
+}

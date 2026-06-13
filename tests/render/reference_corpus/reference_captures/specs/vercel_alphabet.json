@@ -1,0 +1,55 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "vercel",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (DEFAULT_FREE_ALTERNATIVE; no per-brand row)",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=vercel].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "Default free type system",
+    "free_alternative_name": "Inter",
+    "rationale": "Vercel ships Geist; the registry does not yet carry a Geist row, so lookup() returns DEFAULT_FREE_ALTERNATIVE (brand_font_name='Default free type system', free_alternative='Inter'). The disclosure aside surfaces that explicit default state per the library_web_fonts contract; the spec asserts the documented fallback, not a Geist-specific mapping that does not exist in source-of-truth. Negative assertion uses slug=vercel strip targets.",
+    "gaps": [
+      "Geist is not in BRAND_FONT_REGISTRY. Adding a 'geist' row would tighten the disclosure assertions to a brand-font-name 'Geist'. Logged as a Phase 1 registry-extension item, not a Phase 4 spec fabrication.",
+      "Vercel is not in fidelity_targets.yml; gate will report MISSING_REFERENCE for vercel tuples until captures + targets entries land."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "vercel-alphabet-display-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('h1.a-display-1'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "vercel-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('vercel'); })()",
+      "expected": true
+    },
+    {
+      "id": "vercel-disclosure-aside-names-default-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Default free type system",
+      "match_mode": "contains"
+    },
+    {
+      "id": "vercel-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "vercel-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['vercel.com/logo', 'vercel-logo', 'vercel-triangle', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "vercel-alphabet-body-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-body'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    }
+  ]
+}

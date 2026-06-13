@@ -90,8 +90,11 @@ from typing import Dict, List, Optional, Tuple
 
 import pytest
 
-# Test sub-package conftest exports REFERENCE_ROOT + WORKSPACE_ROOT.
-from .conftest import REFERENCE_ROOT, WORKSPACE_ROOT
+# Test sub-package conftest exports REFERENCE_ROOT + WORKSPACE_ROOT + CORPUS_ROOT.
+# CORPUS_ROOT prefers the in-repo ``reference_corpus/`` copy (available on any
+# CI checkout) over REFERENCE_ROOT (workspace _verification/ tree, dev-only).
+# PNGs and the live-fetch full-corpus sweep still use REFERENCE_ROOT.
+from .conftest import CORPUS_ROOT, REFERENCE_ROOT, WORKSPACE_ROOT
 
 # D-5.1 (2026-06-13): bumped v2->v3 for Option A gate-basis rebasis.
 # SSIM demoted to informational; structural dims are now the primary gate.
@@ -209,9 +212,15 @@ class GateReport:
 # ---------------------------------------------------------------------------
 
 
-TOLERANCE_PATH = REFERENCE_ROOT / "tolerance_config.yml"
-MANIFEST_PATH = REFERENCE_ROOT / "reference_captures" / "manifest.json"
-SPECS_DIR = REFERENCE_ROOT / "reference_captures" / "specs"
+# CORPUS_ROOT is the in-repo ``reference_corpus/`` (CI) or REFERENCE_ROOT
+# (dev full-gate runs). Both share the same subdirectory layout, so all
+# derived paths work identically in both environments. See Phase 8 handoff.
+TOLERANCE_PATH = CORPUS_ROOT / "tolerance_config.yml"
+MANIFEST_PATH = CORPUS_ROOT / "reference_captures" / "manifest.json"
+SPECS_DIR = CORPUS_ROOT / "reference_captures" / "specs"
+# Output stays workspace-only: gate run artifacts (live PNGs, reports) are
+# not committed; REFERENCE_ROOT on CI points at a non-existent path and the
+# live sweep skips before any write happens.
 DEFAULT_OUTPUT_DIR = REFERENCE_ROOT / "fidelity_gate_runs"
 ENV_OUTPUT_DIR = "VISUAL_FIDELITY_GATE_OUT"
 ENV_RESEMBLIO_BASE = "RESEMBLIO_BASE_URL"

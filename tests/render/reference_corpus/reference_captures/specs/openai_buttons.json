@@ -1,0 +1,37 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "openai",
+    "category": "buttons",
+    "source_of_truth": "code/api/app/brand_font_registry.py",
+    "brand_font_name": "Sohne",
+    "free_alternative_name": "Inter",
+    "rationale": "OpenAI's first-preference display face Soehne resolves to BRAND_FONT_REGISTRY rows keyed 'sohne'/'soehne', both of which carry brand_font_name='Sohne' and free_alternative_name='Inter'. The library renders the free alternative; the disclosure aside surfaces both names. No palette or spacing assertions; those would require a source-of-truth not yet documented for buttons."
+  },
+  "assertions": [
+    {
+      "id": "openai-button-font-family-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "openai-button-label-contains-brand-name",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; return (el.textContent || '').toLowerCase().includes('openai'); })()",
+      "expected": true
+    },
+    {
+      "id": "openai-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Sohne",
+      "match_mode": "contains"
+    },
+    {
+      "id": "openai-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    }
+  ]
+}

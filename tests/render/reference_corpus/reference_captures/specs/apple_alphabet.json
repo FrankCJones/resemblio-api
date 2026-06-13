@@ -1,0 +1,54 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "apple",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['san francisco'] / ['sf pro'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=apple].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "SF Pro",
+    "free_alternative_name": "Inter",
+    "rationale": "Apple's San Francisco / SF Pro first-preference face maps to Inter in BRAND_FONT_REGISTRY (both 'san francisco' and 'sf pro' keys carry the same mapping). Primary alphabet display element is h1.a-display-1; the :root override forces --ds-font-display to Inter. Negative assertion mirrors slug=apple strip targets (apple-logo, /ac-globalnav/svg/logo, apple.svg).",
+    "gaps": [
+      "Apple is not in fidelity_targets.yml; this spec is authored ahead of reference-capture rollout so the gate reports MISSING_REFERENCE for any apple tuple until captures land. The spec is still validatable as a fidelity_spec_v2 artifact."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "apple-alphabet-display-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('h1.a-display-1'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "apple-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('apple'); })()",
+      "expected": true
+    },
+    {
+      "id": "apple-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "SF Pro",
+      "match_mode": "contains"
+    },
+    {
+      "id": "apple-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "apple-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['apple.com/logo', 'apple-logo', '/ac-globalnav/svg/logo', 'apple.svg', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "apple-alphabet-body-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-body'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    }
+  ]
+}

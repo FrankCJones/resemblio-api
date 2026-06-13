@@ -79,13 +79,85 @@ def test_resolve_ignores_env_without_marker(tmp_path: pathlib.Path) -> None:
 
 
 def test_module_level_binding_does_not_raise() -> None:
-    """Importing conftest binds WORKSPACE_ROOT/REFERENCE_ROOT without crashing.
+    """Importing conftest binds WORKSPACE_ROOT/REFERENCE_ROOT/CORPUS_ROOT without crashing.
 
     The import already happened (this module imports from conftest), so reaching
     this assertion at all proves the module-level resolution did not raise. The
-    explicit attribute access pins the contract that both names exist.
+    explicit attribute access pins the contract that all three names exist.
+    Phase 8 adds CORPUS_ROOT.
     """
     from tests.render import conftest
 
     assert isinstance(conftest.WORKSPACE_ROOT, pathlib.Path)
     assert isinstance(conftest.REFERENCE_ROOT, pathlib.Path)
+    assert isinstance(conftest.CORPUS_ROOT, pathlib.Path)
+
+
+# ---------------------------------------------------------------------------
+# Phase 8: resolve_corpus_root unit tests
+# ---------------------------------------------------------------------------
+
+
+from tests.render.conftest import resolve_corpus_root  # noqa: E402
+
+
+def test_resolve_corpus_root_prefers_in_repo_when_tolerance_present(
+    tmp_path: pathlib.Path,
+) -> None:
+    """In-repo corpus wins when tolerance_config.yml is present there.
+
+    Phase 8 precedence rule 1: the vendored in-repo copy takes priority so
+    the structural gate runs on any checkout (CI or dev).
+    """
+    in_repo = tmp_path / "reference_corpus"
+    in_repo.mkdir()
+    (in_repo / "tolerance_config.yml").write_text("schema_version: v1\n")
+
+    ref_root = tmp_path / "workspace" / "_verification" / "corpus"
+    ref_root.mkdir(parents=True)
+    (ref_root / "tolerance_config.yml").write_text("schema_version: workspace\n")
+
+    result = resolve_corpus_root(in_repo_dir=in_repo, reference_root=ref_root)
+    assert result == in_repo
+
+
+def test_resolve_corpus_root_falls_back_to_workspace_when_in_repo_absent(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Falls back to REFERENCE_ROOT when in-repo corpus lacks tolerance_config.yml.
+
+    Phase 8 precedence rule 2: dev machines running a full gate sweep use the
+    workspace _verification/ tree (which has PNGs + full manifest).
+    """
+    in_repo = tmp_path / "reference_corpus"
+    in_repo.mkdir()  # Exists but lacks tolerance_config.yml.
+
+    ref_root = tmp_path / "workspace" / "_verification"
+    ref_root.mkdir(parents=True)
+    (ref_root / "tolerance_config.yml").write_text("schema_version: workspace\n")
+
+    result = resolve_corpus_root(in_repo_dir=in_repo, reference_root=ref_root)
+    assert result == ref_root
+
+
+def test_resolve_corpus_root_returns_in_repo_when_both_absent(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Returns in_repo_dir even when neither corpus exists.
+
+    Phase 8 precedence rule 3: tests derive non-existent paths from the
+    returned root and self-skip via load_tolerance / load_manifest guards.
+    Returning in_repo (not raising) is the safe-import contract.
+    """
+    in_repo = tmp_path / "reference_corpus"  # Does not exist.
+    result = resolve_corpus_root(in_repo_dir=in_repo, reference_root=None)
+    assert result == in_repo
+
+
+def test_resolve_corpus_root_returns_in_repo_when_workspace_also_missing(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Workspace reference_root=None (absent) yields in_repo fallback."""
+    in_repo = tmp_path / "reference_corpus"  # Does not exist.
+    result = resolve_corpus_root(in_repo_dir=in_repo, reference_root=None)
+    assert result == in_repo

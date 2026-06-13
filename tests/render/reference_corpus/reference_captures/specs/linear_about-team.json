@@ -1,0 +1,55 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "linear",
+    "category": "about-team",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (lookup('inter') -> brand_font_name='Inter')",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=linear].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ABOUT_TEAM_BODY + ABOUT_TEAM_STYLES)"
+    ],
+    "brand_font_name": "Inter",
+    "free_alternative_name": "Inter",
+    "rationale": "Linear's DRL tokens carry Inter as the display-slot font. _slot_first_preference('display', tokens)='Inter'; lookup('inter') -> brand_font_name='Inter', free_alternative_name='Inter'. Disclosure renders 'Linear uses Inter.' About-team title element is .at__title. Phase 3.2 strips photo avatars. Negative trademark scan covers slug=linear strip targets. Confirmed 2026-06-13 via prod DB probe.",
+    "gaps": [
+      "Linear is not in BRAND_FONT_REGISTRY by brand slug. Lookup goes by font family name ('inter'). No registry change needed.",
+      "fidelity_targets.yml updated 2026-06-13; Linear now in targets."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "linear-about-team-title-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.at__title'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "linear-about-team-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('section.at') || document.body; return (root.textContent || '').toLowerCase().includes('linear'); })()",
+      "expected": true
+    },
+    {
+      "id": "linear-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "linear uses inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "linear-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "linear-about-team-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['linear.app/logo', 'linear-logo', 'linear-mark', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "linear-about-team-avatars-photo-stripped",
+      "evaluate": "(() => { const members = document.querySelectorAll('.at__member'); if (members.length === 0) return false; for (const m of members) { if (m.querySelector('img')) return false; } return true; })()",
+      "expected": true
+    }
+  ]
+}

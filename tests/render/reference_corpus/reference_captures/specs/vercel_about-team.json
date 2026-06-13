@@ -1,0 +1,55 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "vercel",
+    "category": "about-team",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (DEFAULT_FREE_ALTERNATIVE; no per-brand row)",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=vercel].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ABOUT_TEAM_BODY + ABOUT_TEAM_STYLES)"
+    ],
+    "brand_font_name": "Default free type system",
+    "free_alternative_name": "Inter",
+    "rationale": "Vercel falls through to DEFAULT_FREE_ALTERNATIVE. About-team title element is .at__title. Phase 3.2 strips photo avatars. Negative trademark scan covers slug=vercel strip targets.",
+    "gaps": [
+      "Geist not in registry (same gap as vercel_alphabet).",
+      "Vercel not in fidelity_targets.yml."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "vercel-about-team-title-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.at__title'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "vercel-about-team-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('section.at') || document.body; return (root.textContent || '').toLowerCase().includes('vercel'); })()",
+      "expected": true
+    },
+    {
+      "id": "vercel-disclosure-aside-names-default-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Default free type system",
+      "match_mode": "contains"
+    },
+    {
+      "id": "vercel-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "vercel-about-team-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['vercel.com/logo', 'vercel-logo', 'vercel-triangle', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "vercel-about-team-avatars-photo-stripped",
+      "evaluate": "(() => { const members = document.querySelectorAll('.at__member'); if (members.length === 0) return false; for (const m of members) { if (m.querySelector('img')) return false; } return true; })()",
+      "expected": true
+    }
+  ]
+}

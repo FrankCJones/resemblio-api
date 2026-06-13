@@ -1,0 +1,37 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "stripe",
+    "category": "buttons",
+    "source_of_truth": "code/api/app/brand_font_registry.py",
+    "brand_font_name": "Sohne",
+    "free_alternative_name": "Inter",
+    "rationale": "Stripe's first-preference display face Sohne maps to Inter in BRAND_FONT_REGISTRY (key 'sohne'). The library renders the free alternative; the disclosure aside surfaces both names. No palette or spacing assertions; those would require a source-of-truth not yet documented for buttons."
+  },
+  "assertions": [
+    {
+      "id": "stripe-button-font-family-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "stripe-button-label-contains-brand-name",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; return (el.textContent || '').toLowerCase().includes('stripe'); })()",
+      "expected": true
+    },
+    {
+      "id": "stripe-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Sohne",
+      "match_mode": "contains"
+    },
+    {
+      "id": "stripe-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    }
+  ]
+}

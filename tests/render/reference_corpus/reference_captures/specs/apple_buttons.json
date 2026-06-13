@@ -1,0 +1,54 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "apple",
+    "category": "buttons",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['sf pro'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=apple].forbidden_image_substrings)"
+    ],
+    "brand_font_name": "SF Pro",
+    "free_alternative_name": "Inter",
+    "rationale": "Apple's SF Pro maps to Inter in BRAND_FONT_REGISTRY. Follows the same .a-button selector pattern as the three Phase 5 first-tuple specs (aeon_buttons, openai_buttons, stripe_buttons); identical assertion shape preserved so the four buttons specs are mutually consistent. Negative assertion uses the apple strip-target set.",
+    "gaps": [
+      "Apple is not in fidelity_targets.yml; gate will report MISSING_REFERENCE for apple/buttons tuples until captures land.",
+      "No palette or spacing assertion; the three sibling buttons specs do not carry one either (same source-of-truth gap)."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "apple-button-font-family-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "apple-button-label-contains-brand-name",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; return (el.textContent || '').toLowerCase().includes('apple'); })()",
+      "expected": true
+    },
+    {
+      "id": "apple-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "SF Pro",
+      "match_mode": "contains"
+    },
+    {
+      "id": "apple-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "apple-buttons-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['apple.com/logo', 'apple-logo', '/ac-globalnav/svg/logo', 'apple.svg', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "apple-buttons-primary-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.b-btn--primary, .a-btn'); if (!el) return true; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    }
+  ]
+}

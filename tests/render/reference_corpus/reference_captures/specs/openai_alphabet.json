@@ -1,0 +1,54 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "openai",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (lookup falls back to DEFAULT_FREE_ALTERNATIVE; openai font not in registry as sohne/soehne)",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=openai].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "Default free type system",
+    "free_alternative_name": "Inter",
+    "rationale": "OpenAI's DRL tokens contain a font not in the registry (lookup falls through to DEFAULT_FREE_ALTERNATIVE but brand_font_first_preference is NOT None, so disclosure renders 'OpenAI uses Default free type system.'). Confirmed 2026-06-13 via prod DB probe. Primary display element on the alphabet template is h1.a-display-1. The :root override forces --ds-font-display to Inter. Negative assertion scans for slug=openai strip targets plus universal forbidden patterns.",
+    "gaps": [
+      "No source-of-truth file pins a per-brand --ds-accent hex for openai (Phase 4 contract names ds-accent for buttons but does not pin a literal); computed_css color assertion deferred."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "openai-alphabet-display-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('h1.a-display-1'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "openai-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('openai'); })()",
+      "expected": true
+    },
+    {
+      "id": "openai-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "openai uses default free type system",
+      "match_mode": "contains"
+    },
+    {
+      "id": "openai-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "openai-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['openai.com/logo', 'openai-logo', 'openai-wordmark', 'openai.svg', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "openai-alphabet-body-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-body'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    }
+  ]
+}

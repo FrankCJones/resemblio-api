@@ -1,0 +1,42 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "figma",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['whyte'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=figma].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "Whyte",
+    "free_alternative_name": "Manrope",
+    "rationale": "Figma's display face Whyte resolves to Manrope as the free alternative. Disclosure renders 'Figma uses Whyte.' Confirmed 2026-06-13 via prod DB probe. Reference captures from figma.com home page at both viewports; color overlap confirmed >= 3 at both viewports (buckets: white/4095, black/0, light-gray/3822). Alphabet display element is h1.a-display-1.",
+    "gaps": []
+  },
+  "assertions": [
+    {
+      "id": "figma-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('figma'); })()",
+      "expected": true
+    },
+    {
+      "id": "figma-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "figma uses whyte",
+      "match_mode": "contains"
+    },
+    {
+      "id": "figma-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Manrope",
+      "match_mode": "contains"
+    },
+    {
+      "id": "figma-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['figma.com/logo', 'figma-logo', 'figma-wordmark', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    }
+  ]
+}

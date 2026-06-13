@@ -1,0 +1,43 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "quanta",
+    "category": "alphabet",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (BRAND_FONT_REGISTRY['tiempos-headline'])",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=quanta].forbidden_image_substrings)",
+      "code/api/_vendored/drl/drl/_scripts/templates.py (ALPHABET_BODY selectors)"
+    ],
+    "brand_font_name": "Tiempos Headline",
+    "free_alternative_name": "Playfair Display",
+    "rationale": "Quanta Magazine's display face Tiempos Headline resolves to Playfair Display as the free alternative. Disclosure renders 'Quanta uses Tiempos Headline.' Confirmed 2026-06-13 via prod DB probe. Reference captures from quantamagazine.org home page at both viewports; color overlap confirmed >= 3 at both viewports (buckets: white/4095, near-black/273, light-gray/3822). Alphabet display element is h1.a-display-1.",
+    "captured_at_utc": "2026-06-13",
+    "gaps": []
+  },
+  "assertions": [
+    {
+      "id": "quanta-alphabet-display-contains-brand-name",
+      "evaluate": "(() => { const root = document.querySelector('main.a-page') || document.body; return (root.textContent || '').toLowerCase().includes('quanta'); })()",
+      "expected": true
+    },
+    {
+      "id": "quanta-disclosure-aside-names-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "quanta uses tiempos headline",
+      "match_mode": "contains"
+    },
+    {
+      "id": "quanta-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Playfair Display",
+      "match_mode": "contains"
+    },
+    {
+      "id": "quanta-alphabet-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['quanta.com/logo', 'quanta-logo', 'quanta-wordmark', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    }
+  ]
+}

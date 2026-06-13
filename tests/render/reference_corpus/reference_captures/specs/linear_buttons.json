@@ -1,0 +1,54 @@
+{
+  "schema_version": "fidelity_spec_v2",
+  "_meta": {
+    "brand": "linear",
+    "category": "buttons",
+    "source_of_truth": [
+      "code/api/app/brand_font_registry.py (DEFAULT_FREE_ALTERNATIVE; no per-brand row)",
+      "code/api/app/trademark_strip_targets.yml (brands[slug=linear].forbidden_image_substrings)"
+    ],
+    "brand_font_name": "Default free type system",
+    "free_alternative_name": "Inter",
+    "rationale": "Linear resolves to DEFAULT_FREE_ALTERNATIVE. Follows the .a-button selector pattern of the three Phase 5 first-tuple buttons specs.",
+    "gaps": [
+      "Linear not in registry.",
+      "Linear not in fidelity_targets.yml."
+    ]
+  },
+  "assertions": [
+    {
+      "id": "linear-button-font-family-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    },
+    {
+      "id": "linear-button-label-contains-brand-name",
+      "evaluate": "(() => { const el = document.querySelector('.a-button'); if (!el) return false; return (el.textContent || '').toLowerCase().includes('linear'); })()",
+      "expected": true
+    },
+    {
+      "id": "linear-disclosure-aside-names-default-brand-font",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Default free type system",
+      "match_mode": "contains"
+    },
+    {
+      "id": "linear-disclosure-aside-names-free-alternative",
+      "kind": "text_content",
+      "selector": "aside.rs-font-attribution",
+      "expected_text": "Inter",
+      "match_mode": "contains"
+    },
+    {
+      "id": "linear-buttons-no-wordmark-logo-leak",
+      "evaluate": "(() => { const html = document.documentElement.outerHTML.toLowerCase(); const forbidden = ['linear.app/logo', 'linear-logo', 'linear-mark', '/logo.svg', '/wordmark.svg', '/brand/logo']; return forbidden.every(s => !html.includes(s)); })()",
+      "expected": true
+    },
+    {
+      "id": "linear-buttons-primary-uses-free-alt",
+      "evaluate": "(() => { const el = document.querySelector('.b-btn--primary, .a-btn'); if (!el) return true; const fam = window.getComputedStyle(el).fontFamily || ''; return fam.toLowerCase().includes('inter'); })()",
+      "expected": true
+    }
+  ]
+}
