@@ -198,6 +198,46 @@ Total passing: 1863. The 1 failure is `test_corpus_coverage_floor` (pre-existing
 | `688581b` | feat(integrity): GREEN - track site_classifier_signals.yml + its tests |
 | `3ebf32c` | feat(monitoring): track synthetic-probe subsystem (24 tests pass) |
 | `da33c48` | chore(hygiene): Phase 6.3 - dispose untracked briefs, logs, PRDs, smoke script |
+| `59d136c` | docs(prd): Phase 6 pre-flip hygiene PRD |
+| `bb58436` | docs(prd): update Phase 6 PRD with definitive test counts |
+| `cb6d5a1` | test(monitoring): cover load_state freshness branch + doc-accuracy fixes (Opus review) |
+
+---
+
+## Opus Gate-6 review (2026-06-13)
+
+Reviewed against observed state, not the reported test counts. Verified independently:
+
+- **Broken-on-clone bug is real and customer-facing.** `app/site_classifier.py`
+  is imported by `app/routes/extractions_anonymous.py:86` and called at line 420
+  (`classify_url(url)`). The YAML loads lazily via `_load_signals -> target.stat()`,
+  so a fresh clone imports fine but raises `FileNotFoundError` on the first
+  anonymous extraction. The fix (tracking the YAML) + the durable guard are correct
+  and more important than the original framing suggested.
+- **Coverage gap found and closed.** The `load_state()` freshness branch
+  (`STATE_FRESHNESS_SEC`, 25h) had no explicit test - it was exercised only by the
+  hardcoded date in `test_save_and_load_roundtrip` that became a time-bomb. Added
+  two deterministic tests (`test_load_state_returns_fresh_on_stale_file`,
+  `test_load_state_trusts_recent_file`) pinning both sides of the boundary.
+  `tests/test_synthetic_probe.py` now 26 passed (was 24).
+- **Doc-accuracy fix.** Corrected "at import time" -> lazy-first-use in the integrity
+  test comment + docstring (commit `cb6d5a1`).
+- **No prod-divergent code committed.** Monitoring subsystem confirmed absent on prod
+  (`/opt/resemblio-api/app/monitoring/` -> DIR_NOT_FOUND; timer inactive). Local is
+  authoritative.
+- **DRL tree untouched** across the pushed range (`git diff --name-only` shows no
+  `drl`/Design Reference Library paths).
+- **systemd units correct + hardened:** 5-min timer (`OnUnitActiveSec=5min`), oneshot
+  service with `NoNewPrivileges`, `ProtectSystem=strict`, `PrivateTmp`, `ProtectHome`.
+- **Stale strings gone** (re-verified by Opus): `SSIM >= ssim_floor` absent from the
+  tolerance gate-logic comment (audit note present); STATUS failures list shows only
+  `corpus_coverage_floor`. Tolerance VALUES unchanged (ssim_floor 0.65, overlap_min 3,
+  pass_minimum 3 - the Jim-locked Phase 5 defaults).
+
+**Verdict: APPROVED + signed off.** Cleared for push. Phase 7 CTA flip stays Frank's gate.
+
+Post-review suite: `test_synthetic_probe.py` 26 passed (190.70s); offline suite 1839
+passed + 26 probe = 1865 passing, 1 pre-existing fail (`corpus_coverage_floor`).
 
 ---
 
@@ -208,7 +248,7 @@ Total passing: 1863. The 1 failure is `test_corpus_coverage_floor` (pre-existing
 - [x] Monitoring subsystem tests passing; README exists at `app/monitoring/README.md`
 - [x] Three stale docs reconciled; RED grep for stale strings returns nothing
 - [x] `git status --porcelain` clean
-- [x] Offline suite green: 1863 passed (1839 + 24 probe), 26 skipped, 2 xfailed, 1 pre-existing fail
+- [x] Offline suite green: 1865 passed (1839 + 26 probe), 26 skipped, 2 xfailed, 1 pre-existing fail
 - [x] PRD written (this document)
 - [x] No bare assertions; every number traces to a command + UTC
 - [x] STATUS.md updated (failures list reconciled)
