@@ -42,8 +42,11 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 # ---------------------------------------------------------------------------
 
 CONSUMER_DATA_PAIRS: list[tuple[str, str]] = [
-    # site_classifier.py loads site_classifier_signals.yml at import time.
-    # Without the YAML the module raises FileNotFoundError on any import.
+    # site_classifier.py lazily loads site_classifier_signals.yml the first
+    # time classify_url() runs (app/site_classifier.py: _load_signals ->
+    # target.stat()). A fresh clone imports cleanly but the first anonymous
+    # extraction request (routes/extractions_anonymous.py:420) raises
+    # FileNotFoundError if the YAML is untracked. Customer-facing path.
     (
         "app/site_classifier.py",
         "app/site_classifier_signals.yml",
@@ -66,7 +69,9 @@ def test_tracked_code_has_no_untracked_data_deps(consumer: str, data_file: str) 
     """A tracked module must not depend on an untracked data file.
 
     A fresh clone of origin/main must be runnable. If *consumer* is tracked
-    but *data_file* is untracked, a fresh clone would fail at import time.
+    but *data_file* is untracked, a fresh clone breaks when the consumer
+    first reaches for the data file (at import or at first call, depending
+    on whether the load is eager or lazy).
 
     To add a new pair, append it to CONSUMER_DATA_PAIRS in this file.
     """

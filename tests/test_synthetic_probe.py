@@ -26,6 +26,7 @@ from app.monitoring.synthetic_probe import (
     DEDUP_WINDOW_SEC,
     PROBE_RETRY_DELAYS_SEC,
     REPORT_SCHEMA_VERSION,
+    STATE_FRESHNESS_SEC,
     STATE_SCHEMA_VERSION,
     AlertDecision,
     ProbeCheck,
@@ -404,6 +405,59 @@ def test_save_and_load_roundtrip(tmp_path: Path) -> None:
     assert loaded.last_failure_detail == original.last_failure_detail
     assert loaded.last_alert_sent_at == original.last_alert_sent_at
     assert loaded.consecutive_red == original.consecutive_red
+
+
+def test_load_state_returns_fresh_on_stale_file(tmp_path: Path) -> None:
+    """A state file older than STATE_FRESHNESS_SEC is discarded.
+
+    After a long box downtime the last-persisted status is meaningless;
+    load_state must treat the next tick as a first run ("unknown") rather
+    than re-applying a hours-old "red"/"green" verdict. This branch was
+    previously exercised only by accident (via a hardcoded date in
+    test_save_and_load_roundtrip that aged past the threshold over time);
+    this test pins it deterministically by pegging updated_at to a
+    timestamp comfortably beyond the freshness window.
+    """
+    path = tmp_path / "state.json"
+    stale_age_sec = STATE_FRESHNESS_SEC + 3600  # one hour past the window
+    stale_updated_at = time.strftime(
+        "%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - stale_age_sec)
+    )
+    original = _make_state(
+        status="red",
+        detail="library_hub: x",
+        consecutive_red=4,
+        updated_at=stale_updated_at,
+    )
+    save_state(original, path)
+    loaded = load_state(path)
+    assert loaded.last_status == "unknown"
+    assert loaded.consecutive_red == 0
+    assert loaded.last_failure_detail == ""
+
+
+def test_load_state_trusts_recent_file(tmp_path: Path) -> None:
+    """A state file inside STATE_FRESHNESS_SEC is trusted verbatim.
+
+    Pairs with test_load_state_returns_fresh_on_stale_file: the boundary
+    must not be so aggressive that a normal 5-minute tick cadence ever
+    discards a still-valid verdict. updated_at is pegged just inside the
+    window (one minute old).
+    """
+    path = tmp_path / "state.json"
+    recent_updated_at = time.strftime(
+        "%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 60)
+    )
+    original = _make_state(
+        status="red",
+        detail="library_hub: x",
+        consecutive_red=4,
+        updated_at=recent_updated_at,
+    )
+    save_state(original, path)
+    loaded = load_state(path)
+    assert loaded.last_status == "red"
+    assert loaded.consecutive_red == 4
 
 
 # --------------------------------------------------------------------------- #
