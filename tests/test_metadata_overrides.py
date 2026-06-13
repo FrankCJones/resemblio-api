@@ -40,8 +40,16 @@ def _make_entry(
     *,
     category: str,
     applicable_to: tuple[str, ...],
+    tags: tuple[str, ...] | None = None,
 ) -> StrippedEntry:
-    """Build a synthetic StrippedEntry for one asset of a brand."""
+    """Build a synthetic StrippedEntry for one asset of a brand.
+
+    ``tags`` defaults to the denormalized union of the kind + applicable_to,
+    mirroring how ``brand_strip`` flattens those fields into ``tags`` in the
+    real corpus.
+    """
+    if tags is None:
+        tags = ("alphabet", *applicable_to)
     return StrippedEntry(
         source_id=f"{slug}/alphabet/{slug}",
         slug=slug,
@@ -51,7 +59,7 @@ def _make_entry(
         patterns=(),
         mood=("confident",),
         applicable_to=applicable_to,
-        tags=("alphabet",),
+        tags=tags,
         provenance_score="0.9",
         tier="A",
         category=category,
@@ -78,6 +86,24 @@ class TestApplyMetadataOverrides:
         assert corrected.slug == "apple"
         assert corrected.mood == ("confident",)
         assert corrected.tier == "A"
+
+    def test_tags_reconciled_with_applicable_to_edits(self) -> None:
+        # tags is a denormalized list that also carries the applicable_to
+        # tokens. A correction that fixes applicable_to but leaves the stale
+        # token in tags ships an inconsistent bundle/tokens.json artifact.
+        entry = _make_entry(
+            "apple",
+            category="consumer-dtc",
+            applicable_to=("saas-marketing", "editorial-publication"),
+            tags=("alphabet", "modern", "saas-marketing", "editorial-publication"),
+        )
+        corrected = apply_metadata_overrides(entry)
+        assert "saas-marketing" not in corrected.tags
+        assert "editorial-publication" not in corrected.tags
+        assert "consumer-dtc" in corrected.tags
+        # Unrelated tags are preserved.
+        assert "modern" in corrected.tags
+        assert "alphabet" in corrected.tags
 
     def test_overlay_applies_to_non_canonical_asset_slug(self) -> None:
         # A brand's layout/whole assets carry an asset slug that differs from

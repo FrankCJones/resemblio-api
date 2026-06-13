@@ -102,7 +102,7 @@ def load_metadata_overrides(
     }
 
 
-def _apply_applicable_to(
+def _apply_token_edits(
     current: tuple[str, ...],
     *,
     remove: list[str],
@@ -111,7 +111,8 @@ def _apply_applicable_to(
     """Return ``current`` with ``remove`` tokens dropped and ``add`` appended.
 
     Order-preserving and idempotent: an ``add`` token already present (after the
-    removals) is not duplicated.
+    removals) is not duplicated. Used for both ``applicable_to`` and the
+    denormalized ``tags`` list so the two stay consistent after a correction.
     """
     remove_set = set(remove)
     kept = [t for t in current if t not in remove_set]
@@ -172,11 +173,20 @@ def apply_metadata_overrides(
     remove = override.get("applicable_to_remove") or []
     add = override.get("applicable_to_add") or []
     if remove or add:
-        new_applicable = _apply_applicable_to(
+        new_applicable = _apply_token_edits(
             stripped.applicable_to, remove=remove, add=add
         )
         if new_applicable != stripped.applicable_to:
             changes["applicable_to"] = new_applicable
+
+        # ``tags`` is a denormalized search/discovery list that also carries the
+        # applicable_to tokens (brand_strip flattens kind + mood + applicable_to
+        # + patterns into it). Reconcile it with the same edits, or the corrected
+        # brand still ships the wrong token in its bundle/tokens.json artifact -
+        # an inconsistency a customer inspecting the download would see.
+        new_tags = _apply_token_edits(stripped.tags, remove=remove, add=add)
+        if new_tags != stripped.tags:
+            changes["tags"] = new_tags
 
     if not changes:
         return stripped
