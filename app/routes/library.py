@@ -57,7 +57,7 @@ from datetime import datetime, timezone
 from typing import Any, TypedDict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import and_, func, select
+from sqlalchemy import Select, and_, func, select
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
@@ -803,7 +803,13 @@ def get_brand_canonical(
     """
     _validate_brand_slug(brand_slug)
 
-    def _canonical_stmt(*, category_slug: str | None) -> any:
+    def _canonical_stmt(*, category_slug: str | None) -> Select[Any]:
+        """Build the canonical-page query, optionally pinned to a category.
+
+        category_slug=None drops the category filter so the brand's single
+        most-recently-fetched canonical page is returned (fallback path for
+        corpora that predate the v5 alphabet type-specimen).
+        """
         base = (
             select(LibraryPage, AssetVersion)
             .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
