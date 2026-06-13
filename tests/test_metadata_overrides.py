@@ -79,6 +79,42 @@ class TestApplyMetadataOverrides:
         assert corrected.mood == ("confident",)
         assert corrected.tier == "A"
 
+    def test_overlay_applies_to_non_canonical_asset_slug(self) -> None:
+        # A brand's layout/whole assets carry an asset slug that differs from
+        # the brand slug (e.g. "apple-marketing-page-001"). The overlay keys on
+        # the brand (source_id first segment), so it must still correct these -
+        # otherwise only the alphabet specimen gets fixed and the corpus is
+        # internally inconsistent.
+        entry = StrippedEntry(
+            source_id="apple/layout/apple-marketing-page-001",
+            slug="apple-marketing-page-001",
+            cls="",
+            kind="layout",
+            tldr="synthetic layout asset",
+            patterns=(),
+            mood=("confident",),
+            applicable_to=("saas-marketing",),
+            tags=("layout",),
+            provenance_score="0.9",
+            tier="A",
+            category="consumer-dtc",
+            schema_version=STRIPPED_SCHEMA_VERSION,
+        )
+        corrected = apply_metadata_overrides(entry)
+        assert corrected.category == "marketing-modern"
+        assert "saas-marketing" not in corrected.applicable_to
+        assert "consumer-dtc" in corrected.applicable_to
+
+    def test_explicit_brand_slug_overrides_source_id_derivation(self) -> None:
+        entry = _make_entry(
+            "apple",
+            category="consumer-dtc",
+            applicable_to=("saas-marketing",),
+        )
+        # Passing a non-allowlisted brand_slug suppresses the overlay even though
+        # source_id would derive "apple".
+        assert apply_metadata_overrides(entry, brand_slug="not-apple") == entry
+
     def test_non_allowlisted_brand_is_unchanged(self) -> None:
         entry = _make_entry(
             "stripe",

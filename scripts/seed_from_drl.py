@@ -67,6 +67,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.constants import SCHEMA_V1
+from app.metadata_overrides import apply_metadata_overrides
 from transformer import STRIPPED_SCHEMA_VERSION, StrippedEntry, brand_strip
 
 # NOTE: ``app.db`` and ``app.models`` are intentionally NOT imported at module
@@ -533,6 +534,12 @@ def plan_only(
         except ValueError as exc:
             LOG.warning("skipping malformed DRL row: %s", exc)
             continue
+        # Curation overlay: correct mis-tagged DRL taxonomy in-Resemblio without
+        # writing the read-only DRL tree (Option B, 2026-06-12). No-op for
+        # non-allowlisted brands. See app/metadata_overrides.py + D20.
+        stripped = apply_metadata_overrides(
+            stripped, brand_slug=str(system.get("slug") or "")
+        )
         tokens = load_tokens_for_asset(drl_root, asset)
         if not tokens:
             LOG.warning("skipping %s: no tokens.css on disk", stripped.source_id)
@@ -590,6 +597,10 @@ def apply_seed(
             LOG.warning("skipping malformed DRL row: %s", exc)
             counts["skipped"] += 1
             continue
+        # Curation overlay (see plan_seed above + app/metadata_overrides.py).
+        stripped = apply_metadata_overrides(
+            stripped, brand_slug=str(system.get("slug") or "")
+        )
         tokens = load_tokens_for_asset(drl_root, asset)
         if not tokens:
             LOG.warning("skipping %s: no tokens.css on disk", stripped.source_id)
