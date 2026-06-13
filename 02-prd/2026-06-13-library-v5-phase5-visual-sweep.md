@@ -4,7 +4,8 @@ authored:            2026-06-13 UTC
 phase:               Library v5 Phase 5 - Visual Fidelity Gate
 executor:            Sonnet (Builder mode)
 parent handoff:      _HANDOFF_2026-06-13_library-v5-phase5-visual-fidelity-sweep.md
-status:              PASS (gate GREEN) - awaiting Frank ratification + origin push gate
+status:              PASS (gate GREEN) - Opus Gate-5 APPROVED + PUSHED (b22e6ae..fcc737f)
+                     Remaining YELLOW (Frank's): tolerance ratification + Phase 7 CTA flip
 gate_run:            fidelity_gate_runs/20260613T181516Z/gate_report.md
 bxc_passes:          3 (floor 3)
 ```
@@ -127,9 +128,19 @@ gate basis is locked for v5. Override if you disagree.
 
 ---
 
-## Origin push gate
+## Origin push (DONE)
 
-4 commits are ahead of origin (b590adc, 87c2b87, 29c16d0, ac75509). All Phase 5.1-5.2 code.
-No new code commits for Phase 5.3-5.4 (workspace artifacts only).
+Opus Gate-5 review (2026-06-13) approved and pushed `b22e6ae..fcc737f`:
+b590adc, 87c2b87, 29c16d0, ac75509 (Phase 5.1-5.2 code) + fcc737f (this PRD).
+`code/api main` in sync with `origin/main`.
 
-Push requires Frank's explicit gate. Phase 6 (pre-flip hygiene) can begin before push.
+Reference captures, specs, manifest, and targets are workspace-level artifacts under
+`_verification/` (outside this repo by design) and are not pushed.
+
+Contact sheet for Frank's pre-flip review generated post-sign-off:
+`fidelity_gate_runs/20260613T181516Z/contact_sheet.png` via `_scripts/contact_sheet.py`.
+
+## Successor
+
+Phase 6 (pre-flip hygiene): `_HANDOFF_2026-06-13_library-v5-phase6-preflip-hygiene.md`.
+Phase 7 (CTA flip) remains Frank's separate irreversible gate.
