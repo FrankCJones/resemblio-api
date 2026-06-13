@@ -1,0 +1,65 @@
+# Canonical systemd service for the Resemblio synthetic prod probe.
+#
+# Triggered every 5 minutes by resemblio-synthetic-probe.timer. Invokes
+# `python -m scripts.synthetic_probe` which exercises the user-flow
+# surfaces (web root, library hub, library brand buttons page, API
+# healthz, API readyz), runs the state-machine alert dedup, and dispatches
+# a Resend alert on green->red, red->green, failure-mode change, or a
+# re-nag past the 15-minute dedup window.
+#
+# Closes Stage 1 of the CTO TDD recovery plan dated 2026-06-03 (Library
+# 3-hour outage detection gap, failure inventory items #16 and #17).
+#
+# RESEND_API_KEY is sourced from /etc/resemblio/probe.env (chmod 0600,
+# root:root). The .env file is operator-installed at provisioning time,
+# not committed to the repo.
+#
+# Source of truth lives in the repo at
+# `code/api/deploy/systemd/resemblio-synthetic-probe.service`.
+# Apply changes via:
+#   sudo cp resemblio-synthetic-probe.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl restart resemblio-synthetic-probe.timer
+
+[Unit]
+Description=Resemblio synthetic prod probe (user-flow + alert dedup)
+After=network-online.target resemblio-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=claude-cowork
+Group=claude-cowork
+WorkingDirectory=/opt/resemblio-api/app
+EnvironmentFile=/etc/resemblio/probe.env
+ExecStart=/opt/resemblio-api/venv/bin/python -m scripts.synthetic_probe
+
+# Hardening (mirrors resemblio-library-indexer.service).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# /var/lib/resemblio holds the probe state JSON; /var/log/resemblio holds
+# the per-day report log. Both must be writable by the service user.
+ReadWritePaths=/opt/resemblio-api /var/lib/resemblio /var/log/resemblio
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+# The probe should never wedge the timer; cap wall-time well above the
+# per-check timeout * retries * 5 checks budget (5 * 10s * 4 = 200s worst
+# case) plus Resend send (15s + 3 retries).
+TimeoutStartSec=300
+
+# A probe-red outcome is NOT a service failure; the script exits 0 in both
+# the green and red cases. A non-zero exit means the probe itself crashed,
+# which IS operator-actionable.
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

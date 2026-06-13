@@ -1,0 +1,30 @@
+# 5-minute timer for the Resemblio synthetic prod probe.
+#
+# Cadence rationale: CTO Stage 1 spec sets MTTD (mean time to detect a
+# production regression) at 5 minutes. A 5-minute cadence is the longest
+# tick that satisfies the MTTD floor; tighter cadences cost network calls
+# without improving MTTD because the alert latency dominates below 5 min.
+#
+# `Persistent=true` so a missed tick after a reboot still fires once.
+# `RandomizedDelaySec` jitters the actual fire instant so the probe does
+# not collide with the indexer (60s timer) or sweep (per-tier) at :00.
+#
+# Apply changes via:
+#   sudo cp resemblio-synthetic-probe.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now resemblio-synthetic-probe.timer
+
+[Unit]
+Description=5-minute trigger for resemblio-synthetic-probe.service
+Requires=resemblio-synthetic-probe.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+RandomizedDelaySec=20s
+AccuracySec=15s
+Persistent=true
+Unit=resemblio-synthetic-probe.service
+
+[Install]
+WantedBy=timers.target
