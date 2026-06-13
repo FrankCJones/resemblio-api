@@ -408,6 +408,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://api.resemblio.com/v1/healthz
 
 # 2. Hub returns >0 brands.
 # Correct route: GET /v1/library/brands (not /v1/library/hub).
+# Pagination param: page_size (NOT limit). e.g. ?page=1&page_size=10
 curl -s https://api.resemblio.com/v1/library/brands | python -c \
   "import sys, json; d=json.load(sys.stdin); print('hub_total:', d['data'].get('total'))"
 
