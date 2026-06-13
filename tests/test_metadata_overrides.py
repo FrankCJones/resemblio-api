@@ -189,9 +189,7 @@ class TestAppleMetadataRegressionPin:
     """
 
     @staticmethod
-    def _drl_root() -> "Path":
-        from pathlib import Path
-
+    def _drl_root() -> Path:
         return Path(__file__).resolve().parents[4] / "Design Reference Library"
 
     def test_every_apple_asset_carries_corrected_metadata(self) -> None:
@@ -207,8 +205,13 @@ class TestAppleMetadataRegressionPin:
         - "saas-marketing" NOT in dtcg_json["tags"]
         - "editorial-publication" NOT in dtcg_json["tags"]
         """
-        import pytest
-        from pathlib import Path
+        # ``scripts.seed_from_drl`` and ``transformer.brand_strip`` are imported
+        # locally (not at module scope) on purpose: importing seed_from_drl runs
+        # a sys.path insert at import time and pulls the heavier seed pipeline.
+        # Keeping it inside this single corpus-reading test means the file's fast
+        # pure-function tests (the rest of this module) don't pay that cost at
+        # collection. Do not hoist these to the top of the file. ``Path`` and
+        # ``pytest`` are already module-level imports and are reused here.
         from scripts.seed_from_drl import (
             build_bundle,
             iter_assets,
