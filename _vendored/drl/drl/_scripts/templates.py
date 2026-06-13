@@ -135,9 +135,11 @@ body {
                line-height: 1.05; letter-spacing: var(--ds-tracking-snug, -0.018em);
                font-weight: var(--ds-font-weight-display, 600); margin: 0; }
 .a-h2 { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
-        line-height: 1.15; letter-spacing: -0.012em; font-weight: var(--ds-font-weight-display, 600); margin: 0; }
+        line-height: 1.15; letter-spacing: -0.012em; font-weight: var(--ds-font-weight-display, 600);
+        color: var(--ds-text); margin: 0; }
 .a-h3 { font-family: var(--ds-font-display); font-size: var(--ds-text-2xl);
-        line-height: 1.2; font-weight: var(--ds-font-weight-display, 600); margin: 0; }
+        line-height: 1.2; font-weight: var(--ds-font-weight-display, 600);
+        color: var(--ds-text); margin: 0; }
 .a-lead { font-family: var(--ds-font-body); font-size: var(--ds-text-xl);
           line-height: 1.45; margin: 0; }
 .a-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base);
