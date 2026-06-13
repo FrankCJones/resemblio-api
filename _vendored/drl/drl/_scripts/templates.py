@@ -158,7 +158,7 @@ body {
          font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
          font-weight: var(--ds-font-weight-medium, 500); padding: 8px 14px;
          border-radius: var(--ds-radius-sm, 4px); border: 0;
-         background: var(--ds-text); color: var(--ds-bg); cursor: pointer; }
+         background: var(--ds-accent); color: var(--ds-bg); cursor: pointer; }
 .a-mono { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
           color: var(--ds-text-muted); }
 .a-wordmark { font-family: var(--ds-font-display); font-size: var(--ds-text-2xl);
