@@ -23,7 +23,10 @@ from __future__ import annotations
 import pytest
 
 from .assertion_eval import (
+    AVATAR_LEAK_ID_MARKER,
     AssertionSweepResult,
+    BrowserEvalResult,
+    classify_browser_eval_results,
     evaluate_all_assertions_against_live_html,
     evaluate_assertion_against_live_html,
     evaluate_font_family_against_live_html,
@@ -522,3 +525,110 @@ def test_sweep_mixed_spec_correct_classification() -> None:
         f"got {result.browser_required!r}"
     )
     assert NO_LEAK_ID_MARKER in NO_LEAK_ID_MARKER  # sanity: constant is importable
+
+
+# ---------------------------------------------------------------------------
+# Phase 12.1 RED -> GREEN: classify_browser_eval_results unit tests
+# ---------------------------------------------------------------------------
+
+_AVATAR_ASSERTION = {
+    "id": "aeon-about-team-avatars-photo-stripped",
+    "evaluate": (
+        "(() => { const members = document.querySelectorAll('.at__member');"
+        " if (members.length === 0) return false;"
+        " for (const m of members) { if (m.querySelector('img')) return false; }"
+        " return true; })()"
+    ),
+    "expected": True,
+}
+
+
+def test_classify_browser_eval_detects_photo_leak() -> None:
+    """Photo leak: eval_results={id: False} with expected=True -> avatar_photo_leak=True.
+
+    Phase 12.1 RED: stub returns empty BrowserEvalResult() with avatar_photo_leak=False.
+    Phase 12.1 GREEN: real impl detects the leak and sets avatar_photo_leak=True.
+    """
+    result = classify_browser_eval_results(
+        assertions=[_AVATAR_ASSERTION],
+        eval_results={_AVATAR_ASSERTION["id"]: False},
+    )
+    assert result.avatar_photo_leak is True, (
+        "classify_browser_eval_results must set avatar_photo_leak=True when "
+        "an avatars-photo-stripped assertion fails (observed=False, expected=True). "
+        f"Got avatar_photo_leak={result.avatar_photo_leak!r}. "
+        "Phase 12.1 RED: stub always returns False."
+    )
+    assert _AVATAR_ASSERTION["id"] in result.failed, (
+        f"Failing assertion id must be in failed; got failed={result.failed!r}"
+    )
+
+
+def test_classify_browser_eval_clean_pass() -> None:
+    """No leak: eval_results={id: True} with expected=True -> avatar_photo_leak=False.
+
+    Phase 12.1 RED: stub returns empty BrowserEvalResult(); id is not in passed.
+    """
+    result = classify_browser_eval_results(
+        assertions=[_AVATAR_ASSERTION],
+        eval_results={_AVATAR_ASSERTION["id"]: True},
+    )
+    assert result.avatar_photo_leak is False, (
+        "clean pass must not set avatar_photo_leak; "
+        f"got {result.avatar_photo_leak!r}"
+    )
+    assert _AVATAR_ASSERTION["id"] in result.passed, (
+        f"Passing assertion id must be in passed; got passed={result.passed!r}"
+    )
+
+
+def test_classify_browser_eval_missing_result_is_not_pass() -> None:
+    """Absent eval result goes to missing, not failed; avatar_photo_leak stays False.
+
+    Rationale: absence of evidence is not a proven leak. The browser may have
+    thrown, timed out, or not been asked. Recording it in missing surfaces the
+    gap for the operator without promoting it to a HARD FAIL - which could cause
+    false positives if the page simply lacks .at__member elements (an orphan
+    page, a dev fixture, etc.). The missing list is what makes the gap auditable.
+
+    Phase 12.1 RED: stub returns empty BrowserEvalResult(); id not in missing.
+    """
+    result = classify_browser_eval_results(
+        assertions=[_AVATAR_ASSERTION],
+        eval_results={},  # browser never returned a result for this id
+    )
+    assert _AVATAR_ASSERTION["id"] in result.missing, (
+        "Assertion id absent from eval_results must land in missing; "
+        f"got missing={result.missing!r}"
+    )
+    assert _AVATAR_ASSERTION["id"] not in result.passed, (
+        "An absent eval result must NOT be counted as passed"
+    )
+    assert result.avatar_photo_leak is False, (
+        "A missing result is not a proven photo leak; avatar_photo_leak must be False. "
+        "Absence of evidence != evidence of absence, but HARD FAIL needs positive evidence."
+    )
+
+
+def test_classify_browser_eval_respects_expected_false() -> None:
+    """Polarity correctness: expected=False, eval_results={id: False} -> passed.
+
+    observed == expected (False == False) -> PASS. Same polarity discipline as
+    evaluate_assertion_against_live_html.
+
+    Phase 12.1 RED: stub returns empty BrowserEvalResult(); id not in passed.
+    """
+    synthetic_assertion = {
+        "id": "x-synthetic-expected-false-check",
+        "evaluate": "(() => { return false; })()",
+        "expected": False,
+    }
+    result = classify_browser_eval_results(
+        assertions=[synthetic_assertion],
+        eval_results={synthetic_assertion["id"]: False},
+    )
+    assert synthetic_assertion["id"] in result.passed, (
+        "expected=False with observed=False must be classified as passed "
+        "(observed == expected). "
+        f"Got passed={result.passed!r}"
+    )

@@ -272,6 +272,11 @@ def evaluate_assertion_against_live_html(
 #: Used to classify the no-leak family without hardcoding brand names.
 NO_LEAK_ID_MARKER = "no-wordmark-logo-leak"
 
+#: Substring present in the id of every avatars-photo-stripped assertion.
+#: A failing one means a real-person photo leaked into the brand-stripped render
+#: (trademark + PII concern) -> HARD FAIL, parallel to wordmark_leak.
+AVATAR_LEAK_ID_MARKER = "avatars-photo-stripped"
+
 
 @dataclass
 class AssertionSweepResult:
@@ -390,3 +395,78 @@ def evaluate_all_assertions_against_live_html(
         browser_required=browser_required,
         wordmark_leak=wordmark_leak,
     )
+
+
+# ---------------------------------------------------------------------------
+# Phase 12 additions: browser-eval classifier
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class BrowserEvalResult:
+    """Result of classifying browser-executed fidelity-spec assertion results.
+
+    ``passed``           - assertion ids where observed == expected (browser
+                           returned a result and it matched).
+    ``failed``           - assertion ids where observed != expected (browser
+                           returned a result but it did not match the spec).
+    ``missing``          - assertion ids for which the browser did not return
+                           a result (evaluator threw, page.evaluate() raised,
+                           or the id was absent from the eval_results map).
+                           Absence of evidence is NOT a proven failure - these
+                           are surfaced for visibility, not counted as HARD FAILs.
+    ``avatar_photo_leak``- True when any id in ``failed`` contains
+                           AVATAR_LEAK_ID_MARKER ("avatars-photo-stripped").
+                           This is a trademark + PII signal: a real-person photo
+                           from the source brand leaked into the brand-stripped
+                           render. Parallel to wordmark_leak; a live-gate tuple
+                           with avatar_photo_leak=True is a HARD FAIL.
+    ``schema_version``   - "browser_eval_v1".
+
+    Missing vs failed distinction: an id absent from eval_results goes to
+    missing, NOT failed. Absence of evidence is not a proven photo leak;
+    the missing list makes the gap visible without promoting it to a HARD FAIL.
+
+    Pure: no network, no os.environ access.
+    Schema: browser_eval_v1
+    """
+
+    passed: List[str] = field(default_factory=list)
+    failed: List[str] = field(default_factory=list)
+    missing: List[str] = field(default_factory=list)
+    avatar_photo_leak: bool = False
+    schema_version: str = "browser_eval_v1"
+
+
+def classify_browser_eval_results(
+    assertions: List[Dict],
+    eval_results: Dict[str, bool],
+) -> BrowserEvalResult:
+    """Classify browser-executed assertion results into pass/fail/missing buckets.
+
+    For each assertion in ``assertions``:
+    - If its id is absent from ``eval_results``: append to ``missing``.
+    - Otherwise: compare ``bool(eval_results[id])`` to ``bool(assertion.get(
+      "expected", True))``. If they match: ``passed``; else: ``failed``.
+
+    ``avatar_photo_leak`` is True when any id in ``failed`` contains
+    ``AVATAR_LEAK_ID_MARKER``. This is the HARD FAIL signal for photo leaks.
+
+    Missing vs failed distinction: absent ids (browser could not evaluate
+    the assertion - threw, timed out, or was never attempted) go to
+    ``missing``, NOT ``failed``. Absence of evidence is not a proven leak;
+    the ``missing`` list makes the gap visible to the operator.
+
+    Args:
+        assertions: Assertion dicts with at least an "id" key. "expected"
+                    (default True) is the desired boolean outcome.
+        eval_results: Map of {assertion_id: bool} from page.evaluate() calls.
+                      Only ids the browser successfully evaluated are present.
+
+    Returns:
+        BrowserEvalResult with each assertion id classified.
+
+    Pure: no network, no os.environ access.
+    Phase 12.1 RED stub - returns empty BrowserEvalResult.
+    """
+    return BrowserEvalResult()
