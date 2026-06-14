@@ -164,17 +164,26 @@ def evaluate_font_family_against_live_html(
 def forbidden_tokens_from_evaluator(evaluator: str) -> List[str]:
     """Extract the forbidden token array from a forbidden.every evaluator string.
 
-    Parses the pattern: ``const forbidden = ['tok1', 'tok2', ...]``
-    Supports both single-quoted and double-quoted token strings within the array.
-    Returns an empty list on parse failure (malformed or absent array) rather
-    than raising, so callers can apply the conservative-False policy.
+    Parses the pattern: ``const forbidden = ['tok1', 'tok2', ...]``.
+    Tolerates arbitrary whitespace between 'const', 'forbidden', '=', and '[':
+    compact forms ('const forbidden=[...]'), extra-space forms, and
+    newline-before-bracket forms are all handled correctly. Supports both
+    single-quoted and double-quoted token strings within the array.
+
+    Returns an empty list on genuine parse failure (malformed or absent array)
+    rather than raising, so callers can apply the conservative-False policy.
+    An empty list is also returned when the array itself is empty ('const
+    forbidden = []'); callers should treat [] as "no tokens to check" and
+    apply conservative-False rather than silently passing.
 
     Unit-tested for: empty array, single token, multiple tokens, double-quoted
-    tokens, mixed quote styles, and malformed input.
+    tokens, mixed quote styles, malformed input, and whitespace variants
+    (compact, extra-space, newline-before-bracket - Phase 11.2).
 
     Pure function; no network, no os.environ access.
+    Phase 11.2: regex hardened from literal-space to whitespace-tolerant form.
     """
-    m = re.search(r"const forbidden = \[(.*?)\]", evaluator, re.DOTALL)
+    m = re.search(r"const\s+forbidden\s*=\s*\[(.*?)\]", evaluator, re.DOTALL)
     if not m:
         return []
     array_content = m.group(1)
@@ -305,11 +314,81 @@ def evaluate_all_assertions_against_live_html(
 ) -> AssertionSweepResult:
     """Evaluate all fidelity-spec assertions against a blob of live HTML.
 
-    Phase 11 stub (RED): always returns an empty AssertionSweepResult with
-    no failures. Phase 11.2 GREEN replaces this with the real implementation.
+    Iterates every assertion in the provided list and dispatches each to
+    ``evaluate_assertion_against_live_html``. Classifies results into three
+    buckets:
 
-    Pure: no network, no os.environ access.
+    ``passed``           - ids where ``evaluate_assertion_against_live_html``
+                           returned True (observed == expected).
+    ``failed``           - ids where it returned False AND the assertion is NOT
+                           of an unrecognized evaluator shape. For the
+                           forbidden.every (no-leak) family, a False here means
+                           a forbidden token was found in the HTML - a trademark
+                           violation.
+    ``browser_required`` - ids whose evaluator is an unrecognized shape
+                           (querySelectorAll / getComputedStyle without
+                           .includes). ``evaluate_assertion_against_live_html``
+                           conservatively returns False for these, but they are
+                           NOT classified as failures: they require real browser
+                           DOM execution via page.evaluate() (deferred to Phase
+                           12). Callers surface these in the report for
+                           visibility; they do NOT gate the tuple verdict in
+                           Phase 11.
+
+    ``wordmark_leak``    - True when any id in ``failed`` contains
+                           ``NO_LEAK_ID_MARKER`` ("no-wordmark-logo-leak").
+                           This is the trademark-safety signal. A live-gate
+                           tuple with wordmark_leak=True is a HARD FAIL
+                           regardless of color or font verdicts.
+
+    Unrecognized-shape detection mirrors the logic in test_assertion_coverage:
+    an evaluator string that lacks both ".includes(" and "forbidden.every",
+    and whose assertion kind is not "text_content", is treated as
+    browser-required.
+
+    Conservative on every parse failure: relies on
+    ``evaluate_assertion_against_live_html``'s own conservative-False policy;
+    only classifies as browser_required when the evaluator shape is genuinely
+    unrecognized.
+
+    Pure: no network, no os.environ access in core logic.
+    Schema: assertion_sweep_v1
     """
-    # Phase 11.1 RED stub - unconditionally returns empty (no enforcement).
-    # Phase 11.2 GREEN will iterate assertions and classify each correctly.
-    return AssertionSweepResult()
+    passed: List[str] = []
+    failed: List[str] = []
+    browser_required: List[str] = []
+
+    haystack_marker = live_html.lower()  # cheap pre-check for unrecognized shape
+
+    for assertion in assertions:
+        aid: str = assertion.get("id") or ""
+        kind = assertion.get("kind")
+        evaluator = assertion.get("evaluate")
+
+        # Determine whether this assertion needs real browser DOM execution.
+        # Mirrors _assertion_shape() in test_assertion_coverage.py.
+        is_browser_required = False
+        if kind != "text_content":
+            ev_str = evaluator if isinstance(evaluator, str) else ""
+            if ev_str and "forbidden.every" not in ev_str and ".includes(" not in ev_str:
+                is_browser_required = True
+
+        if is_browser_required:
+            # Unrecognized shape: deferred to Phase 12. Do NOT count as failed.
+            browser_required.append(aid)
+            continue
+
+        result = evaluate_assertion_against_live_html(assertion, live_html)
+        if result:
+            passed.append(aid)
+        else:
+            failed.append(aid)
+
+    wordmark_leak = any(NO_LEAK_ID_MARKER in aid for aid in failed)
+
+    return AssertionSweepResult(
+        passed=passed,
+        failed=failed,
+        browser_required=browser_required,
+        wordmark_leak=wordmark_leak,
+    )
