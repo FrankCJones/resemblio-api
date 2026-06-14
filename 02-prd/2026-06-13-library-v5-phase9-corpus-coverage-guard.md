@@ -296,3 +296,68 @@ Expected: ~2000 passed, 1 failed (test_corpus_coverage_floor), ~30 skipped, 2 xf
 
 Phase 7 (homepage CTA flip) remains Frank's separate irreversible gate.
 DRL tree was not touched. No prod app-behavior change.
+
+---
+
+## Gate-9 Review (Opus / Jim) - 2026-06-13 UTC
+
+```
+reviewer:   Opus 4.8 (Jim)
+verdict:    APPROVED
+method:     independent re-verification against code + repo, not test-count trust
+```
+
+### What I verified myself this turn (not taken from the report)
+
+1. **Runs-not-skips on a TRUE standalone checkout.** `git archive HEAD | tar -x` to
+   `/c/tmp/gate9-opus-reproof/resemblio-api` (a tree with no CLAUDE.md/projects ancestor,
+   so `resolve_workspace_root` returns None - genuine CI-depth simulation). `pytest
+   tests/render/` -> **117 passed, 3 skipped**. The 3 skips are each correct and expected:
+   two `test_corpus_drift.py` guards (need the workspace `_verification/` tree) and one
+   live sweep in `test_visual_fidelity_gate.py` (needs PNGs + network). Reproduced the
+   exact tally Sonnet reported.
+
+2. **All 20 parametrized cases RUN, not skip.** `pytest tests/render/test_spec_coverage.py`
+   from the standalone tree -> **35 passed, 0 skipped** (20 parametrized spec cases + 15
+   unit/floor tests; output is all dots, zero `s`). Structural coverage moved from 1 brand
+   (linear-only) to all 8.
+
+3. **No PNG leaked into the public repo.** `find tests/render/reference_corpus -name '*.png'`
+   on the archived HEAD -> **0**. Spec count -> 20 as expected.
+
+4. **Fully pushed, CI green.** `git status` clean; `rev-list --left-right origin/main...HEAD`
+   -> `0 0`. GitHub Actions run for `2c48cd8` -> **completed / success**.
+
+### Code-quality assessment (senior-developer bar)
+
+- Every public function carries an intent-and-edge-cases docstring; `_brands_in_corpus`,
+  `_discover_specs`, `_load_manifest_tuples`, `_load_spec_tuples` are pure and individually
+  unit-tested with `tmp_path` fixtures (no network).
+- The `expected_token_from_assertion` refactor is exactly the DRY+testability change the
+  handoff asked for: one token-extraction path now serves both the live evaluator and the
+  parametrized guard, with a regression pin (`test_evaluate_font_family_uses_expected_token_helper`)
+  guaranteeing the evaluator's behavior survived the extraction.
+- `STRUCTURAL_COVERAGE_FLOOR` derives from the corpus on disk, so adding a brand's specs
+  auto-raises the bar - the property that prevents the Phase-8 blind spot from recurring.
+- `STRUCTURAL_ONLY_SPECS` turns "this spec has no PNG on purpose" into a declared, per-entry
+  documented fact rather than an orphan indistinguishable from a missing capture. The README
+  section makes the remove-when-capturing procedure explicit.
+- Failure messages name the exact spec and tell the next developer what to do (add to
+  allowlist / create the spec / re-run the sync helper). This is maintainability done right.
+
+### Known pre-existing item (NOT a Phase-9 regression)
+
+`tests/test_button_corpus_coverage.py::test_corpus_coverage_floor` fails on a local full-suite
+run because it requires the workspace button-snapshot corpus that is absent on this checkout.
+It is a *different* subsystem (button corpus, not the render fidelity corpus), has been
+failing local-only since before Phase 8 (noted in the Gate-8 review too), and is green on CI.
+Phase 9 neither touched nor worsened it.
+
+### Verdict
+
+Phase 9 makes a senior developer proud. The vendored corpus is now an active CI regression
+guard: every spec across all 8 brands is exercised and RUNS on a workspace-less checkout, the
+floor cannot silently regress, the manifest<->spec relationship is pinned, and the PNG-less
+specs are declared and documented. **Gate 9: APPROVED.** Next build phase queued in
+`_HANDOFF_2026-06-13_library-v5-phase10-full-assertion-guard.md`. Phase 7 (homepage CTA flip)
+remains Frank's separate irreversible gate.
