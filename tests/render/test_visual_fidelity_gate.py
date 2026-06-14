@@ -42,17 +42,17 @@ Schema versions
 in  : reference_capture_manifest_v1 (reference_captures/manifest.json)
 in  : visual_fidelity_tolerance_v1   (tolerance_config.yml)
 in  : fidelity_spec_v2               (reference_captures/specs/*.json)
-out : library_visual_fidelity_gate_report_v5 (gate_report.json + .md)
-      compat_schema_version=v4 written alongside for one cycle so
-      prior v4 consumers (Jim diagnostic) keep reading until their bump.
-      Deprecation date: remove compat v4 after Phase 13 lands.
-      v5 adds: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped assertions
-      now enforced via page.evaluate); content_drift informational field
-      (sweep.failed excluding no-leak + font families, not gating);
-      browser_eval.missing surfaced in browser_eval_missing (field renamed
-      from unenforced_assertions in Phase 13; see v6 schema changelog).
-      v4 adds: full-assertion sweep, wordmark_leak HARD FAIL,
-      unenforced_assertions (renamed to browser_eval_missing in Phase 13).
+out : library_visual_fidelity_gate_report_v6 (gate_report.json + .md)
+      compat_schema_version=v5 written alongside for one cycle so
+      prior v5 consumers keep reading until their bump.
+      Deprecation date: remove compat v5 after Phase 14 lands.
+      v6 renames unenforced_assertions -> browser_eval_missing (semantic
+      correctness: field holds browser eval failures, not assertions never
+      attempted). Compat v4 dropped (one cycle elapsed since Phase 12).
+      v5 added: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped
+      assertions enforced via page.evaluate); content_drift informational
+      field (sweep.failed excluding no-leak + font families, not gating).
+      v4 adds: full-assertion sweep, wordmark_leak HARD FAIL.
       v3 rebased structural gate as primary (D-5.1 Option A, 2026-06-13).
       v2 added RZ-A HEAD pre-flight (2026-06-05).
 
@@ -119,14 +119,17 @@ from .conftest import (
     resolve_manifest_path,
 )
 
+# Phase 13 (2026-06-14): bumped v5->v6. Renamed unenforced_assertions ->
+# browser_eval_missing (semantic correctness: field holds browser eval failures,
+# not assertions that were never attempted). Compat v4 removed (one cycle elapsed
+# since Phase 12); compat v5 held for one cycle for v5 consumers.
 # Phase 12 (2026-06-14): bumped v4->v5 for browser-required assertion enforcement.
 # avatar_photo_leak added as HARD FAIL drift dimension; content_drift informational
-# field added; browser_eval.missing surfaced (field was named unenforced_assertions
-# in v5; renamed to browser_eval_missing in Phase 13 / v6).
+# field added; browser_eval.missing surfaced in unenforced_assertions (renamed in v6).
 # Prior v4 consumers (Jim diagnostic) read via compat_schema for one cycle.
-SCHEMA_VERSION = "library_visual_fidelity_gate_report_v5"
-# One-cycle compat for v4 consumers (Jim diagnostic). Remove after Phase 13.
-COMPAT_SCHEMA_VERSION = "library_visual_fidelity_gate_report_v4"
+SCHEMA_VERSION = "library_visual_fidelity_gate_report_v6"
+# One-cycle compat for v5 consumers. Remove after Phase 14.
+COMPAT_SCHEMA_VERSION = "library_visual_fidelity_gate_report_v5"
 
 # HEAD pre-flight constants (RZ-A). Status >= 400 short-circuits SSIM and
 # marks the tuple as route_missing. Timeout is the HEAD budget only; the
