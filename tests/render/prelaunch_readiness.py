@@ -297,3 +297,52 @@ def assess_public_readiness(report: Dict[str, Any]) -> ReadinessVerdict:
         go=go,
         reasons=reasons,
     )
+
+
+# ---------------------------------------------------------------------------
+# Markdown rendering
+# ---------------------------------------------------------------------------
+
+
+def render_readiness_markdown(verdict: ReadinessVerdict) -> str:
+    """Render a ReadinessVerdict as a human-readable Markdown string.
+
+    The output carries a top-line GO or NO-GO headline, metadata about the
+    assessed report, and one bullet per reason with its check id and detail.
+    Designed to be pasted directly into STATUS.md or the PRD.
+
+    A GO headline looks like:
+        ## Readiness verdict: GO
+
+    A NO-GO headline looks like:
+        ## Readiness verdict: NO-GO
+    """
+    lines: List[str] = []
+    verdict_label = "GO" if verdict.go else "NO-GO"
+    lines.append(f"## Readiness verdict: {verdict_label}")
+    lines.append("")
+    lines.append(f"- Generated: {verdict.generated_at_utc}")
+    lines.append(f"- Gate report schema assessed: {verdict.gate_report_schema}")
+    lines.append(f"- Aggregator schema: {verdict.schema_version}")
+    lines.append("")
+    lines.append("### Checks")
+    lines.append("")
+
+    for r in verdict.reasons:
+        status_icon = "PASS" if r.ok else "FAIL"
+        lines.append(f"- [{status_icon}] `{r.check}`: {r.detail}")
+
+    lines.append("")
+    if verdict.go:
+        lines.append(
+            "**All hard checks passed. Library is ready for Phase 7 (homepage CTA flip) - "
+            "Frank's irreversible gate.**"
+        )
+    else:
+        failing = [r.check for r in verdict.reasons if not r.ok]
+        lines.append(
+            f"**NO-GO. Failing checks: {', '.join(failing)}. "
+            f"Resolve before Frank's Phase 7 flip.**"
+        )
+
+    return "\n".join(lines)
