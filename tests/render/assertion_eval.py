@@ -467,6 +467,30 @@ def classify_browser_eval_results(
         BrowserEvalResult with each assertion id classified.
 
     Pure: no network, no os.environ access.
-    Phase 12.1 RED stub - returns empty BrowserEvalResult.
     """
-    return BrowserEvalResult()
+    passed: List[str] = []
+    failed: List[str] = []
+    missing: List[str] = []
+
+    for assertion in assertions:
+        aid: str = assertion.get("id") or ""
+        expected: bool = bool(assertion.get("expected", True))
+
+        if aid not in eval_results:
+            missing.append(aid)
+            continue
+
+        observed: bool = bool(eval_results[aid])
+        if observed == expected:
+            passed.append(aid)
+        else:
+            failed.append(aid)
+
+    avatar_photo_leak = any(AVATAR_LEAK_ID_MARKER in aid for aid in failed)
+
+    return BrowserEvalResult(
+        passed=passed,
+        failed=failed,
+        missing=missing,
+        avatar_photo_leak=avatar_photo_leak,
+    )
