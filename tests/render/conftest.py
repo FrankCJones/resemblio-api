@@ -119,6 +119,49 @@ def resolve_corpus_root(
     return in_repo_dir  # Absent; tests derive non-existent paths and self-skip.
 
 
+def resolve_manifest_path(
+    *,
+    corpus_root: pathlib.Path,
+    reference_root: pathlib.Path,
+    live_sweep_opt_in: bool,
+) -> pathlib.Path:
+    """Resolve the reference-manifest path for the live full-corpus sweep.
+
+    Pure function (no os.environ / __file__ access) so it is unit-testable
+    with injected paths + flag.
+
+    The reference manifest and the brand-site PNGs it indexes are
+    **co-located**: ``load_manifest`` resolves each record's PNG relative to
+    the manifest's parent directory. The PNGs live ONLY in the workspace
+    ``_verification/`` tree - they are never vendored into this public repo
+    (trademark + size; SSIM is informational-only per D-5.1). So the manifest
+    path determines whether the live sweep can find PNGs to diff against:
+
+      - ``corpus_root`` (the in-repo vendor copy) has the manifest JSON but NO
+        PNGs. A live sweep pointed here finds zero records on disk and SKIPS.
+      - ``reference_root`` (the workspace tree) has the manifest AND all PNGs.
+        A live sweep pointed here can actually run.
+
+    Resolution:
+      - ``live_sweep_opt_in`` True  -> ``reference_root`` (workspace; PNGs present).
+        This is the explicit gate-run-box / scheduled-job mode.
+      - ``live_sweep_opt_in`` False -> ``corpus_root`` (in-repo; PNG-less).
+        This is the SAFE DEFAULT: a bare ``pytest -q`` on CI or a dev machine
+        skips the live sweep instead of firing 24 slow network captures
+        against resemblio.com (or, worse, a flaky FAIL when prod drifts).
+
+    Why opt-in rather than "use the workspace tree whenever it exists": a dev
+    machine that happens to have the workspace tree + Playwright + network
+    would otherwise run a full live integration sweep on every routine
+    ``pytest -q`` - surprising, slow, and network-coupled. Integration tests
+    that hit external services should be explicitly requested, never fired by
+    a default unit run. The gate-run box sets ``FIDELITY_LIVE_SWEEP=1`` to opt
+    in deliberately. See the live-sweep test docstring and the corpus README.
+    """
+    base = reference_root if live_sweep_opt_in else corpus_root
+    return base / "reference_captures" / "manifest.json"
+
+
 def _module_workspace_root() -> pathlib.Path:
     """Bind WORKSPACE_ROOT for this process, never raising at import.
 

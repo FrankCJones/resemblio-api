@@ -76,6 +76,13 @@ Optional environment variables
     VISUAL_FIDELITY_GATE_OUT Directory for gate_report.{json,md}; defaults
                              under _verification/.../fidelity_gate_runs/
     WORKSPACE_ROOT           Override workspace root resolution
+    FIDELITY_LIVE_SWEEP      "1" opts the live full-corpus sweep into the
+                             workspace manifest (whose brand-site PNGs are
+                             co-located). Unset (default) keeps the manifest on
+                             the PNG-less in-repo corpus so a bare pytest run
+                             SKIPS the live sweep on CI and dev. The gate-run
+                             box / scheduled job sets this to "1". See
+                             conftest.resolve_manifest_path.
 """
 from __future__ import annotations
 
@@ -90,11 +97,18 @@ from typing import Dict, List, Optional, Tuple
 
 import pytest
 
-# Test sub-package conftest exports REFERENCE_ROOT + WORKSPACE_ROOT + CORPUS_ROOT.
-# CORPUS_ROOT prefers the in-repo ``reference_corpus/`` copy (available on any
-# CI checkout) over REFERENCE_ROOT (workspace _verification/ tree, dev-only).
-# PNGs and the live-fetch full-corpus sweep still use REFERENCE_ROOT.
-from .conftest import CORPUS_ROOT, REFERENCE_ROOT, WORKSPACE_ROOT
+# Test sub-package conftest exports REFERENCE_ROOT + WORKSPACE_ROOT + CORPUS_ROOT
+# + resolve_manifest_path. CORPUS_ROOT prefers the in-repo ``reference_corpus/``
+# copy (available on any CI checkout) over REFERENCE_ROOT (workspace
+# _verification/ tree, dev-only). The brand-site PNGs and the live-fetch
+# full-corpus sweep still use REFERENCE_ROOT, gated by the FIDELITY_LIVE_SWEEP
+# opt-in (see resolve_manifest_path + MANIFEST_PATH below).
+from .conftest import (
+    CORPUS_ROOT,
+    REFERENCE_ROOT,
+    WORKSPACE_ROOT,
+    resolve_manifest_path,
+)
 
 # D-5.1 (2026-06-13): bumped v2->v3 for Option A gate-basis rebasis.
 # SSIM demoted to informational; structural dims are now the primary gate.
@@ -212,12 +226,34 @@ class GateReport:
 # ---------------------------------------------------------------------------
 
 
-# CORPUS_ROOT is the in-repo ``reference_corpus/`` (CI) or REFERENCE_ROOT
-# (dev full-gate runs). Both share the same subdirectory layout, so all
-# derived paths work identically in both environments. See Phase 8 handoff.
+# Structural-tier text artifacts (tolerance + specs) resolve from CORPUS_ROOT:
+# the in-repo ``reference_corpus/`` copy on a CI checkout, or REFERENCE_ROOT
+# (workspace) on a dev machine running the full gate. Both share the same
+# subdirectory layout, so derived paths work identically in both. This is what
+# makes the structural tier (test_linear_font_spec_* etc.) RUN on CI instead of
+# self-skipping. See the Phase 8 handoff + reference_corpus/README.md.
 TOLERANCE_PATH = CORPUS_ROOT / "tolerance_config.yml"
-MANIFEST_PATH = CORPUS_ROOT / "reference_captures" / "manifest.json"
 SPECS_DIR = CORPUS_ROOT / "reference_captures" / "specs"
+
+# Opt-in env flag for the live full-corpus sweep. When "1", the manifest (and
+# thus the PNG resolution that drives the live pixel diff) resolves to the
+# workspace REFERENCE_ROOT, whose PNGs are co-located. Default (unset) keeps
+# the manifest on the PNG-less in-repo copy so a bare ``pytest -q`` SKIPS the
+# live sweep everywhere - CI and dev alike - rather than firing slow, flaky
+# network captures against resemblio.com. The gate-run box sets this to "1".
+ENV_LIVE_SWEEP = "FIDELITY_LIVE_SWEEP"
+
+# The reference manifest is co-located with the brand-site PNGs it indexes
+# (load_manifest resolves each PNG relative to the manifest's parent dir). The
+# PNGs live only in the workspace tree, never this public repo - so the manifest
+# root decides whether the live sweep can find PNGs. resolve_manifest_path
+# encodes the safe-by-default / explicit-opt-in policy; see its docstring.
+MANIFEST_PATH = resolve_manifest_path(
+    corpus_root=CORPUS_ROOT,
+    reference_root=REFERENCE_ROOT,
+    live_sweep_opt_in=os.environ.get(ENV_LIVE_SWEEP) == "1",
+)
+
 # Output stays workspace-only: gate run artifacts (live PNGs, reports) are
 # not committed; REFERENCE_ROOT on CI points at a non-existent path and the
 # live sweep skips before any write happens.
@@ -974,14 +1010,25 @@ def write_report(report: GateReport, output_dir: pathlib.Path) -> Tuple[
 def test_library_render_within_tolerance_of_brand_reference() -> None:
     """Gate: live Resemblio library renders stay within tolerance of references.
 
+    This is the **live full-corpus sweep** (Tier 2). It needs the brand-site
+    reference PNGs, which live only in the workspace ``_verification/`` tree -
+    never this public repo. By default ``MANIFEST_PATH`` resolves to the
+    PNG-less in-repo corpus, so ``load_manifest`` finds zero records on disk and
+    this test SKIPS on CI and on a routine dev ``pytest -q``. The gate-run box /
+    scheduled job sets ``FIDELITY_LIVE_SWEEP=1`` to point the manifest at the
+    workspace tree (PNGs co-located) and actually run the sweep. The structural
+    tier (test_linear_font_spec_* and the pure-data tests below) runs on CI
+    regardless via the vendored in-repo specs - that is the Phase 8 deliverable.
+
     Pass condition: at least
     ``tolerance.brand_x_category_pass_minimum`` distinct (brand,
-    category) combinations pass on all their viewports via either the
-    SSIM primary gate or the structural fallback.
+    category) combinations pass on all their viewports via the
+    structural gate (D-5.1 Option A; SSIM is informational only).
 
-    Skip condition: the live URL cannot be reached for ALL tuples
-    (Playwright not installed, network unavailable, basic auth absent,
-    etc.) and ``tolerance.skip_on_missing_live_url`` is true.
+    Skip condition: no reference records are present (the default,
+    PNG-less, manifest path) OR the live URL cannot be reached for ALL
+    tuples (Playwright not installed, network unavailable, basic auth
+    absent, etc.) and ``tolerance.skip_on_missing_live_url`` is true.
 
     Fail condition: live URLs ARE reachable but the brand-x-category
     pass count falls below the acceptance floor. The aggregate report

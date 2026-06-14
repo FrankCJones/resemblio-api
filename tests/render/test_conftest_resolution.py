@@ -161,3 +161,71 @@ def test_resolve_corpus_root_returns_in_repo_when_workspace_also_missing(
     in_repo = tmp_path / "reference_corpus"  # Does not exist.
     result = resolve_corpus_root(in_repo_dir=in_repo, reference_root=None)
     assert result == in_repo
+
+
+# ---------------------------------------------------------------------------
+# Phase 8: resolve_manifest_path unit tests (live-sweep opt-in policy)
+# ---------------------------------------------------------------------------
+
+
+from tests.render.conftest import resolve_manifest_path  # noqa: E402
+
+
+def test_resolve_manifest_path_default_uses_in_repo_corpus(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Default (opt-in False) resolves the manifest under the in-repo corpus.
+
+    The in-repo corpus has the manifest JSON but no PNGs, so the live sweep
+    finds zero records and SKIPS - the safe default for CI and routine dev runs.
+    """
+    corpus = tmp_path / "reference_corpus"
+    reference = tmp_path / "workspace_verification"
+    result = resolve_manifest_path(
+        corpus_root=corpus,
+        reference_root=reference,
+        live_sweep_opt_in=False,
+    )
+    assert result == corpus / "reference_captures" / "manifest.json"
+
+
+def test_resolve_manifest_path_opt_in_uses_workspace_reference(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Opt-in True resolves the manifest under the workspace reference root.
+
+    The workspace tree carries the brand-site PNGs co-located with the
+    manifest, so the live sweep can actually run. This is the explicit
+    gate-run-box / scheduled-job mode (FIDELITY_LIVE_SWEEP=1).
+    """
+    corpus = tmp_path / "reference_corpus"
+    reference = tmp_path / "workspace_verification"
+    result = resolve_manifest_path(
+        corpus_root=corpus,
+        reference_root=reference,
+        live_sweep_opt_in=True,
+    )
+    assert result == reference / "reference_captures" / "manifest.json"
+
+
+def test_resolve_manifest_path_is_pure_no_disk_dependency(
+    tmp_path: pathlib.Path,
+) -> None:
+    """resolve_manifest_path returns a path without touching the filesystem.
+
+    Neither root exists on disk; the function still returns the correct
+    derived path. Pins the pure-function contract (mirrors resolve_corpus_root
+    and resolve_workspace_root) so a future refactor cannot smuggle in an
+    is_file() check that would change behavior based on disk state.
+    """
+    corpus = tmp_path / "nope_corpus"
+    reference = tmp_path / "nope_reference"
+    assert not corpus.exists() and not reference.exists()
+    default = resolve_manifest_path(
+        corpus_root=corpus, reference_root=reference, live_sweep_opt_in=False,
+    )
+    opted = resolve_manifest_path(
+        corpus_root=corpus, reference_root=reference, live_sweep_opt_in=True,
+    )
+    assert default == corpus / "reference_captures" / "manifest.json"
+    assert opted == reference / "reference_captures" / "manifest.json"

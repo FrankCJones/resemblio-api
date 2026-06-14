@@ -44,6 +44,30 @@ and full pixel sweeps on the gate-run box.
 | Structural unit tests | `test_linear_font_spec_*`, font resolution, Phase 5.1 gate-basis tests | **YES** (this corpus) | Text artifacts in this directory |
 | Full-corpus live sweep | `test_library_render_within_tolerance_of_brand_reference` | **NO** (self-skips) | Live network + Basic Auth + PNGs |
 
+### How each tier resolves its inputs
+
+The structural tier reads `tolerance_config.yml` + `reference_captures/specs/`
+from `CORPUS_ROOT` - this in-repo copy on CI, or the workspace tree on a dev
+machine running the full gate. Either way the text is present, so the structural
+tier RUNS on CI. That is the Phase 8 deliverable.
+
+The live sweep reads `reference_captures/manifest.json`, and `load_manifest`
+resolves each record's PNG relative to the manifest's parent directory. Because
+the PNGs live ONLY in the workspace tree, the manifest root decides whether the
+sweep can find PNGs:
+
+- **Default** (`FIDELITY_LIVE_SWEEP` unset): manifest resolves to THIS in-repo
+  copy, which has no PNGs -> `load_manifest` returns zero records -> the sweep
+  SKIPS. This keeps a bare `pytest -q` safe on CI and on dev (no slow, flaky
+  network captures).
+- **Opt-in** (`FIDELITY_LIVE_SWEEP=1`): manifest resolves to the workspace
+  `_verification/` tree, whose PNGs are co-located -> the sweep runs. This is
+  the gate-run-box / scheduled-job mode. See `conftest.resolve_manifest_path`.
+
+The in-repo `manifest.json` is still vendored: it is the default (PNG-less)
+manifest that produces the clean skip, and it enumerates the (brand, category,
+viewport) tuples for any future PNG-free structural enumeration on CI.
+
 ## Authoring source and sync direction
 
 The **workspace `_verification/` tree** is the authoring source:
