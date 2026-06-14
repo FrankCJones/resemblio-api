@@ -553,7 +553,10 @@ def color_bucket_overlap(
 # ---------------------------------------------------------------------------
 
 from .assertion_eval import (  # noqa: F401  (re-exports; used by test_spec_coverage.py)
+    AVATAR_LEAK_ID_MARKER,  # noqa: F401
     AssertionSweepResult,  # noqa: F401
+    BrowserEvalResult,  # noqa: F401
+    classify_browser_eval_results,
     evaluate_all_assertions_against_live_html,
     evaluate_font_family_against_live_html,
     expected_token_from_assertion,
@@ -634,10 +637,17 @@ def classify_live_status(
 
 @dataclass(frozen=True)
 class LiveRender:
-    """Bundle of artifacts captured from one live URL fetch."""
+    """Bundle of artifacts captured from one live URL fetch.
+
+    Phase 12.2: browser_eval_results carries {assertion_id: bool} results
+    from page.evaluate() calls run inside the Playwright session while the
+    page was live. Absent ids (evaluator threw or was not attempted) are
+    recorded as missing in BrowserEvalResult by classify_browser_eval_results.
+    """
 
     png_path: pathlib.Path
     html: str
+    browser_eval_results: Dict[str, bool] = field(default_factory=dict)
 
 
 def capture_live_render(
@@ -1739,4 +1749,112 @@ def test_ssim_above_floor_not_sole_pass_path_option_a(
     # Gate path must NOT be 'ssim' (that path is removed in v3).
     assert outcome.gate != "ssim", (
         f"gate='ssim' indicates the SSIM primary gate is still active; got {outcome.gate!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Phase 12.2 RED -> GREEN: avatar_photo_leak HARD FAIL enforcement
+# ---------------------------------------------------------------------------
+
+
+def test_evaluate_tuple_avatar_photo_leak_is_hard_fail(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Avatar photo leak must be a HARD FAIL drift dimension in evaluate_tuple.
+
+    Phase 12.2 RED: evaluate_tuple does not yet consult LiveRender.
+    browser_eval_results, so a leak in browser_eval_results never reaches
+    TupleOutcome.drift_dimensions. The assertion on status=="FAIL" fails.
+
+    Phase 12.2 GREEN: evaluate_tuple classifies browser-required assertions,
+    calls classify_browser_eval_results on LiveRender.browser_eval_results,
+    and adds "avatar_photo_leak" to drift_dimensions when it fires.
+
+    This test is OFFLINE: the fake LiveRender injects browser_eval_results
+    directly without Playwright or network. Color and font are made to pass
+    (overlap patched to 4, font HTML contains the token) so the only FAIL
+    signal is the avatar leak.
+    """
+    import sys as _sys
+
+    requests = pytest.importorskip("requests")
+    pytest.importorskip("PIL.Image")
+    from PIL import Image
+
+    # Build a reference PNG and a live PNG with the same color so color passes.
+    ref_path = tmp_path / "ref_avatar_leak_test.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(ref_path)
+    live_path = tmp_path / "live_avatar_leak_test.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(live_path)
+
+    # Use the aeon about-team tuple which has the avatars-photo-stripped assertion.
+    record = ReferenceRecord(
+        tuple_id="aeon__about-team__1440x900",
+        brand="aeon",
+        category="about-team",
+        viewport="1440x900",
+        source_url="https://example.test/",
+        reference_path=ref_path,
+        capture_mode="full_page",
+    )
+    tolerance = ToleranceConfig(
+        ssim_floor=0.65,
+        color_bucket_overlap_min=3,
+        color_bucket_top_n=5,
+        color_quantization_bits=4,
+        dominant_font_family_required=True,
+        brand_x_category_pass_minimum=3,
+        skip_on_missing_live_url=True,
+        url_pattern="https://resemblio.com/library/{brand}/{category}",
+        basic_auth_env="LIBRARY_BASIC_AUTH_UNSET",
+        timeout_ms=30000,
+        wait_until="networkidle",
+    )
+
+    class _OK:
+        status_code = 200
+
+    monkeypatch.setattr(requests, "head", lambda url, **kwargs: _OK())
+
+    # HTML that is clean of wordmark tokens but contains the font disclosure
+    # text so the font assertion passes. The avatar leak is in browser_eval_results.
+    clean_html = (
+        "<html><body>"
+        "<aside class='rs-font-attribution'>Aeon uses PP Right Grotesk Wide. "
+        "Rendered with Plus Jakarta Sans.</aside>"
+        "<p>Brand-stripped content.</p>"
+        "</body></html>"
+    )
+
+    # Inject a fake LiveRender: browser_eval_results signals a photo leak
+    # (the avatars-photo-stripped assertion observed False when expected True).
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "capture_live_render",
+        lambda **kwargs: LiveRender(
+            png_path=live_path,
+            html=clean_html,
+            browser_eval_results={
+                "aeon-about-team-avatars-photo-stripped": False,  # leak!
+            },
+        ),
+    )
+    # Force color overlap to pass (>= 3) so color is not the failing dimension.
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "color_bucket_overlap",
+        lambda ref_path, live_path, **kwargs: 4,
+    )
+
+    outcome = evaluate_tuple(record, tolerance, tmp_path, DEFAULT_RESEMBLIO_BASE)
+
+    assert outcome.status == "FAIL", (
+        f"Avatar photo leak must be a HARD FAIL; got status={outcome.status!r}. "
+        "Phase 12.2 RED: evaluate_tuple does not yet consult browser_eval_results."
+    )
+    assert "avatar_photo_leak" in outcome.drift_dimensions, (
+        f"'avatar_photo_leak' must appear in drift_dimensions; "
+        f"got {outcome.drift_dimensions!r}. "
+        "Phase 12.2 RED: the drift dimension is not wired yet."
     )
