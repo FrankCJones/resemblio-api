@@ -949,7 +949,7 @@ def evaluate_tuple(
             color_bucket_overlap=overlap,
             font_family_match=font_ok,
             live_status_code=live_status,
-            unenforced_assertions=browser_missing,
+            browser_eval_missing=browser_missing,
             content_drift=content_drift,
         )
 
@@ -974,7 +974,7 @@ def evaluate_tuple(
         font_family_match=font_ok,
         drift_dimensions=drift,
         live_status_code=live_status,
-        unenforced_assertions=browser_missing,
+        browser_eval_missing=browser_missing,
         content_drift=content_drift,
     )
 
@@ -1052,7 +1052,7 @@ def render_markdown(report: GateReport) -> str:
             str(t.live_status_code)
             if t.live_status_code is not None else "-"
         )
-        missing_count = len(t.unenforced_assertions) if t.unenforced_assertions else 0
+        missing_count = len(t.browser_eval_missing) if t.browser_eval_missing else 0
         missing_s = str(missing_count) if missing_count else "-"
         content_drift_count = len(t.content_drift) if t.content_drift else 0
         content_drift_s = str(content_drift_count) if content_drift_count else "-"
@@ -1068,8 +1068,8 @@ def render_markdown(report: GateReport) -> str:
     # in normal runs).
     all_missing: Dict[str, List[str]] = {}
     for t in report.tuples:
-        if t.unenforced_assertions:
-            all_missing[t.tuple_id] = t.unenforced_assertions
+        if t.browser_eval_missing:
+            all_missing[t.tuple_id] = t.browser_eval_missing
     if all_missing:
         lines.append("## Browser eval missing (attempted but could not evaluate)")
         lines.append("")
