@@ -49,10 +49,10 @@ out : library_visual_fidelity_gate_report_v5 (gate_report.json + .md)
       v5 adds: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped assertions
       now enforced via page.evaluate); content_drift informational field
       (sweep.failed excluding no-leak + font families, not gating);
-      browser_eval.missing surfaced in unenforced_assertions instead of
-      the formerly-unenforced browser_required ids.
+      browser_eval.missing surfaced in browser_eval_missing (field renamed
+      from unenforced_assertions in Phase 13; see v6 schema changelog).
       v4 adds: full-assertion sweep, wordmark_leak HARD FAIL,
-      unenforced_assertions (6 browser-required assertions deferred to Phase 12).
+      unenforced_assertions (renamed to browser_eval_missing in Phase 13).
       v3 rebased structural gate as primary (D-5.1 Option A, 2026-06-13).
       v2 added RZ-A HEAD pre-flight (2026-06-05).
 
@@ -121,8 +121,8 @@ from .conftest import (
 
 # Phase 12 (2026-06-14): bumped v4->v5 for browser-required assertion enforcement.
 # avatar_photo_leak added as HARD FAIL drift dimension; content_drift informational
-# field added; unenforced_assertions now holds browser_eval.missing instead of the
-# formerly-unenforced browser_required ids (6 avatars assertions now enforced).
+# field added; browser_eval.missing surfaced (field was named unenforced_assertions
+# in v5; renamed to browser_eval_missing in Phase 13 / v6).
 # Prior v4 consumers (Jim diagnostic) read via compat_schema for one cycle.
 SCHEMA_VERSION = "library_visual_fidelity_gate_report_v5"
 # One-cycle compat for v4 consumers (Jim diagnostic). Remove after Phase 13.
@@ -209,14 +209,11 @@ class TupleOutcome:
     # "render is wrong" (SSIM low, status 200) from "page does not
     # exist" (status 404), which the v1 schema conflated.
     live_status_code: Optional[int] = None
-    # Phase 12.2 (2026-06-14): assertion ids the browser was asked to evaluate
-    # but could not (evaluator threw, page.evaluate() raised, etc.). These are
-    # NOT counted as failures - absence of evidence is not a proven leak. Surfaced
-    # here so the gap is auditable. Prior to Phase 12.2 this field held browser-
-    # required assertion ids that were not attempted at all (unenforced). After
-    # Phase 12.2 the 6 avatars-photo-stripped assertions ARE attempted; this field
-    # now only holds ones the browser attempted but could not complete.
-    unenforced_assertions: List[str] = field(default_factory=list)
+    # Phase 13 (2026-06-14): renamed from unenforced_assertions. Holds assertion ids
+    # the browser attempted via page.evaluate() but could not complete (evaluator threw,
+    # page.evaluate() raised, or the selector returned unexpected types). Expected to be
+    # empty for healthy pages. Surfaced in the report for operator visibility.
+    browser_eval_missing: List[str] = field(default_factory=list)
     # Phase 12.3 (2026-06-14): assertion ids from sweep.failed that are not
     # the wordmark_leak family and not the font assertion. These text_content or
     # .includes misses are reported for visibility but do NOT gate the tuple.
@@ -904,7 +901,7 @@ def evaluate_tuple(
     # Phase 11 full-assertion sweep (trademark + text_content enforcement).
     # Runs over all string-evaluable assertions in the vendored spec for this
     # (brand, category). browser_required assertions are now ENFORCED via
-    # browser_eval (Phase 12.2) - they no longer land in unenforced_assertions.
+    # browser_eval (Phase 12.2) - they no longer land in browser_eval_missing.
     # wordmark_leak is a HARD FAIL regardless of color/font outcome.
     sweep: AssertionSweepResult = evaluate_all_assertions_against_live_html(
         spec_assertions, live.html,
@@ -931,10 +928,10 @@ def evaluate_tuple(
         if NO_LEAK_ID_MARKER not in aid and aid != font_aid
     ]
 
-    # unenforced_assertions: after Phase 12.2 the 6 avatars-photo-stripped assertions
-    # are enforced. Any genuinely unenforced ones (currently expected to be zero)
-    # would be browser assertions not in browser_subset - none expected in this corpus.
-    # Surface browser_eval.missing instead: assertions we tried but the browser could not evaluate.
+    # browser_eval_missing (Phase 13 rename from unenforced_assertions): after Phase 12.2
+    # the 6 avatars-photo-stripped assertions are enforced. Any genuinely unenforced ones
+    # (currently expected to be zero) would be browser assertions not in browser_subset.
+    # Surface browser_eval.missing: assertions we tried but the browser could not evaluate.
     browser_missing = browser_eval.missing
 
     if gate_ok:
@@ -1596,7 +1593,8 @@ def test_schema_version_is_v5() -> None:
 
     v5 adds: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped assertions
     enforced via page.evaluate); content_drift informational field (not gating);
-    browser_eval.missing surfaced in unenforced_assertions. Compat v4 for one cycle.
+    browser_eval.missing surfaced (field was named unenforced_assertions in v5;
+    renamed to browser_eval_missing in Phase 13 / v6). Compat v4 for one cycle.
     v4 added full-assertion sweep enforcement and wordmark_leak HARD FAIL.
     v3 bumped from D-5.1 (SSIM demoted to informational).
     v2 introduced the RZ-A HEAD pre-flight (still present in v5).
