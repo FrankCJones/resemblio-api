@@ -656,6 +656,7 @@ def capture_live_render(
     output_dir: pathlib.Path,
     tuple_id: str,
     tolerance: ToleranceConfig,
+    browser_assertions: Optional[List[Dict]] = None,
 ) -> Optional[LiveRender]:
     """Capture a live screenshot + page HTML via Playwright.
 
@@ -665,6 +666,15 @@ def capture_live_render(
 
     The screenshot is full-page. Output PNG path is
     ``<output_dir>/live_<tuple_id>.png``.
+
+    Phase 12.2: accepts ``browser_assertions`` - the subset of spec assertions
+    that require real browser DOM execution (querySelectorAll-based evaluators).
+    Each assertion's ``evaluate`` string is executed via ``page.evaluate()``
+    while the page is still live. Results are carried on
+    ``LiveRender.browser_eval_results``. A per-assertion try/except ensures
+    that a single malformed or throwing evaluator does not abort the capture;
+    failed evaluators are absent from the map, which classify_browser_eval_results
+    records as ``missing`` rather than ``failed`` (absence of evidence).
 
     Idempotent: a second call for the same ``tuple_id`` overwrites the
     PNG and re-fetches the HTML (the gate is a one-shot artifact run,
@@ -688,6 +698,8 @@ def capture_live_render(
         user, password = basic_auth.split(":", 1)
         http_credentials = {"username": user, "password": password}
 
+    browser_eval_results: Dict[str, bool] = {}
+
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch()
@@ -700,6 +712,17 @@ def capture_live_render(
             page.goto(url, wait_until=tolerance.wait_until)
             html = page.content()
             page.screenshot(path=str(png_path), full_page=True)
+            # Phase 12.2: run browser-required evaluators while the page is live.
+            for a in (browser_assertions or []):
+                aid = a.get("id") or ""
+                ev = a.get("evaluate")
+                if not aid or not isinstance(ev, str):
+                    continue
+                try:
+                    browser_eval_results[aid] = bool(page.evaluate(ev))
+                except Exception as exc:
+                    # A broken evaluator must not sink the capture; record as missing.
+                    _log.warning("browser eval failed for %s: %s", aid, exc)
             browser.close()
     except Exception as exc:  # pragma: no cover - environment dependent
         _log.warning("live capture failed for %s: %s", url, exc)
@@ -707,7 +730,7 @@ def capture_live_render(
 
     if not png_path.exists():
         return None
-    return LiveRender(png_path=png_path, html=html)
+    return LiveRender(png_path=png_path, html=html, browser_eval_results=browser_eval_results)
 
 
 # ---------------------------------------------------------------------------
@@ -787,12 +810,31 @@ def evaluate_tuple(
             live_status_code=live_status,
         )
 
+    # Phase 11 full-assertion sweep determines which assertions are browser-required
+    # so we can pass that subset to capture_live_render before the capture happens.
+    # Load spec assertions early to identify the browser-required subset.
+    spec_assertions = _load_spec_assertions(record.brand, record.category)
+
+    # Phase 12.2: identify browser-required assertions (same classifier used by
+    # evaluate_all_assertions_against_live_html). Pass them to capture_live_render
+    # so page.evaluate() runs while the browser page is still live.
+    browser_subset: List[Dict] = [
+        a for a in spec_assertions
+        if (
+            a.get("kind") != "text_content"
+            and isinstance(a.get("evaluate"), str)
+            and "forbidden.every" not in a.get("evaluate", "")
+            and ".includes(" not in a.get("evaluate", "")
+        )
+    ]
+
     live = capture_live_render(
         url=url,
         viewport=record.viewport,
         output_dir=output_dir,
         tuple_id=record.tuple_id,
         tolerance=tolerance,
+        browser_assertions=browser_subset,
     )
     if live is None:
         return TupleOutcome(
@@ -844,15 +886,29 @@ def evaluate_tuple(
 
     # Phase 11 full-assertion sweep (trademark + text_content enforcement).
     # Runs over all string-evaluable assertions in the vendored spec for this
-    # (brand, category). Unrecognized evaluators (querySelectorAll) are deferred
-    # to Phase 12 and recorded in unenforced_assertions - NOT counted as failures.
+    # (brand, category). browser_required assertions are now ENFORCED via
+    # browser_eval (Phase 12.2) - they no longer land in unenforced_assertions.
     # wordmark_leak is a HARD FAIL regardless of color/font outcome.
-    spec_assertions = _load_spec_assertions(record.brand, record.category)
     sweep: AssertionSweepResult = evaluate_all_assertions_against_live_html(
         spec_assertions, live.html,
     )
 
-    if color_ok and font_ok and not sweep.wordmark_leak:
+    # Phase 12.2: classify browser-executed assertion results.
+    # avatar_photo_leak is a HARD FAIL parallel to wordmark_leak.
+    browser_eval: BrowserEvalResult = classify_browser_eval_results(
+        browser_subset, live.browser_eval_results,
+    )
+
+    # Gate verdict: PASS iff color + font + no wordmark leak + no avatar photo leak.
+    gate_ok = color_ok and font_ok and not sweep.wordmark_leak and not browser_eval.avatar_photo_leak
+
+    # unenforced_assertions: after Phase 12.2 the 6 avatars-photo-stripped assertions
+    # are enforced. Any genuinely unenforced ones (currently expected to be zero)
+    # would be browser assertions not in browser_subset - none expected in this corpus.
+    # Surface browser_eval.missing instead: assertions we tried but the browser could not evaluate.
+    browser_missing = browser_eval.missing
+
+    if gate_ok:
         return TupleOutcome(
             tuple_id=record.tuple_id,
             brand=record.brand,
@@ -864,7 +920,7 @@ def evaluate_tuple(
             color_bucket_overlap=overlap,
             font_family_match=font_ok,
             live_status_code=live_status,
-            unenforced_assertions=sweep.browser_required,
+            unenforced_assertions=browser_missing,
         )
 
     drift: List[str] = []
@@ -874,6 +930,8 @@ def evaluate_tuple(
         drift.append("font")
     if sweep.wordmark_leak:
         drift.append("wordmark_leak")
+    if browser_eval.avatar_photo_leak:
+        drift.append("avatar_photo_leak")
     return TupleOutcome(
         tuple_id=record.tuple_id,
         brand=record.brand,
@@ -886,7 +944,7 @@ def evaluate_tuple(
         font_family_match=font_ok,
         drift_dimensions=drift,
         live_status_code=live_status,
-        unenforced_assertions=sweep.browser_required,
+        unenforced_assertions=browser_missing,
     )
 
 
