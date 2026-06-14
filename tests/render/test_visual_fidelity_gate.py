@@ -1393,6 +1393,63 @@ def test_schema_version_is_v3() -> None:
     assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v2"
 
 
+# ---------------------------------------------------------------------------
+# Phase 11.1 RED: live-gate no-wordmark-leak enforcement pin
+# ---------------------------------------------------------------------------
+
+
+def test_evaluate_tuple_enforces_no_wordmark_leak() -> None:
+    """Live gate must detect wordmark leaks via evaluate_all_assertions_against_live_html.
+
+    Phase 11.1 RED: the stub in assertion_eval.py always returns
+    wordmark_leak=False, so the assertion on wordmark_leak=True fails.
+
+    Phase 11.2 GREEN: the real implementation detects the forbidden token
+    in leaking_html and returns wordmark_leak=True with the assertion id
+    in result.failed.
+
+    This test is OFFLINE: it tests the pure sweep helper directly with
+    synthetic HTML. It does NOT call evaluate_tuple (which requires
+    Playwright + live network). See the Phase 11.2 wiring in evaluate_tuple
+    for how the sweep result is folded into TupleOutcome.drift_dimensions.
+    """
+    from .assertion_eval import evaluate_all_assertions_against_live_html
+
+    no_leak_assertion = {
+        "id": "aeon-about-team-no-wordmark-logo-leak",
+        "evaluate": (
+            "(() => { const html = document.documentElement.outerHTML.toLowerCase();"
+            " const forbidden = ['aeon.co/logo', 'aeon-logo', 'aeon-wordmark',"
+            " '/logo.svg', '/wordmark.svg', '/brand/logo'];"
+            " return forbidden.every(s => !html.includes(s)); })()"
+        ),
+        "expected": True,
+    }
+
+    # HTML that contains a forbidden token - simulates a live render that
+    # leaks the brand wordmark (the inspirado-no-copiado guarantee is violated).
+    leaking_html = (
+        "<html><body>"
+        "<img src='https://aeon.co/logo.png' alt='Aeon logo'>"
+        "<p>Brand-stripped content.</p>"
+        "</body></html>"
+    )
+
+    result = evaluate_all_assertions_against_live_html([no_leak_assertion], leaking_html)
+
+    assert result.wordmark_leak is True, (
+        "evaluate_all_assertions_against_live_html must set wordmark_leak=True "
+        "when a no-wordmark-logo-leak assertion fails against leaking HTML. "
+        f"Got wordmark_leak={result.wordmark_leak!r}. "
+        "Phase 11.1 RED: stub always returns False. "
+        "Phase 11.2 GREEN: the real sweep detects the forbidden token 'aeon.co/logo'."
+    )
+    assert no_leak_assertion["id"] in result.failed, (
+        "The failing no-leak assertion id must appear in result.failed. "
+        f"Got failed={result.failed!r}"
+    )
+
+
 def test_color_bucket_overlap_self_compare_max(tmp_path: pathlib.Path) -> None:
     """An image overlaps itself at top_n."""
     pytest.importorskip("PIL.Image")  # skip cleanly when Pillow absent (CI [test] extra)

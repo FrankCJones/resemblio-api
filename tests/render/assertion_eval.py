@@ -29,6 +29,7 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
 
@@ -252,3 +253,63 @@ def evaluate_assertion_against_live_html(
     # Requires real browser execution; string analysis cannot produce a
     # meaningful result. Return False conservatively rather than guessing.
     return False
+
+
+# ---------------------------------------------------------------------------
+# Phase 11 additions: batch sweep helper and result type
+# ---------------------------------------------------------------------------
+
+#: Substring present in the id of every no-wordmark-logo-leak assertion.
+#: Used to classify the no-leak family without hardcoding brand names.
+NO_LEAK_ID_MARKER = "no-wordmark-logo-leak"
+
+
+@dataclass
+class AssertionSweepResult:
+    """Result of evaluating all string-evaluable fidelity-spec assertions.
+
+    ``passed``          - assertion ids that PASS (observed == expected).
+    ``failed``          - assertion ids that FAIL (observed != expected).
+    ``browser_required``- assertion ids whose evaluator is an unrecognized
+                          shape (querySelectorAll / getComputedStyle) that
+                          requires real browser DOM execution. evaluate_
+                          assertion_against_live_html returns conservative
+                          False for these; they are NOT counted as failed -
+                          they are deferred to Phase 12, where a
+                          page.evaluate() path will be added to
+                          capture_live_render. Surfaced here so the caller
+                          can make the gap VISIBLE in the report instead of
+                          silently ignoring it.
+    ``wordmark_leak``   - True when any assertion whose id contains
+                          NO_LEAK_ID_MARKER is in ``failed``. This is the
+                          trademark-safety signal: the live render leaks a
+                          brand logo or wordmark. A live-gate tuple with
+                          wordmark_leak=True is a HARD FAIL regardless of
+                          color or font verdicts.
+    ``schema_version``  - "assertion_sweep_v1".
+
+    Pure: no network, no os.environ access.
+    Schema: assertion_sweep_v1
+    """
+
+    passed: List[str] = field(default_factory=list)
+    failed: List[str] = field(default_factory=list)
+    browser_required: List[str] = field(default_factory=list)
+    wordmark_leak: bool = False
+    schema_version: str = "assertion_sweep_v1"
+
+
+def evaluate_all_assertions_against_live_html(
+    assertions: List[Dict],
+    live_html: str,
+) -> AssertionSweepResult:
+    """Evaluate all fidelity-spec assertions against a blob of live HTML.
+
+    Phase 11 stub (RED): always returns an empty AssertionSweepResult with
+    no failures. Phase 11.2 GREEN replaces this with the real implementation.
+
+    Pure: no network, no os.environ access.
+    """
+    # Phase 11.1 RED stub - unconditionally returns empty (no enforcement).
+    # Phase 11.2 GREEN will iterate assertions and classify each correctly.
+    return AssertionSweepResult()

@@ -1,4 +1,4 @@
-"""Per-assertion structural guard and coverage completeness (Phase 10).
+"""Per-assertion structural guard and coverage completeness (Phase 10 + 11).
 
 Phase 10.1 RED: test_every_spec_assertion_is_exercised asserted that the number
 of exercised assertions equals the total across all specs. At RED, _ASSERTION_PARAMS
@@ -7,6 +7,12 @@ was an empty placeholder (0 cases). 0 != 110 -> FAIL.
 Phase 10.2 GREEN: _ASSERTION_PARAMS is derived from the corpus (all 110 assertions)
 and test_assertion_structural_guard provides one parametrized case per assertion.
 exercised == total -> PASS.
+
+Phase 11.1 GREEN guard: test_every_no_leak_assertion_parses_to_nonempty_tokens
+verifies that every corpus forbidden.every assertion can be parsed to a non-empty
+token list. At introduction (2026-06-14) all 17 no-leak assertions use exact spacing
+and the guard is GREEN. It is a regression guard, not a TDD-RED test - see Phase 11
+PRD for rationale.
 
 Assertion shapes handled by evaluate_assertion_against_live_html:
   - text_content (40 assertions): expected_text substring check
@@ -26,7 +32,7 @@ Self-skip semantics: both test_every_spec_assertion_is_exercised and
 test_assertion_structural_guard self-skip when SPECS_DIR is absent (corpus not
 vendored - should not occur since Phase 8 delivered the in-repo mirror).
 
-Schema: phase10_assertion_coverage_v1
+Schema: phase11_assertion_coverage_v1
 """
 from __future__ import annotations
 
@@ -42,6 +48,7 @@ from .assertion_eval import (
     forbidden_tokens_from_evaluator,
 )
 from .conftest import CORPUS_ROOT
+from .assertion_eval import NO_LEAK_ID_MARKER
 
 SPECS_DIR: pathlib.Path = CORPUS_ROOT / "reference_captures" / "specs"
 
@@ -392,4 +399,69 @@ def test_assertion_structural_guard(
         f"expected evaluator to return {not expected_val!r} for negative HTML "
         f"(shape={shape!r}), got {result_negative!r}. "
         f"Assertion: {assertion!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Phase 11.1 GREEN guard: no-leak parse completeness
+# Introduced as GREEN (all 17 current corpus assertions use exact spacing).
+# This is a regression guard: if a future spec uses a whitespace variant that
+# the old strict parser cannot handle, this test catches the silent gap before
+# it reaches production.
+# ---------------------------------------------------------------------------
+
+
+def test_every_no_leak_assertion_parses_to_nonempty_tokens() -> None:
+    """Every corpus no-wordmark-logo-leak assertion must parse to non-empty tokens.
+
+    Guards against a future spec introducing a whitespace variant in
+    'const forbidden = [...]' that the parser cannot handle, creating a
+    silent trademark gap (the parser returns [] -> conservative False ->
+    the no-leak check never actually verifies the HTML).
+
+    Phase 11.1 status: GREEN at introduction (2026-06-14). All 17 no-leak
+    assertions in the current corpus use exact spacing and parse correctly.
+    This is a regression guard, not a TDD-RED test - see Phase 11 PRD for
+    the whitespace-brittleness diagnosis and the parser hardening in Phase 11.2.
+
+    Self-skips when SPECS_DIR is absent (should not occur post-Phase-8).
+    """
+    if not SPECS_DIR.exists():
+        pytest.skip(
+            f"SPECS_DIR absent at {SPECS_DIR}; "
+            "no-leak parse guard cannot run without vendored corpus."
+        )
+
+    no_leak_found = 0
+    problems: List[str] = []
+
+    for spec_file in sorted(SPECS_DIR.glob("*.json")):
+        try:
+            spec = json.loads(spec_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for assertion in spec.get("assertions", []) or []:
+            aid = assertion.get("id", "")
+            evaluator = assertion.get("evaluate", "")
+            if not isinstance(evaluator, str):
+                continue
+            if "forbidden.every" not in evaluator:
+                continue
+            no_leak_found += 1
+            tokens = forbidden_tokens_from_evaluator(evaluator)
+            if not tokens:
+                problems.append(
+                    f"{spec_file.stem}::{aid}: "
+                    f"forbidden_tokens_from_evaluator returned [] "
+                    f"(evaluator snippet: {evaluator[evaluator.find('const forbidden'):evaluator.find('const forbidden')+60]!r})"
+                )
+
+    assert no_leak_found > 0, (
+        "No forbidden.every assertions found in any vendored spec. "
+        "The corpus should contain 17 no-wordmark-logo-leak assertions. "
+        "Check that SPECS_DIR is populated correctly."
+    )
+    assert not problems, (
+        f"The following no-leak assertions parsed to empty token lists "
+        f"(silent trademark gap):\n" + "\n".join(problems)
     )
