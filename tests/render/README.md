@@ -28,8 +28,50 @@ missed every render defect. The harness fills that gap.
 |---|---|
 | `__init__.py` | Sub-package marker + schema-version contract |
 | `conftest.py` | Resolves `WORKSPACE_ROOT` and `REFERENCE_ROOT`; isolated from API tests root conftest |
-| `test_visual_fidelity_gate.py` | Compares Resemblio library renders against original brand-site captures. Self-skips when reference manifest is absent. |
+| `test_visual_fidelity_gate.py` | Compares Resemblio library renders against original brand-site captures. Self-skips when reference manifest is absent. Re-exports `evaluate_font_family_against_live_html`, `expected_token_from_assertion`, `font_family_assertion_from_spec` from `assertion_eval.py` for backward compatibility. |
 | `README.md` | This file |
+
+### Phase 9.2 spec-level structural guard
+
+| File | Role |
+|---|---|
+| `test_spec_coverage.py` | Per-(brand, category) structural guard: for each of the 20 vendored specs, verifies the first font assertion evaluates correctly against synthetic HTML. 20 parametrized cases. Imports evaluator helpers from `test_visual_fidelity_gate` (which re-exports from `assertion_eval.py`). |
+
+### Phase 10 assertion-level structural guard (added 2026-06-14)
+
+| File | Role |
+|---|---|
+| `assertion_eval.py` | Pure assertion evaluator module. Schema `assertion_eval_v1`. Handles four assertion shapes: `text_content`, `evaluate:includes`, `evaluate:forbidden.every` (no-wordmark-logo-leak family), and `evaluate:unrecognized` (conservative False). Houses `forbidden_tokens_from_evaluator` and `evaluate_assertion_against_live_html`. Also contains the three functions moved from `test_visual_fidelity_gate.py` (Phase 10 refactor): `font_family_assertion_from_spec`, `expected_token_from_assertion`, `evaluate_font_family_against_live_html`. |
+| `test_assertion_eval.py` | Unit tests for `assertion_eval.py`. Inversion-bug pin (Phase 10.1 RED -> Phase 10.2 GREEN), unit tests for `forbidden_tokens_from_evaluator` and `evaluate_assertion_against_live_html`, backward-compat tests for legacy evaluator. ~35 tests. |
+| `test_assertion_coverage.py` | Per-assertion structural guard and coverage completeness. Schema `phase10_assertion_coverage_v1`. `_ASSERTION_PARAMS` resolved at import from corpus; one `test_assertion_structural_guard` parametrized case per (brand, category, assertion_id). `test_every_spec_assertion_is_exercised` asserts exercised count == total across all specs. 110 parametrized cases + ~20 unit tests. Runs on standalone CI checkout (corpus vendored via Phase 8). |
+
+#### Phase 10 data flow
+
+```
+reference_captures/specs/<brand>_<cat>.json (fidelity_spec_v2)
+    |
+    v
+_discover_assertions(SPECS_DIR)       (test_assertion_coverage.py)
+    |                                  -> List[(brand, category, assertion_id)]
+    v
+_ASSERTION_PARAMS (module-level, resolved at import)
+    |
+    v
+test_assertion_structural_guard[brand__category__assertion_id]
+    |
+    +-- _assertion_shape(assertion)
+    |      -> text_content | includes | forbidden_every | unrecognized
+    |
+    +-- recognized shapes: _build_synthetic_html(assertion, shape)
+    |      -> (positive_html, negative_html)
+    |
+    +-- evaluate_assertion_against_live_html(assertion, html)  (assertion_eval.py)
+    |      -> bool
+    |
+    +-- positive: result == expected   -> PASS
+         negative: result != expected  -> PASS
+         unrecognized: result is False -> PASS (conservative-False verified)
+```
 
 ## Visual harness data flow
 

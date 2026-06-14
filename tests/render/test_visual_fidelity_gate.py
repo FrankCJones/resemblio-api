@@ -535,111 +535,17 @@ def color_bucket_overlap(
 # ---------------------------------------------------------------------------
 
 
-def font_family_assertion_from_spec(
-    spec_dir: pathlib.Path, brand: str, category: str,
-) -> Optional[Dict[str, object]]:
-    """Read the per-(brand, category) spec and return the first font assertion.
+# ---------------------------------------------------------------------------
+# Assertion-evaluation helpers (Phase 10 refactor: moved to assertion_eval.py)
+# Re-exported here so existing callers (test_spec_coverage.py) keep working
+# without import churn.
+# ---------------------------------------------------------------------------
 
-    "First" is the first assertion whose ``id`` lowercases to contain
-    ``font`` or ``family``. Returns the raw assertion dict (the runner
-    knows how to evaluate it). Returns None when the spec file is
-    missing or contains no font assertion; callers treat that as "font
-    dimension not checkable, do not penalize this tuple".
-    """
-    spec_path = spec_dir / f"{brand}_{category}.json"
-    if not spec_path.exists():
-        return None
-    try:
-        spec = json.loads(spec_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
-    for assertion in spec.get("assertions", []) or []:
-        aid = (assertion.get("id") or "").lower()
-        if "font" in aid or "family" in aid:
-            return assertion
-    return None
-
-
-def expected_token_from_assertion(assertion: Dict[str, object]) -> Optional[str]:
-    """Extract the font-family token an assertion checks for.
-
-    Pure function (no os.environ / __file__ access) so it is unit-testable
-    with synthetic assertion dicts. Returns the literal token string (NOT
-    lowercased) that the assertion verifies, or None when the kind is
-    unrecognized or the token cannot be parsed. The caller is responsible
-    for case-folding when doing a case-insensitive HTML substring check.
-
-    For ``text_content`` kind: returns ``assertion["expected_text"]``.
-    For ``evaluate`` kind (JS evaluator): extracts the first ``.includes("...")``
-    argument from the evaluator string. Both single and double-quoted forms are
-    supported. Returns None when no ``.includes(`` marker is found or the
-    quoted argument cannot be parsed.
-
-    This is the single token-extraction code path shared by
-    ``evaluate_font_family_against_live_html`` (the live-gate evaluator) and
-    the Phase 9.2 parametrized structural guard. Having one path means a
-    misparse is caught by one set of unit tests rather than lurking in a copy.
-
-    Phase 9.2 refactor (2026-06-13):
-      _HANDOFF_2026-06-13_library-v5-phase9-corpus-coverage-guard.md
-      "Senior refactor to do as part of 9.2 (DRY + testability)"
-    """
-    kind = assertion.get("kind")
-    if kind == "text_content":
-        text = assertion.get("expected_text")
-        return str(text) if text is not None else None
-    evaluator = assertion.get("evaluate")
-    if isinstance(evaluator, str):
-        marker = ".includes("
-        idx = evaluator.find(marker)
-        if idx == -1:
-            return None
-        tail = evaluator[idx + len(marker):]
-        for quote in ('"', "'"):
-            q_start = tail.find(quote)
-            if q_start == -1:
-                continue
-            q_end = tail.find(quote, q_start + 1)
-            if q_end == -1:
-                continue
-            token = tail[q_start + 1:q_end]
-            if token:
-                return token
-        return None
-    return None
-
-
-def evaluate_font_family_against_live_html(
-    assertion: Dict[str, object], live_html: str,
-) -> bool:
-    """Evaluate a font-family structural assertion against live HTML.
-
-    The Phase-5 specs use two assertion kinds:
-
-      - JavaScript evaluator ("evaluate" field): we cannot run a JS
-        engine here; we approximate by extracting the font-family name
-        the evaluator checks for (the substring inside ``includes(...)``)
-        and checking it appears in the live HTML (case-insensitive). A
-        case-insensitive substring of the rendered HTML is sufficient
-        because the library page surfaces the free-alternative font
-        name in the disclosure aside and in inline ``font-family``
-        declarations on the rendered element.
-
-      - text_content kind ("kind": "text_content", "expected_text"): we
-        check the expected text appears in the live HTML.
-
-    Token extraction is delegated to ``expected_token_from_assertion`` so
-    there is exactly one parsing code path for both this evaluator and the
-    Phase 9.2 parametrized structural guard (DRY + testability).
-
-    Returns True when the assertion is satisfied. Conservative on parse
-    failures: returns False rather than True.
-    """
-    haystack = live_html.lower()
-    token = expected_token_from_assertion(assertion)
-    if token is None:
-        return False
-    return bool(token) and token.lower() in haystack
+from .assertion_eval import (  # noqa: F401  (re-exports; used by test_spec_coverage.py)
+    evaluate_font_family_against_live_html,
+    expected_token_from_assertion,
+    font_family_assertion_from_spec,
+)
 
 
 # ---------------------------------------------------------------------------
