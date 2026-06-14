@@ -51,6 +51,36 @@ DEFAULT_BXC_FLOOR = 3
 
 
 # ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+
+def _as_report_count(value: Any) -> "int | None":
+    """Return value if it is a genuine int count, else None.
+
+    Used for the numeric coverage-floor fields. The gate module writes these
+    via ``dataclasses.asdict`` on int-typed fields, so a correct report ALWAYS
+    carries a JSON number that ``json.loads`` reads back as a Python int.
+    Anything else (a string - even a numeric one like "3", a float, None) means
+    the report was hand-edited or corrupted, so it is untrustworthy: return
+    None and let the caller emit a NO-GO rather than silently coercing a
+    suspect value or letting a TypeError/ValueError escape.
+
+    Booleans are rejected explicitly: ``True``/``False`` are ints in Python,
+    but a bool in a count field is itself a sign of a corrupt report. This
+    strictness is deliberate - the module is the last gate before an
+    irreversible public launch, where distrust of a malformed input is the
+    safe default and there is zero false-positive risk on a genuine
+    machine-generated report.
+    """
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Public data shapes
 # ---------------------------------------------------------------------------
 
@@ -235,16 +265,34 @@ def assess_public_readiness(report: Dict[str, Any]) -> ReadinessVerdict:
         hard_failures.append("pii_clean")
 
     # --- Hard check 4: coverage_floor_met ---
+    # Both the floor and the actual count come from a (usually machine-
+    # generated) JSON report, but a hand-edited or partially-corrupt report
+    # during the launch ceremony could carry a non-numeric value. Coerce
+    # defensively: a value that will not parse as an int is itself a NO-GO
+    # signal (the report is untrustworthy), not a crash. This keeps the
+    # module's "never raises" contract real - critical for a tool that is the
+    # last gate before Frank's irreversible Phase 7 CTA flip.
     tolerance: Dict[str, Any] = report.get("tolerance", {})
     if "brand_x_category_pass_minimum" in tolerance:
-        bxc_floor = int(tolerance["brand_x_category_pass_minimum"])
+        bxc_floor = _as_report_count(tolerance["brand_x_category_pass_minimum"])
         floor_source = f"tolerance block (brand_x_category_pass_minimum={bxc_floor})"
     else:
         bxc_floor = DEFAULT_BXC_FLOOR
         floor_source = f"default constant (DEFAULT_BXC_FLOOR={bxc_floor})"
 
-    bxc_actual = report.get("brand_x_category_passes", 0)
-    if bxc_actual >= bxc_floor:
+    bxc_actual = _as_report_count(report.get("brand_x_category_passes", 0))
+
+    if bxc_floor is None or bxc_actual is None:
+        detail = (
+            "could not assess coverage floor: a numeric field is malformed "
+            f"(brand_x_category_passes={report.get('brand_x_category_passes')!r}, "
+            f"tolerance.brand_x_category_pass_minimum="
+            f"{tolerance.get('brand_x_category_pass_minimum')!r}). "
+            "A non-numeric value means the report is untrustworthy -> NO-GO."
+        )
+        reasons.append(ReadinessReason(check="coverage_floor_met", ok=False, detail=detail))
+        hard_failures.append("coverage_floor_met")
+    elif bxc_actual >= bxc_floor:
         reasons.append(
             ReadinessReason(
                 check="coverage_floor_met",
