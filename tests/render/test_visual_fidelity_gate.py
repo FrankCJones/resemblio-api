@@ -202,12 +202,21 @@ class TupleOutcome:
     # "render is wrong" (SSIM low, status 200) from "page does not
     # exist" (status 404), which the v1 schema conflated.
     live_status_code: Optional[int] = None
-    # Phase 11 (2026-06-14): assertion ids whose evaluator requires real
-    # browser DOM execution (querySelectorAll / getComputedStyle without
-    # .includes). These are NOT enforced in Phase 11 - they are deferred to
-    # Phase 12, where a page.evaluate() path will be added. Surfaced here so
-    # the gap is auditable in the JSON and Markdown reports.
+    # Phase 12.2 (2026-06-14): assertion ids the browser was asked to evaluate
+    # but could not (evaluator threw, page.evaluate() raised, etc.). These are
+    # NOT counted as failures - absence of evidence is not a proven leak. Surfaced
+    # here so the gap is auditable. Prior to Phase 12.2 this field held browser-
+    # required assertion ids that were not attempted at all (unenforced). After
+    # Phase 12.2 the 6 avatars-photo-stripped assertions ARE attempted; this field
+    # now only holds ones the browser attempted but could not complete.
     unenforced_assertions: List[str] = field(default_factory=list)
+    # Phase 12.3 (2026-06-14): assertion ids from sweep.failed that are not
+    # the wordmark_leak family and not the font assertion. These text_content or
+    # .includes misses are reported for visibility but do NOT gate the tuple.
+    # Rationale: mirrors the SSIM informational-only precedent (D-5.1 Option A);
+    # text_content drift has not been observed against the live corpus; gating
+    # before one observation cycle risks flaky FAILs on benign copy changes.
+    content_drift: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -1916,3 +1925,208 @@ def test_evaluate_tuple_avatar_photo_leak_is_hard_fail(
         f"got {outcome.drift_dimensions!r}. "
         "Phase 12.2 RED: the drift dimension is not wired yet."
     )
+
+
+# ---------------------------------------------------------------------------
+# Phase 12.3 RED -> GREEN: content_drift informational surfacing
+# ---------------------------------------------------------------------------
+
+
+def test_evaluate_tuple_surfaces_content_drift_without_failing(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    """content_drift is populated from sweep.failed (non-wordmark, non-font) but does NOT gate.
+
+    Scenario: a text_content assertion fails in the sweep (expected_text absent from
+    live HTML), but color + font + wordmark + avatar are all clean. The tuple must
+    still PASS while the failing assertion id appears in TupleOutcome.content_drift.
+
+    Phase 12.3 RED: content_drift field does not exist yet; the assertion on
+    outcome.content_drift raises AttributeError (or [] if the field exists as a stub
+    but is not populated). The status==PASS assertion may also fail if content_drift
+    is accidentally gating.
+    """
+    import sys as _sys
+
+    requests = pytest.importorskip("requests")
+    pytest.importorskip("PIL.Image")
+    from PIL import Image
+
+    ref_path = tmp_path / "ref_content_drift_test.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(ref_path)
+    live_path = tmp_path / "live_content_drift_test.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(live_path)
+
+    # Use a brand+category that has text_content assertions (aeon about-team
+    # has 'aeon-disclosure-aside-names-brand-font' with expected_text="PP Right Grotesk Wide").
+    # Inject HTML that is clean of wordmark tokens and contains font disclosure
+    # text (so font passes) but is MISSING the brand-font text_content assertion value.
+    record = ReferenceRecord(
+        tuple_id="aeon__about-team__1440x900_drift",
+        brand="aeon",
+        category="about-team",
+        viewport="1440x900",
+        source_url="https://example.test/",
+        reference_path=ref_path,
+        capture_mode="full_page",
+    )
+    tolerance = ToleranceConfig(
+        ssim_floor=0.65,
+        color_bucket_overlap_min=3,
+        color_bucket_top_n=5,
+        color_quantization_bits=4,
+        dominant_font_family_required=True,
+        brand_x_category_pass_minimum=3,
+        skip_on_missing_live_url=True,
+        url_pattern="https://resemblio.com/library/{brand}/{category}",
+        basic_auth_env="LIBRARY_BASIC_AUTH_UNSET",
+        timeout_ms=30000,
+        wait_until="networkidle",
+    )
+
+    class _OK:
+        status_code = 200
+
+    monkeypatch.setattr(requests, "head", lambda url, **kwargs: _OK())
+
+    # HTML: contains "PP Right Grotesk Wide" (font assertion passes), contains "aeon"
+    # (brand-name check passes), NO "Plus Jakarta Sans". This causes
+    # aeon-disclosure-aside-names-free-alternative (text_content, "Plus Jakarta Sans")
+    # and aeon-about-team-title-uses-free-alt (.includes('plus jakarta sans')) to FAIL
+    # into sweep.failed -> content_drift. Neither is the font assertion id nor the
+    # no-leak family, so they must surface in content_drift, not in drift_dimensions.
+    html_with_content_drift = (
+        "<html><body>"
+        "<aside class='rs-font-attribution'>Aeon uses PP Right Grotesk Wide. "
+        "Rendered with a free substitute.</aside>"
+        "<p>Brand-stripped content about aeon. No forbidden tokens here.</p>"
+        "</body></html>"
+    )
+
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "capture_live_render",
+        lambda **kwargs: LiveRender(
+            png_path=live_path,
+            html=html_with_content_drift,
+            browser_eval_results={
+                "aeon-about-team-avatars-photo-stripped": True,  # no leak
+            },
+        ),
+    )
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "color_bucket_overlap",
+        lambda ref_path, live_path, **kwargs: 4,
+    )
+
+    outcome = evaluate_tuple(record, tolerance, tmp_path, DEFAULT_RESEMBLIO_BASE)
+
+    assert outcome.status == "PASS", (
+        f"content_drift must be informational only (not gating); "
+        f"expected PASS, got {outcome.status!r}. "
+        "Phase 12.3 RED: if this is FAIL, content_drift is incorrectly gating."
+    )
+    # 'aeon-disclosure-aside-names-free-alternative' expects "Plus Jakarta Sans" which
+    # is absent from the HTML above -> should appear in content_drift.
+    # 'aeon-about-team-title-uses-free-alt' (.includes 'plus jakarta sans') also fails.
+    assert any(
+        "free-alternative" in aid or "free-alt" in aid
+        for aid in getattr(outcome, "content_drift", [])
+    ), (
+        f"A failing non-font text_content/includes assertion must appear in content_drift; "
+        f"got content_drift={getattr(outcome, 'content_drift', 'ATTRIBUTE_MISSING')!r}. "
+        "Phase 12.3 RED: content_drift field or wiring does not exist yet."
+    )
+
+
+def test_content_drift_excludes_font_and_wordmark(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Font assertion id and no-leak ids must NOT be double-counted into content_drift.
+
+    The font assertion is represented by the font_family_match dimension.
+    The no-wordmark-logo-leak family is represented by wordmark_leak.
+    content_drift must hold only ids that belong to neither of those families.
+
+    Phase 12.3 RED: content_drift field absent or not filtered correctly.
+    """
+    import sys as _sys
+
+    requests = pytest.importorskip("requests")
+    pytest.importorskip("PIL.Image")
+    from PIL import Image
+
+    ref_path = tmp_path / "ref_no_double_count.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(ref_path)
+    live_path = tmp_path / "live_no_double_count.png"
+    Image.new("RGB", (16, 16), color=(100, 150, 200)).save(live_path)
+
+    record = ReferenceRecord(
+        tuple_id="aeon__about-team__1440x900_nodup",
+        brand="aeon",
+        category="about-team",
+        viewport="1440x900",
+        source_url="https://example.test/",
+        reference_path=ref_path,
+        capture_mode="full_page",
+    )
+    tolerance = ToleranceConfig(
+        ssim_floor=0.65,
+        color_bucket_overlap_min=3,
+        color_bucket_top_n=5,
+        color_quantization_bits=4,
+        dominant_font_family_required=True,
+        brand_x_category_pass_minimum=3,
+        skip_on_missing_live_url=True,
+        url_pattern="https://resemblio.com/library/{brand}/{category}",
+        basic_auth_env="LIBRARY_BASIC_AUTH_UNSET",
+        timeout_ms=30000,
+        wait_until="networkidle",
+    )
+
+    class _OK:
+        status_code = 200
+
+    monkeypatch.setattr(requests, "head", lambda url, **kwargs: _OK())
+
+    # HTML: clean of everything so only text_content assertions may drift.
+    # Includes Plus Jakarta Sans so the font assertion passes.
+    clean_html = (
+        "<html><body>"
+        "<aside class='rs-font-attribution'>Aeon uses PP Right Grotesk Wide. "
+        "Rendered with Plus Jakarta Sans.</aside>"
+        "<p>Brand-stripped content. No forbidden tokens.</p>"
+        "</body></html>"
+    )
+
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "capture_live_render",
+        lambda **kwargs: LiveRender(
+            png_path=live_path,
+            html=clean_html,
+            browser_eval_results={
+                "aeon-about-team-avatars-photo-stripped": True,
+            },
+        ),
+    )
+    monkeypatch.setattr(
+        _sys.modules[__name__],
+        "color_bucket_overlap",
+        lambda ref_path, live_path, **kwargs: 4,
+    )
+
+    outcome = evaluate_tuple(record, tolerance, tmp_path, DEFAULT_RESEMBLIO_BASE)
+    content_drift = getattr(outcome, "content_drift", None)
+    assert content_drift is not None, "content_drift field must exist on TupleOutcome"
+
+    # No-leak assertion ids must not appear in content_drift.
+    from .assertion_eval import NO_LEAK_ID_MARKER
+    for aid in (content_drift or []):
+        assert NO_LEAK_ID_MARKER not in aid, (
+            f"No-leak assertion id {aid!r} must not be in content_drift "
+            "(it has its own wordmark_leak dimension)"
+        )
