@@ -358,8 +358,6 @@ def evaluate_all_assertions_against_live_html(
     failed: List[str] = []
     browser_required: List[str] = []
 
-    haystack_marker = live_html.lower()  # cheap pre-check for unrecognized shape
-
     for assertion in assertions:
         aid: str = assertion.get("id") or ""
         kind = assertion.get("kind")
