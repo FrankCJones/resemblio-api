@@ -24,6 +24,8 @@ Schema: prelaunch_readiness_v1
 
 from __future__ import annotations
 
+import json
+import pathlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List
@@ -92,6 +94,30 @@ class ReadinessVerdict:
 
 
 # ---------------------------------------------------------------------------
+# IO
+# ---------------------------------------------------------------------------
+
+
+def load_gate_report(path: pathlib.Path) -> Dict[str, Any]:
+    """Load and parse a gate_report.json from disk.
+
+    Raises:
+        FileNotFoundError: if the path does not exist.
+        ValueError: if the file contains invalid JSON, with a message naming
+            the path and the parse error.
+
+    Does not validate the report's schema or field set; that is
+    `assess_public_readiness`'s responsibility.
+    """
+    if not path.exists():
+        raise FileNotFoundError(f"Gate report not found: {path}")
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON in gate report {path}: {exc}") from exc
+
+
+# ---------------------------------------------------------------------------
 # Core assessment
 # ---------------------------------------------------------------------------
 
@@ -135,6 +161,30 @@ def assess_public_readiness(report: Dict[str, Any]) -> ReadinessVerdict:
 
     reasons: List[ReadinessReason] = []
     hard_failures: List[str] = []
+
+    # --- Hard check 1: schema_supported ---
+    # This is the guard the Gate 13 audit identified as missing: the v3 report
+    # on disk carried aggregate=PASS, but that verdict was computed before
+    # wordmark_leak (Phase 11) and avatar_photo_leak (Phase 12) enforcement
+    # existed. A schema below v5 is a stale pre-enforcement report and CANNOT
+    # serve as a launch-readiness verdict regardless of its aggregate field.
+    if report_schema in SUPPORTED_GATE_SCHEMAS:
+        reasons.append(
+            ReadinessReason(
+                check="schema_supported",
+                ok=True,
+                detail=f"report schema {report_schema} is in the supported v5/v6 window",
+            )
+        )
+    else:
+        detail = (
+            f"report schema '{report_schema}' is not in the supported window "
+            f"{{v5, v6}}. This report predates Phase 11/12 enforcement "
+            f"(wordmark_leak + avatar_photo_leak) and cannot be used as a "
+            f"launch-readiness verdict. Run the live v6 gate and assess the fresh report."
+        )
+        reasons.append(ReadinessReason(check="schema_supported", ok=False, detail=detail))
+        hard_failures.append("schema_supported")
 
     # --- Hard check 2: trademark_clean ---
     tuples: List[Dict[str, Any]] = report.get("tuples", [])
@@ -247,52 +297,3 @@ def assess_public_readiness(report: Dict[str, Any]) -> ReadinessVerdict:
         go=go,
         reasons=reasons,
     )
-
-
-# ---------------------------------------------------------------------------
-# Markdown rendering
-# ---------------------------------------------------------------------------
-
-
-def render_readiness_markdown(verdict: ReadinessVerdict) -> str:
-    """Render a ReadinessVerdict as a human-readable Markdown string.
-
-    The output carries a top-line GO or NO-GO headline, metadata about the
-    assessed report, and one bullet per reason with its check id and detail.
-    Designed to be pasted directly into STATUS.md or the PRD.
-
-    A GO headline looks like:
-        ## Readiness verdict: GO
-
-    A NO-GO headline looks like:
-        ## Readiness verdict: NO-GO
-    """
-    lines: List[str] = []
-    verdict_label = "GO" if verdict.go else "NO-GO"
-    lines.append(f"## Readiness verdict: {verdict_label}")
-    lines.append("")
-    lines.append(f"- Generated: {verdict.generated_at_utc}")
-    lines.append(f"- Gate report schema assessed: {verdict.gate_report_schema}")
-    lines.append(f"- Aggregator schema: {verdict.schema_version}")
-    lines.append("")
-    lines.append("### Checks")
-    lines.append("")
-
-    for r in verdict.reasons:
-        status_icon = "PASS" if r.ok else "FAIL"
-        lines.append(f"- [{status_icon}] `{r.check}`: {r.detail}")
-
-    lines.append("")
-    if verdict.go:
-        lines.append(
-            "**All hard checks passed. Library is ready for Phase 7 (homepage CTA flip) - "
-            "Frank's irreversible gate.**"
-        )
-    else:
-        failing = [r.check for r in verdict.reasons if not r.ok]
-        lines.append(
-            f"**NO-GO. Failing checks: {', '.join(failing)}. "
-            f"Resolve before Frank's Phase 7 flip.**"
-        )
-
-    return "\n".join(lines)
