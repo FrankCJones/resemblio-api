@@ -191,7 +191,59 @@ tests pass. All pre-existing tests continue to pass at the same rate.
 
 ---
 
+## Gate-8 review (Opus, 2026-06-13)
+
+**Verdict: APPROVED after one correction (committed `6341a81`).**
+
+Reviewed independently against observed state, not the reported test counts.
+
+### Verified
+
+- **Runs-not-skips proven on a TRUE standalone checkout.** Exported the committed
+  HEAD tree via `git archive` to `/c/tmp/runner/work/resemblio-api/resemblio-api`
+  (CI-depth path, no workspace `CLAUDE.md` ancestor). Ran the render suite there:
+  **76 passed, 3 skipped**; `test_linear_font_spec_matches_actual_live_disclosure`
+  **PASSED** (not skipped). This is a stronger proof than the `WORKSPACE_ROOT`
+  override (which still finds the workspace ancestor via the path walk).
+- **No PNG in the public repo.** `git ls-files tests/render/reference_corpus/ | grep -iE '\.(png|jpe?g)$'` -> 0. `.gitignore` + two guard tests enforce it.
+- **The 3 standalone-checkout skips are each correct:** 2 drift guards self-skip
+  (workspace absent), 1 live sweep skips (PNGs absent).
+- **DRL tree untouched.** No changes under `_vendored/`.
+- **OPS.md note correct.** `page_size` verified at `app/routes/library.py:721`
+  (`page_size: int = Query(...)`); `limit` is a SQLAlchemy chain call, not a param.
+- **CI deploy green** for every completed Phase 8 commit (`96d1e11`, `70e2667`
+  success via GitHub Actions API); fix commit `6341a81` deploy is the standard
+  test-only gate.
+- **Full suite:** 1 failed (documented `test_corpus_coverage_floor` local-only),
+  1953 passed, 27 skipped, 2 xfailed.
+
+### Correction found and fixed (`6341a81`)
+
+Phase 8.2 routed `MANIFEST_PATH` through `CORPUS_ROOT` (the in-repo, PNG-less
+copy). Because `load_manifest` resolves each record's PNG relative to the
+manifest's parent directory, and the PNGs live only in the workspace tree, the
+live full-corpus sweep found **zero PNGs and skipped everywhere - including the
+gate-run box.** That contradicted this PRD's own two-tier table, which lists the
+live sweep as "a gate-run-box / scheduled job."
+
+Confirmed empirically: in-repo manifest -> 0/24 PNGs on disk; workspace manifest
+-> 24/24 present. And `playwright` + `requests` are installed on the dev box, so
+naively pointing the manifest at the workspace tree would fire 24 live network
+captures on a bare `pytest -q` (slow + flaky).
+
+Fix: `conftest.resolve_manifest_path` (pure, injected-paths, 3 unit tests) encodes
+a safe-by-default / explicit-opt-in policy. Default keeps the manifest on the
+in-repo PNG-less copy so the sweep skips on CI and dev; `FIDELITY_LIVE_SWEEP=1`
+points it at the workspace tree so the gate-run box can actually run the sweep.
+The structural tier (`TOLERANCE_PATH` + `SPECS_DIR`) is unchanged - still resolves
+from `CORPUS_ROOT`, still runs on CI. Documented in the live-sweep test docstring,
+the module env-var list, and `reference_corpus/README.md`.
+
+This makes both tiers honest: the structural tier runs on CI; the live sweep runs
+on the gate-run box (opt-in) and skips safely everywhere else.
+
 ## Phase 7 status
 
 Unblocked by: Phase 5 contact sheet signed + Phase 6 hygiene done + Phase 8 makes gate
-honest. Homepage CTA flip remains Frank's separate irreversible gate.
+honest (structural tier runs on CI; live sweep honestly runnable on the gate-run box).
+Homepage CTA flip remains Frank's separate irreversible gate.
