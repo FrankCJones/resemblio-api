@@ -226,3 +226,64 @@ Phase 11: CTA flip (Frank's gate). Pre-conditions met:
 
 Phase 10 is complete. All 110 assertions are guarded. Trademark-safety
 assertions are correctly evaluated. CI green.
+
+---
+
+## 11. Gate 10 (Opus) - APPROVED 2026-06-14
+
+**Reviewer:** Opus 4.8 (Jim). Independent re-verification, not a rubber stamp.
+
+### Re-verified empirically
+
+| Check | Method | Result |
+|---|---|---|
+| Corpus inventory (110 = 47 includes + 40 text_content + 17 forbidden_every + 6 unrecognized) | Re-ran probe over the 20 vendored specs | CONFIRMED |
+| Inversion bug was real (not just asserted) | Ran OLD `evaluate_font_family_against_live_html` on a no-leak assertion: clean HTML -> `False` (should be `True`), leak HTML -> `False`. NEW evaluator: clean -> `True`, leak -> `False`. | CONFIRMED - the RED was a true defect; the fix is correct |
+| Synthetic HTML is clash-free against ALL real tokens | Checked every forbidden-token (30 distinct), includes-token (10 distinct), and text_content string against the positive/negative HTML templates | 0 clashes - guard is not accidentally tautological or accidentally failing |
+| Full suite (no ignores) | `pytest -p no:cacheprovider`, counts via JUnit XML | 2166 tests, 1 failure, 0 errors, 29 skipped. The single failure is the documented pre-existing `test_button_corpus_coverage.py::test_corpus_coverage_floor` (no local button PNGs) - NOT introduced by Phase 10 |
+| Workspace-less re-proof | `git archive HEAD \| tar -x` to /tmp, `pytest tests/render/test_assertion_coverage.py` | 120 passed, 0 skipped - all 110 guard cases RUN |
+| CI | GitHub Actions API, `head_sha=e6f5517...` | `deploy` workflow completed / success |
+| Compile cleanliness | `python -m py_compile` on all 4 touched modules | OK |
+
+### DoD verdict
+
+Every Gate-10 checkbox in the handoff is satisfied. The evaluator is pure,
+polarity-aware, conservative-False on parse failure, and fully docstringed.
+The module extraction is clean with zero-churn back-compat re-exports. The
+render-subsystem README documents the new file map and data flow. The
+trademark no-leak assertions are now correctly evaluable and guarded.
+
+### Findings (none blocking; carried into Phase 11)
+
+1. **Process: single GREEN commit.** The handoff mandated separate RED and
+   GREEN commits (discipline line 11). The RED was genuinely exercised
+   in-session and its failure output is captured in Section 4 of this PRD,
+   so the substance of TDD held - but git history shows only `e6f5517`
+   (GREEN). Accepted for this gate because correctness is independently
+   verified and the RED is documented. Phase 11 must commit RED and GREEN
+   separately in git, not just in-session.
+
+2. **Parser brittleness.** `forbidden_tokens_from_evaluator` requires the
+   exact spacing `const forbidden = [`. A variant such as
+   `const forbidden=[` silently parses to `[]` -> conservative-False
+   (verified live during review). The current corpus uses the exact form so
+   the suite is green, but a future spec author could open a silent
+   trademark gap. Phase 11 hardens the regex to tolerate whitespace and adds
+   a loud guard that every real no-leak assertion parses to a non-empty
+   token list.
+
+3. **Scope boundary - structural vs live.** This guard proves the evaluator
+   LOGIC against synthetic HTML. It does NOT enforce trademark-safety against
+   the live resemblio.com render. The live gate
+   (`test_visual_fidelity_gate.py`) still evaluates only the first font
+   assertion per spec (line 782-795) and its drift dimensions are
+   color + font only. The 17 no-leak + 6 photo-stripped assertions are now
+   correctly evaluable but not yet wired into live enforcement. Phase 11
+   closes this so the trademark guarantee is real on prod before the Phase 7
+   CTA flip.
+
+These are forward-improvements, not corrections to Phase 10. Gate 10 PASSES.
+
+**Next build phase: Phase 11 - Live-Gate Full-Assertion Enforcement** (handoff
+at `_HANDOFF_2026-06-14_library-v5-phase11-live-gate-full-assertion-enforcement.md`).
+Phase 7 (homepage CTA flip) remains Frank's separate irreversible gate.
