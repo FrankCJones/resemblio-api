@@ -1588,19 +1588,20 @@ def test_rz_a_dry_run_vercel_tuples_now_fail_route_missing(
         )
 
 
-def test_schema_version_is_v5() -> None:
-    """The gate report schema_version is the v5 bump from Phase 12.
+def test_schema_version_is_v6() -> None:
+    """The gate report schema_version is the v6 bump from Phase 13.
 
-    v5 adds: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped assertions
-    enforced via page.evaluate); content_drift informational field (not gating);
-    browser_eval.missing surfaced (field was named unenforced_assertions in v5;
-    renamed to browser_eval_missing in Phase 13 / v6). Compat v4 for one cycle.
+    v6 renames unenforced_assertions -> browser_eval_missing (semantic
+    correctness: field holds browser eval failures, not assertions never
+    attempted). Compat v4 dropped (one cycle elapsed since Phase 12);
+    compat v5 held for one cycle for v5 consumers.
+    v5 added avatar_photo_leak HARD FAIL and content_drift informational field.
     v4 added full-assertion sweep enforcement and wordmark_leak HARD FAIL.
     v3 bumped from D-5.1 (SSIM demoted to informational).
-    v2 introduced the RZ-A HEAD pre-flight (still present in v5).
+    v2 introduced the RZ-A HEAD pre-flight.
     """
-    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v5"
-    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v4"
+    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v6"
+    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v5"
 
 
 # ---------------------------------------------------------------------------
@@ -1754,25 +1755,26 @@ def test_linear_font_spec_matches_actual_live_disclosure() -> None:
 
 
 def test_schema_version_is_v3_option_a_gate_rebasis() -> None:
-    """Gate report schema_version reflects Option A (D-5.1) and Phase 12 bumps.
+    """Gate report schema_version reflects Option A (D-5.1) and Phase 13 bumps.
 
     D-5.1 decision (2026-06-13, Opus/Jim locked): demote raw full-page SSIM to
     informational; make structural dimensions (color-bucket overlap + font-family
-    match) the primary gate. Phase 11 bumped to v4; Phase 12 bumped to v5 to add
-    avatar_photo_leak HARD FAIL and content_drift informational field.
-    Regressing below v5 reintroduces the avatar/PII enforcement gap.
+    match) the primary gate. Phase 11 bumped to v4; Phase 12 bumped to v5;
+    Phase 13 bumped to v6 (browser_eval_missing rename, compat v4 dropped).
+    Regressing below v6 reintroduces stale field name in JSON output.
     """
-    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v5"
+    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v6"
 
 
-def test_compat_schema_version_is_v2_after_option_a_bump() -> None:
-    """One-cycle compat schema covers prior v4 gate consumers (Jim diagnostic).
+def test_compat_schema_version_is_v5_after_phase13_bump() -> None:
+    """One-cycle compat schema covers prior v5 gate consumers.
 
     Per the file's established deprecation discipline: compat covers one cycle,
-    removed when the next bump lands. Phase 12 bumped v4->v5; compat is v4
-    (covering consumers that read v4 reports). Remove after Phase 13 lands.
+    removed when the next bump lands. Phase 13 bumped v5->v6; compat is v5
+    (covering consumers that read v5 reports). Remove after Phase 14 lands.
+    Compat v4 is dropped: one cycle elapsed since Phase 12 introduced it.
     """
-    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v4"
+    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v5"
 
 
 def test_ssim_above_floor_not_sole_pass_path_option_a(
