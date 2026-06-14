@@ -56,9 +56,31 @@ MANIFEST_PATH: pathlib.Path = CORPUS_ROOT / "reference_captures" / "manifest.jso
 # ---------------------------------------------------------------------------
 
 #: (brand, category) tuples that intentionally have no manifest entry.
-#: Phase 9.3 RED: empty (8 orphan specs violate the consistency contract).
-#: Phase 9.4 GREEN: all 8 PNG-less specs declared here.
-STRUCTURAL_ONLY_SPECS: FrozenSet[Tuple[str, str]] = frozenset()
+#: Phase 9.3 RED: was empty (8 orphan specs violated the consistency contract).
+#: Phase 9.4 GREEN: all 8 PNG-less specs declared here with per-entry rationale.
+STRUCTURAL_ONLY_SPECS: FrozenSet[Tuple[str, str]] = frozenset({
+    # aeon: no reference capture was ever shot for any aeon category.
+    # aeon.co deploys a Cloudflare challenge on automated requests, making
+    # full-page screenshot capture unreliable. Structural assertions (font
+    # family checks against Plus Jakarta Sans) are authored and pass CI.
+    ("aeon", "about-team"),
+    ("aeon", "alphabet"),
+    ("aeon", "buttons"),
+    # openai: only the alphabet category has a reference capture in the manifest.
+    # openai.com is gated by Cloudflare Turnstile on the paths used for
+    # about-team and buttons pages; captures return a challenge page rather
+    # than real content. See also 02-prd/2026-06-07-openai-permanent-skip.md.
+    # Structural font assertions (Inter) are authored and pass CI.
+    ("openai", "about-team"),
+    ("openai", "buttons"),
+    # stripe: no reference capture was ever shot for any stripe category.
+    # Stripe's marketing pages vary significantly by geography and A/B test
+    # cohort; reliable full-page captures were deferred pending a stable
+    # capture target. Structural assertions (Sohne -> Inter) are authored.
+    ("stripe", "about-team"),
+    ("stripe", "alphabet"),
+    ("stripe", "buttons"),
+})
 
 
 # ---------------------------------------------------------------------------

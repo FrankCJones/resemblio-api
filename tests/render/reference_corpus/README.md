@@ -87,6 +87,40 @@ The sync helper copies text artifacts from the workspace authoring tree into
 this directory, refuses to copy any `*.png`, and is a no-op when they already
 match. Commit the updated in-repo mirror after syncing.
 
+## Structural-only specs
+
+Some specs in `reference_captures/specs/` have no matching entry in
+`manifest.json`. These are **structural-only specs**: font-family assertions
+are authored and pass CI, but no reference PNG was ever shot for them.
+
+The 8 structural-only specs as of the Phase 9.4 baseline (2026-06-13):
+
+| Brand | Category | Reason no PNG exists |
+|---|---|---|
+| aeon | about-team | aeon.co deploys Cloudflare challenge on automated requests |
+| aeon | alphabet | same as above |
+| aeon | buttons | same as above |
+| openai | about-team | Cloudflare Turnstile gates the about-team page |
+| openai | buttons | Cloudflare Turnstile gates the buttons-source page |
+| stripe | about-team | Stripe pages vary by geo/A/B cohort; deferred pending stable target |
+| stripe | alphabet | same as above |
+| stripe | buttons | same as above |
+
+These tuples are declared in `STRUCTURAL_ONLY_SPECS` in
+`tests/render/test_corpus_consistency.py`. The consistency contract
+(`test_every_spec_is_manifest_backed_or_declared_structural_only`) enforces
+that every spec is either manifest-backed or explicitly listed there - so a
+genuinely missing capture is distinguishable from an intentionally PNG-less
+spec.
+
+**If you add a reference capture for one of these brands later:**
+1. Remove the entry from `STRUCTURAL_ONLY_SPECS` in `test_corpus_consistency.py`.
+2. Add the brand tuple to `fidelity_targets.yml` and shoot the PNG.
+3. Re-run `scripts/sync_fidelity_corpus.py` and commit the updated manifest.
+
+The PNG itself never enters this public repo (trademark constraint; D-5.1).
+Only the manifest entry changes; the PNG stays in the workspace `_verification/` tree.
+
 ## Drift guard
 
 `tests/render/test_corpus_drift.py` checks that the vendored specs match their
