@@ -47,6 +47,8 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Callable, Dict, List, Optional, Tuple
 
+from tests.render.assertion_eval import AVATAR_LEAK_ID_MARKER
+
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -299,8 +301,6 @@ def build_avatar_assertion(brand_slug: str) -> Dict:
 
     Pure function; no network, no os.environ access.
     """
-    from tests.render.assertion_eval import AVATAR_LEAK_ID_MARKER
-
     return {
         "id": f"{brand_slug}-corpus-{AVATAR_LEAK_ID_MARKER}",
         "evaluate": AVATAR_PHOTO_EVALUATOR,
