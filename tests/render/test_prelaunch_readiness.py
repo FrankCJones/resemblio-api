@@ -406,3 +406,56 @@ class TestRenderReadinessMarkdown:
         """render_readiness_markdown always returns a str."""
         verdict = assess_public_readiness(_clean_v6_report())
         assert isinstance(render_readiness_markdown(verdict), str)
+
+
+# ---------------------------------------------------------------------------
+# Gate 14 review hardening - malformed report never raises (NO-GO instead)
+# ---------------------------------------------------------------------------
+
+
+class TestMalformedReportNeverRaises:
+    """Pin the docstring contract: a malformed report yields NO-GO, never an
+    uncaught exception.
+
+    The aggregator is the last gate before Frank's irreversible Phase 7 CTA
+    flip. A realistic operator error (a hand-edited or partially-corrupt
+    gate_report.json during the launch ceremony) must surface as a clear
+    NO-GO with an explanatory reason, not a stack trace that an operator
+    might mistake for "the tool is broken, ship anyway".
+    """
+
+    def test_non_numeric_bxc_passes_is_no_go_not_crash(self) -> None:
+        """brand_x_category_passes as a string -> NO-GO, not TypeError."""
+        report = _clean_v6_report(brand_x_category_passes="3")  # string, not int
+        verdict = assess_public_readiness(report)  # must not raise
+        assert verdict.go is False
+        cov = _get_reason(verdict, "coverage_floor_met")
+        assert cov.ok is False
+        assert "could not" in cov.detail.lower() or "malformed" in cov.detail.lower()
+
+    def test_non_numeric_tolerance_floor_is_no_go_not_crash(self) -> None:
+        """tolerance floor as a non-numeric string -> NO-GO, not ValueError."""
+        report = _clean_v6_report(
+            brand_x_category_passes=3,
+            tolerance={"brand_x_category_pass_minimum": "three"},
+        )
+        verdict = assess_public_readiness(report)  # must not raise
+        assert verdict.go is False
+        cov = _get_reason(verdict, "coverage_floor_met")
+        assert cov.ok is False
+
+    def test_missing_bxc_passes_key_is_no_go(self) -> None:
+        """A report missing brand_x_category_passes entirely -> NO-GO (defaults to 0)."""
+        report = _clean_v6_report()
+        del report["brand_x_category_passes"]
+        verdict = assess_public_readiness(report)  # must not raise
+        assert verdict.go is False
+        cov = _get_reason(verdict, "coverage_floor_met")
+        assert cov.ok is False
+
+    def test_empty_report_is_no_go_not_crash(self) -> None:
+        """An empty dict (worst-case malformed input) -> NO-GO, never raises."""
+        verdict = assess_public_readiness({})  # must not raise
+        assert verdict.go is False
+        # schema_supported fails because schema is <missing>
+        assert _get_reason(verdict, "schema_supported").ok is False
