@@ -911,6 +911,19 @@ def evaluate_tuple(
     # Gate verdict: PASS iff color + font + no wordmark leak + no avatar photo leak.
     gate_ok = color_ok and font_ok and not sweep.wordmark_leak and not browser_eval.avatar_photo_leak
 
+    # Phase 12.3: compute content_drift from sweep.failed, excluding:
+    # - the no-leak family (represented by wordmark_leak dimension)
+    # - the font assertion id (represented by font_family_match dimension)
+    # This is informational only - NOT gating. Mirrors the SSIM precedent (D-5.1 Option A):
+    # text_content drift has not been observed in the live corpus; gating before one
+    # observation cycle risks flaky FAILs on benign copy changes. Measure first, gate later.
+    font_aid = (font_assertion or {}).get("id")
+    from .assertion_eval import NO_LEAK_ID_MARKER as _NO_LEAK
+    content_drift: List[str] = [
+        aid for aid in sweep.failed
+        if _NO_LEAK not in aid and aid != font_aid
+    ]
+
     # unenforced_assertions: after Phase 12.2 the 6 avatars-photo-stripped assertions
     # are enforced. Any genuinely unenforced ones (currently expected to be zero)
     # would be browser assertions not in browser_subset - none expected in this corpus.
@@ -930,6 +943,7 @@ def evaluate_tuple(
             font_family_match=font_ok,
             live_status_code=live_status,
             unenforced_assertions=browser_missing,
+            content_drift=content_drift,
         )
 
     drift: List[str] = []
@@ -954,6 +968,7 @@ def evaluate_tuple(
         drift_dimensions=drift,
         live_status_code=live_status,
         unenforced_assertions=browser_missing,
+        content_drift=content_drift,
     )
 
 
