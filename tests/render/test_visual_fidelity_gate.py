@@ -42,10 +42,15 @@ Schema versions
 in  : reference_capture_manifest_v1 (reference_captures/manifest.json)
 in  : visual_fidelity_tolerance_v1   (tolerance_config.yml)
 in  : fidelity_spec_v2               (reference_captures/specs/*.json)
-out : library_visual_fidelity_gate_report_v4 (gate_report.json + .md)
-      compat_schema_version=v3 written alongside for one cycle so
-      prior v3 consumers (Jim diagnostic) keep reading until their bump.
-      Deprecation date: remove compat v3 after Phase 12 lands.
+out : library_visual_fidelity_gate_report_v5 (gate_report.json + .md)
+      compat_schema_version=v4 written alongside for one cycle so
+      prior v4 consumers (Jim diagnostic) keep reading until their bump.
+      Deprecation date: remove compat v4 after Phase 13 lands.
+      v5 adds: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped assertions
+      now enforced via page.evaluate); content_drift informational field
+      (sweep.failed excluding no-leak + font families, not gating);
+      browser_eval.missing surfaced in unenforced_assertions instead of
+      the formerly-unenforced browser_required ids.
       v4 adds: full-assertion sweep, wordmark_leak HARD FAIL,
       unenforced_assertions (6 browser-required assertions deferred to Phase 12).
       v3 rebased structural gate as primary (D-5.1 Option A, 2026-06-13).
@@ -114,12 +119,14 @@ from .conftest import (
     resolve_manifest_path,
 )
 
-# Phase 11.2 (2026-06-14): bumped v3->v4 for trademark no-leak enforcement.
-# unenforced_assertions added to TupleOutcome; wordmark_leak is now a HARD FAIL
-# drift dimension in evaluate_tuple. Prior v3 consumers read via compat_schema.
-SCHEMA_VERSION = "library_visual_fidelity_gate_report_v4"
-# One-cycle compat for v3 consumers (Jim diagnostic). Remove after Phase 12.
-COMPAT_SCHEMA_VERSION = "library_visual_fidelity_gate_report_v3"
+# Phase 12 (2026-06-14): bumped v4->v5 for browser-required assertion enforcement.
+# avatar_photo_leak added as HARD FAIL drift dimension; content_drift informational
+# field added; unenforced_assertions now holds browser_eval.missing instead of the
+# formerly-unenforced browser_required ids (6 avatars assertions now enforced).
+# Prior v4 consumers (Jim diagnostic) read via compat_schema for one cycle.
+SCHEMA_VERSION = "library_visual_fidelity_gate_report_v5"
+# One-cycle compat for v4 consumers (Jim diagnostic). Remove after Phase 13.
+COMPAT_SCHEMA_VERSION = "library_visual_fidelity_gate_report_v4"
 
 # HEAD pre-flight constants (RZ-A). Status >= 400 short-circuits SSIM and
 # marks the tuple as route_missing. Timeout is the HEAD budget only; the
@@ -999,7 +1006,7 @@ def aggregate_brand_category_passes(outcomes: List[TupleOutcome]) -> int:
 def render_markdown(report: GateReport) -> str:
     """Render the aggregate gate report as Markdown for human review."""
     lines: List[str] = []
-    lines.append("# Library Visual Fidelity Gate Report (Phase 11)")
+    lines.append("# Library Visual Fidelity Gate Report (Phase 12)")
     lines.append("")
     lines.append(f"- Schema: `{report.schema_version}`")
     lines.append(f"- Compat schema (one cycle): `{report.compat_schema_version}`")
@@ -1026,9 +1033,9 @@ def render_markdown(report: GateReport) -> str:
     lines.append("## Per-tuple outcomes")
     lines.append("")
     lines.append(
-        "| Tuple | Status | Gate | Live | SSIM | Colors | Font | Drift | Unenforced |"
+        "| Tuple | Status | Gate | Live | SSIM | Colors | Font | Drift | Missing | Content drift |"
     )
-    lines.append("|---|---|---|---|---|---|---|---|---|")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|")
     for t in report.tuples:
         ssim_s = f"{t.ssim:.3f}" if t.ssim is not None else "-"
         colors_s = (
@@ -1045,28 +1052,54 @@ def render_markdown(report: GateReport) -> str:
             str(t.live_status_code)
             if t.live_status_code is not None else "-"
         )
-        unenforced_count = len(t.unenforced_assertions) if t.unenforced_assertions else 0
-        unenforced_s = str(unenforced_count) if unenforced_count else "-"
+        missing_count = len(t.unenforced_assertions) if t.unenforced_assertions else 0
+        missing_s = str(missing_count) if missing_count else "-"
+        content_drift_count = len(t.content_drift) if t.content_drift else 0
+        content_drift_s = str(content_drift_count) if content_drift_count else "-"
         lines.append(
             f"| {t.tuple_id} | {t.status} | {t.gate} | {live_s} | "
-            f"{ssim_s} | {colors_s} | {font_s} | {drift} | {unenforced_s} |"
+            f"{ssim_s} | {colors_s} | {font_s} | {drift} | {missing_s} | {content_drift_s} |"
         )
     lines.append("")
-    # Surface unenforced (browser-required) assertions as a separate section
-    # so the Phase 12 deferred gap is auditable in the Markdown report.
-    all_unenforced: Dict[str, List[str]] = {}
+    # Surface browser_eval.missing assertions: those we attempted via page.evaluate()
+    # but the browser could not evaluate (evaluator threw, timed out, etc.).
+    # After Phase 12 the formerly-unenforced 6 avatars assertions are now attempted;
+    # this section shows what we tried but could not complete (expected to be empty
+    # in normal runs).
+    all_missing: Dict[str, List[str]] = {}
     for t in report.tuples:
         if t.unenforced_assertions:
-            all_unenforced[t.tuple_id] = t.unenforced_assertions
-    if all_unenforced:
-        lines.append("## Unenforced assertions (browser-required; deferred to Phase 12)")
+            all_missing[t.tuple_id] = t.unenforced_assertions
+    if all_missing:
+        lines.append("## Browser eval missing (attempted but could not evaluate)")
         lines.append("")
         lines.append(
-            "These assertions require real browser DOM execution (querySelectorAll /"
-            " getComputedStyle) and are recorded but NOT enforced in Phase 11."
+            "These assertions were passed to page.evaluate() but the browser could not "
+            "complete the evaluation (evaluator threw or timed out). They are NOT counted "
+            "as failures - absence of evidence is not a proven leak. The list is surfaced "
+            "for operator visibility."
         )
         lines.append("")
-        for tuple_id, ids in sorted(all_unenforced.items()):
+        for tuple_id, ids in sorted(all_missing.items()):
+            lines.append(f"- `{tuple_id}`: {', '.join(ids)}")
+        lines.append("")
+    # Surface content_drift: non-wordmark, non-font sweep.failed ids. Informational only.
+    all_content_drift: Dict[str, List[str]] = {}
+    for t in report.tuples:
+        if t.content_drift:
+            all_content_drift[t.tuple_id] = t.content_drift
+    if all_content_drift:
+        lines.append("## Content drift (informational; not gating)")
+        lines.append("")
+        lines.append(
+            "Fidelity-spec assertions that failed in the string sweep but are NOT gating. "
+            "These are text_content or .includes misses outside the wordmark-leak and font "
+            "families. Not gating by design (mirrors SSIM informational precedent D-5.1): "
+            "text_content drift has not been observed against the live corpus; promoting to "
+            "gating before one observation cycle risks flaky FAILs on benign copy changes."
+        )
+        lines.append("")
+        for tuple_id, ids in sorted(all_content_drift.items()):
             lines.append(f"- `{tuple_id}`: {', '.join(ids)}")
         lines.append("")
     if report.fail_count:
@@ -1078,6 +1111,11 @@ def render_markdown(report: GateReport) -> str:
             "- `wordmark_leak` drift -> the live render leaks a brand logo or "
             "wordmark; check trademark_strip_targets.yml and the indexer pipeline "
             "(Phase 11 trademark enforcement)"
+        )
+        lines.append(
+            "- `avatar_photo_leak` drift -> the live render leaks a real-person photo "
+            "from the source brand; check the about-team template photo-strip logic "
+            "(Phase 12 PII enforcement)"
         )
         lines.append(
             "- `structure` drift -> Phase 4 per-category fidelity scaffold"
@@ -1553,17 +1591,18 @@ def test_rz_a_dry_run_vercel_tuples_now_fail_route_missing(
         )
 
 
-def test_schema_version_is_v4() -> None:
-    """The gate report schema_version is the v4 bump from Phase 11.
+def test_schema_version_is_v5() -> None:
+    """The gate report schema_version is the v5 bump from Phase 12.
 
-    v4 adds full-assertion sweep enforcement (trademark no-leak as HARD FAIL),
-    unenforced_assertions field in TupleOutcome, and wordmark_leak drift dimension.
-    Compat v3 maintained for one cycle (Jim diagnostic consumer).
+    v5 adds: avatar_photo_leak HARD FAIL (6 avatars-photo-stripped assertions
+    enforced via page.evaluate); content_drift informational field (not gating);
+    browser_eval.missing surfaced in unenforced_assertions. Compat v4 for one cycle.
+    v4 added full-assertion sweep enforcement and wordmark_leak HARD FAIL.
     v3 bumped from D-5.1 (SSIM demoted to informational).
-    v2 introduced the RZ-A HEAD pre-flight (still present in v4).
+    v2 introduced the RZ-A HEAD pre-flight (still present in v5).
     """
-    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v4"
-    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v3"
+    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v5"
+    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v4"
 
 
 # ---------------------------------------------------------------------------
@@ -1717,25 +1756,25 @@ def test_linear_font_spec_matches_actual_live_disclosure() -> None:
 
 
 def test_schema_version_is_v3_option_a_gate_rebasis() -> None:
-    """Gate report schema_version reflects Option A (D-5.1) and Phase 11 bumps.
+    """Gate report schema_version reflects Option A (D-5.1) and Phase 12 bumps.
 
     D-5.1 decision (2026-06-13, Opus/Jim locked): demote raw full-page SSIM to
     informational; make structural dimensions (color-bucket overlap + font-family
-    match) the primary gate. Phase 11 (2026-06-14) further bumped to v4 to add
-    full-assertion sweep enforcement (wordmark_leak HARD FAIL, unenforced_assertions
-    field). Regressing below v4 reintroduces the trademark enforcement gap.
+    match) the primary gate. Phase 11 bumped to v4; Phase 12 bumped to v5 to add
+    avatar_photo_leak HARD FAIL and content_drift informational field.
+    Regressing below v5 reintroduces the avatar/PII enforcement gap.
     """
-    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v4"
+    assert SCHEMA_VERSION == "library_visual_fidelity_gate_report_v5"
 
 
 def test_compat_schema_version_is_v2_after_option_a_bump() -> None:
-    """One-cycle compat schema covers prior v3 gate consumers (Jim diagnostic).
+    """One-cycle compat schema covers prior v4 gate consumers (Jim diagnostic).
 
     Per the file's established deprecation discipline: compat covers one cycle,
-    removed when the next bump lands. Phase 11 bumped v3->v4; compat is v3
-    (covering consumers that read v3 reports). Remove after Phase 12 lands.
+    removed when the next bump lands. Phase 12 bumped v4->v5; compat is v4
+    (covering consumers that read v4 reports). Remove after Phase 13 lands.
     """
-    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v3"
+    assert COMPAT_SCHEMA_VERSION == "library_visual_fidelity_gate_report_v4"
 
 
 def test_ssim_above_floor_not_sole_pass_path_option_a(
