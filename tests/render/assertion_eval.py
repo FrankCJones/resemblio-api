@@ -288,12 +288,12 @@ class AssertionSweepResult:
                           shape (querySelectorAll / getComputedStyle) that
                           requires real browser DOM execution. evaluate_
                           assertion_against_live_html returns conservative
-                          False for these; they are NOT counted as failed -
-                          they are deferred to Phase 12, where a
-                          page.evaluate() path will be added to
-                          capture_live_render. Surfaced here so the caller
-                          can make the gap VISIBLE in the report instead of
-                          silently ignoring it.
+                          False for these; they are NOT counted as failed.
+                          Phase 12 wired these through page.evaluate() inside
+                          capture_live_render; results are classified by
+                          classify_browser_eval_results into a BrowserEvalResult.
+                          Surfaced here so the caller can make any missing
+                          evaluations VISIBLE in the report.
     ``wordmark_leak``   - True when any assertion whose id contains
                           NO_LEAK_ID_MARKER is in ``failed``. This is the
                           trademark-safety signal: the live render leaks a
@@ -335,10 +335,12 @@ def evaluate_all_assertions_against_live_html(
                            .includes). ``evaluate_assertion_against_live_html``
                            conservatively returns False for these, but they are
                            NOT classified as failures: they require real browser
-                           DOM execution via page.evaluate() (deferred to Phase
-                           12). Callers surface these in the report for
-                           visibility; they do NOT gate the tuple verdict in
-                           Phase 11.
+                           DOM execution. Phase 12 wires these through
+                           page.evaluate() inside capture_live_render and
+                           classifies results via classify_browser_eval_results;
+                           this bucket feeds TupleOutcome.browser_eval_missing
+                           (assertions attempted but the browser could not
+                           evaluate them).
 
     ``wordmark_leak``    - True when any id in ``failed`` contains
                            ``NO_LEAK_ID_MARKER`` ("no-wordmark-logo-leak").
@@ -377,7 +379,8 @@ def evaluate_all_assertions_against_live_html(
                 is_browser_required = True
 
         if is_browser_required:
-            # Unrecognized shape: deferred to Phase 12. Do NOT count as failed.
+            # Unrecognized shape: needs browser DOM execution via page.evaluate().
+            # Phase 12 wires these through capture_live_render. Do NOT count as failed.
             browser_required.append(aid)
             continue
 

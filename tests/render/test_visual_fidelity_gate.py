@@ -184,10 +184,10 @@ class TupleOutcome:
     """Per-tuple gate result.
 
     `gate` is the path the tuple took:
-      - "ssim"        -> primary SSIM gate passed
-      - "structural"  -> SSIM gate failed, structural fallback passed
-      - "fail"        -> both gates failed; see `drift_dimensions`
+      - "structural"  -> structural gate passed (color + font + no-leak + no-photo-leak)
+      - "fail"        -> structural gate failed; see `drift_dimensions`
       - "skip"        -> live render unavailable; tuple counted as skip
+    Note: "ssim" gate path was removed in v3 (D-5.1); SSIM is informational only.
     """
 
     tuple_id: str
@@ -570,6 +570,7 @@ def color_bucket_overlap(
 
 from .assertion_eval import (  # noqa: F401  (re-exports; used by test_spec_coverage.py)
     AVATAR_LEAK_ID_MARKER,  # noqa: F401
+    NO_LEAK_ID_MARKER,
     AssertionSweepResult,  # noqa: F401
     BrowserEvalResult,  # noqa: F401
     classify_browser_eval_results,
@@ -925,10 +926,9 @@ def evaluate_tuple(
     # text_content drift has not been observed in the live corpus; gating before one
     # observation cycle risks flaky FAILs on benign copy changes. Measure first, gate later.
     font_aid = (font_assertion or {}).get("id")
-    from .assertion_eval import NO_LEAK_ID_MARKER as _NO_LEAK
     content_drift: List[str] = [
         aid for aid in sweep.failed
-        if _NO_LEAK not in aid and aid != font_aid
+        if NO_LEAK_ID_MARKER not in aid and aid != font_aid
     ]
 
     # unenforced_assertions: after Phase 12.2 the 6 avatars-photo-stripped assertions
@@ -2178,7 +2178,6 @@ def test_content_drift_excludes_font_and_wordmark(
     assert content_drift is not None, "content_drift field must exist on TupleOutcome"
 
     # No-leak assertion ids must not appear in content_drift.
-    from .assertion_eval import NO_LEAK_ID_MARKER
     for aid in (content_drift or []):
         assert NO_LEAK_ID_MARKER not in aid, (
             f"No-leak assertion id {aid!r} must not be in content_drift "
