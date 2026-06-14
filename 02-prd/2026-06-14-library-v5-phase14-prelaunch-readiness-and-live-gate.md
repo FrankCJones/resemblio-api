@@ -328,5 +328,7 @@ gates before public launch are both Frank's calls:
 | py_compile clean | DONE |
 | No PNG staged to repo | DONE - git status shows none |
 | Separate RED/GREEN commits per sub-phase | DONE - 6 commits |
+| All commits pushed to origin/main | DONE - 20a6df8..958a2ed |
+| CI deploy green for final SHA | DONE - 958a2ed0 completed/success |
 | DRL tree untouched | CONFIRMED |
 | Phase 7 CTA flip still Frank's gate | CONFIRMED |
