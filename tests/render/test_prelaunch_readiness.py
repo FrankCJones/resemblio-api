@@ -21,6 +21,7 @@ from tests.render.prelaunch_readiness import (
     ReadinessVerdict,
     assess_public_readiness,
     load_gate_report,
+    render_readiness_markdown,
 )
 
 
@@ -343,3 +344,65 @@ class TestSchemaSupported:
 
         result = load_gate_report(report_file)
         assert result == data
+
+
+# ---------------------------------------------------------------------------
+# Phase 14.3 tests - Markdown rendering
+# ---------------------------------------------------------------------------
+
+
+class TestRenderReadinessMarkdown:
+    """Tests for render_readiness_markdown."""
+
+    def test_go_verdict_headline(self) -> None:
+        """A GO verdict produces a top-line 'GO' headline."""
+        report = _clean_v6_report()
+        verdict = assess_public_readiness(report)
+        md = render_readiness_markdown(verdict)
+
+        assert "GO" in md
+        assert "NO-GO" not in md
+        first_line = md.splitlines()[0]
+        assert "GO" in first_line
+
+    def test_no_go_verdict_headline(self) -> None:
+        """A NO-GO verdict produces a top-line 'NO-GO' headline."""
+        report = _clean_v6_report(aggregate="FAIL")
+        verdict = assess_public_readiness(report)
+        md = render_readiness_markdown(verdict)
+
+        assert "NO-GO" in md
+        assert md.splitlines()[0].count("NO-GO") >= 1
+
+    def test_each_reason_appears(self) -> None:
+        """Every reason check id appears in the markdown output."""
+        report = _clean_v6_report()
+        verdict = assess_public_readiness(report)
+        md = render_readiness_markdown(verdict)
+
+        for r in verdict.reasons:
+            assert r.check in md, f"Reason check '{r.check}' missing from markdown"
+
+    def test_each_reason_has_detail(self) -> None:
+        """Each reason's detail string appears in the markdown output."""
+        report = _clean_v6_report()
+        verdict = assess_public_readiness(report)
+        md = render_readiness_markdown(verdict)
+
+        for r in verdict.reasons:
+            assert r.detail in md, f"Detail for '{r.check}' missing from markdown"
+
+    def test_failing_check_named_in_no_go(self) -> None:
+        """A NO-GO verdict names the failing check(s) in the bottom summary."""
+        report = _clean_v6_report(aggregate="FAIL")
+        verdict = assess_public_readiness(report)
+        md = render_readiness_markdown(verdict)
+
+        lines = md.splitlines()
+        last_paragraph = " ".join(lines[-3:])
+        assert "aggregate_pass" in last_paragraph
+
+    def test_returns_string(self) -> None:
+        """render_readiness_markdown always returns a str."""
+        verdict = assess_public_readiness(_clean_v6_report())
+        assert isinstance(render_readiness_markdown(verdict), str)
