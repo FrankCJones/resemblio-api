@@ -20,6 +20,7 @@ from tests.render.prelaunch_readiness import (
     ReadinessReason,
     ReadinessVerdict,
     assess_public_readiness,
+    load_gate_report,
 )
 
 
@@ -250,3 +251,95 @@ class TestAssessPublicReadiness:
         # default floor is 3; bxc=2 is below floor
         cov = _get_reason(verdict, "coverage_floor_met")
         assert cov.ok is False
+
+
+# ---------------------------------------------------------------------------
+# Phase 14.2 tests - stale-schema rejection + load_gate_report
+# ---------------------------------------------------------------------------
+
+
+class TestSchemaSupported:
+    """Tests for the schema_supported hard check and load_gate_report IO helper."""
+
+    def test_v3_report_is_no_go(self) -> None:
+        """A v3 report (pre-enforcement) is a hard NO-GO on schema_supported."""
+        report = _clean_v6_report(
+            schema_version="library_visual_fidelity_gate_report_v3",
+            aggregate="PASS",
+            brand_x_category_passes=3,
+        )
+        verdict = assess_public_readiness(report)
+
+        assert verdict.go is False
+        schema = _get_reason(verdict, "schema_supported")
+        assert schema.ok is False
+        assert "v3" in schema.detail
+
+    def test_v4_report_is_no_go(self) -> None:
+        """A v4 report (predates avatar_photo_leak enforcement) is a hard NO-GO."""
+        report = _clean_v6_report(
+            schema_version="library_visual_fidelity_gate_report_v4",
+            aggregate="PASS",
+            brand_x_category_passes=3,
+        )
+        verdict = assess_public_readiness(report)
+
+        assert verdict.go is False
+        schema = _get_reason(verdict, "schema_supported")
+        assert schema.ok is False
+
+    def test_v5_report_passes_schema_check(self) -> None:
+        """A v5 report is within the compat window - schema_supported ok=True."""
+        report = _clean_v6_report(
+            schema_version="library_visual_fidelity_gate_report_v5",
+        )
+        verdict = assess_public_readiness(report)
+        schema = _get_reason(verdict, "schema_supported")
+        assert schema.ok is True
+
+    def test_v6_report_passes_schema_check(self) -> None:
+        """A v6 report is the current schema - schema_supported ok=True."""
+        report = _clean_v6_report()
+        verdict = assess_public_readiness(report)
+        schema = _get_reason(verdict, "schema_supported")
+        assert schema.ok is True
+
+    @pytest.mark.skipif(
+        not _V3_REPORT_PATH.exists(),
+        reason="v3 audit fixture not in workspace (_verification/ tree absent)",
+    )
+    def test_actual_v3_audit_fixture_is_no_go(self) -> None:
+        """The actual v3 on-disk fixture from Gate 13 audit -> go=False, schema_supported=False."""
+        report = load_gate_report(_V3_REPORT_PATH)
+        assert report["schema_version"] == "library_visual_fidelity_gate_report_v3"
+
+        verdict = assess_public_readiness(report)
+        assert verdict.go is False
+
+        schema = _get_reason(verdict, "schema_supported")
+        assert schema.ok is False
+        assert "v3" in schema.detail
+
+    def test_load_gate_report_raises_on_missing_file(self) -> None:
+        """load_gate_report raises FileNotFoundError for a nonexistent path."""
+        missing = pathlib.Path("/nonexistent/path/gate_report.json")
+        with pytest.raises(FileNotFoundError):
+            load_gate_report(missing)
+
+    def test_load_gate_report_raises_on_invalid_json(self, tmp_path: pathlib.Path) -> None:
+        """load_gate_report raises ValueError for a file with invalid JSON."""
+        bad = tmp_path / "bad_report.json"
+        bad.write_text("not-valid-json{{{", encoding="utf-8")
+        with pytest.raises(ValueError, match="Invalid JSON"):
+            load_gate_report(bad)
+
+    def test_load_gate_report_returns_dict(self, tmp_path: pathlib.Path) -> None:
+        """load_gate_report returns the parsed dict from a valid JSON file."""
+        import json
+
+        data = {"schema_version": "test", "aggregate": "PASS"}
+        report_file = tmp_path / "gate_report.json"
+        report_file.write_text(json.dumps(data), encoding="utf-8")
+
+        result = load_gate_report(report_file)
+        assert result == data
