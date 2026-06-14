@@ -227,12 +227,22 @@ should be updated in Phase 12 or the next diagnostic session to:
 
 ## Explicit deferral to Phase 12
 
-6 assertions across the about-team specs (aeon, linear, openai, stripe, vercel plus one
-additional - confirmed count 6 from Phase 10 probe). All use `querySelectorAll('.at__member')`
-and element inspection that requires `page.evaluate()` in a live browser DOM. Phase 11
-records them in `unenforced_assertions` and surfaces them in the Markdown report. Phase 12
-will add a `page.evaluate(assertion["evaluate"])` path to `capture_live_render` so these
-run truly in the browser.
+6 assertions, verified by enumerating the corpus at Gate 11:
+
+```
+aeon-about-team-avatars-photo-stripped
+apple-about-team-avatars-photo-stripped
+linear-about-team-avatars-photo-stripped
+openai-about-team-avatars-photo-stripped
+stripe-about-team-avatars-photo-stripped
+vercel-about-team-avatars-photo-stripped
+```
+
+All use `document.querySelectorAll('.at__member')` then check each member for a child
+`<img>` (a leaked real-person photo). They require `page.evaluate()` in a live browser
+DOM; string analysis cannot run them. Phase 11 records them in `unenforced_assertions`
+and surfaces them in the Markdown report. Phase 12 adds a `page.evaluate(assertion["evaluate"])`
+path to `capture_live_render` so these run truly in the browser.
 
 ---
 
