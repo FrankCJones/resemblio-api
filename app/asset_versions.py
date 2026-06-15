@@ -1,6 +1,6 @@
 """Helpers for the asset_versions library table.
 
-Single source of truth for two operations any caller needs:
+Single source of truth for the following operations:
 
 1. ``canonicalize_dtcg`` / ``content_hash_for`` -- byte-stable serialization
    of a DTCG payload and its SHA-256 digest. Used by the extraction-creation
@@ -18,18 +18,30 @@ Single source of truth for two operations any caller needs:
    dropped the legacy ``extractions.dtcg_json`` column; the helper is kept
    as the single read entry point so callers do not depend on the relation
    shape directly.
+
+4. ``AssetComponentSpec`` / ``insert_asset_component`` -- typed write path
+   for brand-stripped DRL component code (markup + CSS). One row per
+   (asset_version_id, fragment_key) in asset_components. Added in issue #1
+   as the storage foundation the seed (#2) and indexer (#3) build on.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 if TYPE_CHECKING:
-    from app.models import AssetVersion, Extraction
+    from app.models import AssetComponent, AssetVersion, Extraction
+
+
+# Fixed schema version tag written to every asset_components row.
+# Increment (e.g. 'asset_component_v2') if the column contract changes
+# in a way that requires distinguishing old rows from new.
+_ASSET_COMPONENT_SCHEMA_VERSION = "asset_component_v1"
 
 
 def canonicalize_dtcg(dtcg: dict[str, Any]) -> bytes:
@@ -138,3 +150,113 @@ def dtcg_for_extraction(extraction: "Extraction") -> dict[str, Any] | None:
     if av is not None:
         return av.dtcg_json
     return None
+
+
+# ---------------------------------------------------------------------------
+# AssetComponent write path (issue #1)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class AssetComponentSpec:
+    """Typed write-path shape for a single component fragment.
+
+    Frozen so callers cannot mutate a spec after constructing it.
+    All fields are required; see ``insert_asset_component`` for how they
+    map onto an ``AssetComponent`` row.
+
+    Fields
+    ------
+    fragment_key
+        Slot name within the asset. Use ``'default'`` for the primary
+        fragment. Reserved values for future use: ``'inverse'``, ``'dark'``,
+        ``'compact'``. Any string is accepted; the unique index on
+        ``(asset_version_id, fragment_key)`` enforces uniqueness at DB level.
+    component_html
+        Brand-stripped component markup from the DRL ``asset.html``. Must
+        include all states that ``states_present`` declares.
+    component_css
+        Brand-stripped component CSS (component-scoped rules, not the
+        ``:root`` token block). Sourced from DRL ``tokens.css`` component
+        section or the inline ``<style>`` block in ``asset.html``.
+    source_asset_path
+        DRL provenance path relative to the DRL root, e.g.
+        ``'assets/atoms/buttons/a24-cinematic-001'``. Never an absolute
+        OS path; the DRL root is not part of this string.
+    states_present
+        List of UI state names the markup demonstrates, e.g.
+        ``["rest", "hover", "focus", "disabled"]``. Used by the indexer
+        to annotate which interaction states are available.
+    """
+
+    fragment_key: str
+    component_html: str
+    component_css: str
+    source_asset_path: str
+    states_present: list[str]
+
+
+def insert_asset_component(
+    session: Session,
+    asset_version_id: int,
+    spec: AssetComponentSpec,
+) -> "AssetComponent":
+    """Persist a component fragment, upserting on (asset_version_id, fragment_key).
+
+    Idempotent: if a row already exists for ``(asset_version_id, fragment_key)``,
+    the mutable code fields are updated in place to reflect the latest input.
+    A different ``fragment_key`` creates a distinct row under the same
+    ``asset_version_id``.
+
+    The caller is responsible for committing the surrounding transaction;
+    this helper flushes so the returned ``AssetComponent`` has a stable PK.
+
+    Edge cases
+    ----------
+    - Concurrent writers racing on the same ``(asset_version_id, fragment_key)``
+      may collide on the unique constraint. The DB will raise ``IntegrityError``
+      on the second insert; the caller should retry or use a row-level lock if
+      high contention is expected. The seed pipeline is single-process today so
+      this is not a current concern.
+    - ``states_present`` is not validated against ``component_html``; the caller
+      is responsible for accuracy. The field is informational metadata for the
+      indexer, not a structural constraint.
+
+    Parameters
+    ----------
+    session
+        Active SQLAlchemy session.
+    asset_version_id
+        FK to ``asset_versions.id``; the referenced row must exist before calling.
+    spec
+        Typed spec carrying the component code, provenance, and state list.
+    """
+    from app.models import AssetComponent  # local import: avoid circular at module load
+
+    existing = session.execute(
+        select(AssetComponent).where(
+            AssetComponent.asset_version_id == asset_version_id,
+            AssetComponent.fragment_key == spec.fragment_key,
+        )
+    ).scalar_one_or_none()
+
+    if existing is not None:
+        existing.component_html = spec.component_html
+        existing.component_css = spec.component_css
+        existing.source_asset_path = spec.source_asset_path
+        existing.states_present = spec.states_present
+        session.flush()
+        return existing
+
+    row = AssetComponent(
+        asset_version_id=asset_version_id,
+        fragment_key=spec.fragment_key,
+        component_html=spec.component_html,
+        component_css=spec.component_css,
+        source_asset_path=spec.source_asset_path,
+        states_present=spec.states_present,
+        schema_version=_ASSET_COMPONENT_SCHEMA_VERSION,
+    )
+    session.add(row)
+    session.flush()
+    return row

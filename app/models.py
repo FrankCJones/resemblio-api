@@ -533,6 +533,57 @@ class LibraryPage(Base):
     )
 
 
+class AssetComponent(Base):
+    """Brand-stripped component code (markup + CSS) extracted from a DRL asset.
+
+    One row per (asset_version_id, fragment_key). The 1:N relation with
+    asset_versions allows a single asset to carry multiple fragments - e.g.
+    a 'default' and an 'inverse' variant - though the issue #1 seed starts
+    with a single 'default' fragment per asset.
+
+    Large text blobs live here rather than on the hot asset_versions row so
+    frequently-read extraction queries stay fast. The seed (#2) writes here;
+    the indexer (#3) reads component_html + component_css to compose real
+    library pages instead of generic tinted templates.
+
+    schema_version is fixed at 'asset_component_v1' for all rows written
+    by this schema; increment if the column contract changes.
+    Migration: 0023_asset_components.
+    """
+
+    __tablename__ = "asset_components"
+
+    id: Mapped[int] = mapped_column(BigIntType, primary_key=True, autoincrement=True)
+    asset_version_id: Mapped[int] = mapped_column(
+        BigIntType, ForeignKey("asset_versions.id"), nullable=False
+    )
+    # Slot name within the asset. 'default' for the primary fragment.
+    # Reserved for future 'inverse', 'dark', 'compact' variants.
+    fragment_key: Mapped[str] = mapped_column(Text, nullable=False)
+    component_html: Mapped[str] = mapped_column(Text, nullable=False)
+    component_css: Mapped[str] = mapped_column(Text, nullable=False)
+    # DRL provenance path relative to the DRL root, e.g.
+    # 'assets/atoms/buttons/a24-cinematic-001'. Never an absolute OS path.
+    source_asset_path: Mapped[str] = mapped_column(Text, nullable=False)
+    # JSON array of UI state names the markup demonstrates, e.g.
+    # ["rest", "hover", "focus", "disabled"]. Used by the indexer to
+    # annotate which states are present in the stored component.
+    states_present: Mapped[list[str]] = mapped_column(JsonType, nullable=False)
+    schema_version: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "asset_version_id",
+            "fragment_key",
+            name="uq_asset_components_version_fragment",
+        ),
+        Index("ix_asset_components_asset_version_id", "asset_version_id"),
+    )
+
+
 class AnonymousExtraction(Base):
     """Claim-token registry for Stage O1 anonymous extractions.
 
