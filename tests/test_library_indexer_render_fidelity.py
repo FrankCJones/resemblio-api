@@ -165,9 +165,14 @@ def test_every_brand_token_key_renders_as_namespaced_css_variable(session: Sessi
 
     for page in pages:
         rendered = page.rendered_html
-        assert isinstance(rendered, str) and rendered, (
-            f"page {page.category_slug} has empty rendered_html"
-        )
+        # Issue #3: when class_name == dtcg["class"] and no asset_components
+        # row is stored for the asset, the real-component path returns "" to
+        # surface an honest "not captured" notice rather than a fabricated
+        # generic template. The empty-body contract is covered by
+        # test_library_indexer_real_component.py; skip those pages here so
+        # this token-fidelity test continues to verify what it was built for.
+        if not rendered:
+            continue
         for raw_key in source_tokens:
             # The fixture is all already-namespaced (ds-*); after
             # normalization through _ds_var_name the var name must be the
@@ -426,6 +431,11 @@ def test_aeon_renders_with_free_alternative_google_fonts_link_tag(session: Sessi
     pages = session.query(LibraryPage).filter_by(asset_version_id=av.id).all()
     for page in pages:
         html = page.rendered_html
+        # Issue #3: matching class with no asset_components row gives an empty
+        # body (honest "not captured" notice path). Font-link assertions are
+        # only meaningful for rendered pages; skip empty ones here.
+        if not html:
+            continue
         assert "fonts.googleapis.com/css2" in html, (
             f"page {page.category_slug}: Aeon must load a Google Fonts link "
             f"tag for its free alternatives under the v2 contract."
