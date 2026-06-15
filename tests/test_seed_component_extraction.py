@@ -16,7 +16,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -210,21 +209,50 @@ def test_extract_component_html_does_not_include_head_content() -> None:
     assert "Proprietary colour palette" not in result
 
 
-def test_extract_component_html_fallback_when_no_body(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """When no <body> tag exists the function returns the doc minus <head> and logs a warning."""
+def test_extract_component_html_fallback_when_no_body() -> None:
+    """When no <body> tag exists the function returns the doc minus <head> and logs a warning.
+
+    The warning is captured with a handler attached directly to the
+    ``seed_from_drl`` logger rather than pytest's ``caplog`` fixture. ``caplog``
+    relies on log-record propagation to the root logger, which is unreliable
+    under full-suite ordering: other tests in this suite mutate that logger's
+    propagation/level state, so this assertion would fail only when the test
+    runs after them. The pre-existing seed tests document this exact flakiness
+    with ``@pytest.mark.xfail(strict=False)``. Attaching our own handler makes
+    the assertion deterministic without weakening it.
+    """
     import logging
 
-    with caplog.at_level(logging.WARNING, logger="seed_from_drl"):
+    from scripts.seed_from_drl import LOG as seed_log
+
+    records: list[logging.LogRecord] = []
+
+    class _CaptureHandler(logging.Handler):
+        """Append every emitted record so the test can assert on it directly."""
+
+        def emit(self, record: logging.LogRecord) -> None:
+            records.append(record)
+
+    handler = _CaptureHandler(level=logging.WARNING)
+    seed_log.addHandler(handler)
+    # Pin the logger level so the WARNING is not gated by a level a prior test
+    # may have raised; restore it afterward to avoid leaking state.
+    prior_level = seed_log.level
+    seed_log.setLevel(logging.WARNING)
+    try:
         result = extract_component_html(_HTML_NO_BODY)
+    finally:
+        seed_log.removeHandler(handler)
+        seed_log.setLevel(prior_level)
 
     # <head> content must be absent; body-less content must survive.
     assert "<head>" not in result
     assert "<title>" not in result
     assert "Content without a body tag" in result
     # Operators must be alerted that this asset is structurally unusual.
-    assert any("body" in record.message.lower() for record in caplog.records)
+    assert any("body" in record.getMessage().lower() for record in records), (
+        f"expected a warning mentioning 'body'; got {[r.getMessage() for r in records]}"
+    )
 
 
 # ---------------------------------------------------------------------------
