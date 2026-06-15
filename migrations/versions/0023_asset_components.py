@@ -68,16 +68,28 @@ def upgrade() -> None:
         sa.Column("component_html", sa.Text(), nullable=False),
         sa.Column("component_css", sa.Text(), nullable=False),
         sa.Column("source_asset_path", sa.Text(), nullable=False),
-        # JSON array of state names; Postgres uses JSONB in prod but the
-        # SQLAlchemy dialect-variant is applied at ORM level, not migration
-        # level. Plain JSON here is correct for both Postgres and SQLite tests.
-        sa.Column("states_present", sa.JSON(), nullable=False),
+        # JSON array of state names. Must mirror the ORM column type exactly:
+        # ``app.models.JsonType`` is ``postgresql.JSONB`` on Postgres with a
+        # plain-``JSON`` variant on SQLite. Creating a bare ``sa.JSON()`` here
+        # would produce a Postgres ``json`` column where the ORM expects
+        # ``jsonb`` - that drift breaks ``alembic`` autogenerate parity and
+        # forfeits JSONB operators / GIN indexing on prod. This matches the
+        # pattern established in migration 0020 (library_pages.metadata_json).
+        sa.Column(
+            "states_present",
+            sa.dialects.postgresql.JSONB(astext_type=sa.Text()).with_variant(
+                sa.JSON(), "sqlite"
+            ),
+            nullable=False,
+        ),
         sa.Column("schema_version", sa.Text(), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
             nullable=False,
-            server_default=sa.text("now()"),
+            # ``sa.func.now()`` is the codebase convention (migrations 0020,
+            # 0021) and renders to the same ``now()`` on Postgres.
+            server_default=sa.func.now(),
         ),
         sa.UniqueConstraint(
             "asset_version_id",
