@@ -33,6 +33,21 @@ This script is written to run unattended; all user-facing output uses
 ``(seed_source, source_id)`` partial unique index added by migration
 ``0007_extractions_seed_source``; re-running with the same arguments is safe
 and produces no duplicate rows.
+
+Component extraction (issue #2)
+--------------------------------
+In addition to token parsing, this script now reads each DRL asset's
+``asset.html`` and extracts the real component code (markup + component CSS).
+The four extraction helpers (``strip_provenance_comments``,
+``extract_component_css``, ``extract_component_html``,
+``derive_states_present``) are pure functions operating on strings; they have
+no I/O side-effects and are unit-tested with synthetic fixtures. The DRL is
+read-only throughout: these functions never write to any DRL path.
+
+Comments (both HTML ``<!-- -->`` and CSS ``/* */``) are stripped before the
+component bytes reach the DB. This removes the DRL provenance annotations
+(``Inspired by: <Brand Name>``) that appear only in comments and would
+otherwise leak brand attribution into the bytes Resemblio serves.
 """
 from __future__ import annotations
 
@@ -122,6 +137,34 @@ naturally nests under ``seed/drl/<system>/<class>/<slug>.zip``."""
 # DRL ``tokens.css`` files declare CSS custom properties under ``:root``.
 # This regex captures ``--name: value`` pairs across line breaks.
 _CSS_VAR_PATTERN = re.compile(r"--([a-zA-Z0-9_-]+)\s*:\s*([^;]+);")
+
+# --- Component extraction regexes (issue #2) ---------------------------------
+# All use re.DOTALL so they span newlines, matching real DRL multi-line blocks.
+
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+"""Matches HTML block comments ``<!-- ... -->``."""
+
+_CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+"""Matches CSS block comments ``/* ... */``."""
+
+_STYLE_BLOCK_RE = re.compile(r"<style[^>]*>(.*?)</style>", re.DOTALL | re.IGNORECASE)
+"""Captures the content of every inline ``<style>`` block."""
+
+_BODY_BLOCK_RE = re.compile(r"<body[^>]*>(.*?)</body>", re.DOTALL | re.IGNORECASE)
+"""Captures the inner HTML of ``<body>``."""
+
+_HEAD_BLOCK_RE = re.compile(r"<head[^>]*>.*?</head>", re.DOTALL | re.IGNORECASE)
+"""Matches the entire ``<head>`` element (used for the no-body fallback)."""
+
+# Maps compiled CSS state-selector regexes to their normalised state name.
+# ':focus' matches both ':focus' and ':focus-visible'; both map to 'focus'.
+# '[disabled]' and '[aria-disabled="true"]' map to 'disabled' alongside ':disabled'.
+_STATE_SELECTOR_MAP: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r":hover"), "hover"),
+    (re.compile(r":focus"), "focus"),
+    (re.compile(r":active"), "active"),
+    (re.compile(r':disabled|\[disabled\]|\[aria-disabled=["\']true["\']\]'), "disabled"),
+]
 
 
 class DrlAssetDict(TypedDict, total=False):
@@ -268,6 +311,143 @@ def load_system_json(drl_root: Path, brand_slug: str) -> dict[str, Any] | None:
     return json.loads(system_path.read_text(encoding="utf-8"))
 
 
+# --- Component extraction (issue #2) -----------------------------------------
+#
+# These pure functions parse an ``asset.html`` document and produce the
+# component code stored in ``asset_components``. They have no I/O side-effects
+# and are unit-tested with synthetic fixtures in
+# ``tests/test_seed_component_extraction.py``.
+#
+# The DRL is read-only throughout: no function below ever writes to a DRL path.
+
+
+def strip_provenance_comments(text: str) -> str:
+    """Remove HTML (``<!-- -->``) and CSS (``/* */``) comments from ``text``.
+
+    This is the primary defence against DRL provenance annotations reaching
+    the bytes Resemblio serves. DRL assets embed brand attribution exclusively
+    inside comments (e.g. ``<!-- Inspired by: A24 Films -->``); the rendered
+    markup and class names are already brand-stripped. Stripping both comment
+    forms here ensures no comment-only attribution leaks into the DB.
+
+    Args:
+        text: Raw HTML or CSS string that may contain either comment form.
+
+    Returns:
+        The input with all comment blocks removed. Order of removal is HTML
+        first, then CSS; both forms are independent and order does not matter
+        in practice because neither form can nest inside the other.
+    """
+    text = _HTML_COMMENT_RE.sub("", text)
+    text = _CSS_COMMENT_RE.sub("", text)
+    return text
+
+
+def extract_component_css(asset_html: str) -> str:
+    """Return the concatenated content of every inline ``<style>`` block in ``asset_html``.
+
+    DRL ``asset.html`` documents carry component CSS in one or more ``<style>``
+    blocks inside ``<head>``. This function extracts all of them (in document
+    order) and strips CSS comments so no provenance annotations reach the DB.
+
+    Args:
+        asset_html: Full text of a DRL ``asset.html`` file.
+
+    Returns:
+        Concatenated style-block contents with ``/* */`` comments removed.
+        Returns an empty string when no ``<style>`` tags are found.
+    """
+    blocks = _STYLE_BLOCK_RE.findall(asset_html)
+    combined = "\n".join(blocks)
+    return strip_provenance_comments(combined)
+
+
+def extract_component_html(asset_html: str) -> str:
+    """Return the inner HTML of ``<body>`` from ``asset_html``, with comments stripped.
+
+    This is the markup the indexer (#3) will render inside the token context.
+    HTML comments are stripped so DRL provenance annotations do not reach the DB.
+
+    Falls back gracefully when no ``<body>`` tag is found: logs a warning and
+    returns the full document minus ``<head>``. This degrade path is defensive;
+    all real DRL assets have a ``<body>`` tag.
+
+    Args:
+        asset_html: Full text of a DRL ``asset.html`` file.
+
+    Returns:
+        Brand-comment-free inner markup, suitable for DB storage and re-render.
+    """
+    match = _BODY_BLOCK_RE.search(asset_html)
+    if match:
+        return strip_provenance_comments(match.group(1))
+    # Fallback: no <body> found. Strip <head> and return the rest.
+    LOG.warning(
+        "asset.html has no <body> tag; falling back to document minus <head>. "
+        "Check the DRL asset for structural issues."
+    )
+    without_head = _HEAD_BLOCK_RE.sub("", asset_html)
+    return strip_provenance_comments(without_head)
+
+
+def derive_states_present(component_css: str) -> list[str]:
+    """Derive the UI interaction states declared in ``component_css``.
+
+    Scans the CSS for state selectors and returns a stable, sorted, deduplicated
+    list of normalised state names. ``'rest'`` is always present (it represents
+    the default, unstyled state and has no CSS selector of its own).
+
+    State name mapping (from ``_STATE_SELECTOR_MAP``):
+        - ``:hover``                               -> ``hover``
+        - ``:focus`` or ``:focus-visible``         -> ``focus``
+        - ``:active``                              -> ``active``
+        - ``:disabled``, ``[disabled]``,
+          ``[aria-disabled="true"]``               -> ``disabled``
+
+    Args:
+        component_css: CSS text extracted from the ``<style>`` block of an
+            ``asset.html`` document (already comment-stripped is fine but not
+            required; selectors inside comments are unlikely to occur in DRL).
+
+    Returns:
+        Sorted list of state names, always including ``'rest'``.
+    """
+    states: set[str] = {"rest"}
+    for pattern, state_name in _STATE_SELECTOR_MAP:
+        if pattern.search(component_css):
+            states.add(state_name)
+    return sorted(states)
+
+
+def load_asset_html(drl_root: Path, asset: DrlAssetDict) -> str | None:
+    """Read the ``asset.html`` file for a DRL asset.
+
+    Mirrors ``load_tokens_for_asset``: returns ``None`` and logs a warning
+    when the file is absent or the asset dict lacks a ``'path'`` field.
+    The caller skips the component write for that asset without aborting the
+    overall seed.
+
+    The DRL is read-only: this function only calls ``read_text``; it never
+    writes to any DRL path.
+
+    Args:
+        drl_root: Filesystem root of the Design Reference Library.
+        asset: DRL asset entry from ``corpus.json``.
+
+    Returns:
+        Full text of ``asset.html``, or ``None`` if the file is not present.
+    """
+    asset_path = asset.get("path")
+    if not asset_path:
+        LOG.warning("DRL asset missing 'path' field; skipping asset.html load")
+        return None
+    html_path = drl_root / asset_path / "asset.html"
+    if not html_path.exists():
+        LOG.warning("asset.html not found at %s; skipping component extraction", html_path)
+        return None
+    return html_path.read_text(encoding="utf-8")
+
+
 # --- Bundle assembly (mirrors ``app.extractor_bridge.bundle_from_token_set``) -
 
 def build_bundle(
@@ -372,6 +552,9 @@ def upsert_extraction(
     bundle: SeedBundle,
     r2_zip_key: str,
     captured_date: str,
+    *,
+    drl_root: Path | None = None,
+    asset: DrlAssetDict | None = None,
 ) -> tuple["Extraction", str]:  # noqa: F821 - lazy import
     """Insert a new seed row or update an existing one in place.
 
@@ -387,8 +570,14 @@ def upsert_extraction(
       view distinguishes the corpus bootstrap from organic re-extractions.
     - ``first_extracted_by_user_id=None`` so the audit trail does not
       attribute the bootstrap corpus to the ``--seed-user-id`` operator.
+
+    When ``drl_root`` and ``asset`` are supplied (the normal apply-seed path),
+    this function also writes an ``asset_components`` row by reading the asset's
+    ``asset.html`` (issue #2). The write is idempotent (upsert on
+    ``(asset_version_id, fragment_key)``); a missing ``asset.html`` is logged
+    and skipped without aborting the overall seed.
     """
-    from app.asset_versions import insert_or_reuse_asset_version
+    from app.asset_versions import AssetComponentSpec, insert_asset_component, insert_or_reuse_asset_version
     from app.library_indexer import enqueue_for_asset_version
     from app.models import Extraction  # local import: dry-run safety
 
@@ -403,6 +592,26 @@ def upsert_extraction(
         is_public=True,
         version_label=f"{DRL_VERSION_LABEL_PREFIX} {captured_date}",
     )
+
+    # Write the component code from asset.html (issue #2).
+    # Done on both insert and update branches so re-seeds refresh the component.
+    # Runs inside the same transaction as the asset_version upsert above.
+    if drl_root is not None and asset is not None:
+        html = load_asset_html(drl_root, asset)
+        if html is not None:
+            component_css = extract_component_css(html)
+            component_html = extract_component_html(html)
+            states = derive_states_present(component_css)
+            spec = AssetComponentSpec(
+                fragment_key="default",
+                component_html=component_html,
+                component_css=component_css,
+                # DRL-relative path only; never an absolute OS path.
+                source_asset_path=str(asset.get("path", "")),
+                states_present=states,
+            )
+            insert_asset_component(session, asset_version.id, spec)
+
     if existing is None:
         row = Extraction(
             user_id=user_id,
@@ -631,7 +840,8 @@ def apply_seed(
         r2_key = R2_KEY_TEMPLATE.format(source_id=stripped.source_id)
         storage.put_object_at_key(r2_key, bundle.zip_bytes, "application/zip")
         _row, operation = upsert_extraction(
-            session, seed_user_id, stripped, bundle, r2_key, captured_date
+            session, seed_user_id, stripped, bundle, r2_key, captured_date,
+            drl_root=drl_root, asset=asset,
         )
         counts["inserted" if operation == "insert" else "updated"] += 1
         batch_since_commit += 1
