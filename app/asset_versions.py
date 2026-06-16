@@ -23,6 +23,11 @@ Single source of truth for the following operations:
    for brand-stripped DRL component code (markup + CSS). One row per
    (asset_version_id, fragment_key) in asset_components. Added in issue #1
    as the storage foundation the seed (#2) and indexer (#3) build on.
+
+5. ``get_asset_component`` -- read-path counterpart to ``insert_asset_component``.
+   Returns the ``AssetComponent`` row for a given (asset_version_id, fragment_key),
+   or None when absent. Used by the library indexer (#3) to decide whether to
+   serve the stored real DRL component or fall back to the generic template path.
 """
 from __future__ import annotations
 
@@ -260,3 +265,43 @@ def insert_asset_component(
     session.add(row)
     session.flush()
     return row
+
+
+def get_asset_component(
+    session: Session,
+    asset_version_id: int,
+    fragment_key: str = "default",
+) -> "AssetComponent | None":
+    """Return the AssetComponent row for (asset_version_id, fragment_key), or None if absent.
+
+    This is the read-path counterpart to ``insert_asset_component``. The library
+    indexer calls it once per asset_version (before the per-class render loop) to
+    decide whether to serve the stored real DRL component for the matching class page
+    or fall back to the generic token-tinted template path.
+
+    Edge cases
+    ----------
+    - Returns None for any asset_version_id that has no asset_components rows at all.
+    - Returns None when the row exists but under a different fragment_key. Currently
+      only ``'default'`` is seeded; future variants (``'inverse'``, ``'dark'``) each
+      require their own call with the appropriate key.
+    - The function does NOT raise on missing rows; the caller is responsible for
+      deciding what "absent" means in context (indexer: honest empty body).
+
+    Parameters
+    ----------
+    session
+        Active SQLAlchemy session.
+    asset_version_id
+        FK to ``asset_versions.id``; the row need not exist - None is returned cleanly.
+    fragment_key
+        Slot name within the asset. Defaults to ``'default'`` (the primary fragment).
+    """
+    from app.models import AssetComponent  # local import: avoid circular at module load
+
+    return session.execute(
+        select(AssetComponent).where(
+            AssetComponent.asset_version_id == asset_version_id,
+            AssetComponent.fragment_key == fragment_key,
+        )
+    ).scalar_one_or_none()

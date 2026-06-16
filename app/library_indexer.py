@@ -96,6 +96,7 @@ from app.constants import (
 # downstream operator can grep ``library_indexer.startup`` in journald to
 # confirm the load order on every CLI tick.
 from app import extractor_bridge as _extractor_bridge  # noqa: F401
+from app.asset_versions import get_asset_component
 from app.brand_capture_manifest import BrandCaptureManifest, build_capture_manifest
 from app.brand_names import pretty_brand_name
 from app.library_render_policy import evaluate_category_render
@@ -107,7 +108,7 @@ from app.library_web_fonts import (
     build_google_fonts_link_tag,
     render_font_disclosure_html,
 )
-from app.models import AssetVersion, Extraction, LibraryIndexJob, LibraryPage
+from app.models import AssetComponent, AssetVersion, Extraction, LibraryIndexJob, LibraryPage
 from extractor.button_override import apply_button_tokens
 from extractor.button_tokens import ButtonTokens, derive_button_tokens
 from extractor.computed_styles import ComputedStyleReport
@@ -568,6 +569,73 @@ def _compose_one_page(
     return apply_button_tokens(fragment, button_tokens)
 
 
+def _compose_real_component(
+    component: AssetComponent,
+    *,
+    class_name: str,
+    brand_slug: str,
+    tokens: dict[str, str],
+) -> str:
+    """Render the HTML fragment for a page using the stored DRL component code.
+
+    Unlike ``_compose_one_page`` which renders a generic DRL template tinted
+    with brand tokens, this function wraps the actual markup + CSS extracted
+    from the DRL ``asset.html`` (stored in ``asset_components`` by the seed
+    pipeline). The result carries real interaction states (:hover, :focus-visible,
+    etc.) rather than a recolored generic chiclet.
+
+    The key difference from ``_compose_one_page`` is that ``component.component_html``
+    is DRL-authored markup for ONE specific component, not a template filled with
+    Lorem-stable placeholder content. The CSS is likewise component-specific and
+    is scoped identically to the template path so it does not leak into the
+    surrounding Next.js page chrome.
+
+    The ``data-rs-source="drl-component"`` attribute on the article wrapper is the
+    machine-checkable contract marker distinguishing this path from the generic
+    template path. The web layer and acceptance tests key off this attribute.
+
+    Note: ``apply_button_tokens`` is NOT called here. That hybrid Path-B override
+    paints the generic ``.b-btn`` chiclet with Playwright-captured metrics; it is
+    meaningless (and harmful) when the component HTML is already the real DRL markup
+    with its own interaction CSS. The override is retired for assets whose
+    ``asset_components`` row is populated.
+
+    Args:
+        component: the AssetComponent row carrying real DRL markup + CSS.
+        class_name: the DRL template class (e.g. 'buttons'). Written to
+            ``data-rs-class``; must equal ``asset_version.dtcg_json["class"]``.
+        brand_slug: canonical brand identifier for the ``data-rs-brand`` attribute.
+        tokens: flat ``{key: value}`` brand token dict from ``tokens_for_compose``.
+    """
+    # Scope the real component CSS to the per-page article, exactly as
+    # _compose_one_page does for the generic DRL template CSS. Real DRL assets
+    # can include document-level resets (*::before, html, body) that would leak
+    # into the surrounding Next.js page without this rewrite.
+    scoped_styles = scope_style_block(component.component_css)
+    inline_tokens_css = _emit_brand_root(tokens)
+    web_font_link = build_google_fonts_link_tag(tokens)
+    web_font_block = f"{web_font_link}\n" if web_font_link else ""
+    font_alt_root_block = build_font_alternative_root_block(tokens)
+    disclosure_payload = build_font_disclosure_payload(tokens)
+    disclosure_aside = render_font_disclosure_html(
+        disclosure_payload,
+        brand_display_name=pretty_brand_name(brand_slug),
+    )
+    # data-rs-source="drl-component" is the contract distinguishing real-component
+    # pages from generic-template pages. Both the web layer and the acceptance tests
+    # assert on this attribute. Do not add it to _compose_one_page output.
+    fragment = (
+        f'<article class="rs-library-page" data-rs-class="{class_name}"'
+        f' data-rs-brand="{brand_slug}" data-rs-source="drl-component">\n'
+        f"{web_font_block}"
+        f"<style>\n{inline_tokens_css}\n{font_alt_root_block}{scoped_styles}\n</style>\n"
+        f"{disclosure_aside}\n"
+        f"{component.component_html}\n"
+        f"</article>\n"
+    )
+    return fragment
+
+
 def _compose_with_gate(
     class_name: str,
     *,
@@ -575,6 +643,8 @@ def _compose_with_gate(
     tokens: dict[str, str],
     button_tokens: ButtonTokens | None,
     manifest: BrandCaptureManifest,
+    dtcg_class: str | None = None,
+    real_component: AssetComponent | None = None,
 ) -> str:
     """Apply the D2 render gate and compose the page HTML fragment.
 
@@ -605,11 +675,39 @@ def _compose_with_gate(
         manifest: pre-built ``BrandCaptureManifest`` from
             ``build_capture_manifest``. Callers compute this ONCE per brand
             and pass it here for every class in the loop (avoids N re-computations).
+        dtcg_class: the asset's own DRL class from ``dtcg_json["class"]`` (e.g.
+            ``'buttons'``). When set and matching ``class_name``, the real-component
+            path fires instead of the generic template. ``None`` falls through to
+            the existing gate + template behavior (backward-compatible).
+        real_component: the ``AssetComponent`` row for this asset_version (fetched
+            once per asset_version before the class loop). ``None`` when the asset
+            has no component row or when ``dtcg_class`` is unset.
 
     Returns:
         HTML fragment string (the full ``<article>`` block) if the category
-        should render, or ``""`` if it is gated out.
+        should render, or ``""`` if it is gated out or no component is stored.
     """
+    # Real-component routing (issue #3): when this class is the asset's own
+    # DRL class (class_name == dtcg_class), serve the stored component code
+    # rather than the generic template. The class-match guard is intentional:
+    # an asset_version represents exactly one DRL asset whose real component
+    # code is for ONE class. Serving it for any other class would mix concerns
+    # (e.g. buttons markup on a hero page). All non-matching classes continue
+    # to use the existing gate + template path below.
+    if dtcg_class is not None and class_name == dtcg_class:
+        if real_component is not None:
+            return _compose_real_component(
+                real_component,
+                class_name=class_name,
+                brand_slug=brand_slug,
+                tokens=tokens,
+            )
+        # Matching class but no component row stored: return empty so the web
+        # layer shows an honest "not captured" notice. Never fabricate a generic
+        # template here - a generic buttons chiclet for a buttons brand that
+        # has no real buttons data is a false signal to the user.
+        return ""
+
     decision = evaluate_category_render(class_name, manifest)
     if not decision.should_render:
         return ""
@@ -1362,6 +1460,14 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
     # should be composed (captured) or omitted (empty string, not fabricated).
     # _metadata_for receives the same manifest so it does not recompute.
     brand_manifest = build_capture_manifest(tokens, button_tokens=button_tokens)
+    # Real-component lookup (issue #3): fetch the stored DRL component ONCE
+    # per asset_version before the class loop. The seed pipeline (#2) writes
+    # one asset_components row per asset; the indexer serves that row for the
+    # one page whose class_name matches dtcg["class"]. All other pages use
+    # the existing generic-template path. None when the asset has no component
+    # row or dtcg carries no class key (e.g. organic extractions pre-#2).
+    dtcg_class: str | None = (asset_version.dtcg_json or {}).get("class")
+    real_component = get_asset_component(session, asset_version.id) if dtcg_class else None
     written = 0
     for class_name in _all_template_classes():
         rendered = _compose_with_gate(
@@ -1370,6 +1476,8 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
             tokens=tokens,
             button_tokens=button_tokens,
             manifest=brand_manifest,
+            dtcg_class=dtcg_class,
+            real_component=real_component,
         )
         metadata = _metadata_for(class_name, brand_slug=brand_slug, tokens=tokens, manifest=brand_manifest)
         page = LibraryPage(
