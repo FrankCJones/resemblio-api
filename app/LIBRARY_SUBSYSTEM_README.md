@@ -1,6 +1,6 @@
 # Library Subsystem - README
 
-**Version:** v4 (2026-06-10)
+**Version:** v5 (2026-06-17)
 **v2 plan:** `projects/OptSus Team/missions/resemblio-library-public-launch-tdd-plan-v2.md`
 **v3 plan:** `projects/OptSus Team/missions/resemblio-library-public-view-readiness-tdd-plan-v3.md`
 **v4 plan:** `projects/OptSus Team/missions/resemblio-library-public-view-readiness-tdd-plan-v4.md`
@@ -15,7 +15,9 @@ The v2 addition: **contract-first presentation with honest graceful degradation.
 
 The v3 addition: **hub chip integrity and public-view readiness.** The hub's category-filter chip strip only surfaces showcase chips when at least one brand has that group captured (D8). The web BFF is the single source of truth for which chips are visible; pure TypeScript logic (`visibleHubCategories`) makes this testable without a real API call. All 24 brands render on the hub (no completeness threshold, D4). CSS for the chip strip, sort form, capture signal, and missing notice is now shipped.
 
-The v4 addition: **DRL-reconcile initiative - curated metadata panel + 40-brand expansion.** The corpus expanded from 24 to 40 brands (commit `93e23d8`). A curated "About this system" panel was added to every brand page, sourcing tier, category, commercial signal, design principles, mood, and used-for from the DRL corpus. The panel degrades gracefully by absence (D11): no panel and no notice when data is missing, in contrast to component groups which get a `MissingDataNotice`. Slug-shaped values are title-cased for display (D12); tier is the one exception - it is a grade letter and renders verbatim. The producer/consumer seam is a single-sourced named constant (D13) so the three ends (seeder, route extractor, panel) cannot silently drift. The gated prod re-seed (D14) is the final step.
+The v4 addition: **DRL-reconcile initiative - curated metadata panel + 40-brand expansion.**
+
+The v5 addition: **Mined synthetic asset_versions (issue #28).** `seed_from_drl.mine_and_persist_atoms_for_brand` mines button atoms from DRL whole HTML (using `app/whole_mining.py`), persists them as synthetic `asset_versions` with a `mined_atom_class` D2 guard key in dtcg, and enqueues them for the indexer. The indexer's D2 guard restricts mined synthetics to composing exactly ONE page (their atom class), preventing the mined synthetic's newer `fetched_at` from demoting the whole's canonical pages. Canonical-page selection is now per-(brand, category) rather than per-brand. The corpus expanded from 24 to 40 brands (commit `93e23d8`). A curated "About this system" panel was added to every brand page, sourcing tier, category, commercial signal, design principles, mood, and used-for from the DRL corpus. The panel degrades gracefully by absence (D11): no panel and no notice when data is missing, in contrast to component groups which get a `MissingDataNotice`. Slug-shaped values are title-cased for display (D12); tier is the one exception - it is a grade letter and renders verbatim. The producer/consumer seam is a single-sourced named constant (D13) so the three ends (seeder, route extractor, panel) cannot silently drift. The gated prod re-seed (D14) is the final step.
 
 ---
 
@@ -41,6 +43,12 @@ app/
   library_indexer.py         - Queue-and-worker pipeline. Drains library_index_jobs,
                                runs compose, writes library_pages rows. Calls the three
                                new modules above to thread provenance through metadata.
+                               D2 guard: ``_mined_atom_class()`` restricts the class loop
+                               to one page for mined synthetics (dtcg["mined_atom_class"]).
+                               Per-category canonical reconcile in ``_reconcile_canonical``.
+  whole_mining.py            - ``mine_atom_from_whole()``: extracts atom markup + CSS from
+                               a DRL whole HTML file. Returns MinedAtom (frozen dataclass).
+                               Pure - no DB, no filesystem writes.
   library_style_scope.py     - CSS selector scoper. Rewrites vendored DRL styles to
                                .rs-library-page scope so they don't leak into Next.js chrome.
   library_web_fonts.py       - Google Fonts link-tag builder + font-alternative root block.
@@ -70,6 +78,9 @@ scripts/
                                commercial_signal, mood, applicable_to). See
                                SEED_FROM_DRL_DESIGN.md for the idempotency
                                contract (UPSERT on seed_source partial index).
+                               v5 addition: ``mine_and_persist_atoms_for_brand()``
+                               mines button atoms from whole HTML (via whole_mining),
+                               persists synthetic asset_versions, enqueues indexer jobs.
 ```
 
 ---
@@ -179,6 +190,27 @@ Next.js web BFF (library-data.ts -> buildBrandMetadata -> BrandMetadataPanel)
 /library/{slug}/     - Brand page with honest missing-data notice + curated
                        metadata panel where available
 ```
+
+---
+
+## Mined synthetic asset_versions (v5, issue #28)
+
+Some atom categories (e.g. `buttons`) have no standalone DRL atom entry for a brand. Rather than
+leave `/library/{brand}/buttons` serving only generic template HTML, `seed_from_drl` mines button
+atoms from the brand's CTA-block whole HTML and persists them as synthetic `asset_versions`.
+
+**URL convention:** `resemblio://seed/drl_v1/{brand}/{atom_class}/mined-from-{whole_slug}`
+
+**dtcg contract for mined synthetics:**
+- `"class"`: the atom class (e.g. `"buttons"`).
+- `"mined_atom_class"`: same value - the D2 guard key that tells the indexer to compose exactly
+  one page.  When this key is present the indexer skips the full `_all_template_classes()` loop.
+- `"mined_from"`: the whole slug the atom was extracted from (provenance).
+- `"tokens"`: flat token dict from the whole's DRL token file.
+
+**Per-category canonical reconcile:** `_reconcile_canonical` settles the is_canonical flag
+independently per (brand_slug, category_slug).  This ensures the whole's pages in OTHER categories
+are not demoted when a mined synthetic (with a newer fetched_at) wins only for its one category.
 
 ---
 

@@ -262,7 +262,7 @@ def test_apply_inserts_rows_and_uploads_zips(session: Session, drl_root: Path) -
         seed_user_id=user_id,
         batch_size=DEFAULT_BATCH_SIZE,
     )
-    assert counts == {"inserted": 2, "updated": 0, "skipped": 0}
+    assert counts == {"inserted": 2, "updated": 0, "skipped": 0, "mined": 0}
 
     rows = session.execute(select(Extraction).order_by(Extraction.id)).scalars().all()
     assert len(rows) == 2
@@ -305,7 +305,7 @@ def test_apply_is_idempotent_on_re_run(session: Session, drl_root: Path) -> None
         seed_user_id=user_id,
         batch_size=DEFAULT_BATCH_SIZE,
     )
-    assert second == {"inserted": 0, "updated": 2, "skipped": 0}
+    assert second == {"inserted": 0, "updated": 2, "skipped": 0, "mined": 0}
 
     rows = session.execute(select(Extraction)).scalars().all()
     assert len(rows) == 2
@@ -534,7 +534,7 @@ def test_apply_skips_assets_without_tokens(session: Session, drl_root: Path, cap
         seed_user_id=user_id,
         batch_size=DEFAULT_BATCH_SIZE,
     )
-    assert counts == {"inserted": 1, "updated": 0, "skipped": 1}
+    assert counts == {"inserted": 1, "updated": 0, "skipped": 1, "mined": 0}
     assert any("no tokens.css" in record.message for record in caplog.records), (
         f"caplog empty or missing warning; records={list(caplog.records)} text={caplog.text!r}"
     )
