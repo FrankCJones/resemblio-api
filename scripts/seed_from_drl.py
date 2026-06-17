@@ -83,6 +83,7 @@ from sqlalchemy.orm import Session
 
 from app.constants import SCHEMA_V1
 from app.metadata_overrides import apply_metadata_overrides
+from app.whole_mining import derive_states_present, strip_provenance_comments
 from transformer import STRIPPED_SCHEMA_VERSION, StrippedEntry, brand_strip
 
 # NOTE: ``app.db`` and ``app.models`` are intentionally NOT imported at module
@@ -141,11 +142,11 @@ _CSS_VAR_PATTERN = re.compile(r"--([a-zA-Z0-9_-]+)\s*:\s*([^;]+);")
 # --- Component extraction regexes (issue #2) ---------------------------------
 # All use re.DOTALL so they span newlines, matching real DRL multi-line blocks.
 
-_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
-"""Matches HTML block comments ``<!-- ... -->``."""
-
-_CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
-"""Matches CSS block comments ``/* ... */``."""
+# NOTE: strip_provenance_comments and derive_states_present have moved to
+# app.whole_mining (canonical location) and are imported above.  The regexes
+# below are kept here because they are used by the seed-local extraction
+# functions (extract_component_css, extract_component_html) which operate on
+# the full asset.html document rather than an atom subtree.
 
 _STYLE_BLOCK_RE = re.compile(r"<style[^>]*>(.*?)</style>", re.DOTALL | re.IGNORECASE)
 """Captures the content of every inline ``<style>`` block."""
@@ -155,16 +156,6 @@ _BODY_BLOCK_RE = re.compile(r"<body[^>]*>(.*?)</body>", re.DOTALL | re.IGNORECAS
 
 _HEAD_BLOCK_RE = re.compile(r"<head[^>]*>.*?</head>", re.DOTALL | re.IGNORECASE)
 """Matches the entire ``<head>`` element (used for the no-body fallback)."""
-
-# Maps compiled CSS state-selector regexes to their normalised state name.
-# ':focus' matches both ':focus' and ':focus-visible'; both map to 'focus'.
-# '[disabled]' and '[aria-disabled="true"]' map to 'disabled' alongside ':disabled'.
-_STATE_SELECTOR_MAP: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r":hover"), "hover"),
-    (re.compile(r":focus"), "focus"),
-    (re.compile(r":active"), "active"),
-    (re.compile(r':disabled|\[disabled\]|\[aria-disabled=["\']true["\']\]'), "disabled"),
-]
 
 
 class DrlAssetDict(TypedDict, total=False):
@@ -321,26 +312,9 @@ def load_system_json(drl_root: Path, brand_slug: str) -> dict[str, Any] | None:
 # The DRL is read-only throughout: no function below ever writes to a DRL path.
 
 
-def strip_provenance_comments(text: str) -> str:
-    """Remove HTML (``<!-- -->``) and CSS (``/* */``) comments from ``text``.
-
-    This is the primary defence against DRL provenance annotations reaching
-    the bytes Resemblio serves. DRL assets embed brand attribution exclusively
-    inside comments (e.g. ``<!-- Inspired by: A24 Films -->``); the rendered
-    markup and class names are already brand-stripped. Stripping both comment
-    forms here ensures no comment-only attribution leaks into the DB.
-
-    Args:
-        text: Raw HTML or CSS string that may contain either comment form.
-
-    Returns:
-        The input with all comment blocks removed. Order of removal is HTML
-        first, then CSS; both forms are independent and order does not matter
-        in practice because neither form can nest inside the other.
-    """
-    text = _HTML_COMMENT_RE.sub("", text)
-    text = _CSS_COMMENT_RE.sub("", text)
-    return text
+# strip_provenance_comments is imported from app.whole_mining above.
+# It is re-exported here so existing callers (tests, scripts) that import
+# it from this module continue to work without modification.
 
 
 def extract_component_css(asset_html: str) -> str:
@@ -390,33 +364,9 @@ def extract_component_html(asset_html: str) -> str:
     return strip_provenance_comments(without_head)
 
 
-def derive_states_present(component_css: str) -> list[str]:
-    """Derive the UI interaction states declared in ``component_css``.
-
-    Scans the CSS for state selectors and returns a stable, sorted, deduplicated
-    list of normalised state names. ``'rest'`` is always present (it represents
-    the default, unstyled state and has no CSS selector of its own).
-
-    State name mapping (from ``_STATE_SELECTOR_MAP``):
-        - ``:hover``                               -> ``hover``
-        - ``:focus`` or ``:focus-visible``         -> ``focus``
-        - ``:active``                              -> ``active``
-        - ``:disabled``, ``[disabled]``,
-          ``[aria-disabled="true"]``               -> ``disabled``
-
-    Args:
-        component_css: CSS text extracted from the ``<style>`` block of an
-            ``asset.html`` document (already comment-stripped is fine but not
-            required; selectors inside comments are unlikely to occur in DRL).
-
-    Returns:
-        Sorted list of state names, always including ``'rest'``.
-    """
-    states: set[str] = {"rest"}
-    for pattern, state_name in _STATE_SELECTOR_MAP:
-        if pattern.search(component_css):
-            states.add(state_name)
-    return sorted(states)
+# derive_states_present is imported from app.whole_mining above.
+# It is re-exported here so existing callers (tests, scripts) that import
+# it from this module continue to work without modification.
 
 
 def load_asset_html(drl_root: Path, asset: DrlAssetDict) -> str | None:

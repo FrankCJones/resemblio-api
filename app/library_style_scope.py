@@ -16,6 +16,13 @@ nested ``@supports`` chains, escaped braces inside string values) is
 out of scope. The function is idempotent: re-running on already-scoped
 CSS does not double-prefix.
 
+Public exports
+--------------
+``CssRule`` and ``iter_css_rules`` are the shared CSS-rule iterator used
+by both this module (``scope_style_block``) and ``app.whole_mining``
+(``css_rules_for_classes``). There is exactly ONE CSS rule parser in the
+codebase; callers must not write a second one.
+
 Edge cases preserved:
   - ``:root { ... }`` declarations (custom-property cascade is global)
   - ``@font-face``, ``@keyframes`` at-rules (no selectors to rewrite)
@@ -35,6 +42,8 @@ Edge cases rewritten:
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator
+from dataclasses import dataclass, field
 from typing import Final
 
 # Default wrapper for library-page article fragments. Centralized so the
@@ -69,6 +78,124 @@ _DOCUMENT_ROOT_SELECTORS: Final[frozenset[str]] = frozenset({"html", "body"})
 _COMMENT_RE: Final[re.Pattern[str]] = re.compile(r"/\*.*?\*/", re.DOTALL)
 
 
+# ---------------------------------------------------------------------------
+# Shared CSS rule iterator (used by scope_style_block AND app.whole_mining)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class CssRule:
+    """One top-level CSS rule as yielded by ``iter_css_rules``.
+
+    Fields
+    ------
+    prefix
+        Whitespace and comments that appear BEFORE this rule in the source.
+        Preserving this field lets callers reconstruct the full CSS text
+        faithfully (round-trip safe).
+    prelude
+        Everything before the opening ``{``: a selector list for plain rules,
+        or ``@media (...)`` / ``@keyframes name`` for at-rules. Empty string
+        for the terminal sentinel (see below).
+    body
+        Everything between the opening ``{`` and its matching ``}``. Empty
+        string for the terminal sentinel.
+    at_name
+        The lowercased at-rule keyword (e.g. ``'@media'``, ``'@keyframes'``),
+        or ``''`` for plain selector rules and the terminal sentinel.
+
+    Terminal sentinel
+        When the CSS ends with trailing text that has no rule block (orphan
+        comments, whitespace, malformed input), ``iter_css_rules`` emits one
+        final ``CssRule`` with empty ``prelude`` and ``body`` and the
+        remaining text in ``prefix``. Callers can detect this case with
+        ``not rule.prelude``.
+    """
+
+    prefix: str
+    prelude: str
+    body: str
+    at_name: str
+
+
+def iter_css_rules(css: str) -> Iterator[CssRule]:
+    """Iterate over top-level CSS rules in ``css``, yielding one ``CssRule`` each.
+
+    Handles brace-balanced rule bodies correctly - nested ``@media`` /
+    ``@supports`` blocks are NOT split on inner ``}`` characters. This is
+    the single CSS rule walker for the codebase; ``scope_style_block`` and
+    ``app.whole_mining.css_rules_for_classes`` both use it.
+
+    The ``prefix`` field of each yielded ``CssRule`` carries whitespace and
+    comments that precede the rule. Concatenating ``rule.prefix + rule.prelude
+    + '{' + rule.body + '}'`` for every non-sentinel rule (plus the sentinel's
+    ``prefix``) reconstructs the original text.
+
+    Edge cases
+    ----------
+    - Trailing content (text after the last ``}`` with no new ``{``) is
+      emitted as a sentinel with empty ``prelude`` / ``body`` and the
+      remaining text as ``prefix``.
+    - Unbalanced braces cause the remaining text to be emitted the same way
+      (sentinel with the rest in ``prefix``).
+    - Empty or whitespace-only input emits a single sentinel.
+
+    Args:
+        css: Raw CSS text. May contain comments, at-rules, and nested blocks.
+
+    Yields:
+        ``CssRule`` instances in source order; last item may be a sentinel.
+    """
+    i = 0
+    n = len(css)
+
+    while i < n:
+        # -- accumulate leading whitespace and comments into prefix ----------
+        prefix_parts: list[str] = []
+        while i < n:
+            ws = re.match(r"\s+", css[i:])
+            if ws:
+                prefix_parts.append(ws.group(0))
+                i += ws.end()
+                continue
+            cm = _COMMENT_RE.match(css, i)
+            if cm:
+                prefix_parts.append(cm.group(0))
+                i = cm.end()
+                continue
+            break  # non-whitespace, non-comment: start of rule prelude
+        prefix = "".join(prefix_parts)
+
+        if i >= n:
+            # Only whitespace/comments left - emit as sentinel
+            if prefix:
+                yield CssRule(prefix=prefix, prelude="", body="", at_name="")
+            return
+
+        # -- find the opening brace of the next rule -------------------------
+        brace_open = css.find("{", i)
+        if brace_open == -1:
+            # Trailing content with no block
+            yield CssRule(prefix=prefix + css[i:], prelude="", body="", at_name="")
+            return
+
+        prelude = css[i:brace_open]
+        brace_close = _find_matching_brace(css, brace_open)
+        if brace_close == -1:
+            # Unbalanced braces: emit the remainder as a sentinel
+            yield CssRule(prefix=prefix + css[i:], prelude="", body="", at_name="")
+            return
+
+        body = css[brace_open + 1 : brace_close]
+        prelude_stripped = prelude.strip()
+        at_name = (
+            _at_rule_name(prelude_stripped) if prelude_stripped.startswith("@") else ""
+        )
+
+        yield CssRule(prefix=prefix, prelude=prelude, body=body, at_name=at_name)
+        i = brace_close + 1
+
+
 def scope_style_block(
     css_text: str, wrapper_selector: str = DEFAULT_WRAPPER_SELECTOR
 ) -> str:
@@ -97,55 +224,28 @@ def scope_style_block(
 def _rewrite_block(css_text: str, wrapper: str) -> str:
     """Walk top-level rules in ``css_text`` and rewrite each one.
 
-    Splits on matched braces (not naive ``}`` splits, which would corrupt
-    nested at-rules). For each rule, decides whether it is a plain rule
-    (rewrite the selector list), a nested at-rule (recurse), a declaration
-    at-rule (pass through), or a named at-rule like @keyframes (pass through).
+    Delegates rule iteration to ``iter_css_rules`` (the single CSS rule
+    parser). For each rule, decides whether it is a plain rule (rewrite
+    the selector list), a nested at-rule (recurse), or any other at-rule
+    like @keyframes / @font-face (pass through unchanged).
     """
     out: list[str] = []
-    i = 0
-    n = len(css_text)
-    while i < n:
-        # Preserve leading whitespace / comments verbatim
-        ws_match = re.match(r"\s+", css_text[i:])
-        if ws_match:
-            out.append(ws_match.group(0))
-            i += ws_match.end()
+    for rule in iter_css_rules(css_text):
+        out.append(rule.prefix)
+        if not rule.prelude:
+            # Sentinel: trailing/unbalanced text already emitted in prefix.
             continue
-        comment_match = _COMMENT_RE.match(css_text, i)
-        if comment_match:
-            out.append(comment_match.group(0))
-            i = comment_match.end()
-            continue
-        # Find the next '{' that opens a block
-        brace_open = css_text.find("{", i)
-        if brace_open == -1:
-            # Trailing content with no block; keep verbatim
-            out.append(css_text[i:])
-            break
-        prelude = css_text[i:brace_open]
-        body_start = brace_open + 1
-        body_end = _find_matching_brace(css_text, brace_open)
-        if body_end == -1:
-            # Unbalanced; bail out and keep remainder verbatim
-            out.append(css_text[i:])
-            break
-        body = css_text[body_start:body_end]
-        prelude_stripped = prelude.strip()
-        if prelude_stripped.startswith("@"):
-            at_name = _at_rule_name(prelude_stripped)
-            if at_name in _NESTED_AT_RULES:
-                rewritten_body = _rewrite_block(body, wrapper)
-                out.append(f"{prelude}{{{rewritten_body}}}")
-            else:
-                # @font-face / @keyframes / @page / @property / unknown:
-                # pass through unchanged (no real selectors to rewrite).
-                _ = _DECLARATION_AT_RULES, _NAMED_AT_RULES  # documented intent
-                out.append(f"{prelude}{{{body}}}")
+        if rule.at_name in _NESTED_AT_RULES:
+            rewritten_body = _rewrite_block(rule.body, wrapper)
+            out.append(f"{rule.prelude}{{{rewritten_body}}}")
+        elif rule.at_name:
+            # @font-face / @keyframes / @page / @property / unknown:
+            # pass through unchanged (no real selectors to rewrite).
+            _ = _DECLARATION_AT_RULES, _NAMED_AT_RULES  # documented intent
+            out.append(f"{rule.prelude}{{{rule.body}}}")
         else:
-            rewritten_prelude = _rewrite_selector_list(prelude, wrapper)
-            out.append(f"{rewritten_prelude}{{{body}}}")
-        i = body_end + 1
+            rewritten_prelude = _rewrite_selector_list(rule.prelude, wrapper)
+            out.append(f"{rewritten_prelude}{{{rule.body}}}")
     return "".join(out)
 
 
