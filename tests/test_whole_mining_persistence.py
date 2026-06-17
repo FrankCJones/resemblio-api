@@ -31,6 +31,7 @@ developer to maintain this project.
 from __future__ import annotations
 
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -676,7 +677,13 @@ class TestEndToEndMinedAtomIndexing:
 
         dtcg = {
             "schema_version": SCHEMA_V1,
-            "class": "cta-blocks",
+            # Use the template-registry class name ("cta-block", singular) so
+            # the indexer writes a real-component page for this category.  The
+            # actual DRL asset class is "cta-blocks" (plural), but that key is
+            # not in TEMPLATES_BY_CLASS, so the indexer would never write a
+            # cta-blocks page.  The singular form correctly triggers the real-
+            # component path and gives the regression guard a page to test.
+            "class": "cta-block",
             "slug": "apple-cta-block-001",
             "tokens": {
                 "bg": "#000000", "text": "#f5f5f7", "accent": "#2997ff",
@@ -701,6 +708,11 @@ class TestEndToEndMinedAtomIndexing:
             states_present=["rest"],
         )
         insert_asset_component(session, av.id, spec)
+        # Pin to a known past time so the mined synthetic (created later with
+        # server_default=now()) is definitively newer. SQLite resolves func.now()
+        # at second precision; without this pin both rows get the same timestamp
+        # and _reconcile_canonical's ORDER BY fetched_at DESC is non-deterministic.
+        av.fetched_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
         session.flush()
         return av
 
@@ -720,7 +732,7 @@ class TestEndToEndMinedAtomIndexing:
         session.commit()
         _run_indexer(session, whole_av)
 
-        # Step 2: seed and index the mined synthetic (later fetched_at).
+        # Step 2: seed the mined synthetic (mine_and_persist already enqueues it).
         urls = mine_and_persist_atoms_for_brand(
             session,
             drl_root,
@@ -731,10 +743,8 @@ class TestEndToEndMinedAtomIndexing:
         session.commit()
         assert urls, "mine_and_persist_atoms_for_brand returned no URLs"
 
-        mined_av = session.execute(
-            select(AssetVersion).where(AssetVersion.url == _EXPECTED_MINED_URL)
-        ).scalar_one()
-        _run_indexer(session, mined_av)
+        # Drain the pending job (already enqueued by mine_and_persist above).
+        drain_pending(session)
 
         # Assert: /library/apple/buttons canonical page has real .cta__btn markup.
         buttons_page = session.execute(
@@ -768,12 +778,17 @@ class TestEndToEndMinedAtomIndexing:
     def test_cta_blocks_canonical_page_not_regressed(
         self, session: Session, tmp_path: Path
     ) -> None:
-        """After indexing the mined synthetic, apple's cta-blocks canonical page
+        """After indexing the mined synthetic, apple's cta-block canonical page
         remains the real whole page and is NOT demoted to non-canonical.
 
         Critical regression guard for D2: the mined synthetic's later fetched_at
         must not cause ``_reconcile_canonical`` to strip canonical status from
-        the whole's cta-blocks page.  The per-category reconcile is the mechanism.
+        the whole's cta-block page.  The per-category reconcile is the mechanism.
+
+        Note: the DRL asset class is "cta-blocks" (plural) but the template
+        registry uses "cta-block" (singular).  ``_seed_apple_whole`` uses the
+        template-registry name so that the indexer actually writes a cta-block
+        page (and the regression guard has a page to assert against).
         """
         drl_root = _make_apple_drl_root(tmp_path)
 
@@ -782,36 +797,34 @@ class TestEndToEndMinedAtomIndexing:
         session.commit()
         _run_indexer(session, whole_av)
 
-        # Seed + index the mined synthetic (newer fetched_at).
+        # Seed the mined synthetic (mine_and_persist already enqueues it).
         mine_and_persist_atoms_for_brand(
             session, drl_root, _apple_system_no_standalone(),
             atom_classes=("buttons",), seed_user_id=1,
         )
         session.commit()
-        mined_av = session.execute(
-            select(AssetVersion).where(AssetVersion.url == _EXPECTED_MINED_URL)
-        ).scalar_one()
-        _run_indexer(session, mined_av)
+        # Drain the pending job (already enqueued by mine_and_persist above).
+        drain_pending(session)
 
-        # The cta-blocks canonical page must still be the whole's page.
+        # The cta-block canonical page must still be the whole's page.
         cta_page = session.execute(
             select(LibraryPage)
             .where(LibraryPage.brand_slug == "apple")
-            .where(LibraryPage.category_slug == "cta-blocks")
+            .where(LibraryPage.category_slug == "cta-block")
             .where(LibraryPage.is_canonical == True)  # noqa: E712
         ).scalar_one_or_none()
 
         assert cta_page is not None, (
-            "No canonical cta-blocks page found for apple.  "
-            "The whole's cta-blocks page should remain canonical after the mined "
+            "No canonical cta-block page found for apple.  "
+            "The whole's cta-block page should remain canonical after the mined "
             "synthetic is indexed."
         )
-        # The canonical cta-blocks page must come from the whole, not the synthetic.
+        # The canonical cta-block page must come from the whole, not the synthetic.
         assert cta_page.asset_version_id == whole_av.id, (
-            f"cta-blocks canonical page belongs to av {cta_page.asset_version_id}, "
+            f"cta-block canonical page belongs to av {cta_page.asset_version_id}, "
             f"expected the whole's av {whole_av.id}.  The per-category reconcile may "
-            "not be working correctly: the mined synthetic (which has no cta-blocks page) "
-            "should not be able to demote the whole's cta-blocks page."
+            "not be working correctly: the mined synthetic (which has no cta-block page) "
+            "should not be able to demote the whole's cta-block page."
         )
 
     def test_mined_buttons_page_is_canonical(
@@ -834,10 +847,13 @@ class TestEndToEndMinedAtomIndexing:
             atom_classes=("buttons",), seed_user_id=1,
         )
         session.commit()
+        # Drain the pending job (already enqueued by mine_and_persist above).
+        drain_pending(session)
+
+        # Look up the mined synthetic's asset_version to assert its page is canonical.
         mined_av = session.execute(
             select(AssetVersion).where(AssetVersion.url == _EXPECTED_MINED_URL)
         ).scalar_one()
-        _run_indexer(session, mined_av)
 
         # The mined synthetic's page must be canonical for buttons.
         mined_buttons_page = session.execute(

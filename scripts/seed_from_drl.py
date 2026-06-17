@@ -742,13 +742,24 @@ def apply_seed(
     failure the next dry-run reconciles and re-running is safe under the
     partial unique index.
 
-    Returns a counts dict: ``{"inserted": int, "updated": int, "skipped": int}``.
+    After all normal assets are seeded, calls ``mine_and_persist_atoms_for_brand``
+    for every brand seen in the pairs.  This runs after the final batch commit
+    so the brand's real whole asset_versions exist before the mined synthetics
+    are created (D4 ordering requirement: whole seeded before its mined atoms).
+
+    Returns a counts dict: ``{"inserted": int, "updated": int, "skipped": int,
+    "mined": int}``.
     """
-    counts = {"inserted": 0, "updated": 0, "skipped": 0}
+    counts: dict[str, int] = {"inserted": 0, "updated": 0, "skipped": 0, "mined": 0}
     batch_since_commit = 0
     # Cache system.json loads so a multi-asset brand (e.g. a brand with
     # alphabets + buttons + wholes) only reads disk once per slug.
     _system_json_cache: dict[str, dict[str, Any] | None] = {}
+    # Track one system dict per brand for the post-loop mining pass (D4).
+    # All (system, asset) pairs for the same brand share the same system dict
+    # object from corpus.json (same slug, same assets list); using the latest
+    # one seen is safe and covers the full asset list.
+    _seen_systems: dict[str, DrlSystemDict] = {}
     for system, asset in pairs:
         try:
             stripped = brand_strip(system, asset)
@@ -794,6 +805,7 @@ def apply_seed(
             drl_root=drl_root, asset=asset,
         )
         counts["inserted" if operation == "insert" else "updated"] += 1
+        _seen_systems[brand_slug] = system
         batch_since_commit += 1
         if batch_since_commit >= batch_size:
             session.commit()
@@ -801,7 +813,280 @@ def apply_seed(
             LOG.info("committed batch; running totals: %s", counts)
     if batch_since_commit:
         session.commit()
+
+    # D4 (issue #28): mine atoms from wholes for every brand seen in this seed
+    # run.  Runs AFTER the final batch commit so every brand's real whole
+    # asset_versions are durably written before the synthetics reference them.
+    # Only ``buttons`` is activated for this release; extend the tuple in #5.
+    for brand_slug, system in _seen_systems.items():
+        urls = mine_and_persist_atoms_for_brand(
+            session,
+            drl_root,
+            system,
+            atom_classes=("buttons",),
+            seed_user_id=seed_user_id,
+            captured_date=captured_date,
+        )
+        counts["mined"] += len(urls)
+    if counts["mined"]:
+        session.commit()
+        LOG.info("mined %d synthetic atom(s) after seed loop", counts["mined"])
+
     return counts
+
+
+# --- Whole-mining: mined atom persistence (issue #28) -----------------------
+#
+# These functions implement Design D1-D4 from the issue #28 handoff:
+#
+# D1 - Synthetic mined asset_version shape (url, dtcg, version_label, component).
+# D2 - Mined asset_versions compose ONLY their atom_class (single-class guard).
+# D3 - Precedence: only create a mined synthetic when the brand has no standalone atom.
+# D4 - Mining runs in apply_seed after the brand's normal assets are seeded.
+#
+# The DRL is strictly read-only throughout: load_asset_html reads text only.
+
+
+def _find_whole_candidates(
+    system: DrlSystemDict,
+    atom_classes: tuple[str, ...],
+) -> dict[str, "DrlAssetDict"]:
+    """Return the first candidate whole per atom class for classes with no standalone atom.
+
+    Pure (no I/O): only inspects the corpus kind/path metadata.  The caller
+    (``mine_and_persist_atoms_for_brand``) is responsible for loading the
+    whole's HTML and attempting mining.
+
+    Standalone atom detection: an asset is a standalone atom for class C when
+    its ``kind == "atom"`` and its path matches ``assets/atoms/<C>/...``.
+
+    Whole ordering: wholes are sorted by path string for a deterministic,
+    stable tiebreaker.  The same whole is always selected on re-seeds so the
+    synthetic URL is idempotent.  The caller should iterate all wholes in the
+    same sorted order if the first candidate does not yield a mine hit.
+
+    Args:
+        system: DRL system dict (one entry from ``corpus.json:systems``).
+        atom_classes: Tuple of atom class names to attempt mining for.
+
+    Returns:
+        Dict mapping each mineable atom_class to the first candidate whole
+        asset dict (sorted by path).  Classes already covered by a standalone
+        atom, and classes with no whole in the brand, are excluded.
+    """
+    all_assets: list[DrlAssetDict] = list(system.get("assets") or [])
+
+    # Collect atom classes that already have a standalone asset.  Path pattern
+    # for atoms: assets/atoms/<class>/<slug>.  Checking path index 2 (0-based)
+    # is safer than relying on the optional ``cls`` field (often None in DRL).
+    standalone_classes: set[str] = set()
+    for a in all_assets:
+        if a.get("kind") != "atom":
+            continue
+        parts = str(a.get("path") or "").split("/")
+        # assets / atoms / <class> / <slug>  ->  parts[2] is the class.
+        if len(parts) >= 3 and parts[0] == "assets" and parts[1] == "atoms":
+            standalone_classes.add(parts[2])
+
+    # Wholes in deterministic path order.
+    wholes = sorted(
+        (a for a in all_assets if a.get("kind") == "whole"),
+        key=lambda a: str(a.get("path") or ""),
+    )
+    if not wholes:
+        return {}
+
+    return {
+        atom_class: wholes[0]
+        for atom_class in atom_classes
+        if atom_class not in standalone_classes
+    }
+
+
+def mine_and_persist_atoms_for_brand(
+    session: "Session",
+    drl_root: Path,
+    system: DrlSystemDict,
+    *,
+    atom_classes: tuple[str, ...] = ("buttons",),
+    seed_user_id: int,
+    captured_date: str = DEFAULT_CAPTURED_DATE,
+) -> list[str]:
+    """Mine atoms from a brand's wholes and persist synthetic asset_versions.
+
+    Called from ``apply_seed`` after all of the brand's normal assets have
+    been seeded and the batch-commit covering them has run.
+
+    For each ``atom_class`` in ``atom_classes``:
+
+    1. Skip if the brand already has a standalone atom of that class (D3).
+    2. Iterate the brand's ``kind=="whole"`` assets in deterministic
+       (path-sorted) order; take the first whole whose HTML yields a
+       ``MinedAtom`` via ``mine_atom_from_whole``.
+    3. Persist a synthetic ``asset_version`` with:
+       - url  ``resemblio://seed/drl_v1/<brand>/<atom_class>/mined-from-<whole-slug>``
+       - dtcg carrying ``schema_version``, ``class=<atom_class>``,
+         ``mined_atom_class=<atom_class>`` (the D2 guard key), ``mined_from``,
+         ``slug``, the whole's brand tokens, and all curated metadata fields
+         (``tier``, ``category``, ``mood``, ``applicable_to``,
+         ``design_principles``, ``commercial_signal``) so the seam tests that
+         require unconditional curated fields on every asset_version pass.
+       - ``version_label`` ``"DRL mined from <whole-slug>"``
+       - ``is_public=True`` (same visibility rule as the bootstrap seed).
+    4. Persist an ``asset_component`` row (fragment_key ``"default"``) with
+       the mined HTML, CSS, and states.
+    5. Enqueue the synthetic for the library indexer.
+
+    The ``mined_atom_class`` dtcg key is the D2 guard that restricts the
+    indexer's class loop to this single class, preventing the synthetic's
+    later ``fetched_at`` from demoting the brand's real whole-page rows.
+
+    For this release only ``atom_classes=("buttons",)`` is activated (the
+    proven slice from the apple/cta-block proof).  Adding entries to the tuple
+    fans out to additional classes in issue #5 without changing this function.
+
+    Returns:
+        List of synthetic asset_version URLs that were created (empty when all
+        classes have standalone atoms or no wholes yield a mine hit).
+
+    DRL is read-only: ``load_asset_html`` returns a string; no DRL path is
+    written or modified.
+    """
+    from app.asset_versions import (
+        AssetComponentSpec,
+        insert_asset_component,
+        insert_or_reuse_asset_version,
+    )
+    from app.library_indexer import enqueue_for_asset_version
+    from app.whole_mining import mine_atom_from_whole
+
+    brand_slug = str(system.get("slug") or "")
+    all_assets: list[DrlAssetDict] = list(system.get("assets") or [])
+
+    # Load system.json once for design_principles + commercial_signal (same
+    # pattern as the main apply_seed loop).  Returns None when the file is
+    # absent on disk (test fixtures or brands without a system.json).
+    system_meta: dict[str, Any] = load_system_json(drl_root, brand_slug) or {}
+    raw_dp = system_meta.get("design_principles")
+    _design_principles: list[str] | None = (
+        [str(p) for p in raw_dp] if isinstance(raw_dp, list) else None
+    )
+    raw_cs = system_meta.get("commercial_signal")
+    _commercial_signal: str | None = (
+        str(raw_cs) if isinstance(raw_cs, str) and raw_cs else None
+    )
+
+    # D3 precedence: identify atom classes with standalone atoms in this brand.
+    standalone_classes: set[str] = set()
+    for a in all_assets:
+        if a.get("kind") != "atom":
+            continue
+        parts = str(a.get("path") or "").split("/")
+        if len(parts) >= 3 and parts[0] == "assets" and parts[1] == "atoms":
+            standalone_classes.add(parts[2])
+
+    # Wholes in deterministic path-sorted order (same order as _find_whole_candidates).
+    wholes = sorted(
+        (a for a in all_assets if a.get("kind") == "whole"),
+        key=lambda a: str(a.get("path") or ""),
+    )
+
+    written_urls: list[str] = []
+
+    for atom_class in atom_classes:
+        if atom_class in standalone_classes:
+            LOG.debug(
+                "brand=%s already has a standalone %s atom; skipping mined synthetic",
+                brand_slug,
+                atom_class,
+            )
+            continue
+
+        # Try each whole in sorted order until a mine hit is found.
+        for whole_asset in wholes:
+            html = load_asset_html(drl_root, whole_asset)
+            if html is None:
+                continue
+
+            mined = mine_atom_from_whole(html, atom_class)
+            if mined is None:
+                continue
+
+            # Hit. Build the stable dedup URL and synthetic dtcg.
+            whole_path = str(whole_asset.get("path") or "")
+            whole_slug = whole_path.rsplit("/", 1)[-1] if "/" in whole_path else whole_path
+            synthetic_url = (
+                f"resemblio://seed/{SEED_SOURCE_DRL_V1}"
+                f"/{brand_slug}/{atom_class}/mined-from-{whole_slug}"
+            )
+
+            # Load the whole's brand tokens so the synthetic dtcg is brand-correct.
+            # This ensures token-dependent metadata (tier, palette) is accurate.
+            tokens = load_tokens_for_asset(drl_root, whole_asset)
+
+            dtcg: dict[str, object] = {
+                "schema_version": SCHEMA_V1,
+                "class": atom_class,
+                # D2 guard: restricts the indexer's class loop to this single class.
+                "mined_atom_class": atom_class,
+                "slug": f"{brand_slug}-{atom_class}-mined",
+                "tokens": tokens,
+                # Provenance: which whole was mined, for disclosure and audit.
+                "mined_from": whole_slug,
+                # Curated metadata: mirrors the fields build_bundle writes on
+                # regular asset_versions so the seam tests that require
+                # unconditional curated fields on every row continue to pass.
+                "tier": str(system.get("tier") or ""),
+                "category": str(system.get("category") or ""),
+                "mood": list(whole_asset.get("mood") or []),
+                "applicable_to": list(whole_asset.get("applicable_to") or []),
+            }
+            if _design_principles is not None:
+                dtcg["design_principles"] = _design_principles
+            if _commercial_signal is not None:
+                dtcg["commercial_signal"] = _commercial_signal
+
+            asset_version = insert_or_reuse_asset_version(
+                session,
+                url=synthetic_url,
+                dtcg=dtcg,
+                first_extracted_by_user_id=DRL_BOOTSTRAP_USER_ID,
+                manifest_schema_version=SCHEMA_V1,
+                is_public=True,
+                version_label=f"DRL mined from {whole_slug}",
+            )
+
+            spec = AssetComponentSpec(
+                fragment_key="default",
+                component_html=mined.component_html,
+                component_css=mined.component_css,
+                # DRL-relative path of the source whole (never an absolute OS path).
+                source_asset_path=whole_path,
+                states_present=mined.states_present,
+            )
+            insert_asset_component(session, asset_version.id, spec)
+            session.flush()
+
+            try:
+                enqueue_for_asset_version(session, asset_version.id)
+            except Exception as exc:  # noqa: BLE001
+                LOG.warning(
+                    "enqueue_for_asset_version failed for mined synthetic url=%s: %r",
+                    synthetic_url,
+                    exc,
+                )
+
+            written_urls.append(synthetic_url)
+            LOG.info(
+                "mined %s for brand=%s from whole=%s -> %s",
+                atom_class,
+                brand_slug,
+                whole_slug,
+                synthetic_url,
+            )
+            break  # First hit per atom_class is enough; do not mine duplicates.
+
+    return written_urls
 
 
 # --- Storage adapter (wraps app.storage.R2Storage for the seeder) ------------

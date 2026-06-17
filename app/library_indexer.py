@@ -1374,41 +1374,90 @@ def _metadata_for(
 
 
 def _reconcile_canonical(session: Session, asset_version: AssetVersion) -> None:
-    """Set ``is_canonical`` on this asset_version's pages and flip older ones FALSE.
+    """Set ``is_canonical`` per (brand_slug, category_slug) independently.
 
-    The "latest version" per (brand_slug, category_slug) is the one whose
-    asset_version has the most recent ``fetched_at``. Run after pages are
-    written so the just-inserted rows participate in the comparison.
+    For each category that exists for this brand, the canonical page is
+    the one from the most recent asset_version that contributed a page in
+    that category.  This per-category approach is required to handle mined
+    synthetic asset_versions correctly:
+
+    A mined synthetic (e.g. apple/buttons) writes only ONE category page.
+    If reconcile were per-brand (choosing one winner asset_version for the
+    whole brand), the mined synthetic's later ``fetched_at`` would cause the
+    whole's cta-blocks page to lose canonical status even though no mined
+    page competes for that category.  Per-category reconcile avoids that
+    regression: each category is settled independently, so the whole keeps
+    its cta-blocks canonical and the synthetic wins only for buttons.
+
+    Run after pages are written so the just-inserted rows participate in
+    the comparison.
     """
     brand_slug = derive_brand_slug(asset_version.url)
-    # Find the latest asset_version_id per brand_slug. We compute it by
-    # joining library_pages back to asset_versions and ordering by
-    # fetched_at; the winner per brand_slug is the asset_version whose
-    # pages should be canonical.
-    latest_stmt = (
-        select(AssetVersion.id)
-        .join(LibraryPage, LibraryPage.asset_version_id == AssetVersion.id)
+
+    # All distinct categories for this brand in library_pages.
+    categories: list[str] = session.execute(
+        select(LibraryPage.category_slug)
         .where(LibraryPage.brand_slug == brand_slug)
-        .order_by(AssetVersion.fetched_at.desc())
-        .limit(1)
-    )
-    latest_id = session.execute(latest_stmt).scalar_one_or_none()
-    if latest_id is None:
-        return
-    # Pages owned by the winning asset_version flip to canonical=True;
-    # pages owned by older asset_versions for the same brand flip FALSE.
-    session.execute(
-        update(LibraryPage)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.asset_version_id == latest_id)
-        .values(is_canonical=True)
-    )
-    session.execute(
-        update(LibraryPage)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.asset_version_id != latest_id)
-        .values(is_canonical=False)
-    )
+        .distinct()
+    ).scalars().all()
+
+    for category_slug in categories:
+        # Latest asset_version_id for this (brand, category) by fetched_at.
+        latest_id = session.execute(
+            select(AssetVersion.id)
+            .join(LibraryPage, LibraryPage.asset_version_id == AssetVersion.id)
+            .where(LibraryPage.brand_slug == brand_slug)
+            .where(LibraryPage.category_slug == category_slug)
+            .order_by(AssetVersion.fetched_at.desc())
+            .limit(1)
+        ).scalar_one_or_none()
+        if latest_id is None:
+            continue
+        # Flip the winner canonical for this (brand, category).
+        session.execute(
+            update(LibraryPage)
+            .where(LibraryPage.brand_slug == brand_slug)
+            .where(LibraryPage.category_slug == category_slug)
+            .where(LibraryPage.asset_version_id == latest_id)
+            .values(is_canonical=True)
+        )
+        # Flip all older versions non-canonical for this (brand, category).
+        session.execute(
+            update(LibraryPage)
+            .where(LibraryPage.brand_slug == brand_slug)
+            .where(LibraryPage.category_slug == category_slug)
+            .where(LibraryPage.asset_version_id != latest_id)
+            .values(is_canonical=False)
+        )
+
+
+# ----------------------------------------------------------------------
+# Mined-atom marker helper
+# ----------------------------------------------------------------------
+
+
+def _mined_atom_class(dtcg: dict[str, object]) -> str | None:
+    """Return the mined atom class name if this asset_version is a mined synthetic.
+
+    Mined asset_versions carry ``dtcg["mined_atom_class"]`` set to the single
+    atom class they serve (e.g. ``"buttons"``).  This is the D2 guard key: the
+    indexer restricts its class loop to this one class so a mined synthetic
+    can never overwrite the canonical status of other category pages (e.g.
+    ``cta-blocks``) that belong to the brand's real captured wholes.
+
+    Returns ``None`` for all other asset_versions (key absent or empty string).
+    Using a dedicated key rather than overloading ``version_label`` keeps
+    control flow out of string parsing and makes this function unit-testable
+    in isolation.
+
+    Args:
+        dtcg: The ``dtcg_json`` payload from an ``asset_versions`` row.
+
+    Returns:
+        The atom class name string, or ``None`` if the marker is absent/empty.
+    """
+    val = dtcg.get("mined_atom_class")
+    return str(val) if val else None
 
 
 # ----------------------------------------------------------------------
@@ -1466,10 +1515,21 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
     # one page whose class_name matches dtcg["class"]. All other pages use
     # the existing generic-template path. None when the asset has no component
     # row or dtcg carries no class key (e.g. organic extractions pre-#2).
-    dtcg_class: str | None = (asset_version.dtcg_json or {}).get("class")
+    dtcg_json = asset_version.dtcg_json or {}
+    dtcg_class: str | None = dtcg_json.get("class")
     real_component = get_asset_component(session, asset_version.id) if dtcg_class else None
+    # D2 guard (issue #28): mined synthetic asset_versions must compose exactly
+    # one page - their atom_class.  If the full _all_template_classes() loop
+    # ran for a mined synthetic, its later fetched_at could cause the per-brand
+    # reconcile to demote the whole's real pages (e.g. cta-blocks) from canonical.
+    # _mined_atom_class returns the single class name when the marker is present,
+    # or None for all other asset_versions (no change to their behaviour).
+    mined_class = _mined_atom_class(dtcg_json)
+    classes_to_compose: tuple[str, ...] = (
+        (mined_class,) if mined_class else _all_template_classes()
+    )
     written = 0
-    for class_name in _all_template_classes():
+    for class_name in classes_to_compose:
         rendered = _compose_with_gate(
             class_name,
             brand_slug=brand_slug,
