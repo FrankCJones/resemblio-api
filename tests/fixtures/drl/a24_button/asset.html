@@ -1,0 +1,174 @@
+<!--
+  Asset: a24-cinematic-001
+  Class: buttons
+  Pattern: primary-square
+  Inspired by: A24 Films, A24 Shop
+  Notes:
+    - Editorial-cinema CTA: near-sharp ink slab on paper, mixed-case sans label,
+      tiny positive tracking so the label reads as titlecard rather than UI shout.
+    - Renders four states (rest, hover, focus, disabled) plus an inverse
+      white-on-black variant matching the films-site register.
+    - Variables: every color, size, spacing, radius, motion value.
+    - Inline ornament: the inverse-state's 0.5px underline lift on hover is a
+      single asset-specific micro-affordance documented at its rule; not a token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-cinematic-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter is the closest open-source substitute for the GT America / Söhne
+     register A24 uses. The token chain falls back through both before reaching
+     Inter, so the asset still expresses the right voice when those licensed
+     faces are not installed. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-8);
+  }
+
+  /* The button. Ink slab on paper, near-sharp 2px corners, mixed-case label
+   * with mild positive tracking. No shadow at rest; hover swaps to a hairline
+   * border instead of an elevation cue (editorial restraint). */
+  .btn {
+    appearance: none;
+    border: 1px solid transparent;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    line-height: 1;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-xs);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-none);
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .btn:hover {
+    /* Slab "warms" by one step rather than recoloring; restraint. */
+    background: var(--ds-accent-2);
+  }
+  .btn:active {
+    /* 1px translate cues press without violating the flatness. */
+    transform: translateY(1px);
+  }
+  /* Focus ring: ink, offset by 3px so it floats off the slab and reads
+   * against the paper. The offset is a one-time geometric tuning; the
+   * 3px is asset-specific and not a contract slot. */
+  .btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+  .btn[disabled] {
+    background: var(--ds-hairline);
+    color: var(--ds-text-muted);
+    cursor: not-allowed;
+  }
+
+  /* Inverse variant: white-on-black, matching the films-site register where
+   * the page is dark and the CTA flips to paper. Same geometry; inverted
+   * palette; ink-on-paper hover swaps to paper-on-ink. */
+  .btn--inverse {
+    background: #FFFFFF;
+    color: var(--ds-text);
+    border-color: var(--ds-text);
+  }
+  .btn--inverse:hover {
+    background: transparent;
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+    /* The 0.5px underline lift on the label is a single editorial micro-
+     * affordance, sized in fractional px to read as a hairline rather than
+     * a UI underline. Not promoted to a token because no other asset uses
+     * this exact value. */
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;
+    text-underline-offset: 4px;
+  }
+
+  /* State labels: mono kicker above each button, matching A24's small-caps
+   * label register ("Coming Soon", "2026" on /films). */
+  .row {
+    display: flex;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .row--dark {
+    background: var(--ds-text);
+    padding: var(--ds-space-8);
+    border-radius: var(--ds-radius-xs);
+  }
+  .group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .state-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .row--dark .state-label { color: #B5B5B0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="group">
+      <span class="state-label">rest</span>
+      <button type="button" class="btn">Watch Trailer</button>
+    </div>
+    <div class="group">
+      <span class="state-label">hover</span>
+      <button type="button" class="btn" style="background: var(--ds-accent-2);">Watch Trailer</button>
+    </div>
+    <div class="group">
+      <span class="state-label">focus</span>
+      <button type="button" class="btn" style="outline: 2px solid var(--ds-focus-ring); outline-offset: 3px;">Watch Trailer</button>
+    </div>
+    <div class="group">
+      <span class="state-label">disabled</span>
+      <button type="button" class="btn" disabled>Watch Trailer</button>
+    </div>
+  </div>
+
+  <div class="row row--dark">
+    <div class="group">
+      <span class="state-label">inverse / rest</span>
+      <button type="button" class="btn btn--inverse">Shop Now</button>
+    </div>
+    <div class="group">
+      <span class="state-label">inverse / hover</span>
+      <button type="button" class="btn btn--inverse" style="background: transparent; color: #FFFFFF; border-color: #FFFFFF; text-decoration: underline; text-decoration-thickness: 0.5px; text-underline-offset: 4px;">Shop Now</button>
+    </div>
+  </div>
+</body>
+</html>
