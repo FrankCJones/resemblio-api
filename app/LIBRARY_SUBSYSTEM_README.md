@@ -79,8 +79,11 @@ scripts/
                                SEED_FROM_DRL_DESIGN.md for the idempotency
                                contract (UPSERT on seed_source partial index).
                                v5 addition: ``mine_and_persist_atoms_for_brand()``
-                               mines button atoms from whole HTML (via whole_mining),
-                               persists synthetic asset_versions, enqueues indexer jobs.
+                               mines atoms from whole HTML (via whole_mining).
+                               v6 addition (issue #5): fans out to all proven classes
+                               (buttons, badges, cards, links) via MINEABLE_ATOM_CLASSES.
+                               inputs deferred to issue #30 (void-element capture bug).
+                               Persists synthetic asset_versions, enqueues indexer jobs.
 ```
 
 ---
@@ -193,11 +196,20 @@ Next.js web BFF (library-data.ts -> buildBrandMetadata -> BrandMetadataPanel)
 
 ---
 
-## Mined synthetic asset_versions (v5, issue #28)
+## Mined synthetic asset_versions (v5 issue #28, extended v6 issue #5)
 
-Some atom categories (e.g. `buttons`) have no standalone DRL atom entry for a brand. Rather than
-leave `/library/{brand}/buttons` serving only generic template HTML, `seed_from_drl` mines button
-atoms from the brand's CTA-block whole HTML and persists them as synthetic `asset_versions`.
+Some atom categories have no standalone DRL atom entry for a brand. Rather than leave
+`/library/{brand}/<class>` serving only generic template HTML, `seed_from_drl` mines atoms from the
+brand's whole HTML files and persists them as synthetic `asset_versions`.
+
+**Active classes (MINEABLE_ATOM_CLASSES in seed_from_drl.py):** buttons, badges, cards, links.
+Each class is proven against a vendored DRL fixture before activation (validate-then-activate
+discipline; see `tests/test_whole_mining.py::TestAtomClassValidation`). `inputs` is excluded
+pending issue #30 (void-element capture: bare `<input>` without self-closing slash is never
+completed by `_FragmentExtractor`).
+
+**D3 precedence:** if a brand already has a standalone atom for a given class, that class is skipped
+for that brand - the standalone always wins over the mined synthetic.
 
 **URL convention:** `resemblio://seed/drl_v1/{brand}/{atom_class}/mined-from-{whole_slug}`
 
