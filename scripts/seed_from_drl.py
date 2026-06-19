@@ -62,7 +62,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Protocol, TypedDict
+from typing import Any, Final, Protocol, TypedDict
 from zipfile import ZIP_DEFLATED, ZipFile
 
 # The seed script lives at ``code/api/scripts/seed_from_drl.py``. Adding the
@@ -125,6 +125,28 @@ prefix; downstream sort uses the trailing date."""
 DEFAULT_BATCH_SIZE = 25
 """Rows per DB transaction. The R2 PUT happens outside the transaction (S3
 has no two-phase commit); on partial failure the next dry-run reconciles."""
+
+MINEABLE_ATOM_CLASSES: Final[tuple[str, ...]] = (
+    "buttons",
+    "badges",
+    "cards",
+    "links",
+    # inputs excluded: void-element capture bug tracked in issue #30.
+    # Re-add once _FragmentExtractor correctly completes capture of bare
+    # <input> elements (no self-closing slash) in DRL wholes.
+)
+"""Atom classes actively mined corpus-wide during DRL seeding.
+
+Only classes proven against real DRL fixtures (see
+``tests/test_whole_mining.py::TestAtomClassValidation``) appear here.
+The validate-then-activate discipline keeps this list honest: a class with
+a broken or imprecise hint produces false positives across all brands, so
+it must never be added speculatively.
+
+D3 precedence rule: a class in this tuple is skipped for any brand that
+already has a standalone atom of that class (see
+``mine_and_persist_atoms_for_brand``).
+"""
 
 DEFAULT_DRL_ROOT = (
     Path(__file__).resolve().parents[4] / "Design Reference Library"
@@ -817,13 +839,14 @@ def apply_seed(
     # D4 (issue #28): mine atoms from wholes for every brand seen in this seed
     # run.  Runs AFTER the final batch commit so every brand's real whole
     # asset_versions are durably written before the synthetics reference them.
-    # Only ``buttons`` is activated for this release; extend the tuple in #5.
+    # The active class set is MINEABLE_ATOM_CLASSES (issue #5: expanded from
+    # buttons-only to all four proven classes).
     for brand_slug, system in _seen_systems.items():
         urls = mine_and_persist_atoms_for_brand(
             session,
             drl_root,
             system,
-            atom_classes=("buttons",),
+            atom_classes=MINEABLE_ATOM_CLASSES,
             seed_user_id=seed_user_id,
             captured_date=captured_date,
         )
@@ -908,7 +931,7 @@ def mine_and_persist_atoms_for_brand(
     drl_root: Path,
     system: DrlSystemDict,
     *,
-    atom_classes: tuple[str, ...] = ("buttons",),
+    atom_classes: tuple[str, ...] = MINEABLE_ATOM_CLASSES,
     seed_user_id: int,
     captured_date: str = DEFAULT_CAPTURED_DATE,
 ) -> list[str]:
@@ -941,9 +964,11 @@ def mine_and_persist_atoms_for_brand(
     indexer's class loop to this single class, preventing the synthetic's
     later ``fetched_at`` from demoting the brand's real whole-page rows.
 
-    For this release only ``atom_classes=("buttons",)`` is activated (the
-    proven slice from the apple/cta-block proof).  Adding entries to the tuple
-    fans out to additional classes in issue #5 without changing this function.
+    The active class set is controlled by ``MINEABLE_ATOM_CLASSES`` (defined in
+    this module). ``apply_seed`` passes that constant; callers may override for
+    tests. The validate-then-activate discipline in ``ATOM_DETECTION_HINTS``
+    (``app/whole_mining.py``) ensures only classes proven against real DRL
+    fixtures appear in the tuple. Issue #30 tracks the inputs deferral.
 
     Returns:
         List of synthetic asset_version URLs that were created (empty when all

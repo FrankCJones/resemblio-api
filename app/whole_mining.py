@@ -156,8 +156,24 @@ class AtomHint:
 
 # Detection hints for the five atom classes supported by this implementation.
 # Adding a new class: add an entry here with the appropriate tags and
-# class_substrings.  The buttons slice is the proven one; cards/badges/links/
-# inputs are seeded but not yet validated against a real corpus.
+# class_substrings.  Classes are proven against real DRL fixtures (see
+# tests/test_whole_mining.py TestAtomClassValidation) before being activated
+# in MINEABLE_ATOM_CLASSES in seed_from_drl.py.
+#
+# Proven (tested against vendored DRL fixtures, activated in MINEABLE_ATOM_CLASSES):
+#   buttons - proven in issue #28; tags + class_substrings both used.
+#   cards   - proven in TestAtomClassValidation (apple_testimonials fixture).
+#   badges  - proven in TestAtomClassValidation (cursor_pricing fixture).
+#   links   - proven in TestAtomClassValidation (glossier_footer fixture).
+#             NOTE: tags=frozenset() is intentional. DRL wholes frequently have
+#             button-styled <a> elements (cta__btn) and wordmark <a> elements
+#             that must NOT be captured as links. Relying on class_substrings
+#             {"link"} alone gives precise matches without false positives.
+#
+# Deferred (seeded but not yet validated or activated):
+#   inputs  - issue #30: bare <input> without self-closing slash never fires
+#             handle_endtag so capture is never completed. Excluded from
+#             MINEABLE_ATOM_CLASSES until #30 is resolved.
 ATOM_DETECTION_HINTS: Final[dict[str, AtomHint]] = {
     "buttons": AtomHint(
         tags=frozenset({"button"}),
@@ -172,7 +188,9 @@ ATOM_DETECTION_HINTS: Final[dict[str, AtomHint]] = {
         class_substrings=frozenset({"badge", "pill", "tag", "chip"}),
     ),
     "links": AtomHint(
-        tags=frozenset({"a"}),
+        # tags intentionally empty: class_substrings={'link'} drives matching.
+        # See comment block above for rationale.
+        tags=frozenset(),
         class_substrings=frozenset({"link"}),
     ),
     "inputs": AtomHint(
