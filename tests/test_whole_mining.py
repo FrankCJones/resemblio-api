@@ -372,3 +372,220 @@ class TestMineAtomFromWhole:
         assert result is not None
         assert "<!--" not in result.component_html
         assert "Inspired by" not in result.component_html
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 - Per-class extractor validation against real DRL whole fixtures
+# (Issue #5: validate each class ATOM_DETECTION_HINTS entry before activating
+#  it in MINEABLE_ATOM_CLASSES in seed_from_drl.py)
+#
+# Each test drives a vendored DRL whole through mine_atom_from_whole and
+# asserts that the correct elements are captured and the wrong ones are not.
+# A class is added to MINEABLE_ATOM_CLASSES only once its test here passes.
+#
+# Fixtures are frozen snapshots of real DRL whole asset.html files copied on
+# 2026-06-19. They are never edited to track DRL changes (DRL is read-only).
+# ---------------------------------------------------------------------------
+
+_DRL_FIXTURE_DIR = Path(__file__).parent / "fixtures" / "drl"
+
+
+@pytest.fixture
+def cursor_pricing_html() -> str:
+    """Vendored cursor ai-credit-pricing-001 whole (badges validation fixture).
+
+    Source: DRL assets/wholes/pricing-tables/ai-credit-pricing-001 (cursor brand).
+    Contains: <span class='tier__badge'>Recommended</span>.
+    Frozen: 2026-06-19. Do not edit to track DRL changes.
+    """
+    return (_DRL_FIXTURE_DIR / "cursor_pricing" / "asset.html").read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def apple_testimonials_html() -> str:
+    """Vendored apple-testimonials-001 whole (cards validation fixture).
+
+    Source: DRL assets/wholes/testimonials/apple-testimonials-001 (apple brand).
+    Contains: <div class='ts__cards'> grid with <article class='ts__card'> children.
+    Frozen: 2026-06-19. Do not edit to track DRL changes.
+    """
+    return (_DRL_FIXTURE_DIR / "apple_testimonials" / "asset.html").read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def glossier_footer_html() -> str:
+    """Vendored glossier-footer-001 whole (links validation fixture).
+
+    Source: DRL assets/wholes/footers/glossier-footer-001 (glossier brand).
+    Contains: footer__link, footer__index-link, footer__legal-link (class-based links)
+    and footer__mark (wordmark anchor that must NOT be captured as a link).
+    Frozen: 2026-06-19. Do not edit to track DRL changes.
+    """
+    return (_DRL_FIXTURE_DIR / "glossier_footer" / "asset.html").read_text(encoding="utf-8")
+
+
+class TestAtomClassValidation:
+    """Phase 5: validate each ATOM_DETECTION_HINTS entry against real DRL fixtures.
+
+    These tests enforce the validate-then-activate discipline from issue #5:
+    a class is added to MINEABLE_ATOM_CLASSES only once a test here passes
+    against a real vendored DRL whole fixture.
+
+    The links tests include two RED tests that expose the over-broad tags={'a'}
+    hint and will only pass after the hint is narrowed to tags=frozenset().
+    """
+
+    # ---- badges ----
+
+    def test_badges_cursor_pricing_captures_badge_span(
+        self, cursor_pricing_html: str
+    ) -> None:
+        """badges hint captures <span class='tier__badge'> from the cursor pricing whole.
+
+        'tier__badge' contains 'badge', which is in the badges hint class_substrings.
+        """
+        result = mine_atom_from_whole(cursor_pricing_html, "badges")
+        assert result is not None, (
+            "mine_atom_from_whole returned None for 'badges' on cursor_pricing. "
+            "The badges hint should match tier__badge (contains 'badge')."
+        )
+        assert "tier__badge" in result.component_html, (
+            "Expected 'tier__badge' in component_html. "
+            "Check ATOM_DETECTION_HINTS['badges'].class_substrings."
+        )
+        assert "tier__badge" in result.source_classes
+
+    def test_badges_cursor_pricing_css_contains_badge_rule(
+        self, cursor_pricing_html: str
+    ) -> None:
+        """component_css retains the .tier__badge styling rule (not the whole page CSS)."""
+        result = mine_atom_from_whole(cursor_pricing_html, "badges")
+        assert result is not None
+        assert ".tier__badge" in result.component_css, (
+            "component_css should contain .tier__badge rules. "
+            "The CSS filter should keep badge-class rules and drop page layout rules."
+        )
+
+    def test_badges_atom_class_and_schema_correct(
+        self, cursor_pricing_html: str
+    ) -> None:
+        """MinedAtom carries atom_class='badges' and schema_version='whole_mining_v1'."""
+        result = mine_atom_from_whole(cursor_pricing_html, "badges")
+        assert result is not None
+        assert result.atom_class == "badges"
+        assert result.schema_version == "whole_mining_v1"
+
+    # ---- cards ----
+
+    def test_cards_apple_testimonials_captures_card_container(
+        self, apple_testimonials_html: str
+    ) -> None:
+        """cards hint captures the outer element whose class contains 'card'.
+
+        apple-testimonials-001 has <div class='ts__cards'> (the grid container)
+        containing three <article class='ts__card'> children. The container is
+        captured as the root-level match; its children are included in the fragment.
+        """
+        result = mine_atom_from_whole(apple_testimonials_html, "cards")
+        assert result is not None, (
+            "mine_atom_from_whole returned None for 'cards' on apple_testimonials. "
+            "The cards hint should match ts__cards (contains 'card')."
+        )
+        assert "ts__card" in result.component_html, (
+            "Expected 'ts__card' in component_html (the individual card class). "
+            "Check ATOM_DETECTION_HINTS['cards'].class_substrings."
+        )
+
+    def test_cards_apple_testimonials_source_classes_contain_card_class(
+        self, apple_testimonials_html: str
+    ) -> None:
+        """source_classes contains at least one class with 'card' in its name."""
+        result = mine_atom_from_whole(apple_testimonials_html, "cards")
+        assert result is not None
+        assert any("card" in c for c in result.source_classes), (
+            f"Expected a class containing 'card' in source_classes; got {result.source_classes}"
+        )
+
+    def test_cards_atom_class_correct(self, apple_testimonials_html: str) -> None:
+        """MinedAtom.atom_class is 'cards'."""
+        result = mine_atom_from_whole(apple_testimonials_html, "cards")
+        assert result is not None
+        assert result.atom_class == "cards"
+
+    # ---- links ----
+
+    def test_links_glossier_footer_captures_link_class_anchors(
+        self, glossier_footer_html: str
+    ) -> None:
+        """links hint captures <a> elements whose class contains 'link'.
+
+        glossier-footer-001 has footer__link, footer__index-link, footer__legal-link.
+        All contain 'link' as a substring and should be captured.
+        """
+        result = mine_atom_from_whole(glossier_footer_html, "links")
+        assert result is not None, (
+            "mine_atom_from_whole returned None for 'links' on glossier_footer. "
+            "The links hint (class_substrings={'link'}) should match footer__link."
+        )
+        assert "footer__link" in result.component_html, (
+            "Expected 'footer__link' in component_html. "
+            "Check ATOM_DETECTION_HINTS['links'].class_substrings."
+        )
+        assert "footer__link" in result.source_classes
+
+    def test_links_glossier_footer_does_not_capture_wordmark_anchor(
+        self, glossier_footer_html: str
+    ) -> None:
+        """The wordmark <a class='footer__mark'> must NOT appear in the links fragment.
+
+        footer__mark contains no 'link' substring. The current hint has
+        tags=frozenset({'a'}) which over-captures ALL <a> elements including the
+        wordmark. The fix: change tags to frozenset() so only class_substrings match.
+
+        RED: fails with the current tags={'a'} hint (wordmark IS captured).
+        GREEN: passes after narrowing to tags=frozenset().
+        """
+        result = mine_atom_from_whole(glossier_footer_html, "links")
+        assert result is not None
+        assert "footer__mark" not in result.component_html, (
+            "'footer__mark' (the wordmark anchor, class not containing 'link') "
+            "must not be captured as a link. "
+            "Fix ATOM_DETECTION_HINTS['links']: change tags to frozenset() "
+            "so only class_substrings={'link'} drives matching."
+        )
+        assert "footer__mark" not in result.source_classes
+
+    def test_links_apple_cta_block_no_false_positive_on_btn_anchors(
+        self, apple_html: str
+    ) -> None:
+        """Button-styled <a> elements (.cta__btn) must NOT be captured as links.
+
+        apple-cta-block-001 has <a class='cta__btn cta__btn--primary'>. These are
+        buttons, not links. 'cta__btn' does not contain 'link'. With the current
+        over-broad tags={'a'} hint, mine_atom_from_whole would return non-None.
+        With the fixed hint (tags=frozenset()), it must return None.
+
+        RED: fails with the current tags={'a'} hint (cta__btn anchors ARE captured).
+        GREEN: passes after narrowing to tags=frozenset().
+        """
+        result = mine_atom_from_whole(apple_html, "links")
+        assert result is None, (
+            "mine_atom_from_whole('links') returned non-None for the apple cta-block. "
+            "<a class='cta__btn'> elements are buttons, not links. "
+            "Fix ATOM_DETECTION_HINTS['links']: change tags to frozenset()."
+        )
+
+    def test_links_atom_class_correct(self, glossier_footer_html: str) -> None:
+        """MinedAtom.atom_class is 'links'."""
+        result = mine_atom_from_whole(glossier_footer_html, "links")
+        assert result is not None
+        assert result.atom_class == "links"
+
+    def test_links_css_contains_hover_state(self, glossier_footer_html: str) -> None:
+        """The mined links CSS retains hover state rules (footer__link has :hover)."""
+        result = mine_atom_from_whole(glossier_footer_html, "links")
+        assert result is not None
+        assert "hover" in result.states_present, (
+            f"Expected 'hover' in states_present; got {result.states_present}. "
+            "footer__link has a :hover rule in glossier-footer-001."
+        )

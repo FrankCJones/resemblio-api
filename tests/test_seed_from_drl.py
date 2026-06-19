@@ -41,6 +41,7 @@ from scripts.seed_from_drl import (
     load_corpus,
     load_system_json,
     load_tokens_for_asset,
+    mine_and_persist_atoms_for_brand,
     parse_tokens_css,
     plan_only,
 )
@@ -1125,3 +1126,390 @@ def test_40_brand_coverage_apply_is_idempotent(session: Session) -> None:
         f"Row count changed from {av_count_after_run1} to {av_count_after_run2} "
         "after the second run; idempotency violated."
     )
+
+
+# ---------------------------------------------------------------------------
+# MINEABLE_ATOM_CLASSES constant (Issue #5)
+# ---------------------------------------------------------------------------
+# These tests enforce the discipline that the active mining set is a named
+# constant, not a literal buried inside apply_seed.
+# RED: both tests fail until MINEABLE_ATOM_CLASSES is added to seed_from_drl.
+
+class TestMineableAtomClassesConstant:
+    """Unit tests for the MINEABLE_ATOM_CLASSES named constant.
+
+    The constant centralises the proven-mineable class set so the validate-
+    then-activate discipline is visible and the reader can see exactly which
+    classes are live. Tests import from scripts.seed_from_drl locally so an
+    ImportError surfaces only for these tests (not the whole file).
+    """
+
+    def test_constant_exists_and_is_tuple(self) -> None:
+        """MINEABLE_ATOM_CLASSES is exported from seed_from_drl as a tuple.
+
+        RED: fails with ImportError until the constant is defined.
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        assert isinstance(MINEABLE_ATOM_CLASSES, tuple), (
+            "MINEABLE_ATOM_CLASSES must be a tuple so it can be passed directly "
+            "to mine_and_persist_atoms_for_brand(atom_classes=...)."
+        )
+
+    def test_constant_contains_all_four_proven_classes(self) -> None:
+        """MINEABLE_ATOM_CLASSES contains the four classes proven against DRL fixtures.
+
+        buttons: proven in issue #28.
+        badges: proven in test_whole_mining.TestAtomClassValidation.
+        cards: proven in test_whole_mining.TestAtomClassValidation.
+        links: proven in test_whole_mining.TestAtomClassValidation (after hint fix).
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        for cls in ("buttons", "badges", "cards", "links"):
+            assert cls in MINEABLE_ATOM_CLASSES, (
+                f"'{cls}' missing from MINEABLE_ATOM_CLASSES. "
+                f"Current value: {MINEABLE_ATOM_CLASSES}"
+            )
+
+    def test_constant_excludes_inputs(self) -> None:
+        """MINEABLE_ATOM_CLASSES must not include 'inputs'.
+
+        The inputs hint is deferred: bare <input> (without self-closing slash)
+        is never captured because _FragmentExtractor pushes a capture in
+        handle_starttag but the void element never fires handle_endtag.
+        Tracked in issue #30. Do not activate until #30 is resolved.
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        assert "inputs" not in MINEABLE_ATOM_CLASSES, (
+            "'inputs' must not be in MINEABLE_ATOM_CLASSES until issue #30 "
+            "(void-element capture bug) is resolved."
+        )
+
+
+# ---------------------------------------------------------------------------
+# Multi-brand corpus-wide fan-out integration tests (Issue #5)
+# ---------------------------------------------------------------------------
+# These tests use a synthetic two-brand DRL tree (alpha and beta) where each
+# brand has a whole embedding all four mineable atom classes. Beta additionally
+# has a standalone buttons atom to exercise the D3 precedence rule.
+#
+# RED: tests fail until MINEABLE_ATOM_CLASSES exists and apply_seed uses it.
+
+# Synthetic HTML embedding all four mineable atom classes. Class names chosen
+# to exercise each hint without ambiguity:
+#   buttons: cta__btn (contains 'btn')
+#   badges:  tier__badge (contains 'badge')
+#   cards:   ts__card (contains 'card')
+#   links:   footer__link (contains 'link'; <a> tag but not button-styled)
+_MULTI_CLASS_WHOLE_HTML = """\
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>
+/* buttons: style the cta__btn anchor */
+.cta__btn { padding: 12px 24px; border-radius: 6px; }
+.cta__btn:hover { opacity: 0.9; }
+/* badges: styled pill */
+.tier__badge { display: inline-block; padding: 4px 10px; border-radius: 99px; }
+/* cards: simple card frame */
+.ts__card { border: 1px solid; padding: 24px; border-radius: 8px; }
+/* links: quiet underline link */
+.footer__link { text-decoration: underline; }
+.footer__link:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+<a class="cta__btn" href="#">Get started</a>
+<span class="tier__badge">New</span>
+<article class="ts__card"><p>Card content</p></article>
+<a class="footer__link" href="#">Learn more</a>
+</body>
+</html>
+"""
+
+_MINIMAL_TOKENS_CSS = """\
+:root {
+  --ds-bg: #ffffff;
+  --ds-text: #111111;
+  --ds-accent: #ff3366;
+  --ds-border: #e5e5e5;
+  --ds-font-body: "Inter", sans-serif;
+  --ds-font-display: "Playfair Display", serif;
+  --ds-radius-sm: 4px;
+}
+"""
+
+# Whole path pattern used in the synthetic DRL tree.
+_ALPHA_WHOLE_PATH = "assets/wholes/cta-blocks/alpha-whole-001"
+_BETA_WHOLE_PATH = "assets/wholes/cta-blocks/beta-whole-001"
+# Path for beta's standalone buttons atom (triggers D3 precedence).
+_BETA_STANDALONE_BUTTONS_PATH = "assets/atoms/buttons/beta-btn-001"
+
+
+def _make_multi_brand_drl_root(tmp_path: Path) -> Path:
+    """Create a two-brand synthetic DRL tree for corpus-wide fan-out tests.
+
+    Brand alpha: one whole embedding all 4 mineable classes; no standalone atoms.
+    Brand beta: same whole + a standalone buttons atom (D3 precedence test).
+
+    Returns the drl_root path. Writes minimal tokens.css files so
+    load_tokens_for_asset does not return an empty dict for the whole's dtcg.
+    """
+    drl_root = tmp_path / "drl"
+    drl_root.mkdir()
+
+    # alpha whole
+    alpha_dir = drl_root / _ALPHA_WHOLE_PATH
+    alpha_dir.mkdir(parents=True)
+    (alpha_dir / "asset.html").write_text(_MULTI_CLASS_WHOLE_HTML, encoding="utf-8")
+    (alpha_dir / "tokens.css").write_text(_MINIMAL_TOKENS_CSS, encoding="utf-8")
+
+    # beta whole
+    beta_dir = drl_root / _BETA_WHOLE_PATH
+    beta_dir.mkdir(parents=True)
+    (beta_dir / "asset.html").write_text(_MULTI_CLASS_WHOLE_HTML, encoding="utf-8")
+    (beta_dir / "tokens.css").write_text(_MINIMAL_TOKENS_CSS, encoding="utf-8")
+
+    # beta standalone buttons atom (D3 precedence: beta/buttons should not be mined)
+    beta_btn_dir = drl_root / _BETA_STANDALONE_BUTTONS_PATH
+    beta_btn_dir.mkdir(parents=True)
+    (beta_btn_dir / "tokens.css").write_text(_MINIMAL_TOKENS_CSS, encoding="utf-8")
+
+    return drl_root
+
+
+def _alpha_system() -> dict[str, Any]:
+    """DRL system dict for alpha: one whole, no standalone atoms."""
+    return {
+        "slug": "alpha",
+        "name": "Alpha",
+        "tier": "A",
+        "category": "tech-consumer",
+        "asset_count": 1,
+        "assets": [
+            {
+                "slug": "alpha-whole-001",
+                "cls": None,
+                "kind": "whole",
+                "path": _ALPHA_WHOLE_PATH,
+                "tokens_path": f"{_ALPHA_WHOLE_PATH}/tokens.css",
+                "tldr": "Alpha multi-class whole.",
+                "patterns": [],
+                "mood": [],
+                "applicable_to": [],
+                "tags": [],
+                "provenance_score": "A",
+            }
+        ],
+    }
+
+
+def _beta_system() -> dict[str, Any]:
+    """DRL system dict for beta: one whole + a standalone buttons atom (D3 test)."""
+    return {
+        "slug": "beta",
+        "name": "Beta",
+        "tier": "A",
+        "category": "saas",
+        "asset_count": 2,
+        "assets": [
+            {
+                "slug": "beta-btn-001",
+                "cls": None,
+                "kind": "atom",
+                "path": _BETA_STANDALONE_BUTTONS_PATH,
+                "tokens_path": f"{_BETA_STANDALONE_BUTTONS_PATH}/tokens.css",
+                "tldr": "Beta standalone buttons atom.",
+                "patterns": [],
+                "mood": [],
+                "applicable_to": [],
+                "tags": [],
+                "provenance_score": "A",
+            },
+            {
+                "slug": "beta-whole-001",
+                "cls": None,
+                "kind": "whole",
+                "path": _BETA_WHOLE_PATH,
+                "tokens_path": f"{_BETA_WHOLE_PATH}/tokens.css",
+                "tldr": "Beta multi-class whole.",
+                "patterns": [],
+                "mood": [],
+                "applicable_to": [],
+                "tags": [],
+                "provenance_score": "A",
+            },
+        ],
+    }
+
+
+class TestMultiBrandFanOut:
+    """Issue #5 corpus-wide fan-out: mine all proven classes for each brand.
+
+    Uses a synthetic two-brand DRL tree (alpha, beta) with multi-class wholes
+    so every assertion isolates one behaviour without real DRL I/O.
+
+    RED: tests fail until MINEABLE_ATOM_CLASSES is defined and apply_seed
+    calls mine_and_persist_atoms_for_brand with that constant.
+    """
+
+    def test_alpha_mines_all_four_classes(
+        self, session: Session, tmp_path: Path
+    ) -> None:
+        """alpha (no standalone atoms) produces four mined synthetics.
+
+        One synthetic URL per class: buttons, badges, cards, links.
+        After this test passes, the fan-out is live for brands without any
+        standalone atoms.
+
+        RED: fails until MINEABLE_ATOM_CLASSES replaces the hardcoded ('buttons',)
+        tuple in apply_seed.
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        drl_root = _make_multi_brand_drl_root(tmp_path)
+
+        urls = mine_and_persist_atoms_for_brand(
+            session,
+            drl_root,
+            _alpha_system(),
+            atom_classes=MINEABLE_ATOM_CLASSES,
+            seed_user_id=1,
+        )
+        session.commit()
+
+        assert len(urls) == 4, (
+            f"Expected 4 mined synthetics for alpha (one per class in "
+            f"MINEABLE_ATOM_CLASSES), got {len(urls)}: {urls}"
+        )
+        mined_classes = {u.split("/")[-2] for u in urls}
+        assert mined_classes == {"buttons", "badges", "cards", "links"}, (
+            f"Expected class set {{buttons, badges, cards, links}}, got {mined_classes}. "
+            "Each class in MINEABLE_ATOM_CLASSES must produce one synthetic URL."
+        )
+
+    def test_beta_standalone_buttons_blocks_buttons_mining(
+        self, session: Session, tmp_path: Path
+    ) -> None:
+        """beta (standalone buttons atom) produces three mined synthetics, not four.
+
+        The D3 precedence rule: standalone atom wins over mined synthetic for
+        the same (brand, class). beta has a standalone buttons atom, so buttons
+        mining is skipped; badges, cards, and links are still mined.
+
+        RED: fails until MINEABLE_ATOM_CLASSES is in place.
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        drl_root = _make_multi_brand_drl_root(tmp_path)
+
+        urls = mine_and_persist_atoms_for_brand(
+            session,
+            drl_root,
+            _beta_system(),
+            atom_classes=MINEABLE_ATOM_CLASSES,
+            seed_user_id=1,
+        )
+        session.commit()
+
+        assert len(urls) == 3, (
+            f"Expected 3 mined synthetics for beta (buttons blocked by standalone), "
+            f"got {len(urls)}: {urls}"
+        )
+        mined_classes = {u.split("/")[-2] for u in urls}
+        assert "buttons" not in mined_classes, (
+            f"'buttons' must not be mined for beta (standalone exists). "
+            f"Got: {mined_classes}"
+        )
+        assert mined_classes == {"badges", "cards", "links"}, (
+            f"Expected {{badges, cards, links}} for beta; got {mined_classes}."
+        )
+
+    def test_idempotency_second_run_no_new_rows(
+        self, session: Session, tmp_path: Path
+    ) -> None:
+        """A second mine_and_persist call creates no duplicate rows.
+
+        Idempotency is anchored on the stable synthetic URL:
+        resemblio://seed/drl_v1/<brand>/<class>/mined-from-<whole-slug>.
+        The dedup in insert_or_reuse_asset_version must hold across both runs.
+
+        RED: fails until MINEABLE_ATOM_CLASSES is in place (first run produces 0
+        mined rows, second run also 0, so the row count assertion after run 2 holds
+        trivially - but the assertion on run 1 producing 4 rows is the real RED gate).
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        drl_root = _make_multi_brand_drl_root(tmp_path)
+        system = _alpha_system()
+
+        # First run: produces 4 synthetics.
+        urls_1 = mine_and_persist_atoms_for_brand(
+            session, drl_root, system, atom_classes=MINEABLE_ATOM_CLASSES, seed_user_id=1
+        )
+        session.commit()
+        assert len(urls_1) == 4, f"First run: expected 4 URLs, got {len(urls_1)}"
+
+        from app.models import AssetVersion
+        count_after_run1 = len(
+            session.execute(
+                select(AssetVersion).where(
+                    AssetVersion.url.like("resemblio://seed/drl_v1/alpha/%")
+                )
+            ).scalars().all()
+        )
+
+        # Second run: same DRL -> same URLs -> all reused, no new rows.
+        urls_2 = mine_and_persist_atoms_for_brand(
+            session, drl_root, system, atom_classes=MINEABLE_ATOM_CLASSES, seed_user_id=1
+        )
+        session.commit()
+        # mine_and_persist returns URLs that were written (new inserts only).
+        # On a pure re-run the function may return 0 URLs (all reused) or the
+        # same URLs again depending on insert_or_reuse_asset_version behaviour;
+        # the critical assertion is no new DB rows.
+        count_after_run2 = len(
+            session.execute(
+                select(AssetVersion).where(
+                    AssetVersion.url.like("resemblio://seed/drl_v1/alpha/%")
+                )
+            ).scalars().all()
+        )
+        assert count_after_run2 == count_after_run1, (
+            f"Row count grew from {count_after_run1} to {count_after_run2} on the "
+            "second run. mine_and_persist must be idempotent: re-running over "
+            "unchanged DRL must not create new asset_version rows."
+        )
+
+    def test_no_duplicate_mined_and_standalone_coexist(
+        self, session: Session, tmp_path: Path
+    ) -> None:
+        """No mined synthetic is created for a class that already has a standalone atom.
+
+        Even when MINEABLE_ATOM_CLASSES includes 'buttons', beta's standalone
+        buttons atom blocks the mined synthetic. Confirms the D3 guard in
+        mine_and_persist_atoms_for_brand at the point where the full tuple is used.
+        """
+        from scripts.seed_from_drl import MINEABLE_ATOM_CLASSES  # noqa: PLC0415
+
+        drl_root = _make_multi_brand_drl_root(tmp_path)
+
+        mine_and_persist_atoms_for_brand(
+            session, drl_root, _beta_system(), atom_classes=MINEABLE_ATOM_CLASSES, seed_user_id=1
+        )
+        session.commit()
+
+        # No mined synthetic for beta/buttons should have been created.
+        from app.models import AssetVersion
+        buttons_rows = session.execute(
+            select(AssetVersion).where(
+                AssetVersion.url.like("resemblio://seed/drl_v1/beta/buttons/%")
+            )
+        ).scalars().all()
+        assert len(buttons_rows) == 0, (
+            f"Found {len(buttons_rows)} mined rows for beta/buttons even though "
+            "beta has a standalone buttons atom. D3 precedence guard is not working."
+        )

@@ -1,0 +1,377 @@
+<!--
+  Asset: ai-credit-pricing-001
+  Class: pricing-tables (whole)
+  Pattern: accent-on-neutral, paper-and-ink, mono-eyebrow, primary-pill, ghost-button, property-value-row
+  Inspired by: Cursor
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001          (palette context)
+    - type-pairings/sans-system-modern-001     (display + body + mono families)
+    - cards/hairline-flat-001                  (tier card frame)
+    - buttons/primary-pill-001                 (recommended-tier primary CTA)
+    - buttons/ghost-bordered-001               (non-recommended tier CTA)
+    - headings/display-tight-001               (price digit display)
+    - kickers/mono-eyebrow-001                 (section eyebrow)
+    - badges/category-saturated-badge-001      ("Recommended" pill on lifted card)
+    - labels/metadata-mono-001                 (credits-allowance row)
+  Notes:
+    - The pricing block composes the patterns from each constituent atom.
+      It does not import the atoms' files at runtime; instead, each
+      pattern's structure and tokens are re-implemented here so the
+      pricing-tables block is a self-contained renderable.
+    - Inline ornament: the "Recommended" card's accent stroke is a
+      one-off colored hairline (--ds-accent at 1.5px), not a shared
+      shadow recipe. The four-card grid is variable (1 to 4 columns)
+      via clamp + minmax; the credits-row mono allowance line is the
+      AI-credit-pricing signature and stays inline per card.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ai-credit-pricing-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm-leaning off-white surface; centered column with
+   * generous vertical breathing room. The whitespace is the chrome. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  .pricing {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Section head: mono eyebrow + tight display title + body lede. The
+   * eyebrow follows kickers/mono-eyebrow-001 verbatim. */
+  .pricing__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-3);
+  }
+  .pricing__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .pricing__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 4vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: 0;
+    max-width: 56ch;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* Tier-card grid. Four cards on wide; collapses cleanly via auto-fit
+   * + minmax. Gap binds to --ds-space-4 per the tokens comment. */
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--ds-space-4);
+  }
+
+  /* Tier card: from cards/hairline-flat-001. Flat white surface, hairline
+   * border, generous interior padding, vertical rhythm via gap. */
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+
+  /* Inline ornament: the recommended-tier accent stroke. A 1.5px blue
+   * inset border replaces the hairline. Not a shared shadow recipe;
+   * specific to the AI-credit-pricing tier-lift convention. */
+  .tier--recommended {
+    border-color: var(--ds-accent);
+    box-shadow: inset 0 0 0 1px var(--ds-accent);
+  }
+
+  /* "Recommended" badge: from badges/category-saturated-badge-001.
+   * Saturated accent fill, white text, pill radius, sits absolute
+   * top-right of the lifted tier. */
+  .tier__badge {
+    position: absolute;
+    top: var(--ds-space-4);
+    right: var(--ds-space-4);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: 4px var(--ds-space-2);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    margin: 0;
+  }
+
+  /* Price block. Display-tight digit pattern (headings/display-tight-001)
+   * paired with a muted cadence label and a one-line tagline below. */
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+  }
+  .tier__price-digit {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-cadence {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__tagline {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* Credits-allowance row: from labels/metadata-mono-001. The AI-pricing
+   * signature. A mono label-plus-value composition sits in an inset strip
+   * (--ds-surface-2) that reads as a quiet recess. */
+  .tier__credits {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+  }
+  .tier__credits-label {
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .tier__credits-value {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* Hairline between credits row and feature list. Lives in --ds-hairline. */
+  .tier__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: 0;
+    border: 0;
+  }
+
+  /* Feature list. Each row: green check glyph + body text. The check is
+   * the only chromatic moment besides the accent CTA. */
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .tier__features li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+  .tier__features li::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    /* Inline ornament: SVG check glyph, hand-tuned stroke geometry.
+     * Not a shared icon atom; specific to this row's compact scale. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%232F8F5C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 2px;
+  }
+
+  /* CTA row. Primary pill on the recommended tier; ghost-bordered on the
+   * others. Both follow library button atoms verbatim. */
+  .tier__cta {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      border-color var(--ds-duration-instant) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .tier__cta--primary:hover {
+    background: var(--ds-accent-2);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover {
+    border-color: var(--ds-text);
+  }
+  .tier__cta:active { transform: translateY(1px); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tier__cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="pricing" aria-label="Lorem ipsum pricing tiers">
+    <header class="pricing__head">
+      <span class="pricing__kicker">Lorem &middot; pricing</span>
+      <h2 class="pricing__h2">Lorem ipsum dolor sit amet consectetur.</h2>
+      <p class="pricing__sub">Adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla.</p>
+    </header>
+
+    <div class="pricing__grid" role="list">
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Lorem</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$0</span>
+          <span class="tier__price-cadence">/ ipsum</span>
+        </div>
+        <p class="tier__tagline">Adipiscing elit dolor sit amet, no nisi required.</p>
+        <div class="tier__credits">
+          <span class="tier__credits-label">Credits</span>
+          <span class="tier__credits-value">50 / mo</span>
+        </div>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Lorem ipsum dolor sit amet consectetur.</li>
+          <li>Adipiscing elit vivamus sapien velit.</li>
+          <li>Curabitur nec libero non nisi.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Download</button>
+      </article>
+
+      <article class="tier tier--recommended" role="listitem">
+        <span class="tier__badge">Recommended</span>
+        <h3 class="tier__name">Ipsum</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$20</span>
+          <span class="tier__price-cadence">/ month</span>
+        </div>
+        <p class="tier__tagline">For dolor sit amet who consectetur daily.</p>
+        <div class="tier__credits">
+          <span class="tier__credits-label">Credits</span>
+          <span class="tier__credits-value">1,500 / mo</span>
+        </div>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Lorem, plus extended agent limits.</li>
+          <li>Frontier model access and cloud agents.</li>
+          <li>MCPs, skills, and hooks integration.</li>
+          <li>Usage-based overflow billing at fair rate.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--primary">Get Ipsum</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Dolor</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$40</span>
+          <span class="tier__price-cadence">/ user / month</span>
+        </div>
+        <p class="tier__tagline">For consectetur collaborating with others.</p>
+        <div class="tier__credits">
+          <span class="tier__credits-label">Credits</span>
+          <span class="tier__credits-value">Pooled / team</span>
+        </div>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Ipsum, shared team context.</li>
+          <li>Team-wide rules and automations.</li>
+          <li>SSO and privacy enforcement.</li>
+          <li>Centralized billing and analytics.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Get Dolor</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Amet</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">Custom</span>
+          <span class="tier__price-cadence">contact us</span>
+        </div>
+        <p class="tier__tagline">Sit amet consectetur for organizations at scale.</p>
+        <div class="tier__credits">
+          <span class="tier__credits-label">Credits</span>
+          <span class="tier__credits-value">Custom pool</span>
+        </div>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Dolor, SCIM management.</li>
+          <li>AI tracking API and audit logs.</li>
+          <li>Granular controls and priority support.</li>
+          <li>Custom usage plan and pooled allowances.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+      </article>
+    </div>
+  </section>
+</body>
+</html>
