@@ -38,8 +38,13 @@ app/
                                THE new primitive (Phase 1). Pure, no I/O.
   library_render_policy.py   - CATEGORY_CAPTURE_REQUIREMENTS + evaluate_category_render.
                                Maps showcase categories to their required groups (Phase 2).
-  missing_data_notice.py     - build_missing_notice + build_hub_capture_signal.
+  missing_data_notice.py     - build_missing_notice + build_hub_capture_signal +
+                               hub_capture_signal_from_captured_groups.
                                Honest gap acknowledgment (Phase 3).
+                               hub_capture_signal_from_captured_groups is the
+                               single source of truth for the 'N of 5' count rule;
+                               both build_hub_capture_signal and the hub route
+                               delegate here (issue #11).
   library_indexer.py         - Queue-and-worker pipeline. Drains library_index_jobs,
                                runs compose, writes library_pages rows. Calls the three
                                new modules above to thread provenance through metadata.
@@ -59,8 +64,13 @@ app/
   routes/
     library.py               - GET /v1/library/brands, /v1/library/brands/{slug}, etc.
                                Exposes manifest fields through two API surfaces:
-                               - HubFeaturedRow: captured_count + total_showcase_groups
-                                 (sourced from metadata_json.hub_capture_signal)
+                               - HubFeaturedRow: captured_count + total_showcase_groups.
+                                 Count is a CROSS-PAGE UNION of all public
+                                 asset_versions' capture_manifest.groups for the brand
+                                 (not a single-page hub_capture_signal read). Required
+                                 because each mined atom class is a distinct asset_version
+                                 after issue #5 - a single-page read would always return 1.
+                                 Delegated to hub_capture_signal_from_captured_groups.
                                - LibraryPageData: missing_groups + captured_groups
                                  (sourced from metadata_json.missing_data_notice and
                                  metadata_json.capture_manifest)
