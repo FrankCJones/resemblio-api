@@ -636,13 +636,19 @@ def _v2_metadata(
 def test_hub_row_carries_captured_count_and_total(
     client: TestClient, session: Session
 ) -> None:
-    """Hub rows carry captured_count and total_showcase_groups from metadata_json."""
+    """Hub rows carry captured_count derived from capture_manifest.groups union.
+
+    Uses captured_groups=["button","card"] so the route computes 2 via the
+    cross-page union aggregation. The hub_capture_signal.captured_count stored
+    in the metadata is no longer read by the route (issue #11).
+    """
     av = _make_asset_version(session, url="https://stripe.com/", version_label="2026-06")
     _make_page_with_metadata(
         session, av,
         brand_slug="stripe-com",
         category_slug="buttons",
-        metadata=_v2_metadata(captured_count=2, total_showcase_groups=5),
+        # captured_groups drives the union; hub_capture_signal is now ignored.
+        metadata=_v2_metadata(captured_groups=["button", "card"]),
     )
     session.commit()
 
@@ -657,7 +663,12 @@ def test_hub_row_carries_captured_count_and_total(
 def test_hub_row_capture_signal_defaults_when_no_metadata(
     client: TestClient, session: Session
 ) -> None:
-    """Hub rows carry captured_count=0 and total_showcase_groups=0 for pre-v2 rows."""
+    """Hub rows degrade safely for pre-v2 rows (no capture_manifest in metadata).
+
+    captured_count=0 (no groups captured); total_showcase_groups=5 (the count
+    function always knows there are 5 showcase groups regardless of what the
+    page stores - "0 of 5" is the correct degraded state, not "0 of 0").
+    """
     av = _make_asset_version(session, url="https://old.example/", version_label="2026-06")
     _make_page(session, av, brand_slug="old-example", category_slug="buttons")
     session.commit()
@@ -666,9 +677,10 @@ def test_hub_row_capture_signal_defaults_when_no_metadata(
     assert resp.status_code == 200
     rows = resp.json()["data"]["featured"]
     row = next(r for r in rows if r["brand_slug"] == "old-example")
-    # Pre-v2 metadata has no hub_capture_signal; safe defaults must apply.
     assert row["captured_count"] == 0
-    assert row["total_showcase_groups"] == 0
+    # total_showcase_groups is 5, not 0: the count rule knows the showcase set
+    # size even when no capture_manifest exists. Hub card shows "0 of 5".
+    assert row["total_showcase_groups"] == 5
 
 
 def test_page_payload_carries_missing_groups(

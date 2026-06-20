@@ -64,6 +64,7 @@ from starlette.responses import JSONResponse
 from app.brand_names import pretty_brand_name
 from app.constants import SCHEMA_V1_1
 from app.db import get_db
+from app.missing_data_notice import hub_capture_signal_from_captured_groups
 from app.models import AssetVersion, LibraryPage
 
 router = APIRouter()
@@ -365,45 +366,22 @@ class _BrandHubMeta(TypedDict):
     total_showcase_groups: int
 
 
-def _hub_meta_for_brand(
-    session: Session, brand_slug: str,
-) -> _BrandHubMeta:
-    """Return visual identity + Library v2 capture signal for a hub card.
+def _palette_from_metadata(metadata: dict[str, Any]) -> list[str]:
+    """Extract the ordered hex palette from a library_pages metadata_json dict.
 
-    Picks the brand's representative ``library_pages`` row (most recent
-    public) and pulls color slots, ``font_display``, and the Library v2
-    ``hub_capture_signal`` from its ``metadata_json``. One DB query per brand.
+    Reads slots in ``_HUB_PALETTE_SLOTS`` order (accent first, per the web
+    contract "index 0 is canonical accent / primary"). Hex strings are
+    lowercased; duplicates are collapsed case-insensitively. Non-hex values
+    (rgb(), named colors, garbage) are silently dropped. Result is capped at
+    ``_HUB_PALETTE_MAX``.
 
-    Palette ordering: ``_HUB_PALETTE_SLOTS`` (accent first, per the web
-    contract's "index 0 is canonical accent / primary"). Hex strings are
-    normalized to lowercase; duplicates collapsed case-insensitively.
-    Non-hex values (rgb(), named colors, garbage) are silently dropped.
-    Result is capped at ``_HUB_PALETTE_MAX``.
+    Args:
+        metadata: a ``library_pages.metadata_json`` dict. Must be a real dict
+            (caller is responsible for the isinstance check).
 
-    ``captured_count`` and ``total_showcase_groups`` come from
-    ``metadata_json.hub_capture_signal`` written by the Library v2 indexer.
-    Both default to 0 when no signal is present (pre-v2 rows or missing
-    metadata) so the hub card degrades to "0 of 0 captured" rather than
-    raising.
-
-    Returns a ``_BrandHubMeta`` with safe zero-valued defaults when no
-    public library_pages row exists or the row's metadata is unusable.
+    Returns:
+        List of lowercase hex color strings, length 0-``_HUB_PALETTE_MAX``.
     """
-    stmt = (
-        select(LibraryPage.metadata_json)
-        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(AssetVersion.is_public.is_(True))
-        .order_by(AssetVersion.fetched_at.desc())
-        .limit(1)
-    )
-    metadata = session.execute(stmt).scalar_one_or_none()
-    if not isinstance(metadata, dict):
-        return _BrandHubMeta(
-            palette=[], display_font=None, captured_count=0, total_showcase_groups=0
-        )
-
-    # --- Palette ---
     palette: list[str] = []
     seen: set[str] = set()
     for slot in _HUB_PALETTE_SLOTS:
@@ -420,28 +398,84 @@ def _hub_meta_for_brand(
             continue
         seen.add(norm)
         palette.append(norm)
+    return palette
 
-    # --- Display font ---
-    font_raw = metadata.get("font_display")
+
+def _hub_meta_for_brand(
+    session: Session, brand_slug: str,
+) -> _BrandHubMeta:
+    """Return visual identity + honest capture count for a hub card.
+
+    Queries ALL public ``library_pages`` rows for the brand in one pass,
+    ordered by ``asset_versions.fetched_at DESC``:
+
+    - **Palette and display_font** come from the representative row (the most
+      recent public page), preserving the existing visual-identity contract.
+    - **captured_count** is computed by unioning the captured component-group
+      names across EVERY page's ``capture_manifest.groups``. This is required
+      because post-issue-#5 each mined atom class is a DISTINCT asset_version
+      (distinct ``synthetic_url`` per ``(brand, atom_class)``). A single-page
+      read would return the per-page count (always 1 for a mined page), not
+      the honest cross-page total.
+
+    Count rule is delegated to ``hub_capture_signal_from_captured_groups``
+    (``missing_data_notice.py``), the single source of truth for "N of 5."
+
+    Palette ordering: ``_HUB_PALETTE_SLOTS`` (accent first). Hex strings are
+    normalized to lowercase; duplicates collapsed case-insensitively. Non-hex
+    values are silently dropped. Result capped at ``_HUB_PALETTE_MAX``.
+
+    Defensive parsing: rows with absent or malformed ``capture_manifest``
+    contribute zero captured groups and never raise. Pre-v2 rows (no
+    ``capture_manifest`` key) degrade gracefully to zero contribution.
+
+    Returns a ``_BrandHubMeta`` with safe defaults when no public
+    ``library_pages`` row exists for the brand.
+    """
+    stmt = (
+        select(LibraryPage.metadata_json)
+        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
+        .where(LibraryPage.brand_slug == brand_slug)
+        .where(AssetVersion.is_public.is_(True))
+        .order_by(AssetVersion.fetched_at.desc())
+    )
+    all_metadata: list[Any] = list(session.execute(stmt).scalars())
+
+    if not all_metadata:
+        return _BrandHubMeta(
+            palette=[], display_font=None, captured_count=0, total_showcase_groups=0
+        )
+
+    # --- Palette and display font from the representative (most recent) row ---
+    representative = all_metadata[0] if isinstance(all_metadata[0], dict) else {}
+    palette = _palette_from_metadata(representative)
+    font_raw = representative.get("font_display") if isinstance(representative, dict) else None
     display_font = font_raw if isinstance(font_raw, str) and font_raw.strip() else None
 
-    # --- Hub capture signal (Library v2) ---
-    signal_raw = metadata.get("hub_capture_signal")
-    captured_count = 0
-    total_showcase_groups = 0
-    if isinstance(signal_raw, dict):
-        cc = signal_raw.get("captured_count")
-        if isinstance(cc, int):
-            captured_count = cc
-        tsg = signal_raw.get("total_showcase_groups")
-        if isinstance(tsg, int):
-            total_showcase_groups = tsg
+    # --- Union captured groups across ALL pages (issue #11) ---
+    # Each mined-atom asset_version carries a capture_manifest for its own class.
+    # Unioning ensures "buttons + cards + badges mined" produces 3, not 1.
+    union_captured: set[str] = set()
+    for metadata in all_metadata:
+        if not isinstance(metadata, dict):
+            continue
+        manifest = metadata.get("capture_manifest")
+        if not isinstance(manifest, dict):
+            # Pre-v2 row: no capture_manifest -> contributes zero groups.
+            continue
+        groups = manifest.get("groups")
+        if not isinstance(groups, dict):
+            continue
+        for group_name, detail in groups.items():
+            if isinstance(detail, dict) and detail.get("captured") is True:
+                union_captured.add(group_name)
 
+    signal = hub_capture_signal_from_captured_groups(frozenset(union_captured))
     return _BrandHubMeta(
         palette=palette,
         display_font=display_font,
-        captured_count=captured_count,
-        total_showcase_groups=total_showcase_groups,
+        captured_count=signal.captured_count,
+        total_showcase_groups=signal.total_showcase_groups,
     )
 
 

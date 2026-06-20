@@ -155,12 +155,63 @@ def build_missing_notice(manifest: BrandCaptureManifest) -> MissingDataSummary:
     )
 
 
+def hub_capture_signal_from_captured_groups(
+    captured_groups: frozenset[str],
+) -> HubCaptureSignal:
+    """Return the hub capture signal for a set of captured component-group names.
+
+    This is the **single source of truth** for the "N of 5 captured" count rule.
+    Both ``build_hub_capture_signal`` (per-manifest path) and the hub route's
+    cross-page union aggregation (``_hub_meta_for_brand`` in
+    ``app/routes/library.py``) delegate here, ensuring both surfaces produce
+    identical counts for the same captured-group set.
+
+    Pure: no I/O, no side effects.
+
+    Args:
+        captured_groups: frozenset of component group names where
+            ``captured=True``, e.g. ``frozenset({"button", "card"})``.
+            May be empty. Color/typography/spacing groups do NOT satisfy
+            showcase categories and are counted as zero by the rule table.
+
+    Returns:
+        ``HubCaptureSignal`` with ``captured_count`` and
+        ``total_showcase_groups``. ``total_showcase_groups`` is always
+        ``len(_PRIMARY_SHOWCASE_CATEGORIES)`` (5 for the current set).
+
+    Example:
+        >>> hub_capture_signal_from_captured_groups(frozenset()).captured_count
+        0
+        >>> hub_capture_signal_from_captured_groups(frozenset({"button"})).captured_count
+        1
+        >>> hub_capture_signal_from_captured_groups(frozenset({"button","card","badge"})).captured_count
+        3
+    """
+    captured_count = sum(
+        1
+        for category_slug in _PRIMARY_SHOWCASE_CATEGORIES
+        if (
+            (reqs := CATEGORY_CAPTURE_REQUIREMENTS.get(category_slug)) is not None
+            and reqs.issubset(captured_groups)
+        )
+    )
+    return HubCaptureSignal(
+        schema_version=HUB_CAPTURE_SIGNAL_SCHEMA_VERSION,
+        captured_count=captured_count,
+        total_showcase_groups=len(_PRIMARY_SHOWCASE_CATEGORIES),
+    )
+
+
 def build_hub_capture_signal(manifest: BrandCaptureManifest) -> HubCaptureSignal:
     """Return the coarse capture count for a hub card.
 
     Counts how many of the primary showcase categories have ALL their required
     component groups captured. Does NOT count 'library' (composite; would
     double-count button/card/badge already in the primary set).
+
+    Delegates to ``hub_capture_signal_from_captured_groups`` - the shared
+    count rule - so that the per-manifest path and the hub route's cross-page
+    union path stay in sync. When the rule changes, update the helper only.
 
     Pure: no I/O, no side effects.
 
@@ -175,18 +226,4 @@ def build_hub_capture_signal(manifest: BrandCaptureManifest) -> HubCaptureSignal
         for group, detail in manifest["groups"].items()
         if detail["captured"]
     )
-
-    captured_count = sum(
-        1
-        for category_slug in _PRIMARY_SHOWCASE_CATEGORIES
-        if (
-            (reqs := CATEGORY_CAPTURE_REQUIREMENTS.get(category_slug)) is not None
-            and reqs.issubset(captured_groups)
-        )
-    )
-
-    return HubCaptureSignal(
-        schema_version=HUB_CAPTURE_SIGNAL_SCHEMA_VERSION,
-        captured_count=captured_count,
-        total_showcase_groups=len(_PRIMARY_SHOWCASE_CATEGORIES),
-    )
+    return hub_capture_signal_from_captured_groups(captured_groups)
