@@ -184,22 +184,26 @@ class HubFeaturedRow(TypedDict, total=False):
     Library v2 fields (Phase 4, 2026-06-07):
 
     - ``captured_count``: number of primary showcase component groups with
-      real captured geometry data (0-5). Sourced from
-      ``metadata_json.hub_capture_signal.captured_count``.
+      real captured (native or mined) data (0-5). As of issue #11 this is a
+      CROSS-PAGE UNION across all of the brand's public asset_versions (see
+      the issue #11 note below), NOT a single-page read.
     - ``total_showcase_groups``: total number of primary showcase component
-      groups (5 in the current corpus). Sourced from
-      ``metadata_json.hub_capture_signal.total_showcase_groups``.
+      groups (5 in the current corpus). Computed by the count rule, so it is
+      5 for any brand that has at least one public page (even a pre-v2 page
+      with no capture data: "0 of 5", never "0 of 0").
 
     Old web clients ignore additive fields; new ones consume them with a
     fallback. No envelope or data schema_version bump required (web contract
     stays at ``library_data_v1``).
 
-    Issue #11 (2026-06-20): ``captured_count`` is now a CROSS-PAGE UNION, not a
+    Issue #11 (2026-06-20): ``captured_count`` is a CROSS-PAGE UNION, not a
     single-page read. ``_hub_meta_for_brand`` unions ``capture_manifest.groups``
     across ALL public asset_versions for the brand and calls
     ``hub_capture_signal_from_captured_groups`` (the single source of truth for
     the count rule). This ensures brands with multiple mined atom classes (one
-    asset_version each) show the honest total rather than always "1 of 5".
+    asset_version each) show the honest total rather than always "1 of 5". The
+    per-page ``metadata_json.hub_capture_signal`` is still written by the
+    indexer but is no longer the read source for this count.
 
     KNOWN GAP (Library v3 D8, documented 2026-06-08): the web hub's
     ``visibleHubCategories`` (``app/app/lib/library-categories.ts``) consumes a
