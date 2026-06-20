@@ -1303,12 +1303,20 @@ def _metadata_for(
     render-real-or-hide decision (Phase 2) and the honest acknowledgment
     (Phase 3) can be driven from a single stored payload per page row.
 
+    v2 shape (issue #11, 2026-06-20): each group dict now includes
+    ``"provenance": "native" | "mined" | "synthesized-states" | "none"``
+    alongside ``"captured"``. Mined synthetics pass their atom class via
+    ``mined_atom_classes`` to ``build_capture_manifest`` before this function
+    is called, so the provenance is already in ``manifest`` at write time.
+
     ``hub_capture_signal`` carries the coarse N-of-M count consumed by the
     hub card grid without requiring the full manifest deserialization.
+    Mined groups count toward the captured_count (they are real components).
 
     ``missing_data_notice`` carries the structured missing-item list for
-    the brand page's acknowledgment section. Stored alongside the page row
-    so the web can render the notice without a separate API call.
+    the brand page's acknowledgment section. Mined groups do NOT appear
+    in missing_items (they are captured, not absent). Stored alongside the
+    page row so the web can render the notice without a separate API call.
     """
     def _lookup(field: str) -> str | None:
         # Underscore -> dash so ``font_display`` and ``font-display``

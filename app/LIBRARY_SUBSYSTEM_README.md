@@ -242,22 +242,41 @@ Rendering the full HTML body of the `buttons` template when the brand has no rea
 
 ## The "captured" rule per component group
 
-Defined in `brand_capture_manifest._CAPTURE_RULES`. Tunable by Opus review (plan Section 8):
+Defined in `brand_capture_manifest._CAPTURE_RULES`. Tunable by Opus review (plan Section 8).
 
-| Group | Captured when |
+A group is captured when ANY of its paths is satisfied (precedence: native > mined > none):
+
+| Group | Native path (token bag / ButtonTokens) | Also captured via mined |
+|---|---|---|
+| color | ds-bg + ds-accent + ds-text all brand-supplied | - |
+| typography | ds-font-body OR ds-font-display extras present, OR any weight/tracking slot | - |
+| spacing | any ds-space-* slot brand-supplied | - |
+| radius | any of ds-radius-xs/sm/md/lg/full brand-supplied | - |
+| layout | any ds-page-* slot brand-supplied | - |
+| section | any ds-section-* slot brand-supplied | - |
+| motion | any ds-duration-* or ds-ease-* slot brand-supplied | - |
+| shadow | any ds-shadow-* slot brand-supplied | - |
+| button | ButtonTokens snapshot exists, OR (ds-button-padding-y + ds-button-padding-x + ds-button-border-width) all present | mined_atom_class "buttons" or "library" |
+| card | ds-card-border-width + (ds-card-padding OR ds-card-padding-y) | mined_atom_class "cards" or "library" |
+| badge | ds-badge-padding-y + ds-badge-padding-x | mined_atom_class "badges" or "library" |
+| input | ds-input-padding-y + ds-input-border-width | mined_atom_class "form-fields" or "inputs" |
+
+### Provenance (capture_manifest_v2, issue #11)
+
+`GroupCaptureDetail.provenance` records the source of truth:
+
+| Value | Meaning |
 |---|---|
-| color | ds-bg + ds-accent + ds-text all brand-supplied |
-| typography | ds-font-body OR ds-font-display extras present, OR any weight/tracking slot |
-| spacing | any ds-space-* slot brand-supplied |
-| radius | any of ds-radius-xs/sm/md/lg/full brand-supplied |
-| layout | any ds-page-* slot brand-supplied |
-| section | any ds-section-* slot brand-supplied |
-| motion | any ds-duration-* or ds-ease-* slot brand-supplied |
-| shadow | any ds-shadow-* slot brand-supplied |
-| button | ButtonTokens snapshot exists, OR (ds-button-padding-y + ds-button-padding-x + ds-button-border-width) all present |
-| card | ds-card-border-width + (ds-card-padding OR ds-card-padding-y) |
-| badge | ds-badge-padding-y + ds-badge-padding-x |
-| input | ds-input-padding-y + ds-input-border-width |
+| `"native"` | Token-bag geometry or ButtonTokens snapshot (highest fidelity). |
+| `"mined"` | Component HTML mined from a DRL whole by the whole-mining pipeline (issue #5). Real extracted code. |
+| `"synthesized-states"` | Interaction-state variants synthesized (future, issue #29). Not produced by any current path. |
+| `"none"` | Not captured by any path. |
+
+`"native"` takes precedence over `"mined"` when both paths apply.
+
+The mapping from mined_atom_class -> covered groups is in `_MINED_CLASS_TO_GROUPS` (mirrors `CATEGORY_CAPTURE_REQUIREMENTS` in `library_render_policy.py` but avoids the circular import).
+
+Provenance is stored in `metadata_json.capture_manifest.groups[group].provenance` by the indexer.
 
 ---
 
@@ -579,7 +598,7 @@ JSON, or wrong-shape input).  If exit 2 fires during the ceremony, check you poi
 | Schema | Version | File |
 |---|---|---|
 | TokenContract | `token_contract_v1` | extractor/token_contract.py |
-| BrandCaptureManifest | `capture_manifest_v1` | app/brand_capture_manifest.py |
+| BrandCaptureManifest | `capture_manifest_v2` | app/brand_capture_manifest.py |
 | MissingDataSummary | `missing_data_notice_v1` | app/missing_data_notice.py |
 | HubCaptureSignal | `hub_capture_signal_v1` | app/missing_data_notice.py |
 | DeployCheckResult | `library_deploy_selfcheck_v1` | app/library_deploy_selfcheck.py |

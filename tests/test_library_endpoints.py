@@ -601,10 +601,10 @@ def _v2_metadata(
         missing_slugs = ["badges", "buttons", "cards", "form-fields", "inputs"]
     groups_dict: dict[str, Any] = {}
     for g in captured_groups:
-        groups_dict[g] = {"captured": True, "present_source_fields": [], "absent_source_fields": []}
+        groups_dict[g] = {"captured": True, "provenance": "native", "present_source_fields": [], "absent_source_fields": []}
     for g in ("button", "card", "badge", "input"):
         if g not in groups_dict:
-            groups_dict[g] = {"captured": False, "present_source_fields": [], "absent_source_fields": [g]}
+            groups_dict[g] = {"captured": False, "provenance": "none", "present_source_fields": [], "absent_source_fields": [g]}
     return {
         "schema_version": 2,
         "brand_slug": brand_slug,
@@ -615,7 +615,7 @@ def _v2_metadata(
         "font_display": "Inter",
         "font_body": "Inter",
         "capture_manifest": {
-            "schema_version": "capture_manifest_v1",
+            "schema_version": "capture_manifest_v2",
             "groups": groups_dict,
         },
         "hub_capture_signal": {
