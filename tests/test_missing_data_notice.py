@@ -162,3 +162,62 @@ class TestBuildHubCaptureSignal:
         signal = build_hub_capture_signal(manifest)
         assert signal.schema_version is not None
         assert "v1" in signal.schema_version
+
+
+# ---------------------------------------------------------------------------
+# hub_capture_signal_from_captured_groups (issue #11 hub-aggregation helper)
+# ---------------------------------------------------------------------------
+#
+# This helper is the single source of truth for the "N of 5 captured" count rule.
+# Both build_hub_capture_signal (per-manifest path) and the hub route's
+# cross-page union aggregation (_hub_meta_for_brand) must delegate here so that
+# both surfaces produce identical counts for the same captured-group set.
+
+
+class TestHubCaptureSignalFromCapturedGroups:
+    """hub_capture_signal_from_captured_groups: count rule unit tests (issue #11).
+
+    RED tests - written before the function exists. These pin:
+      - empty frozenset -> captured_count = 0
+      - frozenset({"button"}) -> 1 (satisfies 'buttons' showcase category)
+      - frozenset({"button","card","badge"}) -> 3 distinct showcase categories
+      - total_showcase_groups is always 5 (the fixed primary-showcase count)
+      - Result matches build_hub_capture_signal for the same group set (one source of truth)
+    """
+
+    def test_empty_set_returns_zero(self) -> None:
+        """Empty group set -> captured_count = 0."""
+        from app.missing_data_notice import hub_capture_signal_from_captured_groups
+        signal = hub_capture_signal_from_captured_groups(frozenset())
+        assert signal.captured_count == 0
+
+    def test_button_group_only_counts_buttons_showcase_category(self) -> None:
+        """frozenset({"button"}) -> 1: satisfies the 'buttons' showcase category."""
+        from app.missing_data_notice import hub_capture_signal_from_captured_groups
+        signal = hub_capture_signal_from_captured_groups(frozenset({"button"}))
+        assert signal.captured_count == 1
+
+    def test_button_card_badge_groups_returns_three(self) -> None:
+        """frozenset({"button","card","badge"}) -> 3 distinct showcase categories."""
+        from app.missing_data_notice import hub_capture_signal_from_captured_groups
+        signal = hub_capture_signal_from_captured_groups(frozenset({"button", "card", "badge"}))
+        assert signal.captured_count == 3
+
+    def test_total_showcase_groups_is_always_five(self) -> None:
+        """total_showcase_groups is 5 regardless of how many groups are captured."""
+        from app.missing_data_notice import hub_capture_signal_from_captured_groups
+        assert hub_capture_signal_from_captured_groups(frozenset()).total_showcase_groups == 5
+        assert hub_capture_signal_from_captured_groups(
+            frozenset({"button", "card"})
+        ).total_showcase_groups == 5
+
+    def test_result_matches_build_hub_capture_signal_for_same_group_set(self) -> None:
+        """Both paths produce identical counts for the same group set (one source of truth)."""
+        from app.missing_data_notice import hub_capture_signal_from_captured_groups
+        manifest = build_capture_manifest(
+            DRL_SEED_TOKENS, mined_atom_classes=frozenset({"buttons", "cards"})
+        )
+        via_manifest = build_hub_capture_signal(manifest)
+        via_groups = hub_capture_signal_from_captured_groups(frozenset({"button", "card"}))
+        assert via_manifest.captured_count == via_groups.captured_count
+        assert via_manifest.total_showcase_groups == via_groups.total_showcase_groups

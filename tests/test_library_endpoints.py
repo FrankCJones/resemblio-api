@@ -697,6 +697,234 @@ def test_page_payload_carries_missing_groups(
     }
 
 
+# ----------------------------------------------------------------------
+# Hub captured_count cross-page UNION aggregation (issue #11)
+# ----------------------------------------------------------------------
+#
+# After issue #5 mined buttons/cards/badges/links for ~40 brands, each atom
+# class became its own DISTINCT asset_version (distinct synthetic_url per
+# (brand, atom_class)). The old _hub_meta_for_brand used .limit(1) and read
+# one page's stored hub_capture_signal, so a brand with buttons+cards+badges
+# mined showed "1 of 5" instead of "3 of 5".
+#
+# These tests verify the hub route UNIONS captured groups across all public
+# pages for a brand, so the count reflects all available mined + native atoms.
+
+
+def _mined_page_metadata(
+    brand_slug: str,
+    category_slug: str,
+    mined_group: str,
+) -> dict[str, Any]:
+    """Build metadata for a single mined-synthetic page with ONE group captured.
+
+    Simulates what the seed pipeline writes for a brand with a mined
+    asset_version for one template class. Only ``mined_group`` is captured;
+    all others are False. The per-page ``hub_capture_signal.captured_count``
+    is intentionally 1 (the old stale per-page value) to prove the route
+    no longer reads it - the union computation must produce the real total.
+
+    Args:
+        brand_slug: the brand this page belongs to.
+        category_slug: the DRL template class name (e.g. 'buttons').
+        mined_group: the single component group captured on this page (e.g. 'button').
+    """
+    groups_dict: dict[str, Any] = {}
+    for g in ("button", "card", "badge", "input", "color", "typography", "spacing"):
+        if g == mined_group:
+            groups_dict[g] = {
+                "captured": True,
+                "provenance": "mined",
+                "present_source_fields": [],
+                "absent_source_fields": [],
+            }
+        else:
+            groups_dict[g] = {
+                "captured": False,
+                "provenance": "none",
+                "present_source_fields": [],
+                "absent_source_fields": [],
+            }
+    return {
+        "schema_version": 2,
+        "brand_slug": brand_slug,
+        "category_slug": category_slug,
+        "bg": "#ffffff",
+        "accent": "#635bff",
+        "text": "#0a2540",
+        "font_display": "Inter",
+        "capture_manifest": {
+            "schema_version": "capture_manifest_v2",
+            "groups": groups_dict,
+        },
+        # Stale per-page hub_capture_signal: the route must NOT read this.
+        # The union aggregation produces the correct total across all pages.
+        "hub_capture_signal": {
+            "schema_version": "hub_capture_signal_v1",
+            "captured_count": 1,
+            "total_showcase_groups": 5,
+        },
+    }
+
+
+def test_hub_count_is_union_across_distinct_mined_asset_versions(
+    client: TestClient, session: Session
+) -> None:
+    """Brand with 2 mined asset_versions (one group each) shows captured_count=2 (AC1).
+
+    Two distinct asset_versions, each with one group captured. The old
+    .limit(1) path returned 1 (the representative page's stored
+    hub_capture_signal.captured_count). The union path must return 2.
+    """
+    av_buttons = _make_asset_version(
+        session,
+        url="resemblio://seed/drl_v1/acme-corp/buttons/mined",
+        version_label="mined-buttons",
+    )
+    _make_page_with_metadata(
+        session, av_buttons,
+        brand_slug="acme-corp",
+        category_slug="buttons",
+        metadata=_mined_page_metadata("acme-corp", "buttons", "button"),
+    )
+    av_cards = _make_asset_version(
+        session,
+        url="resemblio://seed/drl_v1/acme-corp/cards/mined",
+        version_label="mined-cards",
+    )
+    _make_page_with_metadata(
+        session, av_cards,
+        brand_slug="acme-corp",
+        category_slug="cards",
+        metadata=_mined_page_metadata("acme-corp", "cards", "card"),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "acme-corp")
+    assert row["captured_count"] == 2, (
+        f"Expected 2 (union of buttons+cards mined pages), got {row['captured_count']}"
+    )
+
+
+def test_hub_count_union_extends_to_three_with_badges_page(
+    client: TestClient, session: Session
+) -> None:
+    """Adding a third distinct mined page (badges) increments the union count to 3."""
+    for category_slug, group in [("buttons", "button"), ("cards", "card"), ("badges", "badge")]:
+        av = _make_asset_version(
+            session,
+            url=f"resemblio://seed/drl_v1/brand-three/{category_slug}/mined",
+            version_label=f"mined-{category_slug}",
+        )
+        _make_page_with_metadata(
+            session, av,
+            brand_slug="brand-three",
+            category_slug=category_slug,
+            metadata=_mined_page_metadata("brand-three", category_slug, group),
+        )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "brand-three")
+    assert row["captured_count"] == 3, (
+        f"Expected 3 (union of buttons+cards+badges mined), got {row['captured_count']}"
+    )
+
+
+def test_hub_count_pre_v2_pages_contribute_zero_captured_groups(
+    client: TestClient, session: Session
+) -> None:
+    """Pre-v2 pages (no capture_manifest) contribute zero captured groups (AC3 degradation).
+
+    A brand with multiple pre-v2 pages must still show captured_count=0 rather
+    than raising or counting stale hub_capture_signal values.
+    """
+    av1 = _make_asset_version(
+        session, url="https://legacy-a.example/", version_label="2026-01"
+    )
+    _make_page(session, av1, brand_slug="legacy-brand-x", category_slug="buttons")
+    av2 = _make_asset_version(
+        session, url="https://legacy-b.example/", version_label="2026-02"
+    )
+    _make_page(session, av2, brand_slug="legacy-brand-x", category_slug="cards")
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "legacy-brand-x")
+    assert row["captured_count"] == 0, (
+        f"Pre-v2 pages must degrade to 0 captured groups; got {row['captured_count']}"
+    )
+
+
+def test_hub_count_no_double_count_when_same_group_on_two_pages(
+    client: TestClient, session: Session
+) -> None:
+    """Same group captured on two pages (native + mined) counts once, not twice (AC2 set-union)."""
+    # Native page: button natively captured
+    native_meta: dict[str, Any] = {
+        "schema_version": 2,
+        "brand_slug": "overlap-co",
+        "category_slug": "buttons",
+        "bg": "#fff",
+        "accent": "#f00",
+        "text": "#000",
+        "font_display": "Arial",
+        "capture_manifest": {
+            "schema_version": "capture_manifest_v2",
+            "groups": {
+                "button": {
+                    "captured": True,
+                    "provenance": "native",
+                    "present_source_fields": [],
+                    "absent_source_fields": [],
+                },
+                "card": {"captured": False, "provenance": "none", "present_source_fields": [], "absent_source_fields": []},
+                "badge": {"captured": False, "provenance": "none", "present_source_fields": [], "absent_source_fields": []},
+                "input": {"captured": False, "provenance": "none", "present_source_fields": [], "absent_source_fields": []},
+            },
+        },
+        "hub_capture_signal": {
+            "schema_version": "hub_capture_signal_v1",
+            "captured_count": 1,
+            "total_showcase_groups": 5,
+        },
+    }
+    av_native = _make_asset_version(
+        session, url="https://overlap.example/", version_label="v1"
+    )
+    _make_page_with_metadata(
+        session, av_native, brand_slug="overlap-co", category_slug="buttons",
+        metadata=native_meta,
+    )
+    # Mined page: same button group, distinct asset_version
+    av_mined = _make_asset_version(
+        session,
+        url="resemblio://seed/drl_v1/overlap-co/buttons/mined",
+        version_label="mined-buttons",
+    )
+    _make_page_with_metadata(
+        session, av_mined,
+        brand_slug="overlap-co",
+        category_slug="buttons",
+        metadata=_mined_page_metadata("overlap-co", "buttons", "button"),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]["featured"]
+    row = next(r for r in rows if r["brand_slug"] == "overlap-co")
+    assert row["captured_count"] == 1, (
+        f"button on native+mined pages must count once (set union); got {row['captured_count']}"
+    )
+
 def test_page_payload_carries_captured_groups(
     client: TestClient, session: Session
 ) -> None:
