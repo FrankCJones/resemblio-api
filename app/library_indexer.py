@@ -1342,11 +1342,14 @@ def _metadata_for(
         "font_display": _lookup("font_display"),
         "font_body": _lookup("font_body"),
         # Library v2 provenance fields (2026-06-07, plan Phase 4).
+        # capture_manifest v2 (issue #11): added 'provenance' per group so
+        # downstream consumers can distinguish native / mined / none capture.
         "capture_manifest": {
             "schema_version": _manifest["schema_version"],
             "groups": {
                 group: {
                     "captured": detail["captured"],
+                    "provenance": detail["provenance"],
                     "present_source_fields": list(detail["present_source_fields"]),
                     "absent_source_fields": list(detail["absent_source_fields"]),
                 }
@@ -1504,27 +1507,36 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
     # Hybrid Path B button-fidelity override (CTO 2026-06-02). One disk
     # read per asset version (None for the common no-snapshot case).
     button_tokens = _load_button_tokens(brand_slug)
-    # Library v2 D2 gate: compute the manifest ONCE per brand (not per class).
-    # _compose_with_gate uses it to decide whether each showcase category
-    # should be composed (captured) or omitted (empty string, not fabricated).
-    # _metadata_for receives the same manifest so it does not recompute.
-    brand_manifest = build_capture_manifest(tokens, button_tokens=button_tokens)
-    # Real-component lookup (issue #3): fetch the stored DRL component ONCE
-    # per asset_version before the class loop. The seed pipeline (#2) writes
-    # one asset_components row per asset; the indexer serves that row for the
-    # one page whose class_name matches dtcg["class"]. All other pages use
-    # the existing generic-template path. None when the asset has no component
-    # row or dtcg carries no class key (e.g. organic extractions pre-#2).
-    dtcg_json = asset_version.dtcg_json or {}
-    dtcg_class: str | None = dtcg_json.get("class")
-    real_component = get_asset_component(session, asset_version.id) if dtcg_class else None
     # D2 guard (issue #28): mined synthetic asset_versions must compose exactly
     # one page - their atom_class.  If the full _all_template_classes() loop
     # ran for a mined synthetic, its later fetched_at could cause the per-brand
     # reconcile to demote the whole's real pages (e.g. cta-blocks) from canonical.
     # _mined_atom_class returns the single class name when the marker is present,
     # or None for all other asset_versions (no change to their behaviour).
+    # Computed BEFORE build_capture_manifest so mined provenance is reflected
+    # in the manifest stored with the page (issue #11).
+    dtcg_json = asset_version.dtcg_json or {}
     mined_class = _mined_atom_class(dtcg_json)
+    # Library v2 D2 gate: compute the manifest ONCE per brand (not per class).
+    # _compose_with_gate uses it to decide whether each showcase category
+    # should be composed (captured) or omitted (empty string, not fabricated).
+    # _metadata_for receives the same manifest so it does not recompute.
+    # mined_atom_classes (issue #11): when the asset is a mined synthetic, its
+    # atom class is passed so the manifest records honest "mined" provenance for
+    # that group. Whole asset_versions pass an empty frozenset (no change).
+    brand_manifest = build_capture_manifest(
+        tokens,
+        button_tokens=button_tokens,
+        mined_atom_classes=frozenset({mined_class}) if mined_class else frozenset(),
+    )
+    # Real-component lookup (issue #3): fetch the stored DRL component ONCE
+    # per asset_version before the class loop. The seed pipeline (#2) writes
+    # one asset_components row per asset; the indexer serves that row for the
+    # one page whose class_name matches dtcg["class"]. All other pages use
+    # the existing generic-template path. None when the asset has no component
+    # row or dtcg carries no class key (e.g. organic extractions pre-#2).
+    dtcg_class: str | None = dtcg_json.get("class")
+    real_component = get_asset_component(session, asset_version.id) if dtcg_class else None
     classes_to_compose: tuple[str, ...] = (
         (mined_class,) if mined_class else _all_template_classes()
     )

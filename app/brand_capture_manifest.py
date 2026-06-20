@@ -34,6 +34,27 @@ The exception is color, typography, spacing, radius, layout, and section:
 for these groups, ANY brand-supplied value is a real signal (the groups'
 whole point is the scale itself, not per-component geometry).
 
+Provenance (added Library v3, issue #11)
+----------------------------------------
+``GroupCaptureDetail.provenance`` records HOW a group was captured:
+
+  - ``"native"``:           brand supplied geometry via token bag or ButtonTokens snapshot.
+  - ``"mined"``:            the group's component HTML was mined from a DRL whole by the
+                            whole-mining pipeline (issue #5). Real extracted code, distinct
+                            from natively-captured geometry.
+  - ``"synthesized-states"``: interaction-state variants were synthesized (future issue #29).
+                            Not produced by any current code path.
+  - ``"none"``:             the group is not captured by any path.
+
+``"native"`` takes precedence over ``"mined"`` when both paths apply to the
+same group - the token-bag geometry is higher-fidelity than the mined HTML.
+
+Callers pass ``mined_atom_classes`` to ``build_capture_manifest`` to signal
+which DRL template class names have mined asset_versions for this brand (e.g.
+``frozenset({"buttons", "cards"})``). The mapping from class name to component
+group names lives in ``_MINED_CLASS_TO_GROUPS`` to avoid a circular import
+with ``library_render_policy`` (which imports this module).
+
 Key normalization
 -----------------
 Token dicts arrive in multiple formats (DRL seed: ``ds-bg``, ``ds-font-body``;
@@ -47,17 +68,31 @@ Schema versioning
 ``CAPTURE_MANIFEST_SCHEMA_VERSION`` is bumped when ``BrandCaptureManifest``
 or ``GroupCaptureDetail`` changes shape. Downstream consumers (indexer,
 routes, web contract) key off this string for shape detection.
+
+  v1 (2026-06-07): initial shape (captured + source_fields).
+  v2 (2026-06-20, issue #11): added provenance field; mined_atom_classes param.
 """
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from extractor.button_tokens import ButtonTokens
 from extractor.token_contract import BRAND_TOKEN_CONTRACT, slots_for_group
 
-CAPTURE_MANIFEST_SCHEMA_VERSION = "capture_manifest_v1"
+CAPTURE_MANIFEST_SCHEMA_VERSION = "capture_manifest_v2"
 """Bumped when BrandCaptureManifest or GroupCaptureDetail shape changes."""
+
+CaptureProvenance = Literal["native", "mined", "synthesized-states", "none"]
+"""How a component group's data was obtained.
+
+Values
+------
+native:               token-bag geometry or ButtonTokens snapshot (highest fidelity).
+mined:                component HTML mined from a DRL whole (issue #5 pipeline).
+synthesized-states:   interaction-state variants synthesized (future, issue #29).
+none:                 group is not captured by any current path.
+"""
 
 # All component groups the manifest covers (alphabetical; drives iteration order).
 # Any group added to BRAND_TOKEN_CONTRACT should appear here; tests will catch drift.
@@ -78,10 +113,14 @@ COMPONENT_GROUPS: tuple[str, ...] = (
 
 
 class GroupCaptureDetail(TypedDict):
-    """Per-group capture status with source-field provenance."""
+    """Per-group capture status with source-field and provenance detail."""
 
     captured: bool
-    """True when REAL brand-specific data for this group is present."""
+    """True when REAL brand-specific data for this group is present (native or mined)."""
+
+    provenance: CaptureProvenance
+    """How this group's data was obtained. See ``CaptureProvenance`` for the full
+    value set. 'native' takes precedence over 'mined' when both paths are active."""
 
     present_source_fields: tuple[str, ...]
     """Contract source_field values (e.g. 'button.padding-y') confirmed present
@@ -102,6 +141,42 @@ class BrandCaptureManifest(TypedDict):
 
     groups: dict[str, GroupCaptureDetail]
     """Keyed by component group name (one of ``COMPONENT_GROUPS``)."""
+
+
+# ---------------------------------------------------------------------------
+# Mined-class to component-group mapping
+# ---------------------------------------------------------------------------
+#
+# Maps DRL template class names (the mined_atom_class marker value) to the
+# frozenset of component group names they cover. Mirrors CATEGORY_CAPTURE_REQUIREMENTS
+# in library_render_policy.py; defined here to avoid the circular import that
+# would result from library_render_policy importing brand_capture_manifest.
+#
+# Any new template class added to CATEGORY_CAPTURE_REQUIREMENTS with component
+# groups should also appear here.
+
+_MINED_CLASS_TO_GROUPS: dict[str, frozenset[str]] = {
+    "buttons": frozenset({"button"}),
+    "cards": frozenset({"card"}),
+    "badges": frozenset({"badge"}),
+    "form-fields": frozenset({"input"}),
+    "inputs": frozenset({"input"}),
+    # 'library' is composite: mined library HTML covers button + card + badge.
+    "library": frozenset({"button", "card", "badge"}),
+}
+
+
+def _groups_for_mined_classes(mined_atom_classes: frozenset[str]) -> frozenset[str]:
+    """Return the union of component group names covered by ``mined_atom_classes``.
+
+    Silently ignores class names not present in ``_MINED_CLASS_TO_GROUPS`` so
+    future DRL class additions don't crash older code. An empty frozenset
+    produces an empty result (no mined effect).
+    """
+    result: set[str] = set()
+    for cls in mined_atom_classes:
+        result.update(_MINED_CLASS_TO_GROUPS.get(cls, frozenset()))
+    return frozenset(result)
 
 
 # ---------------------------------------------------------------------------
@@ -333,6 +408,7 @@ def build_capture_manifest(
     tokens: dict[str, str],
     *,
     button_tokens: ButtonTokens | None = None,
+    mined_atom_classes: frozenset[str] = frozenset(),
 ) -> BrandCaptureManifest:
     """Build a BrandCaptureManifest for the given brand token bag.
 
@@ -346,25 +422,54 @@ def build_capture_manifest(
         button_tokens: the brand's R3.1 ``ButtonTokens`` snapshot if one exists
             on disk, else None. A non-None value captures the button group
             regardless of whether button geometry slots appear in ``tokens``.
+        mined_atom_classes: frozenset of DRL template class names whose mined
+            asset_versions exist for this brand (e.g. ``frozenset({"buttons"})``).
+            Each class name is resolved to one or more component groups via
+            ``_MINED_CLASS_TO_GROUPS``; those groups are marked ``captured=True``
+            with ``provenance="mined"`` unless the native path already captured
+            them (in which case ``provenance="native"`` takes precedence).
+            Unknown class names are silently ignored.
 
     Returns:
         A ``BrandCaptureManifest`` with ``schema_version`` and per-group detail.
+
+    Provenance precedence: native > mined > none.
 
     Example:
         >>> manifest = build_capture_manifest({"ds-bg": "#fff", "ds-accent": "#0f0", "ds-text": "#000"})
         >>> manifest["groups"]["color"]["captured"]
         True
+        >>> manifest["groups"]["color"]["provenance"]
+        'native'
         >>> manifest["groups"]["button"]["captured"]
         False
+        >>> manifest["groups"]["button"]["provenance"]
+        'none'
+
+        >>> mined = build_capture_manifest({"ds-bg": "#fff"}, mined_atom_classes=frozenset({"buttons"}))
+        >>> mined["groups"]["button"]["captured"]
+        True
+        >>> mined["groups"]["button"]["provenance"]
+        'mined'
     """
     overrides = _build_overrides(tokens)
+    mined_groups = _groups_for_mined_classes(mined_atom_classes)
     groups: dict[str, GroupCaptureDetail] = {}
     for group in COMPONENT_GROUPS:
         rule = _CAPTURE_RULES[group]
-        captured = rule(overrides, button_tokens)
+        native_captured = rule(overrides, button_tokens)
+        # Provenance precedence: native > mined > none.
+        if native_captured:
+            provenance: CaptureProvenance = "native"
+        elif group in mined_groups:
+            provenance = "mined"
+        else:
+            provenance = "none"
+        captured = native_captured or (group in mined_groups)
         present, absent = _group_source_field_status(group, overrides)
         groups[group] = GroupCaptureDetail(
             captured=captured,
+            provenance=provenance,
             present_source_fields=present,
             absent_source_fields=absent,
         )
