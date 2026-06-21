@@ -537,14 +537,19 @@ def upsert_extraction(
 
     The ``asset_versions`` row carries the DRL bootstrap audit shape:
 
-    - ``is_public=not is_brand_suppressed(stripped.slug)`` so the library
-      indexer (mission Phase 4) picks up bootstrap entries on its first run
-      without a moderation step, while suppressed utility slugs (e.g.
-      ``"shared"``) are hidden from the public hub at insert time. This is
-      durable: a content-changing reseed that inserts a new asset_versions row
-      (different content_hash) will also set is_public=False for suppressed
-      slugs, without requiring a manual post-hoc suppress_seed_brands.py run.
-      See ``app/library_suppression.py`` for the authoritative suppression list.
+    - ``is_public=not is_brand_suppressed(derive_brand_slug(public_url))`` so
+      the library indexer (mission Phase 4) picks up bootstrap entries on its
+      first run without a moderation step, while suppressed utility slugs (e.g.
+      ``"shared"``) are hidden from the public hub at insert time. The
+      suppression check uses ``derive_brand_slug`` - the same brand-slug
+      derivation the indexer applies when writing ``library_pages.brand_slug``
+      - NOT ``stripped.slug`` (which is the asset slug, e.g.
+      ``"r3f-orbit-scene-001"``). This keeps the suppressed set aligned with how
+      brands actually appear in the public hub. The behaviour is durable: a
+      content-changing reseed that inserts a new asset_versions row (different
+      content_hash) also sets is_public=False for suppressed slugs, without
+      requiring a manual post-hoc suppress_seed_brands.py run. See
+      ``app/library_suppression.py`` for the authoritative suppression list.
     - ``version_label="DRL bootstrap {captured_date}"`` so the timeline
       view distinguishes the corpus bootstrap from organic re-extractions.
     - ``first_extracted_by_user_id=None`` so the audit trail does not
