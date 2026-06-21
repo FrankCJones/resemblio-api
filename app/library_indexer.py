@@ -62,7 +62,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from sqlalchemy import select, update
+from sqlalchemy import case, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -1387,18 +1387,31 @@ def _metadata_for(
 def _reconcile_canonical(session: Session, asset_version: AssetVersion) -> None:
     """Set ``is_canonical`` per (brand_slug, category_slug) independently.
 
-    For each category that exists for this brand, the canonical page is
-    the one from the most recent asset_version that contributed a page in
-    that category.  This per-category approach is required to handle mined
-    synthetic asset_versions correctly:
+    For each category that exists for this brand, the canonical page is the
+    best page in that category, ranked by:
 
-    A mined synthetic (e.g. apple/buttons) writes only ONE category page.
-    If reconcile were per-brand (choosing one winner asset_version for the
-    whole brand), the mined synthetic's later ``fetched_at`` would cause the
-    whole's cta-blocks page to lose canonical status even though no mined
-    page competes for that category.  Per-category reconcile avoids that
-    regression: each category is settled independently, so the whole keeps
-    its cta-blocks canonical and the synthetic wins only for buttons.
+      1. **Non-empty rendered_html first.** A real-content page always beats
+         an empty placeholder. This is the issue-#31 fix: in the cross-category
+         page model every whole asset_version writes a page for EVERY template
+         class, and the classes it does not own render to an empty string. When
+         a brand's real buttons whole and a sibling whole (e.g. a footer) carry
+         the *same* ``fetched_at`` (common after a single corpus re-seed, where
+         all wholes share one timestamp), a pure ``fetched_at`` ordering could
+         crown the sibling's EMPTY buttons page canonical, so the live
+         ``/library/<brand>/buttons`` page served blank. Ranking non-empty
+         first guarantees the real component wins regardless of the tie.
+      2. **Most recent ``fetched_at``.** Among equally-non-empty pages, the
+         newest asset_version wins (the genuine version-flip behaviour).
+      3. **Highest ``asset_version.id``.** A deterministic final tiebreak so
+         the winner is stable across re-runs when (1) and (2) tie.
+
+    This per-category approach is required to handle mined synthetic
+    asset_versions correctly: a mined synthetic (e.g. apple/buttons) writes
+    only ONE category page. If reconcile were per-brand (choosing one winner
+    asset_version for the whole brand), the mined synthetic's later
+    ``fetched_at`` would cause the whole's cta-blocks page to lose canonical
+    status even though no mined page competes for that category.  Per-category
+    reconcile avoids that regression: each category is settled independently.
 
     Run after pages are written so the just-inserted rows participate in
     the comparison.
@@ -1412,32 +1425,45 @@ def _reconcile_canonical(session: Session, asset_version: AssetVersion) -> None:
         .distinct()
     ).scalars().all()
 
+    # Non-empty content ranks above empty placeholders. Use an explicit
+    # integer ``case`` (1 for content, 0 for empty) rather than ordering by a
+    # raw boolean expression: boolean ORDER BY is not portably sortable across
+    # dialects, whereas integer DESC reliably puts content (1) ahead of empty
+    # (0). ``rendered_html`` is never NULL (the indexer writes ``""`` for
+    # omitted categories), so func.length is always defined.
+    _has_content = case((func.length(LibraryPage.rendered_html) > 0, 1), else_=0)
+
     for category_slug in categories:
-        # Latest asset_version_id for this (brand, category) by fetched_at.
-        latest_id = session.execute(
-            select(AssetVersion.id)
-            .join(LibraryPage, LibraryPage.asset_version_id == AssetVersion.id)
+        # Best asset_version for this (brand, category): real content first,
+        # then most recent, then highest id for a deterministic tiebreak.
+        winner_id = session.execute(
+            select(LibraryPage.asset_version_id)
+            .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
             .where(LibraryPage.brand_slug == brand_slug)
             .where(LibraryPage.category_slug == category_slug)
-            .order_by(AssetVersion.fetched_at.desc())
+            .order_by(
+                _has_content.desc(),
+                AssetVersion.fetched_at.desc(),
+                AssetVersion.id.desc(),
+            )
             .limit(1)
         ).scalar_one_or_none()
-        if latest_id is None:
+        if winner_id is None:
             continue
         # Flip the winner canonical for this (brand, category).
         session.execute(
             update(LibraryPage)
             .where(LibraryPage.brand_slug == brand_slug)
             .where(LibraryPage.category_slug == category_slug)
-            .where(LibraryPage.asset_version_id == latest_id)
+            .where(LibraryPage.asset_version_id == winner_id)
             .values(is_canonical=True)
         )
-        # Flip all older versions non-canonical for this (brand, category).
+        # Flip every other page for this (brand, category) non-canonical.
         session.execute(
             update(LibraryPage)
             .where(LibraryPage.brand_slug == brand_slug)
             .where(LibraryPage.category_slug == category_slug)
-            .where(LibraryPage.asset_version_id != latest_id)
+            .where(LibraryPage.asset_version_id != winner_id)
             .values(is_canonical=False)
         )
 

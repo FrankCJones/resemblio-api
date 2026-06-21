@@ -348,6 +348,63 @@ def test_canonical_flips_when_newer_version_indexed(session: Session) -> None:
     assert older_pages and not any(p.is_canonical for p in older_pages)
 
 
+def test_canonical_prefers_nonempty_over_empty_sibling(session: Session) -> None:
+    """issue #31: the real-content page wins canonical over an empty sibling.
+
+    In the cross-category page model every whole asset_version writes a page
+    for every template class; classes it does not own render to ``""``. After
+    a single corpus re-seed all wholes share one ``fetched_at``, so a
+    ``fetched_at``-only ranking could crown an empty placeholder canonical and
+    serve a blank ``/library/<brand>/<category>`` page. This pins the fix:
+    a non-empty page must win even when an empty sibling is *newer*.
+    """
+    from app.library_indexer import _reconcile_canonical, derive_brand_slug
+
+    seed_user(session)
+    ts = datetime.now(timezone.utc)
+    brand_url = "https://stripe.com/"
+    brand = derive_brand_slug(brand_url)
+    av_real = _make_asset_version(
+        session, url=brand_url, fetched_at=ts, version_label="real"
+    )
+    # Empty sibling fetched one second LATER: a fetched_at-only ranking would
+    # wrongly prefer it. The fix ranks non-empty content first.
+    av_empty = _make_asset_version(
+        session,
+        url=brand_url,
+        fetched_at=ts + timedelta(seconds=1),
+        version_label="empty",
+        tokens={**_HEALTHY_TOKENS, "bg": "#010101"},
+    )
+    real_page = LibraryPage(
+        asset_version_id=av_real.id,
+        category_slug="buttons",
+        brand_slug=brand,
+        version_label="real",
+        rendered_html='<article data-rs-source="drl-component">real</article>',
+        metadata_json={},
+        is_canonical=False,
+    )
+    empty_page = LibraryPage(
+        asset_version_id=av_empty.id,
+        category_slug="buttons",
+        brand_slug=brand,
+        version_label="empty",
+        rendered_html="",
+        metadata_json={},
+        is_canonical=True,  # the bug state: empty page currently canonical
+    )
+    session.add_all([real_page, empty_page])
+    session.flush()
+
+    _reconcile_canonical(session, av_empty)
+    session.refresh(real_page)
+    session.refresh(empty_page)
+
+    assert real_page.is_canonical is True
+    assert empty_page.is_canonical is False
+
+
 # ----------------------------------------------------------------------
 # Retry semantics
 # ----------------------------------------------------------------------
