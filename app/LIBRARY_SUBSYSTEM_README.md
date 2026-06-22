@@ -94,6 +94,23 @@ scripts/
                                (buttons, badges, cards, links) via MINEABLE_ATOM_CLASSES.
                                inputs deferred to issue #30 (void-element capture bug).
                                Persists synthetic asset_versions, enqueues indexer jobs.
+                               issue #19: suppression is enforced AT INSERT TIME.
+                               Both the bootstrap and mined-synthetic paths call
+                               ``is_brand_suppressed(derive_brand_slug(url))``
+                               before writing ``is_public``. To add a suppressed slug,
+                               edit ``app/library_suppression.py::SUPPRESSED_SLUGS``
+                               and run ``scripts/suppress_seed_brands.py`` once to
+                               back-fill existing rows.
+  suppress_seed_brands.py    - Post-hoc reconciler: sets is_public=False on existing
+                               asset_versions for suppressed slugs. Idempotent. Reads
+                               SUPPRESSED_SLUGS from app/library_suppression.py
+                               (single source of truth).
+  library_suppression.py     - (in app/) Single source of truth for suppressed brand
+  (app/)                       slugs. Both the seed pipeline and the post-hoc script
+                               import SUPPRESSED_SLUGS and is_brand_suppressed() from
+                               here. Add a slug here, then run suppress_seed_brands.py
+                               to suppress existing rows; future reseeds enforce it
+                               automatically without any manual step.
 ```
 
 ---

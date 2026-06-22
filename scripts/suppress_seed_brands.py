@@ -35,13 +35,8 @@ from sqlalchemy import func, select, text, update
 
 from app.config import get_settings, load_project_env
 from app.db import create_db_engine, sessionmaker
+from app.library_suppression import SUPPRESSED_SLUGS  # single source of truth (issue #19)
 from app.models import AssetVersion, LibraryPage
-
-#: Slugs that are DRL utility entries, not curated brands.
-#: Extend if future seeds produce additional non-brand slugs.
-SUPPRESSED_SLUGS: list[str] = [
-    "shared",
-]
 
 
 def suppress_seed_brands(dry_run: bool = False) -> None:

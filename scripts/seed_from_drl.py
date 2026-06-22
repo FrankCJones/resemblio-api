@@ -82,6 +82,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.constants import SCHEMA_V1
+from app.library_suppression import is_brand_suppressed  # single source of truth (issue #19)
 from app.metadata_overrides import apply_metadata_overrides
 from app.whole_mining import derive_states_present, strip_provenance_comments
 from transformer import STRIPPED_SCHEMA_VERSION, StrippedEntry, brand_strip
@@ -536,8 +537,19 @@ def upsert_extraction(
 
     The ``asset_versions`` row carries the DRL bootstrap audit shape:
 
-    - ``is_public=True`` so the library indexer (mission Phase 4) picks
-      bootstrap entries up on its first run without a moderation step.
+    - ``is_public=not is_brand_suppressed(derive_brand_slug(public_url))`` so
+      the library indexer (mission Phase 4) picks up bootstrap entries on its
+      first run without a moderation step, while suppressed utility slugs (e.g.
+      ``"shared"``) are hidden from the public hub at insert time. The
+      suppression check uses ``derive_brand_slug`` - the same brand-slug
+      derivation the indexer applies when writing ``library_pages.brand_slug``
+      - NOT ``stripped.slug`` (which is the asset slug, e.g.
+      ``"r3f-orbit-scene-001"``). This keeps the suppressed set aligned with how
+      brands actually appear in the public hub. The behaviour is durable: a
+      content-changing reseed that inserts a new asset_versions row (different
+      content_hash) also sets is_public=False for suppressed slugs, without
+      requiring a manual post-hoc suppress_seed_brands.py run. See
+      ``app/library_suppression.py`` for the authoritative suppression list.
     - ``version_label="DRL bootstrap {captured_date}"`` so the timeline
       view distinguishes the corpus bootstrap from organic re-extractions.
     - ``first_extracted_by_user_id=None`` so the audit trail does not
@@ -550,18 +562,23 @@ def upsert_extraction(
     and skipped without aborting the overall seed.
     """
     from app.asset_versions import AssetComponentSpec, insert_asset_component, insert_or_reuse_asset_version
-    from app.library_indexer import enqueue_for_asset_version
+    from app.library_indexer import derive_brand_slug, enqueue_for_asset_version
     from app.models import Extraction  # local import: dry-run safety
 
     existing = find_existing(session, stripped.source_id)
     public_url = f"resemblio://seed/{SEED_SOURCE_DRL_V1}/{stripped.source_id}"
+    # derive_brand_slug applies the same slugification as the library indexer
+    # uses when writing library_pages.brand_slug, so the suppression check
+    # is consistent with how brands appear in the public hub.
+    # stripped.slug is the asset slug (e.g. "r3f-orbit-scene-001"), not the
+    # brand slug - we cannot use it directly here.
     asset_version = insert_or_reuse_asset_version(
         session,
         url=public_url,
         dtcg=bundle.dtcg_json,
         first_extracted_by_user_id=DRL_BOOTSTRAP_USER_ID,
         manifest_schema_version=SCHEMA_V1,
-        is_public=True,
+        is_public=not is_brand_suppressed(derive_brand_slug(public_url)),  # issue #19
         version_label=f"{DRL_VERSION_LABEL_PREFIX} {captured_date}",
     )
 
@@ -982,7 +999,7 @@ def mine_and_persist_atoms_for_brand(
         insert_asset_component,
         insert_or_reuse_asset_version,
     )
-    from app.library_indexer import enqueue_for_asset_version
+    from app.library_indexer import derive_brand_slug, enqueue_for_asset_version
     from app.whole_mining import mine_atom_from_whole
 
     brand_slug = str(system.get("slug") or "")
@@ -1071,13 +1088,15 @@ def mine_and_persist_atoms_for_brand(
             if _commercial_signal is not None:
                 dtcg["commercial_signal"] = _commercial_signal
 
+            # derive_brand_slug(synthetic_url) gives the slugified brand name
+            # (e.g. "_shared" -> "shared") matching library_pages.brand_slug.
             asset_version = insert_or_reuse_asset_version(
                 session,
                 url=synthetic_url,
                 dtcg=dtcg,
                 first_extracted_by_user_id=DRL_BOOTSTRAP_USER_ID,
                 manifest_schema_version=SCHEMA_V1,
-                is_public=True,
+                is_public=not is_brand_suppressed(derive_brand_slug(synthetic_url)),  # issue #19
                 version_label=f"DRL mined from {whole_slug}",
             )
 
