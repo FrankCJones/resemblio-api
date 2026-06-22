@@ -30,6 +30,19 @@ on prod), in-tree seed root as fallback
 same assertion works whether a capture wrote to the runtime root (prod)
 or the seed root (local dev with ``--write-into-seed`` rescue).
 
+**Self-skip discipline for data-dependent tests:** ``test_corpus_coverage_floor``
+self-skips when no captured button snapshots exist on disk (neither root is
+populated). On a fresh checkout only a ``.gitkeep`` is committed to the seed
+root; the prod runtime root does not exist locally. When both roots are empty
+the floor assertion is not runnable and skipping is correct - the same pattern
+``test_visual_fidelity_gate`` and ``test_corpus_drift`` use for their data
+dependencies. To run the floor with real data, populate the snapshots via::
+
+    python scripts/capture_all_button_snapshots.py
+
+on a machine with browser access, or set ``RESEMBLIO_RUNTIME_DATA_ROOT`` to
+point at an existing ``computed_styles/`` directory.
+
 These tests are pure-file inspection: no network, no Playwright.
 """
 from __future__ import annotations
@@ -153,6 +166,23 @@ def _find_snapshot(brand_slug: str) -> Path | None:
         if candidate.exists():
             return candidate
     return None
+
+
+def _button_snapshots_available(slugs: list[str]) -> bool:
+    """Return True iff at least one brand snapshot exists in any candidate root.
+
+    The coverage-floor regression asserts a property of the REAL captured
+    corpus. The snapshots live at the prod runtime root
+    (``/var/lib/resemblio/computed_styles``) or the in-tree seed root, neither
+    of which is populated on a fresh checkout (only a ``.gitkeep`` is
+    committed). When no snapshot is present anywhere, the corpus-level
+    assertion is not runnable and the test self-skips - the same discipline
+    ``test_visual_fidelity_gate`` and ``test_corpus_drift`` use for their data
+    dependencies. The field-counting logic this test exercises is unit-tested
+    separately with synthetic fixtures in ``tests/test_button_selector_fixtures.py``,
+    so the skip loses no logic coverage.
+    """
+    return any(_find_snapshot(slug) is not None for slug in slugs)
 
 
 # --- Snapshot field inspection -----------------------------------------------
@@ -344,6 +374,13 @@ def test_corpus_coverage_floor() -> None:
             "/opt/resemblio-api/drl, or the workspace DRL project. "
             "Regression-floor test requires the live DRL corpus."
         )
+    if not _button_snapshots_available(slugs):
+        pytest.skip(
+            "No captured button snapshots on disk. Populate "
+            "RESEMBLIO_RUNTIME_DATA_ROOT/computed_styles or the in-tree seed root "
+            "(scripts/capture_all_button_snapshots.py on a box with browser access), "
+            "then re-run. The coverage floor only runs where the real corpus exists."
+        )
 
     passing: list[str] = []
     failing: dict[str, str] = {}
@@ -369,3 +406,60 @@ def test_corpus_coverage_floor() -> None:
         f"corpus coverage floor: {len(passing)} of {len(slugs)} brands passed; "
         f"required >= {expected}. Failing: {failing!r}"
     )
+
+
+# --- Tests for snapshot-absence self-skip guard (Issue #21) ------------------
+
+
+def test_button_snapshots_available_false_when_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """_button_snapshots_available returns False when no snapshot JSON files exist.
+
+    Monkeypatches _candidate_snapshot_dirs to an empty tmp_path, simulating a
+    fresh checkout where neither the prod runtime root nor the in-tree seed root
+    has been populated. AC3 (absent case).
+    """
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._candidate_snapshot_dirs",
+        lambda: [tmp_path],
+    )
+    assert _button_snapshots_available(["acme"]) is False
+
+
+def test_button_snapshots_available_true_when_present(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """_button_snapshots_available returns True when at least one snapshot exists.
+
+    Monkeypatches _candidate_snapshot_dirs to a tmp_path containing one JSON
+    file. AC3 (populated case).
+    """
+    (tmp_path / "acme.json").write_text('{"status": "ok"}', encoding="utf-8")
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._candidate_snapshot_dirs",
+        lambda: [tmp_path],
+    )
+    assert _button_snapshots_available(["acme"]) is True
+
+
+def test_corpus_coverage_floor_skips_when_no_snapshots(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """test_corpus_coverage_floor self-skips (not fails) when snapshots are absent.
+
+    Monkeypatches _candidate_snapshot_dirs to an empty directory and
+    _drl_corpus_brand_slugs to return one slug so the snapshot-absence guard
+    is reached rather than the brand-list guard. The floor must raise
+    pytest.skip.Exception, not AssertionError. AC1.
+    """
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._candidate_snapshot_dirs",
+        lambda: [tmp_path],
+    )
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._drl_corpus_brand_slugs",
+        lambda: ["acme"],
+    )
+    with pytest.raises(pytest.skip.Exception):
+        test_corpus_coverage_floor()
