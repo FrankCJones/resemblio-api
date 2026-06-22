@@ -369,3 +369,60 @@ def test_corpus_coverage_floor() -> None:
         f"corpus coverage floor: {len(passing)} of {len(slugs)} brands passed; "
         f"required >= {expected}. Failing: {failing!r}"
     )
+
+
+# --- Tests for snapshot-absence self-skip guard (Issue #21) ------------------
+
+
+def test_button_snapshots_available_false_when_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """_button_snapshots_available returns False when no snapshot JSON files exist.
+
+    Monkeypatches _candidate_snapshot_dirs to an empty tmp_path, simulating a
+    fresh checkout where neither the prod runtime root nor the in-tree seed root
+    has been populated. AC3 (absent case).
+    """
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._candidate_snapshot_dirs",
+        lambda: [tmp_path],
+    )
+    assert _button_snapshots_available(["acme"]) is False
+
+
+def test_button_snapshots_available_true_when_present(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """_button_snapshots_available returns True when at least one snapshot exists.
+
+    Monkeypatches _candidate_snapshot_dirs to a tmp_path containing one JSON
+    file. AC3 (populated case).
+    """
+    (tmp_path / "acme.json").write_text('{"status": "ok"}', encoding="utf-8")
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._candidate_snapshot_dirs",
+        lambda: [tmp_path],
+    )
+    assert _button_snapshots_available(["acme"]) is True
+
+
+def test_corpus_coverage_floor_skips_when_no_snapshots(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """test_corpus_coverage_floor self-skips (not fails) when snapshots are absent.
+
+    Monkeypatches _candidate_snapshot_dirs to an empty directory and
+    _drl_corpus_brand_slugs to return one slug so the snapshot-absence guard
+    is reached rather than the brand-list guard. The floor must raise
+    pytest.skip.Exception, not AssertionError. AC1.
+    """
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._candidate_snapshot_dirs",
+        lambda: [tmp_path],
+    )
+    monkeypatch.setattr(
+        "tests.test_button_corpus_coverage._drl_corpus_brand_slugs",
+        lambda: ["acme"],
+    )
+    with pytest.raises(pytest.skip.Exception):
+        test_corpus_coverage_floor()
