@@ -53,11 +53,14 @@ developer to maintain this project.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import logging
+import os
 import pathlib
 import re
 import sys
+import urllib.request
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tuple
@@ -792,9 +795,6 @@ def _make_live_candidate_fetcher(
         basic_auth: Optional "user:password" string for HTTP Basic Auth
                     (used when the site is behind staging basic auth).
     """
-    import base64
-    import urllib.request
-
     def _fetch(brand: str, asset_class: str) -> Optional[str]:
         url = f"{base_url.rstrip('/')}/library/{brand}/{asset_class}"
         req = urllib.request.Request(url)
@@ -869,8 +869,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not corpus_root.exists():
         _log.error("Corpus root not found: %s", corpus_root)
         return 1
-
-    import os
 
     basic_auth: Optional[str] = None
     if args.auth_env:
