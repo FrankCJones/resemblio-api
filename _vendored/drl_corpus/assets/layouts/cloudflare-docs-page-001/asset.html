@@ -1,0 +1,596 @@
+<!--
+  Asset: cloudflare-docs-page-001
+  Class: layouts
+  Pattern: three-column-docs-grid, centered-narrow-column, mono-utility-pair, breadcrumb-trail
+  Inspired by: Cloudflare (developers.cloudflare.com/workers/get-started/guide/)
+  Notes:
+    - Developer-docs page skeleton: flush-top nav with hairline rule,
+      then a three-column grid (260px left product/section sidebar /
+      1fr main content column / 220px right "On this page" TOC rail).
+      Main column sequence: mono breadcrumb (Docs / Workers / Get
+      started / <slug>), page title, lead paragraph, body with H2/H3,
+      tabbed code blocks (npm / yarn / pnpm), inline callout for
+      troubleshooting, Next-steps link list, prev/next pagination at
+      the column close. Sidebar carries collapsible product groups
+      (Workers / KV / R2 / Pages) with one active link in Cloudflare
+      orange and a 2px orange rule on its left edge. TOC rail lists
+      in-page headings with the current heading active.
+    - Variable: three-column grid widths, section sequence in the
+      main column, sidebar and TOC width. Inline: column gutters,
+      sidebar width (260px - wider than Vercel/Geist because the
+      Cloudflare product tree is deeper), TOC width (220px), main
+      column cap (~78ch). Code-tab strip is inline ornament specific
+      to the Cloudflare/Starlight convention.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-docs-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Cloudflare's marketing register runs on Inter with a mono
+  utility face. Faces are not loaded in the asset; the fallback chains
+  in tokens.css (system-ui, JetBrains Mono) carry the register so the
+  asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1440px; gutters scale up at desktop.
+   * Inline page-grid character.
+   */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Three-column docs grid. Inline column widths because they are
+   * page-grid character, not contract slots. Sidebar 260px (Cloudflare's
+   * product tree is wider than Vercel's), content 1fr, TOC 220px. On
+   * tablet the TOC drops; on mobile the sidebar drops to a top toggle.
+   */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    padding-bottom: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .docs-grid {
+      grid-template-columns: 260px 1fr;
+      gap: var(--ds-space-10);
+    }
+  }
+  @media (min-width: 1200px) {
+    .docs-grid {
+      grid-template-columns: 260px 1fr 220px;
+    }
+  }
+
+  /*
+   * Left product/section sidebar. Sticky scroll. Product groups stack
+   * vertically with a small bold sans group label and a column of links.
+   * The active link picks up Cloudflare orange with a 2px accent rule
+   * on the left edge.
+   */
+  .sidebar {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: var(--ds-space-4);
+    border-right: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) { .sidebar { display: block; } }
+  .sidebar__group { margin-bottom: var(--ds-space-6); }
+  .sidebar__group-label {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .sidebar__link {
+    display: block;
+    padding: 6px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    border-left: 2px solid transparent;
+  }
+  .sidebar__link:hover { color: var(--ds-text-strong); }
+  .sidebar__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+    font-weight: 500;
+  }
+
+  /*
+   * Main content column. Cap at ~78ch so wide code-blocks render
+   * without horizontal scroll. Inline measure character.
+   */
+  .main {
+    min-width: 0;
+    max-width: 78ch;
+  }
+  .breadcrumb {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .breadcrumb__sep { padding: 0 var(--ds-space-2); color: var(--ds-text-muted); }
+  .doc-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .doc-lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  .doc-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .doc-body > * + * { margin-top: var(--ds-space-5); }
+  .doc-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    scroll-margin-top: var(--ds-space-8);
+  }
+  .doc-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .doc-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .doc-body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Tabbed code block. Cloudflare developer docs use a top tab strip
+   * (npm / yarn / pnpm) above a tinted code surface with hairline
+   * border and sm radius. The active tab carries a 2px orange
+   * underline; the strip itself sits on the same surface and shares
+   * the top border.
+   */
+  .codeblock {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface);
+    overflow: hidden;
+  }
+  .codeblock__tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-surface-2);
+  }
+  .codeblock__tab {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .codeblock__tab--active {
+    color: var(--ds-text-strong);
+    border-bottom-color: var(--ds-accent); /* signature Cloudflare orange underline. */
+  }
+  .codeblock pre {
+    margin: 0;
+    padding: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /*
+   * Callout / admonition. Tinted surface, hairline border, orange left
+   * rule signals the "Browser issues?" / "No visible changes?" style
+   * collapsible helper boxes Cloudflare docs use contextually.
+   */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  .callout__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .callout__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Prev/next pagination footer. Two hairline-bordered cards at the
+   * column close with a mono Previous / Next label and a body-sans
+   * title. The Next cell right-aligns its content.
+   */
+  .pagination {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+  }
+  .pagination__cell {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .pagination__cell--next { text-align: right; align-items: flex-end; }
+  .pagination__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .pagination__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Right TOC rail. Sticky in the viewport. Small mono "On this page"
+   * label, vertical list of in-page headings. Current heading picks up
+   * Cloudflare orange with a 2px accent rule on the left edge. Sub-
+   * headings indent one step.
+   */
+  .toc {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-left: var(--ds-space-5);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 1200px) { .toc { display: block; } }
+  .toc__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .toc__link {
+    display: block;
+    padding: 4px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-left: 2px solid transparent;
+    border-radius: var(--ds-radius-xs);
+  }
+  .toc__link:hover { color: var(--ds-text-strong); }
+  .toc__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+  }
+  .toc__link--sub { padding-left: var(--ds-space-5); }
+
+  /* Footer band: full-width, outside the page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a cloudflare-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">docs-search + product-nav-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Sign up Lorem
+      </div>
+    </nav>
+
+    <!-- Section: three-column docs grid. -->
+    <div class="docs-grid">
+
+      <!-- Left product/section sidebar. -->
+      <aside class="sidebar" aria-label="Documentation navigation">
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Workers</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem overview</a></li>
+            <li><a class="sidebar__link sidebar__link--active" href="#">Lorem get started</a></li>
+            <li><a class="sidebar__link" href="#">Lorem CLI quickstart</a></li>
+            <li><a class="sidebar__link" href="#">Lorem dashboard quickstart</a></li>
+            <li><a class="sidebar__link" href="#">Lorem frameworks</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">KV</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem overview</a></li>
+            <li><a class="sidebar__link" href="#">Lorem namespaces</a></li>
+            <li><a class="sidebar__link" href="#">Lorem read/write</a></li>
+            <li><a class="sidebar__link" href="#">Lorem metadata</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">R2</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem buckets</a></li>
+            <li><a class="sidebar__link" href="#">Lorem objects</a></li>
+            <li><a class="sidebar__link" href="#">Lorem signed URLs</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Pages</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem deploy</a></li>
+            <li><a class="sidebar__link" href="#">Lorem functions</a></li>
+            <li><a class="sidebar__link" href="#">Lorem bindings</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main content column. -->
+      <main class="main">
+
+        <!-- Breadcrumb above the title. -->
+        <p class="breadcrumb">
+          <span>Docs</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Workers</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Get started</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem CLI</span>
+        </p>
+
+        <!-- Page title. -->
+        <h1 class="doc-title">Lorem ipsum dolor sit amet workers</h1>
+
+        <!-- Lead paragraph. -->
+        <p class="doc-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+          do eiusmod tempor incididunt ut labore et dolore magna aliqua
+          via the lorem CLI in four short steps.
+        </p>
+
+        <!-- Body with H2/H3, code blocks, callouts. -->
+        <div class="doc-body">
+
+          <h2 id="prerequisites">Prerequisites</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. You
+            need a <a href="#">free lorem account</a> and a recent
+            version of <code>node</code> installed on your machine. Ut
+            enim ad minim veniam, quis nostrud exercitation.
+          </p>
+
+          <h2 id="create">Create your project</h2>
+          <p>
+            Duis aute irure dolor in reprehenderit. Run the
+            <code>lorem create</code> command from your terminal to
+            scaffold a new ipsum project with sensible defaults.
+          </p>
+          <div class="codeblock" role="group" aria-label="Package manager tabs">
+            <div class="codeblock__tabs">
+              <span class="codeblock__tab codeblock__tab--active">npm</span>
+              <span class="codeblock__tab">yarn</span>
+              <span class="codeblock__tab">pnpm</span>
+            </div>
+<pre>npm create lorem@latest my-first-worker
+cd my-first-worker
+npm run dev</pre>
+          </div>
+
+          <h3 id="config">Configure your worker</h3>
+          <p>
+            Excepteur sint occaecat cupidatat non proident. Edit the
+            <code>lorem.jsonc</code> file at the project root to set
+            your worker name and routes.
+          </p>
+
+          <h2 id="deploy">Deploy your worker</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit
+            voluptatem accusantium doloremque laudantium, totam rem
+            aperiam. Once your worker runs locally, deploy it to the
+            global lorem network with a single command.
+          </p>
+          <div class="codeblock" role="group" aria-label="Package manager tabs">
+            <div class="codeblock__tabs">
+              <span class="codeblock__tab codeblock__tab--active">npm</span>
+              <span class="codeblock__tab">yarn</span>
+              <span class="codeblock__tab">pnpm</span>
+            </div>
+<pre>npm run deploy</pre>
+          </div>
+
+          <aside class="callout" aria-label="Troubleshooting note">
+            <p class="callout__title">No visible changes?</p>
+            <p class="callout__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Wait a few seconds for the lorem edge to propagate, then
+              hard-refresh your browser. Add <code>--log-level=debug</code>
+              to surface deployment details.
+            </p>
+          </aside>
+
+          <h2 id="next-steps">Next steps</h2>
+          <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+            odit aut fugit, sed quia consequuntur magni dolores.
+          </p>
+          <ul>
+            <li><a href="#">Lorem bindings</a> dolor sit amet</li>
+            <li><a href="#">Set up ipsum routes</a> consectetur</li>
+            <li><a href="#">Add a lorem KV namespace</a> adipiscing elit</li>
+            <li><a href="#">Explore lorem frameworks</a> tempor</li>
+          </ul>
+
+        </div>
+
+        <!-- Prev/next pagination at the column close. -->
+        <nav class="pagination" aria-label="Pagination">
+          <a class="pagination__cell" href="#">
+            <span class="pagination__label">Previous</span>
+            <span class="pagination__title">Lorem overview</span>
+          </a>
+          <a class="pagination__cell pagination__cell--next" href="#">
+            <span class="pagination__label">Next</span>
+            <span class="pagination__title">Lorem CLI reference</span>
+          </a>
+        </nav>
+      </main>
+
+      <!-- Right TOC rail: in-page headings, current active. -->
+      <aside class="toc" aria-label="On this page">
+        <p class="toc__label">On this page</p>
+        <ul class="toc__list">
+          <li><a class="toc__link" href="#prerequisites">Prerequisites</a></li>
+          <li><a class="toc__link toc__link--active" href="#create">Create your project</a></li>
+          <li><a class="toc__link toc__link--sub" href="#config">Configure your worker</a></li>
+          <li><a class="toc__link" href="#deploy">Deploy your worker</a></li>
+          <li><a class="toc__link" href="#next-steps">Next steps</a></li>
+        </ul>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 200px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

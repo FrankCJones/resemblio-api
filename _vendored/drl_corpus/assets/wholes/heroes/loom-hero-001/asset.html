@@ -1,0 +1,443 @@
+<!--
+  Asset: loom-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, product-shot-hero, display-tight
+  Inspired by: Loom
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (white canvas + near-black ink + saturated accent)
+    - type-pairings/sans-system-modern-001       (Inter family across display + body)
+    - headings/display-tight-001                 (56-72px display-tight H1)
+    - buttons/primary-pill-001                   (Loom purple solid pill, 8px radius)
+  Notes:
+    - Native context: loom.com homepage opening viewport and loom.com/enterprise,
+      both captured via WebFetch 2026-05-20. White canvas, the signature Loom
+      purple-blue (#625DF5) as the only chromatic moment, paired primary
+      ("Get Loom for free") and secondary ("Download now") CTAs, and a
+      product-canvas screenshot below the CTA pair carrying an inline
+      recorder-overlay composite (circular control with a record dot, a
+      live elapsed counter, and waveform glyph).
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the recorder-overlay composite (circular pulse rim,
+      red record dot, waveform path, mono timer) is a Loom-specific moment
+      and lives inline; the gradient halo behind the product canvas uses
+      an inline rgba stop because the geometry has no contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the humanist sans Loom serves on marketing. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White canvas with a soft purple halo behind the product
+   * canvas screenshot — the halo is the only chromatic atmosphere in
+   * the first viewport, and it sits behind the screenshot rather than
+   * behind the headline. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: wordmark left, sparse nav center, sign-in + CTA right.
+   * Hairline rule below separates chrome from canvas. */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: a circle-mark stand-in for Loom's recorder glyph wordmark. */
+  .topbar__mark__glyph {
+    width: 22px; height: 22px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    position: relative;
+  }
+  .topbar__mark__glyph::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: var(--ds-radius-full);
+    background: #FFFFFF;
+  }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 880px so the H1 holds a balanced
+   * two- or three-line shape. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Kicker: small uppercase label. Loom's homepage hero ships without
+   * a kicker; the enterprise page surfaces a small category label. The
+   * asset includes a quiet kicker slot so the pattern is reusable. */
+  .hero__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+
+  /* H1: display-tight signature. 56-72px clamp; text-wrap: balance
+   * holds the headline shape. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-5xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: single sentence at 20px on 1.5 leading, in muted cool gray. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 58ch;
+  }
+
+  /* CTA row: purple primary on the left, hairline-outline secondary on
+   * the right. Loom uses this pair structure on the homepage hero. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    padding: 14px 22px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: purple focus glow; geometry has no contract slot. */
+    box-shadow: 0 0 0 4px rgba(98, 93, 245, 0.25);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface); }
+
+  /* Product canvas: the soft-cornered screenshot sitting below the CTA
+   * pair. A faint cool-paper wash, hairline border, soft elevation
+   * shadow. The recorder-overlay composite is positioned in the
+   * lower-left corner of the canvas. */
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    margin: var(--ds-space-10) auto var(--ds-space-16);
+    padding: 0 var(--ds-space-5);
+  }
+  /* Inline ornament: the purple halo behind the screenshot. A radial
+   * gradient stop with no contract slot for atmospheric geometry. */
+  .canvas-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -80px -40px;
+    background:
+      radial-gradient(60% 50% at 50% 35%, rgba(98, 93, 245, 0.18), rgba(98, 93, 245, 0) 70%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .canvas {
+    position: relative;
+    z-index: 1;
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-lg);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+  /* Inline ornament: a faux product UI inside the canvas — a left
+   * sidebar with stacked rows, a main grid of video thumbnails. */
+  .canvas__inner {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    height: 100%;
+  }
+  .canvas__sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-5) var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .canvas__sidebar__row {
+    height: 12px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+  }
+  .canvas__sidebar__row--accent { background: rgba(98, 93, 245, 0.18); }
+  .canvas__main {
+    padding: var(--ds-space-5);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-4);
+    align-content: start;
+  }
+  .canvas__tile {
+    aspect-ratio: 16 / 10;
+    border-radius: var(--ds-radius-md);
+    background: linear-gradient(135deg, #E6E6F2, #F4F4FA);
+    border: 1px solid var(--ds-hairline);
+    position: relative;
+  }
+  .canvas__tile::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    width: 8px; height: 8px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-success);
+  }
+
+  /* Recorder overlay: a Loom-signature composite. Circular pulse rim,
+   * red record dot, mono elapsed timer, waveform glyph. Anchored to
+   * the lower-left of the canvas. */
+  .recorder {
+    position: absolute;
+    z-index: 2;
+    left: 32px;
+    bottom: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding: 10px 16px 10px 10px;
+    border-radius: var(--ds-radius-full);
+    background: #FFFFFF;
+    border: 1px solid var(--ds-border);
+    box-shadow: var(--ds-shadow-md);
+  }
+  /* Inline ornament: the circular control with a pulsing record dot. */
+  .recorder__control {
+    position: relative;
+    width: 36px; height: 36px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .recorder__control::before {
+    /* Inline: outer pulse rim; subtle purple glow ring. */
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: var(--ds-radius-full);
+    border: 1.5px solid rgba(98, 93, 245, 0.35);
+    animation: pulse 1.8s var(--ds-ease-standard) infinite;
+  }
+  .recorder__control__dot {
+    width: 10px; height: 10px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-error);
+  }
+  .recorder__timer {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .recorder__wave {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 18px;
+  }
+  .recorder__wave span {
+    display: inline-block;
+    width: 3px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+  }
+  .recorder__wave span:nth-child(1) { height: 6px; }
+  .recorder__wave span:nth-child(2) { height: 12px; }
+  .recorder__wave span:nth-child(3) { height: 18px; }
+  .recorder__wave span:nth-child(4) { height: 10px; }
+  .recorder__wave span:nth-child(5) { height: 14px; }
+  .recorder__wave span:nth-child(6) { height: 7px; }
+
+  @keyframes pulse {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    70%  { transform: scale(1.15); opacity: 0;   }
+    100% { transform: scale(1.15); opacity: 0;   }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+    .recorder__control::before { animation: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .canvas__inner { grid-template-columns: 1fr; }
+    .canvas__sidebar { display: none; }
+    .canvas__main { grid-template-columns: repeat(2, 1fr); }
+    .recorder { left: 16px; bottom: 16px; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <span class="topbar__mark__glyph" aria-hidden="true"></span>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">Sed Do</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__kicker">Lorem Ipsum</span>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,
+      ut enim ad minim veniam quis nostrud exercitation ullamco laboris.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit</a>
+    </div>
+  </section>
+
+  <div class="canvas-wrap" aria-label="Lorem product canvas">
+    <div class="canvas">
+      <div class="canvas__inner">
+        <aside class="canvas__sidebar" aria-hidden="true">
+          <span class="canvas__sidebar__row canvas__sidebar__row--accent" style="width: 70%;"></span>
+          <span class="canvas__sidebar__row" style="width: 55%;"></span>
+          <span class="canvas__sidebar__row" style="width: 80%;"></span>
+          <span class="canvas__sidebar__row" style="width: 45%;"></span>
+          <span class="canvas__sidebar__row" style="width: 60%;"></span>
+          <span class="canvas__sidebar__row" style="width: 35%;"></span>
+        </aside>
+        <div class="canvas__main">
+          <div class="canvas__tile"></div>
+          <div class="canvas__tile"></div>
+          <div class="canvas__tile"></div>
+          <div class="canvas__tile"></div>
+          <div class="canvas__tile"></div>
+          <div class="canvas__tile"></div>
+        </div>
+      </div>
+      <div class="recorder" aria-label="Lorem recorder overlay">
+        <span class="recorder__control" aria-hidden="true">
+          <span class="recorder__control__dot"></span>
+        </span>
+        <span class="recorder__timer">00:42</span>
+        <span class="recorder__wave" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

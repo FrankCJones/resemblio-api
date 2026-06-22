@@ -1,0 +1,233 @@
+<!--
+  Asset: anthropic-research-process-001
+  Class: process-steps (whole)
+  Pattern: numbered-section, kicker-with-rule, serif-display-sans-body
+  Inspired by: Anthropic (anthropic.com/research, anthropic.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001            (warm cream palette context)
+    - type-pairings/serif-mono-editorial-001 (serif heads + sans body + mono labels)
+    - kickers/numbered-section-001           (the "01 / 04" step counter)
+    - headings/display-editorial-serif-001   (serif step heading)
+    - body-text/lead-paragraph-001           (description treatment under each step)
+    - dividers/hairline-rule-001             (warm hairline between steps)
+  Notes:
+    - Four numbered research-methodology steps stacked vertically on a warm
+      cream surface. Each row carries a tabular step counter at left, a
+      serif heading, and a sans description; rows are separated by a warm
+      hairline. The pattern reads as a printed methodology page that has
+      been translated to screen without losing its editorial register.
+    - Variable in tokens.css: every color, font, size, spacing, radius.
+    - Inline in this file: the two-column grid template for each step row,
+      the tabular-figures setting on the step counter, the optional brick
+      accent rule above the section kicker.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-research-process-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Anthropic Serif / Tiempos are licensed; Newsreader and Inter carry the
+     same serif-display-sans-body posture for library demonstration. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Section shell. Narrow editorial measure; the warm cream surface
+   * already provides the breathing room a wider grid would need. */
+  .section {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  /* Section header. Short brick rule above the kicker is an inline ornament
+   * borrowed from the page's editorial cues; not a token role. */
+  .section__rule {
+    width: 32px;
+    height: 2px;
+    background: var(--ds-accent);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3) 0;
+    display: block;
+  }
+  .section__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 4.5vw, var(--ds-text-4xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5) 0;
+    max-width: 22ch;
+  }
+  .section__lede {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-10) 0;
+    max-width: 56ch;
+  }
+
+  /* The numbered list. Ordered list with semantic numbering suppressed in
+   * favor of the visible step counter; preserved in the DOM for screen
+   * readers and for the implicit ordinal meaning. */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Step row. Two-column grid: step counter at left, content at right.
+   * Inline ornament: the column widths and the vertical padding are tuned
+   * to make the counter sit visually balanced against the serif heading. */
+  .steps__row {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: var(--ds-space-8);
+    padding: var(--ds-space-10) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Step counter. Mono tabular figures; renders as "01 / 04" to set the
+   * step in its sequence. Anthropic Serif's tabular numeral is the source
+   * register; Söhne Mono is the closest reachable substitute. */
+  .steps__counter {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    /* Tabular figures so "01" through "04" align on the leading digit.
+     * Inline ornament; not a token role - this is a one-off font-feature. */
+    font-variant-numeric: tabular-nums;
+    padding-top: 6px;
+    white-space: nowrap;
+  }
+  .steps__counter::before {
+    content: counter(step, decimal-leading-zero) " / 04";
+  }
+
+  /* Step heading. Serif display at a card-fitting size. */
+  .steps__h3 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 2.5vw, var(--ds-text-2xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4) 0;
+    max-width: 30ch;
+  }
+
+  /* Step body. Sans, generous leading, muted to keep the serif heading
+   * carrying the room. */
+  .steps__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4) 0;
+    max-width: 56ch;
+  }
+
+  /* Step meta. A small tabular-figure metadata row under each step; this
+   * is the editorial-paper register of the page made literal. */
+  .steps__meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Mobile. The counter drops above the content rather than to the side
+   * so the heading keeps its full measure on narrow viewports. */
+  @media (max-width: 640px) {
+    .steps__row {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-3);
+      padding: var(--ds-space-8) 0;
+    }
+    .steps__counter { padding-top: 0; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="process-heading">
+    <div class="section__rule" aria-hidden="true"></div>
+    <span class="section__kicker">Lorem · Methodology</span>
+    <h2 class="section__h2" id="process-heading">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+    <p class="section__lede">Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor sit amet. Curabitur nec libero non nisi convallis fringilla, vivamus sit amet sapien velit.</p>
+
+    <ol class="steps" role="list">
+      <!-- Step 1 -->
+      <li class="steps__row" role="listitem">
+        <div class="steps__counter" aria-hidden="true"></div>
+        <div class="steps__content">
+          <h3 class="steps__h3">Lorem ipsum dolor sit amet consectetur.</h3>
+          <p class="steps__body">Adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor.</p>
+          <span class="steps__meta">Phase 01 · Inquiry</span>
+        </div>
+      </li>
+
+      <!-- Step 2 -->
+      <li class="steps__row" role="listitem">
+        <div class="steps__counter" aria-hidden="true"></div>
+        <div class="steps__content">
+          <h3 class="steps__h3">Ipsum dolor sit amet adipiscing elit nullam.</h3>
+          <p class="steps__body">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit.</p>
+          <span class="steps__meta">Phase 02 · Hypothesis</span>
+        </div>
+      </li>
+
+      <!-- Step 3 -->
+      <li class="steps__row" role="listitem">
+        <div class="steps__counter" aria-hidden="true"></div>
+        <div class="steps__content">
+          <h3 class="steps__h3">Sit amet consectetur adipiscing nullam.</h3>
+          <p class="steps__body">Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor sit amet sapien velit.</p>
+          <span class="steps__meta">Phase 03 · Evaluation</span>
+        </div>
+      </li>
+
+      <!-- Step 4 -->
+      <li class="steps__row" role="listitem">
+        <div class="steps__counter" aria-hidden="true"></div>
+        <div class="steps__content">
+          <h3 class="steps__h3">Consectetur adipiscing elit nullam vivamus.</h3>
+          <p class="steps__body">Aenean fermentum magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor. Curabitur nec libero non nisi convallis fringilla sapien velit.</p>
+          <span class="steps__meta">Phase 04 · Publication</span>
+        </div>
+      </li>
+    </ol>
+  </section>
+</body>
+</html>

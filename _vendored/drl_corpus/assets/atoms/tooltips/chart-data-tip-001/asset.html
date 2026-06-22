@@ -1,0 +1,183 @@
+<!--
+  Asset: chart-data-tip-001
+  Class: tooltips
+  Pattern: property-value-row
+  Inspired by: Plausible
+  Notes:
+    - Dark floating tooltip that appears over a chart point: date header on top, metric rows below with a colored series dot, name, and right-aligned tabular value.
+    - Surface, ink, accent indigo, and the row gap are token-driven; the series dot colors and the dashed crosshair line over the chart are inline because they are chart-specific ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>chart-data-tip-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Plausible ships system sans; system stack and JetBrains Mono fallback in tokens.css. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: #252F3F;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+  .label {
+    color: #6B7280;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  /* Chart stage: a white card with a placeholder SVG line chart and the data tip floating over a point. */
+  .chart {
+    background: #FFFFFF;
+    border: 0.8px solid #E5E7EB;
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-5) var(--ds-space-3);
+    position: relative;
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .chart-title {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: #111827;
+    letter-spacing: var(--ds-tracking-tight);
+    margin-bottom: var(--ds-space-3);
+  }
+  .chart-svg {
+    width: 100%;
+    height: 220px;
+    display: block;
+  }
+  /* inline: dashed crosshair at the hovered x-position; chart-specific ornament */
+  .crosshair {
+    position: absolute;
+    top: 64px;
+    left: 320px;
+    bottom: 38px;
+    width: 1px;
+    background: repeating-linear-gradient(to bottom, rgba(88,80,236,0.4) 0 4px, transparent 4px 8px);
+    pointer-events: none;
+  }
+  /* Data tip floats above the crosshair point */
+  .data-tip {
+    position: absolute;
+    /* inline: anchored to the crosshair point, offset 18px up and translated -50% */
+    top: 36px;
+    left: 320px;
+    transform: translateX(-50%);
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-2xl);
+    padding: var(--ds-space-3);
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    z-index: 2;
+  }
+  .data-tip-date {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .data-tip-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--ds-space-2);
+    align-items: center;
+    font-size: var(--ds-text-xs);
+  }
+  /* inline: series dot color per row, drawn as a 8px circle */
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+  }
+  .dot.teal { background: var(--ds-accent-2); }
+  .data-tip-name {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+  }
+  .data-tip-value {
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    /* inline: tabular numerals so numbers align column-wise */
+    font-variant-numeric: tabular-nums;
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+  }
+  /* Tip arrow pointing down at the chart point */
+  .data-tip::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="label">Lorem chart tip</div>
+
+    <div class="chart">
+      <div class="chart-title">Lorem ipsum visitors</div>
+      <svg class="chart-svg" viewBox="0 0 720 220" preserveAspectRatio="none" aria-hidden="true">
+        <!-- Soft horizontal grid -->
+        <g stroke="#E5E7EB" stroke-width="1">
+          <line x1="0" y1="40" x2="720" y2="40"/>
+          <line x1="0" y1="90" x2="720" y2="90"/>
+          <line x1="0" y1="140" x2="720" y2="140"/>
+          <line x1="0" y1="190" x2="720" y2="190"/>
+        </g>
+        <!-- Series 1 indigo -->
+        <path d="M0 170 L80 150 L160 130 L240 110 L320 70 L400 95 L480 60 L560 80 L640 55 L720 90" fill="none" stroke="#5850EC" stroke-width="2"/>
+        <!-- Series 1 indigo fill -->
+        <path d="M0 170 L80 150 L160 130 L240 110 L320 70 L400 95 L480 60 L560 80 L640 55 L720 90 L720 200 L0 200 Z" fill="rgba(88,80,236,0.10)"/>
+        <!-- Series 2 teal -->
+        <path d="M0 195 L80 185 L160 175 L240 165 L320 150 L400 160 L480 140 L560 150 L640 138 L720 155" fill="none" stroke="#14B8A6" stroke-width="2"/>
+        <!-- highlighted point at x=320 -->
+        <circle cx="320" cy="70" r="4" fill="#5850EC" stroke="#FFFFFF" stroke-width="2"/>
+        <circle cx="320" cy="150" r="4" fill="#14B8A6" stroke="#FFFFFF" stroke-width="2"/>
+      </svg>
+
+      <div class="crosshair"></div>
+
+      <div class="data-tip" role="tooltip">
+        <div class="data-tip-date">Lorem 12, 2026</div>
+        <div class="data-tip-row">
+          <span class="dot"></span>
+          <span class="data-tip-name">Visitors</span>
+          <span class="data-tip-value">12,438</span>
+        </div>
+        <div class="data-tip-row">
+          <span class="dot teal"></span>
+          <span class="data-tip-name">Pageviews</span>
+          <span class="data-tip-value">28,901</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

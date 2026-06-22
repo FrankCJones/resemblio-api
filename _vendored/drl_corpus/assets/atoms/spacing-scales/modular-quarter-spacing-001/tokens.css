@@ -1,0 +1,130 @@
+/*
+ * modular-quarter-spacing-001 tokens
+ *
+ * Modular spacing scale on the perfect-fourth ratio (1.333x), the
+ * "musical quarter" interval. Each step is 1.333x the previous, base
+ * 8px. The ratio is wider than the 1.25x major-third used by
+ * modular-1-25-001, so steps climb faster and the top of the scale
+ * reaches further before saturating.
+ *
+ * Sources inspected via WebFetch 2026-05-19: quantamagazine.org
+ * homepage. WebFetch returned processed HTML; inline CSS and computed
+ * styles were not exposed. The asset captures Quanta's published
+ * editorial-magazine identity (paper-and-ink palette, Tiempos serif
+ * body, GT America sans accent) cross-checked against the prior
+ * Quanta entries in this library (kickers/quanta-section-001,
+ * type-pairings/quanta-science-pair-001) that scored B on the same
+ * inspection path. Spacing values are derived from the 4:3 perfect-
+ * fourth ratio rather than measured directly. Provenance score B
+ * per the documented Quanta extraction ceiling.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper background; Quanta sets articles on white. */
+  --ds-surface:      #FAFAFA;   /* Off-paper for card hover surfaces. */
+  --ds-surface-2:    #F2F2F2;   /* Section dividers and raised cards. */
+  --ds-text:         #1A1A1A;   /* Near-black body and headline color. */
+  --ds-text-muted:   #6B6B6B;   /* Byline, date, supporting metadata. */
+  --ds-text-strong:  #000000;   /* Pure black for emphasis moments. */
+  --ds-border:       #E5E5E5;   /* Card edges and hairline borders. */
+  --ds-hairline:     #EDEDED;   /* The thinnest visible divider. */
+  --ds-accent:       #4A2D7E;   /* Quanta signature deep violet; section kicker color. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet; hover lift on linked kickers. */
+  --ds-success:      #2E8540;   /* Confirmation green. */
+  --ds-warning:      #C77700;   /* Amber for caution. */
+  --ds-error:        #B3261E;   /* Destructive red. */
+  --ds-info:         #4A2D7E;   /* Info reads as the brand accent. */
+  --ds-focus-ring:   #7B4FB7;   /* Visible against paper. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Tiempos Headline", "Charter", Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Charter", Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing (modular perfect-fourth, 1.333x) ----------
+   * Base = 8px. Each step is the previous step times 4:3, rounded
+   * to the nearest pixel. The contract's named slots (0, 1, 2, 3, 4,
+   * 5, 6, 8, 10, 12, 16, 32) hold geometric values, not additive
+   * ones. Where the contract index skips (e.g. 6 -> 8), the spacing
+   * value advances two ratio steps rather than one to keep the
+   * progression continuous.
+   *
+   *  step-1 (half base):  4px
+   *  step-2 (base):       8px
+   *  step-3: 8  * 1.333 = 10.66  -> 11px
+   *  step-4: 11 * 1.333 = 14.66  -> 14px
+   *  step-5: 14 * 1.333 = 18.66  -> 19px
+   *  step-6: 19 * 1.333 = 25.33  -> 25px
+   *  step-8: 25 * 1.333^2 = 44px (two ratio steps to bridge the contract gap)
+   *  step-10: 44 * 1.333^2 = 79px
+   *  step-12: 79 * 1.333^2 = 140px
+   *  step-16: 140 * 1.333^2 = 249px
+   *  step-32: 249 * 1.333^2 = 442px
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  11px;
+  --ds-space-4:  14px;
+  --ds-space-5:  19px;
+  --ds-space-6:  25px;
+  --ds-space-8:  44px;
+  --ds-space-10: 79px;
+  --ds-space-12: 140px;
+  --ds-space-16: 249px;
+  --ds-space-32: 442px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

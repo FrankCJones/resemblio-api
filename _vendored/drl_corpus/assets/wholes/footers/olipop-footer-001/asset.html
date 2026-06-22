@@ -1,0 +1,357 @@
+<!--
+  Asset: olipop-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, primary-pill, electric-accent
+  Inspired by: Olipop
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/candy-bright-001
+    - headings/retro-soda-001
+    - buttons/soft-pill-pink-001
+    - kickers/mono-eyebrow-001
+  Notes:
+    - The footer mechanic is figure-ground inversion: rest of the Olipop
+      site lives on candy-bright peach with the forest-green pill as CTA;
+      the footer flips that, sitting on the same forest green with the
+      cream as the ink. Oversized retro-soda wordmark anchors the band.
+    - Variable: every palette, type, spacing, and chrome value comes from
+      tokens.css. Inline: wordmark dot tint and social-icon stroke
+      geometry are one-off ornamental decisions and carry comments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-footer-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* Footer band. Wide horizontal padding holds the sitemap; vertical
+   * padding sets the candy-bright breathing room. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+  }
+  .footer__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Upper band: oversized wordmark left, newsletter right. */
+  .footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: var(--ds-space-10);
+    align-items: end;
+  }
+  @media (max-width: 880px) {
+    .footer__top { grid-template-columns: 1fr; }
+  }
+
+  /* Oversized wordmark (pattern: headings/retro-soda-001). */
+  .footer__mark {
+    font-family: var(--ds-font-display);
+    font-weight: 800;
+    font-size: var(--ds-text-7xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    margin: 0;
+    display: inline-block;
+  }
+  /* Inline ornament: trailing period tinted yellow as the only second-
+   * color punctuation in the band. */
+  .footer__mark .dot { color: var(--ds-accent-2); }
+
+  /* Newsletter block. Kicker, lede, pill-input paired with Subscribe
+   * pill. Form sits cream-on-green; the input carries a deeper surface. */
+  .nl__kicker {
+    display: block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .nl__lede {
+    margin: 0 0 var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    max-width: 38ch;
+    font-weight: 500;
+  }
+  .nl__form {
+    display: flex;
+    align-items: stretch;
+    gap: var(--ds-space-3);
+    max-width: 460px;
+    background: var(--ds-surface);
+    padding: var(--ds-space-2);
+    border-radius: var(--ds-radius-full);
+    border: 1.5px solid var(--ds-border);
+  }
+  .nl__input {
+    flex: 1;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    padding: var(--ds-space-2) var(--ds-space-4);
+  }
+  .nl__input::placeholder { color: var(--ds-text-muted); opacity: 0.8; }
+  .nl__input:focus { outline: none; }
+  .nl__input:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Subscribe pill (inverted soft-pill-pink-001 pattern). Body surface
+   * has forest-green-on-cream; here it is cream-on-green. The geometric
+   * pattern carries; the inversion is the compositional move. */
+  .nl__cta {
+    appearance: none;
+    cursor: pointer;
+    border: 0;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-full);
+    transition: background-color var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nl__cta:hover { background: var(--ds-accent); color: var(--ds-bg); }
+  .nl__cta:active { transform: translateY(1px); }
+  .nl__cta:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 3px; }
+
+  /* Sitemap: two columns side by side; Olipop runs Help and Company. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ds-space-8);
+  }
+  @media (max-width: 640px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Column kicker (pattern: kickers/mono-eyebrow-001). Olipop sets
+   * column labels in Ano upper-cased with wide tracking. */
+  .footer__col-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  /* Footer link. Peach-muted at rest, lifts to cream on hover. No
+   * underline; the color lift IS the affordance. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-text); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  /* Social row: pill-bordered icon buttons. */
+  .footer__socials {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+  .footer__social {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--ds-text-muted);
+    border-radius: var(--ds-radius-full);
+    color: var(--ds-text);
+    text-decoration: none;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: muted peach ring at rest so the cream wordmark
+     * and pill stay the loudest marks in the band; lifts on hover. */
+  }
+  .footer__social:hover { border-color: var(--ds-text); color: var(--ds-text); }
+  .footer__social:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 3px; }
+
+  /* Hairline splits sitemap and socials from the legal row. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+    opacity: 0.6;
+  }
+
+  /* Legal row. Ano-as-mono register at xs with wider tracking; the
+   * legal line stays in the same voice as the column kickers. */
+  .footer__legal {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, auto);
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (max-width: 640px) {
+    .footer__legal { grid-template-columns: 1fr; }
+  }
+  .footer__legal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+  }
+  .footer__legal-link {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__legal-link:hover { color: var(--ds-text); }
+  .footer__copy {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link, .footer__legal-link, .footer__social, .nl__cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <div class="footer__top">
+        <a class="footer__mark" href="#" aria-label="Lorem ipsum home">lorem<span class="dot">.</span></a>
+
+        <section class="nl" aria-labelledby="nl-heading">
+          <span class="nl__kicker">Lorem dispatch</span>
+          <p id="nl-heading" class="nl__lede">Sign up for lorem ipsum dolor sit amet, plus 15% off your first consectetur.</p>
+          <form class="nl__form" action="#" method="post" novalidate>
+            <input class="nl__input" id="nl-email" name="email" type="email" placeholder="lorem@ipsum.dolor" autocomplete="email" aria-label="Email address" />
+            <button class="nl__cta" type="submit">Subscribe</button>
+          </form>
+        </section>
+      </div>
+
+      <div class="footer__grid">
+        <nav aria-label="Lorem help">
+          <p class="footer__col-kicker">Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Lorem ipsum</a></li>
+            <li><a class="footer__link" href="#">Dolor sit</a></li>
+            <li><a class="footer__link" href="#">Amet consectetur</a></li>
+            <li><a class="footer__link" href="#">Adipiscing elit</a></li>
+            <li><a class="footer__link" href="#">Sed do eiusmod</a></li>
+            <li><a class="footer__link" href="#">Tempor incididunt</a></li>
+            <li><a class="footer__link" href="#">Ut labore</a></li>
+            <li><a class="footer__link" href="#">Et dolore</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Ipsum company">
+          <p class="footer__col-kicker">Ipsum</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Magna aliqua</a></li>
+            <li><a class="footer__link" href="#">Ut enim ad</a></li>
+            <li><a class="footer__link" href="#">Minim veniam</a></li>
+            <li><a class="footer__link" href="#">Quis nostrud</a></li>
+            <li><a class="footer__link" href="#">Exercitation</a></li>
+            <li><a class="footer__link" href="#">Ullamco laboris</a></li>
+            <li><a class="footer__link" href="#">Aliquip ex</a></li>
+            <li><a class="footer__link" href="#">Ea commodo</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <ul class="footer__socials" aria-label="Lorem ipsum social links">
+        <li><a class="footer__social" href="#" aria-label="Lorem one">LO</a></li>
+        <li><a class="footer__social" href="#" aria-label="Lorem two">IP</a></li>
+        <li><a class="footer__social" href="#" aria-label="Lorem three">SU</a></li>
+        <li><a class="footer__social" href="#" aria-label="Lorem four">DO</a></li>
+        <li><a class="footer__social" href="#" aria-label="Lorem five">LR</a></li>
+        <li><a class="footer__social" href="#" aria-label="Lorem six">ST</a></li>
+      </ul>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__legal">
+        <ul class="footer__legal-list">
+          <li><a class="footer__legal-link" href="#">Terms of service</a></li>
+          <li><a class="footer__legal-link" href="#">Privacy policy</a></li>
+          <li><a class="footer__legal-link" href="#">Do not sell my information</a></li>
+          <li><a class="footer__legal-link" href="#">Accessibility</a></li>
+        </ul>
+        <p class="footer__copy">(c) 2026 Lorem Ipsum, Inc. All rights reserved.</p>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

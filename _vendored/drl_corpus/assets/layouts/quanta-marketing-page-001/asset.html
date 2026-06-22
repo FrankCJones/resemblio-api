@@ -1,0 +1,749 @@
+<!--
+  Asset: quanta-marketing-page-001
+  Class: layouts
+  Pattern: editorial-hero, mega-menu, story-card-grid, paper-and-ink, serif-display-sans-body
+  Inspired by: Quanta Magazine (quantamagazine.org)
+  Notes:
+    - Editorial homepage skeleton: top nav with mega-menu (topic links
+      Physics, Mathematics, Biology, Computer Science plus secondary
+      menus); featured-article hero (illustration left, lowercase sans
+      kicker, serif title, byline); four-up topic tile grid grouped by
+      topic kicker; podcast feature with audio player; secondary tile
+      row; most-read sidebar paired with featured-videos grid;
+      multimedia explainer; about block; newsletter band; multi-column
+      footer with foundation attribution. Container 1200px max; tiles
+      take paper-white surface; deep violet (#4A2D7E) appears only on
+      kickers, inline links, and the newsletter CTA.
+    - Variable: section sequence, tile counts, container width, type
+      scale per slot. Inline: hero illustration aspect (16:10),
+      podcast audio-player chrome, most-read ranked-list rule weight.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos Headline / Tiempos Text and GT America are the
+  Quanta licensed faces. They are not loaded in the asset; the fallback
+  chains in tokens.css (Source Serif 4, Inter) carry the editorial
+  register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* Page container. Editorial sites cap narrower than dev-tool sites;
+   * 1200px gives the hero illustration room without stretching the
+   * tile grid past comfortable reading. Inline value. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* ---------- Top nav ---------- */
+  .nav {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav__primary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    padding-block: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__topics {
+    display: none;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .nav__topics { display: inline-flex; }
+  }
+  .nav__topic {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .nav__search {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  /* Mega-menu secondary band. Hairline above and below, mixed link
+   * cluster of secondary sections. */
+  .nav__mega {
+    border-top: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    justify-content: center;
+  }
+  .nav__mega-link {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* ---------- Section rhythm ---------- */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-top: 1px solid var(--ds-hairline); }
+
+  /* Lowercase sans kicker. The Quanta inversion of uppercase mono
+   * convention: lowercase humanist sans on positive tracking, deep
+   * violet ink. */
+  .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* ---------- Hero (featured article) ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 900px) {
+    .hero { grid-template-columns: 1.2fr 1fr; align-items: center; gap: var(--ds-space-10); }
+  }
+  /* Hero illustration well. Tile-shaped surface; 16:10 aspect is the
+   * Quanta editorial illustration default. Inline value. */
+  .hero__illustration {
+    background: linear-gradient(135deg, #E8E2F0 0%, #D6CBE6 100%);
+    aspect-ratio: 16 / 10;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  @media (min-width: 900px) {
+    .hero__title { font-size: var(--ds-text-4xl); }
+  }
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* ---------- Story-card tile grid ---------- */
+  .tile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .tile-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .tile-grid { grid-template-columns: repeat(4, 1fr); } }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .tile__thumb {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(135deg, #EDEAF5 0%, #DBD2EA 100%);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+  }
+  .tile__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tile__byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* ---------- Section heading register ---------- */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* ---------- Podcast feature ---------- */
+  .podcast {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .podcast { grid-template-columns: 1fr 1.5fr; gap: var(--ds-space-8); align-items: center; }
+  }
+  .podcast__art {
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #4A2D7E 0%, #2B1A4E 100%);
+    border-radius: var(--ds-radius-sm);
+  }
+  .podcast__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  /* Audio player chrome. Hairline-bordered row with mono timestamp and
+   * a circular play affordance. Inline composition. */
+  .audio-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-3);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-bg);
+  }
+  .audio-row__play {
+    width: 32px; height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .audio-row__time {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .audio-row__bar {
+    flex: 1;
+    height: 2px;
+    background: var(--ds-hairline);
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* ---------- Most-read sidebar + videos grid ---------- */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+  }
+  @media (min-width: 1024px) {
+    .two-col { grid-template-columns: 1fr 2fr; gap: var(--ds-space-12); align-items: start; }
+  }
+  .most-read {
+    border-top: 2px solid var(--ds-text-strong);
+    padding-top: var(--ds-space-5);
+  }
+  .most-read__heading {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .most-read__item {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: var(--ds-space-4);
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .most-read__thumb {
+    aspect-ratio: 1 / 1;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-xs);
+  }
+  .most-read__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .video-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .video-grid { grid-template-columns: repeat(2, 1fr); } }
+  .video-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .video-card__thumb {
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, #2B1A4E 0%, #4A2D7E 100%);
+    border-radius: var(--ds-radius-sm);
+    position: relative;
+  }
+  .video-card__duration {
+    position: absolute;
+    bottom: var(--ds-space-2);
+    right: var(--ds-space-2);
+    background: rgba(0,0,0,0.8);
+    color: #FFFFFF;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* ---------- About block ---------- */
+  .about {
+    text-align: center;
+    max-width: 56ch;
+    margin: 0 auto;
+  }
+  .about__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Newsletter band ---------- */
+  .newsletter {
+    background: var(--ds-surface);
+    border-block: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-12);
+    text-align: center;
+  }
+  .newsletter__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-3);
+    max-width: 32ch;
+    line-height: var(--ds-leading-snug);
+  }
+  .newsletter__sub {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 48ch;
+  }
+  .newsletter__form {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+  .newsletter__input {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    min-width: 280px;
+  }
+  .newsletter__cta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+  }
+
+  /* ---------- Footer ---------- */
+  .footer-band {
+    background: var(--ds-bg);
+    border-top: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-10);
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .footer-cols { grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-8); }
+  }
+  .footer-col h4 {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; }
+  .footer-col li {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    padding-block: var(--ds-space-1);
+  }
+  .footer-legal {
+    margin-top: var(--ds-space-8);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-align: center;
+  }
+
+  /* Slot placeholder (stand-in for a downstream Quanta whole). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top nav with mega-menu. Two-band header. -->
+  <header class="nav" aria-label="Primary">
+    <div class="page">
+      <div class="nav__primary">
+        <span class="nav__wordmark">Lorem Ipsum</span>
+        <nav class="nav__topics" aria-label="Topics">
+          <a href="#" class="nav__topic">physics</a>
+          <a href="#" class="nav__topic">mathematics</a>
+          <a href="#" class="nav__topic">biology</a>
+          <a href="#" class="nav__topic">computer science</a>
+        </nav>
+        <span class="nav__search">Search</span>
+      </div>
+    </div>
+    <div class="nav__mega" role="navigation" aria-label="Sections">
+      <a href="#" class="nav__mega-link">topics</a>
+      <a href="#" class="nav__mega-link">archive</a>
+      <a href="#" class="nav__mega-link">blog</a>
+      <a href="#" class="nav__mega-link">columns</a>
+      <a href="#" class="nav__mega-link">interviews</a>
+      <a href="#" class="nav__mega-link">podcasts</a>
+      <a href="#" class="nav__mega-link">puzzles</a>
+      <a href="#" class="nav__mega-link">multimedia</a>
+      <a href="#" class="nav__mega-link">videos</a>
+      <a href="#" class="nav__mega-link">about</a>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- Section: featured-article hero. Illustration + lowercase
+         kicker + serif title + dek + byline. -->
+    <article class="hero" aria-label="Featured article">
+      <div class="hero__illustration" role="img" aria-label="Lorem ipsum illustration"></div>
+      <div>
+        <span class="kicker">qualia</span>
+        <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+        <p class="hero__dek">
+          Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </p>
+        <span class="byline">By Lorem Ipsum</span>
+      </div>
+    </article>
+
+    <!-- Section: four-up topic tile grid. One tile per topic kicker:
+         astronomy, physiology, cryptography, qualia. The lowercase
+         kicker is the topic tag; the serif title carries the story. -->
+    <section class="section section--ruled" aria-label="Latest articles">
+      <div class="tile-grid" role="list">
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Lorem ipsum thumb"></div>
+          <span class="kicker">astronomy</span>
+          <h3 class="tile__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h3>
+          <span class="tile__byline">By Lorem Ipsum</span>
+        </article>
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Dolor sit thumb"></div>
+          <span class="kicker">physiology</span>
+          <h3 class="tile__title">Dolor sit amet consectetur adipiscing elit sed do.</h3>
+          <span class="tile__byline">By Dolor Sit</span>
+        </article>
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Consectetur thumb"></div>
+          <span class="kicker">cryptography</span>
+          <h3 class="tile__title">Consectetur adipiscing elit sed do eiusmod tempor.</h3>
+          <span class="tile__byline">By Consectetur Adipiscing</span>
+        </article>
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Eiusmod thumb"></div>
+          <span class="kicker">qualia</span>
+          <h3 class="tile__title">Eiusmod tempor incididunt ut labore et dolore magna.</h3>
+          <span class="tile__byline">By Eiusmod Tempor</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: podcast feature with audio player. -->
+    <section class="section section--ruled" aria-label="Podcast feature">
+      <span class="kicker">materials science</span>
+      <h2 class="section-heading">The Quanta Podcast</h2>
+      <div class="podcast">
+        <div class="podcast__art" role="img" aria-label="Podcast art"></div>
+        <div>
+          <h3 class="podcast__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h3>
+          <p style="margin: 0 0 var(--ds-space-5); color: var(--ds-text-muted); font-size: var(--ds-text-sm);">
+            By Lorem Ipsum · 24:34
+          </p>
+          <div class="audio-row">
+            <span class="audio-row__play" aria-label="Play">&#9658;</span>
+            <span class="audio-row__time">00:00</span>
+            <span class="audio-row__bar"></span>
+            <span class="audio-row__time">24:34</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: secondary tile row (continued grid). Topic kickers
+         atmospheric-science, biophysics, image-gallery. -->
+    <section class="section section--ruled" aria-label="More articles">
+      <div class="tile-grid" role="list">
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Lorem thumb"></div>
+          <span class="kicker">mathematics</span>
+          <h3 class="tile__title">Lorem ipsum dolor sit amet consectetur.</h3>
+          <span class="tile__byline">By Lorem Ipsum</span>
+        </article>
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Dolor thumb"></div>
+          <span class="kicker">atmospheric science</span>
+          <h3 class="tile__title">Dolor sit amet adipiscing elit sed do eiusmod.</h3>
+          <span class="tile__byline">By Dolor Sit</span>
+        </article>
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Sit thumb"></div>
+          <span class="kicker">biophysics</span>
+          <h3 class="tile__title">Sit amet consectetur adipiscing elit tempor.</h3>
+          <span class="tile__byline">By Sit Amet</span>
+        </article>
+        <article class="tile" role="listitem">
+          <div class="tile__thumb" role="img" aria-label="Amet thumb"></div>
+          <span class="kicker">image gallery</span>
+          <h3 class="tile__title">Amet consectetur adipiscing elit sed do tempor.</h3>
+          <span class="tile__byline">By Amet Consectetur</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: most-read sidebar + featured-videos grid. -->
+    <section class="section section--ruled" aria-label="Most read and videos">
+      <div class="two-col">
+        <aside class="most-read" aria-label="Most read this week">
+          <h3 class="most-read__heading">Most Read · Past Week</h3>
+          <div class="most-read__item">
+            <div class="most-read__thumb" role="img" aria-label=""></div>
+            <h4 class="most-read__title">Lorem ipsum dolor sit amet consectetur.</h4>
+          </div>
+          <div class="most-read__item">
+            <div class="most-read__thumb" role="img" aria-label=""></div>
+            <h4 class="most-read__title">Dolor sit amet adipiscing elit sed do.</h4>
+          </div>
+          <div class="most-read__item">
+            <div class="most-read__thumb" role="img" aria-label=""></div>
+            <h4 class="most-read__title">Sit amet consectetur adipiscing tempor.</h4>
+          </div>
+          <div class="most-read__item">
+            <div class="most-read__thumb" role="img" aria-label=""></div>
+            <h4 class="most-read__title">Amet consectetur adipiscing labore magna.</h4>
+          </div>
+        </aside>
+        <div>
+          <span class="kicker">featured videos</span>
+          <h3 class="section-heading">Lorem ipsum dolor sit amet</h3>
+          <div class="video-grid" role="list">
+            <article class="video-card" role="listitem">
+              <div class="video-card__thumb"><span class="video-card__duration">15:55</span></div>
+              <span class="kicker">biology</span>
+              <h4 class="tile__title">Biggest Lorem in Biology</h4>
+            </article>
+            <article class="video-card" role="listitem">
+              <div class="video-card__thumb"><span class="video-card__duration">14:02</span></div>
+              <span class="kicker">computer science</span>
+              <h4 class="tile__title">Biggest Lorem in Computer Science</h4>
+            </article>
+            <article class="video-card" role="listitem">
+              <div class="video-card__thumb"><span class="video-card__duration">19:39</span></div>
+              <span class="kicker">mathematics</span>
+              <h4 class="tile__title">Biggest Lorem in Mathematics</h4>
+            </article>
+            <article class="video-card" role="listitem">
+              <div class="video-card__thumb"><span class="video-card__duration">15:45</span></div>
+              <span class="kicker">physics</span>
+              <h4 class="tile__title">Biggest Lorem in Physics</h4>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: multimedia explainer. Single feature row. -->
+    <section class="section section--ruled" aria-label="Multimedia explainer">
+      <span class="kicker">explainers</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet?</h2>
+      <div class="hero">
+        <div class="hero__illustration" role="img" aria-label="Explainer illustration"></div>
+        <div>
+          <p class="hero__dek">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <span class="byline">By Lorem Ipsum + Dolor Sit</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: about block. Mission statement, narrow column. -->
+    <section class="section section--ruled" aria-label="About">
+      <div class="about">
+        <span class="kicker" style="text-align: center;">about</span>
+        <p class="about__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+          do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco.
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Section: newsletter band. Full-bleed, surface-fill, single
+       violet CTA. Stands in for a Quanta-tagged newsletter-band whole. -->
+  <section class="newsletter" aria-label="Newsletter">
+    <h2 class="newsletter__heading">Lorem Ipsum Dolor Sit Amet</h2>
+    <p class="newsletter__sub">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+      eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </p>
+    <form class="newsletter__form" onsubmit="return false;">
+      <input class="newsletter__input" type="email" placeholder="lorem@ipsum.dolor" aria-label="Email"/>
+      <button class="newsletter__cta" type="submit">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- Footer: multi-column with foundation attribution legal strip. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Sections</h4>
+          <ul>
+            <li>Physics</li>
+            <li>Mathematics</li>
+            <li>Biology</li>
+            <li>Computer Science</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Quanta</h4>
+          <ul>
+            <li>About</li>
+            <li>Archive</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Policies</h4>
+          <ul>
+            <li>Terms &amp; Conditions</li>
+            <li>Privacy Policy</li>
+            <li>AI Editorial Policy</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Follow</h4>
+          <ul>
+            <li>Facebook</li>
+            <li>YouTube</li>
+            <li>Instagram</li>
+            <li>Bluesky</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-legal">
+        Lorem ipsum dolor sit amet &copy; 2026. An editorially independent
+        publication supported by the Lorem Foundation.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

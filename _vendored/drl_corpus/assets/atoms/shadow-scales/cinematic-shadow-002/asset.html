@@ -1,0 +1,163 @@
+<!--
+  Asset: cinematic-shadow-002
+  Class: shadow-scales
+  Pattern: (none - scales and motion primitives are visualizations, not patterns)
+  Inspired by: A24 Films (a24films.com)
+  Notes:
+    - Shadow scale for the cinema-black register: dense black casts on a near-black field, no halo.
+    - The 5 contract shadow steps are variable; demo composition (grid, swatch sizes) is inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cinematic-shadow-002 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter as a humanist-sans stand-in for GT America / Söhne; the label
+     register only needs a clean sans for the demo. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  /* Asset-specific rules only; no global reset beyond what the demo needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Top kicker; mirrors the A24 mono-label register used on credits and dates. */
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    margin: 0;
+    color: var(--ds-text);
+  }
+
+  .lede {
+    /* Lorem ipsum lede; max-width keeps the column at editorial measure. */
+    max-width: 56ch;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Grid of swatch cells. auto-fill keeps the demo flexible across widths. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--ds-space-10);
+    /* Top padding on grid creates the room each shadow needs to cast. */
+    padding-top: var(--ds-space-6);
+  }
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+
+  /* The swatch reads as a film-still tile, not a UI card: square-ish,
+     warm-tinted surface, near-sharp corners. Sized to give the larger
+     shadow steps room to breathe without overflow. */
+  .swatch {
+    width: 120px;
+    height: 160px;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-sm);
+  }
+
+  .cell__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  .cell__value {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-text-muted);
+    opacity: 0.65;
+    text-align: center;
+    max-width: 16ch;
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Footer note; honest provenance trace inside the rendered demo. */
+  .note {
+    margin-top: var(--ds-space-8);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+  }
+</style>
+</head>
+<body>
+  <div class="kicker">cinematic-shadow-002 / shadow-scales</div>
+  <h1 class="title">Lorem ipsum dolor sit amet</h1>
+  <p class="lede">
+    Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  </p>
+
+  <div class="grid" role="list" aria-label="shadow scale steps">
+    <div class="cell" role="listitem">
+      <div class="swatch" style="box-shadow: var(--ds-shadow-xs);"></div>
+      <div class="cell__label">xs</div>
+      <div class="cell__value">hairline ring; black at low alpha</div>
+    </div>
+    <div class="cell" role="listitem">
+      <div class="swatch" style="box-shadow: var(--ds-shadow-sm);"></div>
+      <div class="cell__label">sm</div>
+      <div class="cell__value">tight cast; film-still rest</div>
+    </div>
+    <div class="cell" role="listitem">
+      <div class="swatch" style="box-shadow: var(--ds-shadow-md);"></div>
+      <div class="cell__label">md</div>
+      <div class="cell__value">deepest normal step</div>
+    </div>
+    <div class="cell" role="listitem">
+      <div class="swatch" style="box-shadow: var(--ds-shadow-lg);"></div>
+      <div class="cell__label">lg</div>
+      <div class="cell__value">reserved; theatrical lift</div>
+    </div>
+    <div class="cell" role="listitem">
+      <div class="swatch" style="box-shadow: var(--ds-shadow-2xl);"></div>
+      <div class="cell__label">2xl</div>
+      <div class="cell__value">modal-over-grid; rare</div>
+    </div>
+  </div>
+
+  <p class="note">
+    Source: A24 Films (a24films.com). Chrome MCP refused the domain; WebFetch
+    returned summarized HTML without computed styles. Shadow values reflect
+    the observed character of A24 marketing surfaces (image-led, near-flat,
+    no UI elevation) rather than extracted px values. Score B.
+  </p>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!--
+  Asset: cosmos-masonry-grid-001
+  Class: feature-grids (whole)
+  Pattern: bento-grid (loose), asymmetric-grid, no-imagery (chrome)
+  Inspired by: Cosmos (cosmos.so)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/curated-museum-neutral-001  (the paper-warm + true-ink palette)
+    - type-pairings/sans-system-modern-001     (humanist sans across the surface)
+    - cards/soft-elevation-001                 (the rounded-tile cell with faint lift on hover)
+    - headings/display-tight-001               (the section headline register)
+  Notes:
+    - The grid uses CSS multi-column layout for true masonry behavior:
+      portrait, landscape, and square thumbnails settle into vertical
+      columns of varying height without any per-cell row-span logic.
+      This matches the observed cosmos.so behavior where every image
+      keeps its native aspect ratio.
+    - Variable: every color, type family, spacing step, radius, shadow,
+      motion curve. Inline ornament: the four gradient stand-in
+      "thumbnails" (the asset has no external image dependency), the
+      cell hover lift, and the small caption block under each tile -
+      character specific to a curated-imagery wall.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cosmos-masonry-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the humanist sans curated-platform brands
+     typically license (Söhne, GT America, ABC Diatype). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .section {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* Header band: a compact section title and one line of helper text.
+   * The brand carries through the type system; no kicker, no rule. */
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-8);
+    max-width: 64ch;
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-5xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .section__sub {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Filter row: plain-text nav links, no pill chrome. Spacing carries
+   * the rhythm; the active link gets a weight bump, not a hue. */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    margin-bottom: var(--ds-space-6);
+    padding-bottom: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .filters a {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .filters a[aria-current="page"] {
+    color: var(--ds-text-strong);
+    font-weight: 600;
+  }
+  .filters a:hover { color: var(--ds-text); }
+  .filters a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* The masonry. CSS multi-column gives true masonry without grid-row
+   * span math. break-inside: avoid on each tile keeps cells whole as
+   * the browser flows them. column-count steps down on narrower
+   * viewports. */
+  .masonry {
+    column-count: 4;
+    column-gap: var(--ds-space-5);
+  }
+  @media (max-width: 1100px) { .masonry { column-count: 3; } }
+  @media (max-width: 760px)  { .masonry { column-count: 2; } }
+  @media (max-width: 480px)  { .masonry { column-count: 1; } }
+
+  .tile {
+    break-inside: avoid;
+    display: block;
+    margin: 0 0 var(--ds-space-5) 0;
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform var(--ds-duration-normal) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* The thumbnail. Native aspect ratio is the entire point; tiles use
+   * the .tile__media--<ratio> modifier to set the height. In a real
+   * implementation, an <img> with width/height attrs would do this
+   * for free. */
+  .tile__media {
+    display: block;
+    border-top-left-radius: var(--ds-radius-lg);
+    border-top-right-radius: var(--ds-radius-lg);
+    /* Inline ornament: soft gradient stand-in. No external image
+     * dependency; the demonstration is the container shape, not the
+     * imagery itself. */
+    background: linear-gradient(135deg, #CFC8B9 0%, #9E957F 100%);
+  }
+  .tile__media--portrait-tall { aspect-ratio: 3 / 5; background: linear-gradient(160deg, #B6AC95 0%, #6E6553 100%); }
+  .tile__media--portrait      { aspect-ratio: 3 / 4; background: linear-gradient(135deg, #D9D2C2 0%, #A29985 100%); }
+  .tile__media--square        { aspect-ratio: 1 / 1; background: linear-gradient(135deg, #C1BAA9 0%, #837C6B 100%); }
+  .tile__media--landscape     { aspect-ratio: 4 / 3; background: linear-gradient(135deg, #E0DAC9 0%, #B0A78F 100%); }
+  .tile__media--wide          { aspect-ratio: 5 / 3; background: linear-gradient(135deg, #C6BFA9 0%, #7C7561 100%); }
+
+  /* Caption block: tile metadata sits flush under the thumbnail. Title
+   * is body-weight; meta is muted. The cell carries one line of each.
+   * No "save" button at rest; the affordance appears on hover in a
+   * production implementation. */
+  .tile__caption {
+    padding: var(--ds-space-3) var(--ds-space-3) var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .tile__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    margin: 0;
+    line-height: var(--ds-leading-snug);
+  }
+  .tile__meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile, .filters a { transition: none; }
+    .tile:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="grid-title">
+    <header class="section__head">
+      <h2 class="section__title" id="grid-title">Lorem ipsum dolor sit amet consectetur</h2>
+      <p class="section__sub">Adipiscing elit nullam vitae quam at eros pellentesque. Suspendisse magna purus consequat nec velit.</p>
+    </header>
+
+    <nav class="filters" aria-label="Filter">
+      <a href="#" aria-current="page">Lorem</a>
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor sit</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+      <a href="#">Elit nullam</a>
+      <a href="#">Vitae quam</a>
+      <a href="#">Eros pellentesque</a>
+    </nav>
+
+    <div class="masonry" role="list">
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait-tall" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Lorem ipsum dolor sit amet</p>
+          <p class="tile__meta">Sit amet · 1024 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--square" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Consectetur adipiscing</p>
+          <p class="tile__meta">Adipiscing · 884 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Suspendisse magna purus</p>
+          <p class="tile__meta">Magna · 712 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--landscape" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Vitae quam at eros</p>
+          <p class="tile__meta">Eros · 543 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Pellentesque consequat</p>
+          <p class="tile__meta">Consequat · 992 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--wide" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Nec velit dignissim</p>
+          <p class="tile__meta">Dignissim · 421 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait-tall" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Aliquam erat volutpat</p>
+          <p class="tile__meta">Volutpat · 1318 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--square" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Curabitur lacinia nulla</p>
+          <p class="tile__meta">Lacinia · 627 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Donec eu massa nec</p>
+          <p class="tile__meta">Massa · 803 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--landscape" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Praesent finibus odio</p>
+          <p class="tile__meta">Finibus · 215 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait-tall" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Sed posuere tellus</p>
+          <p class="tile__meta">Posuere · 1107 saved</p>
+        </div>
+      </a>
+      <a class="tile" role="listitem" href="#">
+        <span class="tile__media tile__media--portrait" aria-hidden="true"></span>
+        <div class="tile__caption">
+          <p class="tile__title">Etiam in faucibus turpis</p>
+          <p class="tile__meta">Faucibus · 458 saved</p>
+        </div>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

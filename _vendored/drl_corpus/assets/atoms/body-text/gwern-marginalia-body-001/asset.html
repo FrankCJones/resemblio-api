@@ -1,0 +1,162 @@
+<!--
+  Asset: gwern-marginalia-body-001
+  Class: body-text
+  Pattern: marginalia
+  Inspired by: Gwern (gwern.net)
+  Notes:
+    - Gwern's marginalia treatment uses position-anchored italic side-notes flush-right
+      of the main column, hidden below 1497px and collapsed into an inline notes block
+      on narrow screens. The asset captures both states.
+    - Type tokens reconstruct the Gwern source: pure ink #000 on paper #fff, serif body
+      with IBM Plex Mono accents, 20px desktop body. Marginalia drops to 0.85 of body.
+    - The reading column is 720px to keep the wide layout sane without a custom font;
+      Gwern uses a slightly wider column with Source Serif 4 Text Basic.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>gwern-marginalia-body-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Gwern ships self-hosted Source Serif 4 Text Basic. Source Serif 4 from Google
+     Fonts is the open analog; Source Sans 3 plus IBM Plex Mono complete the stack. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-8) var(--ds-space-4);
+  }
+  /* The reading column. Marginalia anchors off it on wide viewports.            */
+  .column {
+    max-width: var(--ds-column-width);
+    margin: 0 auto;
+    position: relative;
+  }
+  h1 {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-tight);
+    margin: 0 0 var(--ds-space-4) 0;
+    letter-spacing: -0.01em;
+  }
+  p {
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  /* Lead paragraph uses small-caps on the opening line - Gwern's `.intro-graf`. */
+  p.intro-graf::first-line {
+    font-variant-caps: small-caps;
+    letter-spacing: 0.02em;
+  }
+
+  /* Marginalia: italic serif, right-anchored, hidden when the column is narrow. */
+  .has-margin-note { position: relative; }
+  .marginnote {
+    font-style: italic;
+    font-family: var(--ds-font-body);
+    color: var(--ds-text);
+    font-size: calc(var(--ds-text-base) * 0.85);
+    line-height: var(--ds-leading-snug);
+    opacity: 0.85;
+    text-align: left;
+  }
+  /* Wide-viewport sidenote rail (gwern shows above 1497px in source; we lower
+     the breakpoint here so the demo can show the pattern in this iframe). */
+  @media (min-width: 880px) {
+    .marginnote.sidenote {
+      position: absolute;
+      left: calc(100% + var(--ds-space-6));
+      top: 0;
+      width: calc((100vw - var(--ds-column-width)) / 2 - var(--ds-space-12));
+      max-width: 260px;
+      padding-top: var(--ds-space-1);
+      display: block;
+    }
+    .margin-notes-block { display: none; }
+  }
+  /* Narrow viewport: marginalia collapses into an inline notes block, with
+     bullets between entries. Mirrors gwern's `.margin-notes-block` pattern. */
+  @media (max-width: 879px) {
+    .marginnote.sidenote { display: none; }
+    .margin-notes-block {
+      text-align: center;
+      hyphens: none;
+      font-size: calc(var(--ds-text-base) * 0.85);
+      color: var(--ds-text);
+      opacity: 0.85;
+      font-style: italic;
+      margin: var(--ds-space-3) 0 var(--ds-space-6) 0;
+      padding-top: var(--ds-space-3);
+      border-top: 1px solid var(--ds-hairline);
+    }
+    .margin-notes-block .marginnote:not(:last-child)::after {
+      content: "•";
+      margin: 0 0.75em;
+      opacity: 0.5;
+    }
+  }
+
+  /* Inline reference glyph — small uppercase superscript pointer to a sidenote. */
+  .note-ref {
+    font-family: var(--ds-font-mono);
+    font-size: 0.72em;
+    vertical-align: super;
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: 0 0.15em;
+  }
+  .note-ref:hover { color: var(--ds-accent); }
+</style>
+</head>
+<body>
+  <article class="column">
+    <h1>Notes toward a longer essay.</h1>
+
+    <p class="intro-graf">Lorem ipsum dolor sit amet, consectetur adipiscing
+      elit. Sed do eiusmod tempor incididunt ut labore et dolore magna
+      aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+      laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+    <p class="has-margin-note">Duis aute irure dolor in reprehenderit in
+      voluptate velit esse cillum dolore eu fugiat nulla pariatur.<a class="note-ref" href="#n1">1</a>
+      Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+      officia deserunt mollit anim id est laborum.
+      <span class="marginnote sidenote" id="n1">A side-note pinned in the
+        margin. Italic serif, slightly muted, anchored to the paragraph it
+        annotates. Falls back to an inline list on narrow viewports.</span></p>
+
+    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+      accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+      quae ab illo inventore veritatis et quasi architecto beatae vitae
+      dicta sunt explicabo.</p>
+
+    <p class="has-margin-note">Nemo enim ipsam voluptatem quia voluptas
+      sit aspernatur aut odit aut fugit,<a class="note-ref" href="#n2">2</a>
+      sed quia consequuntur magni dolores eos qui ratione voluptatem
+      sequi nesciunt.
+      <span class="marginnote sidenote" id="n2">Second note: the rail
+        holds multiple side-notes that stack down the page, each anchored
+        to the paragraph that called it.</span></p>
+
+    <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+      consectetur, adipisci velit, sed quia non numquam eius modi tempora
+      incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+
+    <!-- Narrow-viewport collapse: the same notes appear here inline. -->
+    <div class="margin-notes-block" aria-label="Margin notes (collapsed view)">
+      <span class="marginnote">Italic serif side-notes pinned to the page margin.</span>
+      <span class="marginnote">Falls back to an inline list when the column is narrow.</span>
+    </div>
+  </article>
+</body>
+</html>

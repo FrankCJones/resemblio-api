@@ -1,0 +1,332 @@
+<!--
+  Asset: a24-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, serif-display-sans-body, mono-eyebrow, pull-quote-breakout
+  Inspired by: A24 (/notes essays; weeping-bleeding-hearts and baby-blues posts)
+  Notes:
+    - Mechanic: editorial-cinema reading register on a paper-cream canvas. A
+      title-card serif H1 carries the moment; humanist sans does the body;
+      mono kicker holds the category label or date stamp. No chromatic accent.
+      Hairlines and whitespace do every structural break.
+    - Variable: paper-cream bg, warm near-black ink, two-family system
+      (serif title-card + sans body), mono kicker, 18px body at 1.65 leading,
+      60px serif H1, 680px narrow measure.
+    - Inline ornament: the centered short hairline section break, the
+      full-measure left-aligned pull-quote with serif body and mono
+      attribution, the 5ch hanging indent on speaker labels in transcript
+      passages.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Cormorant Garamond substitutes for Times Now / Tiempos Headline on the
+     title-card H1. Inter substitutes for GT America / Sohne on body. JetBrains
+     Mono substitutes for IBM Plex Mono on the kicker. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure. A24 notes hold one
+   * column the whole way down with no break to a wider figure measure.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Mono kicker (category word or date), then a large serif title-card H1,
+   * then an optional sans dek, then a hairline byline strip with author
+   * name and a separate date line. Order follows the A24 /notes chrome.
+   */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Mono kicker - category label ("podcast", "article", "zine") or the
+   * date stamp on notes without an explicit category. Always present in
+   * the canonical /notes register; the eyebrow that signals which kind of
+   * editorial object this is. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  /* Title-card serif H1. The load-bearing moment. High-contrast humanist
+   * serif at the 4xl step (60px); the same family A24 uses on /films title
+   * cards, now doing duty as an editorial article title. Tight leading
+   * holds the silhouette; negative tracking carries the display feel. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6.2vw, var(--ds-text-4xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Optional dek - sans at lg, muted. Not every A24 note carries one (the
+   * transcript posts skip it); the asset surfaces it as the canonical
+   * editorial chrome for essay-shaped notes. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+    font-style: italic;
+    /* Inline ornament: italic on the dek is the editorial-magazine cue,
+     * not a contract slot; signals "this is the standfirst, not the body". */
+  }
+
+  /* Hairline byline strip - sans author + date line on separate baseline
+   * to a hairline above. The live notes pages render a date stamp alone
+   * (no separate byline) on transcript posts and a "A Note from <Name>"
+   * format on essay posts; the asset captures the essay register and
+   * shows both author and date pipe-separated on a single line above
+   * a hairline rule. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .article__meta a {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .article__meta a:hover { color: var(--ds-accent-2); }
+  .article__meta .pipe {
+    color: var(--ds-text-muted);
+    /* Inline ornament: pipe glyph separating the author group from the date;
+     * the editorial register's signature one-line metadata separator. */
+  }
+  .article__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 680px. Reading register sits at 18px / 1.65;
+   * the editorial-magazine move, one step above Vercel's product-reading
+   * 1.6. Body family stays in the humanist sans; only the H1 broke into
+   * serif. Subheads inside body return to sans for rhythm against the
+   * serif title.
+   */
+  .article__body {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - underline at rest in the warm ink color,
+   * lifts to the slightly lighter ink on hover. The page refuses any
+   * chromatic link color; the underline does the work. */
+  .article__body a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside body - sans at xl, generous gap above. A24 holds
+   * subheads to sans (the serif is reserved for the title-card moment);
+   * the sans-after-serif rhythm is how the chrome avoids reading as
+   * over-decorated. */
+  .article__body h2 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+
+  /* Speaker label inside transcript posts - bold sans, hanging at the
+   * paragraph start. Confirmed on the weeping-bleeding-hearts note where
+   * "<strong>David Lowery:</strong>" anchors each dialogue turn. */
+  .article__body p strong {
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  /* ---------------- Pull quote ----------------
+   * Full-measure pull-quote that breaks the column rhythm. Serif body at
+   * the xl step echoing the title-card H1 family; mono attribution
+   * underneath. The breakout is the editorial-cinema's one moment of
+   * theatre inside the body.
+   */
+  .article__pullquote {
+    margin: var(--ds-space-12) 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-8) 0;
+  }
+  .article__pullquote p {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    font-style: italic;
+    /* Inline ornament: italic on the pull-quote is the editorial-magazine
+     * convention, paired with the serif family for the breakout moment. */
+  }
+  .article__pullquote cite {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+  }
+  .article__pullquote cite::before {
+    content: "\2014 \00a0";
+    /* Inline ornament: em-dash glyph as content before the attribution; the
+     * canonical editorial cite mark. Lives only in the cite::before, not in
+     * any authored copy. */
+  }
+
+  /* ---------------- Section break ----------------
+   * Short centered hairline rule between major sections. The editorial
+   * cadence runs roomy: 96px of vertical air on either side keeps the
+   * rule from feeling like furniture.
+   */
+  .article__sectionbreak {
+    display: block;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-12) auto;
+    max-width: 96px;
+    /* Inline ornament: 96px max width keeps the rule short and centered
+     * rather than running the full measure; aligns with the A24 editorial
+     * register where structural chrome is restrained rather than absent. */
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__pullquote p { font-size: var(--ds-text-lg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__meta a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <span class="article__kicker">Article</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos.</p>
+      <div class="article__meta">
+        <a href="#">Lorem Ipsum</a>
+        <span class="pipe" aria-hidden="true">|</span>
+        <time datetime="2026-05-19">May 19, 2026</time>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <p><strong>Lorem Ipsum:</strong> Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+
+      <p><strong>Dolor Amet:</strong> Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+
+      <blockquote class="article__pullquote">
+        <p>Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipiscing velit per saecula saeculorum.</p>
+        <cite>Lorem Ipsum, Dolor Amet</cite>
+      </blockquote>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit nullam id dolor.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum dolorem.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

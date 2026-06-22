@@ -1,0 +1,36 @@
+<!--
+  Asset: status-pill-001
+  Class: badges
+  Pattern: (status indicator)
+  Inspired by: status page convention, dev-tool footer signals
+  Notes: Three states demonstrated: operational, degraded, down. Pulsing dot on degraded.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>status-pill-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--ds-bg); color: var(--ds-text); font-family: var(--ds-font-body); padding: var(--ds-space-5); min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: var(--ds-space-3); flex-wrap: wrap; }
+  .status { display: inline-flex; align-items: center; gap: var(--ds-space-2); padding: 6px var(--ds-space-3); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-full); font-size: var(--ds-text-xs); font-family: var(--ds-font-mono); color: var(--ds-text-muted); }
+  .status__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status--ok .status__dot { background: var(--ds-success); }
+  .status--warn .status__dot { background: var(--ds-warning); animation: pulse 1.8s infinite var(--ds-ease-standard); }
+  .status--err .status__dot { background: var(--ds-error); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @media (prefers-reduced-motion: reduce) {
+    .status--warn .status__dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <span class="status status--ok"><span class="status__dot"></span>All systems operational</span>
+  <span class="status status--warn"><span class="status__dot"></span>Partial degradation</span>
+  <span class="status status--err"><span class="status__dot"></span>Outage in progress</span>
+</body>
+</html>

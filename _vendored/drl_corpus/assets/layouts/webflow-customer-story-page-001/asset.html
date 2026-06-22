@@ -1,0 +1,705 @@
+<!--
+  Asset: webflow-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: Webflow (webflow.com/customers/<slug>)
+  Notes:
+    - Customer-story page skeleton: flush-top nav with appearance toggle, hero
+      with customer logo + pull-quote-as-headline + CEO attribution + meta-tag
+      row (Industry / Country / Company type), outcome-metric callouts (two-
+      or three-up tiles with oversized value and sans label), body story with
+      H2 section heads alternating with full-width pull quotes and inline
+      product screenshots, related-stories card carousel (multi-up grid with
+      KPI overline), green-tinted CTA block with primary pill plus secondary
+      ghost, mega-footer. Reading column ~64ch; rest of page rides 1280px.
+    - Variable: section sequence, vertical rhythm, color slot mapping, type
+      role per slot. Inline: article-column measure (64ch), page max-width
+      (1280px), hero portrait aspect ratio, metric tile aspect ratio,
+      customer-logo lockup geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter stands in for the Webflow Sans marketing register. Faces
+  are not loaded in the asset; the fallback chains in tokens.css carry the
+  register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1280px so nav, metric band, related grid, and footer
+   * breathe; reading column inside is narrower. Inline value. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Narrative reading column at ~64ch (about 640px). Page-grid character,
+   * not a contract slot, so inline. */
+  .column {
+    max-width: 64ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, hairline below, appearance toggle pill on the right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+  }
+  .nav__cluster { display: flex; gap: var(--ds-space-5); align-items: center; flex: 1; justify-content: center; }
+  .nav__link {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .nav__actions { display: flex; gap: var(--ds-space-3); align-items: center; }
+  .nav__theme-toggle {
+    /* Inline ornament: tri-segment pill (light / dark / auto). */
+    display: inline-flex;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: 2px;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .nav__theme-toggle span {
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+  .nav__theme-toggle span[aria-selected="true"] {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+  }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop; bottom hairline
+   * separates major customer-story sections. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Hero. Customer logo lockup sits above a pull-quote-as-headline (the
+   * Webflow convention: lead with a CEO quote, not a category line), then
+   * CEO attribution and a meta-tag row (Industry / Country / Company type).
+   * On the right, a portrait of the executive in a soft frame.
+   */
+  .hero {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .hero {
+      grid-template-columns: 1.3fr 1fr;
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-10);
+      gap: var(--ds-space-12);
+    }
+  }
+  .hero__customer-logo {
+    /* Customer logo tile: 48px square, Webflow Blue, ornamental.
+     * Downstream consumers swap in a real client logo SVG. */
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-accent-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-xl);
+    margin-bottom: var(--ds-space-5);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__title { font-size: var(--ds-text-4xl); line-height: var(--ds-leading-tight); }
+  }
+  .hero__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-6);
+  }
+  .hero__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .hero__name {
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .hero__role {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+  }
+  .hero__meta-tag {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-1) var(--ds-space-3);
+  }
+  .hero__portrait {
+    /* Inline: 4 / 5 portrait frame on the right. */
+    aspect-ratio: 4 / 5;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /*
+   * Outcome-metric callouts. Two- or three-up tile band: oversized value
+   * (the page's most expressive type moment), sans label, optional unit.
+   * Webflow's convention is descriptive labels, not pure numeric KPIs,
+   * so the value can be a phrase scale ("Hundreds") as well as a number.
+   */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .metrics { grid-template-columns: repeat(3, 1fr); }
+  }
+  .metric {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+  }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .metric__value em {
+    font-style: normal;
+    color: var(--ds-accent);
+  }
+  .metric__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /*
+   * Narrative body. Centered single column at ~64ch. H2 section heads
+   * alternate with full-width pull quotes and inline product screenshots
+   * that bleed wider than the column.
+   */
+  .body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .body .column > * + * { margin-top: var(--ds-space-5); }
+  .body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    max-width: 22ch;
+  }
+  .body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .body figure { margin: var(--ds-space-8) auto; max-width: 960px; }
+  .body figure .slot { aspect-ratio: 16 / 10; }
+  .body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+    text-align: center;
+  }
+
+  /*
+   * Pull quote. Full-width breakout from the reading column. Larger sans
+   * display in near-black, with a Webflow Blue accent rule on the left
+   * and speaker attribution beneath: avatar + name + role.
+   */
+  .pull-quote {
+    margin: var(--ds-space-12) auto;
+    max-width: 960px;
+    padding: var(--ds-space-2) 0 var(--ds-space-2) var(--ds-space-6);
+    border-left: 4px solid var(--ds-accent);
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    font-weight: 500;
+  }
+  @media (min-width: 768px) {
+    .pull-quote__body { font-size: var(--ds-text-2xl); }
+  }
+  .pull-quote__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .pull-quote__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .pull-quote__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .pull-quote__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Related stories. Section heading + multi-up grid; each card carries a
+   * KPI overline (Webflow Blue), customer name, and one-line outcome.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 18ch;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+  .related-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .related-card__kpi {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+    margin: 0;
+  }
+  .related-card__customer {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .related-card__outcome {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * CTA block. Soft tinted panel with display title on the left and a
+   * primary pill + ghost on the right. Stands in for webflow-cta-block-001.
+   */
+  .cta {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: end;
+  }
+  @media (min-width: 768px) {
+    .cta { grid-template-columns: 1.4fr 1fr; gap: var(--ds-space-10); padding: var(--ds-space-12); }
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cta__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+  .cta__primary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .cta__secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-full);
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Slot placeholders for downstream wholes. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band outside .page container. Stands in for a
+   * webflow-tagged mega-footer. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Flush-top with appearance toggle. Stands in for a webflow-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__wordmark" href="#">Lorem</a>
+      <div class="nav__cluster">
+        <a class="nav__link" href="#">Lorem</a>
+        <a class="nav__link" href="#">Ipsum</a>
+        <a class="nav__link" href="#">Dolor</a>
+        <a class="nav__link" href="#">Sit</a>
+      </div>
+      <div class="nav__actions">
+        <div class="nav__theme-toggle" role="radiogroup" aria-label="Appearance">
+          <span aria-selected="true">Light</span>
+          <span>Dark</span>
+          <span>Auto</span>
+        </div>
+        <a class="nav__cta" href="#">Contact Lorem</a>
+      </div>
+    </nav>
+
+    <!-- Section: hero. Customer logo + pull-quote-as-headline + attribution + meta tags + portrait. -->
+    <header class="hero" aria-label="Customer story hero">
+      <div>
+        <span class="hero__customer-logo" aria-hidden="true">L</span>
+        <h1 class="hero__title">
+          "Lorem ipsum helped us move from flying blind to making decisions we
+          could trust, and consectetur adipiscing differently to every audience."
+        </h1>
+        <div class="hero__attribution">
+          <span class="hero__avatar" aria-hidden="true"></span>
+          <div>
+            <p class="hero__name">Lorem Ipsum</p>
+            <p class="hero__role">Global CEO, Lorem Customer</p>
+          </div>
+        </div>
+        <div class="hero__meta">
+          <span class="hero__meta-tag">Industry: Lorem</span>
+          <span class="hero__meta-tag">Country: Ipsum</span>
+          <span class="hero__meta-tag">Company type: Dolor</span>
+        </div>
+      </div>
+      <div class="hero__portrait" aria-hidden="true">
+        hero-portrait
+      </div>
+    </header>
+
+    <!-- Section: outcome-metric callouts. Three-up tile band. -->
+    <section class="section" aria-label="Outcome metrics">
+      <div class="metrics">
+        <div class="metric">
+          <p class="metric__value"><em>Hundreds</em></p>
+          <p class="metric__label">Lorem ipsum experiments running across six dolor sites.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value"><em>6</em>x</p>
+          <p class="metric__label">Consectetur decision velocity, replacing intuition with data.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value"><em>10</em> days</p>
+          <p class="metric__label">From lorem to published, across every adipiscing market.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: narrative body. Single column with H2 section heads, pull quote breakouts, inline figure. -->
+    <section class="section body" aria-label="Narrative body">
+      <div class="column">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+        </p>
+        <h2>Personalizing with purpose across a global audience</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+      </div>
+
+      <blockquote class="pull-quote">
+        <p class="pull-quote__body">
+          "Lorem ipsum is about finding the right message for the right
+          person. With dolor sit amet, we can see what actually resonates
+          for people at each point in their journey."
+        </p>
+        <footer class="pull-quote__attribution">
+          <span class="pull-quote__avatar" aria-hidden="true"></span>
+          <div>
+            <p class="pull-quote__name">Lorem Ipsum</p>
+            <p class="pull-quote__role">Sr. eCommerce Experience Designer, Lorem Customer</p>
+          </div>
+        </footer>
+      </blockquote>
+
+      <div class="column">
+        <h2>Using AI-powered personalization to validate decisions</h2>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.
+        </p>
+      </div>
+
+      <figure>
+        <div class="slot">
+          <span class="slot__label">product-screenshot</span>
+          Lorem ipsum dashboard view
+        </div>
+        <figcaption>
+          Lorem ipsum figure caption explaining the product canvas above.
+        </figcaption>
+      </figure>
+
+      <blockquote class="pull-quote">
+        <p class="pull-quote__body">
+          "We use lorem ipsum to answer the big questions before we spend
+          big money. Our teams are now empowered to test ideas quickly and
+          invest with confidence."
+        </p>
+        <footer class="pull-quote__attribution">
+          <span class="pull-quote__avatar" aria-hidden="true"></span>
+          <div>
+            <p class="pull-quote__name">Lorem Ipsum</p>
+            <p class="pull-quote__role">Global CEO, Lorem Customer</p>
+          </div>
+        </footer>
+      </blockquote>
+
+      <div class="column">
+        <h2>Building a culture of experimentation and performance</h2>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium,
+          totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: related stories. Multi-up grid with KPI overline. -->
+    <section class="section" aria-label="Related stories">
+      <h2 class="related-heading">More enterprise stories</h2>
+      <div class="related-grid">
+        <article class="related-card">
+          <p class="related-card__kpi">32</p>
+          <p class="related-card__customer">Lorem Customer A</p>
+          <p class="related-card__outcome">Global sites launched in ten days.</p>
+        </article>
+        <article class="related-card">
+          <p class="related-card__kpi">50%</p>
+          <p class="related-card__customer">Lorem Customer B</p>
+          <p class="related-card__outcome">Conversion rate lift on the primary funnel.</p>
+        </article>
+        <article class="related-card">
+          <p class="related-card__kpi">$200M</p>
+          <p class="related-card__customer">Lorem Customer C</p>
+          <p class="related-card__outcome">New pipeline generated in the first year.</p>
+        </article>
+        <article class="related-card">
+          <p class="related-card__kpi">3x</p>
+          <p class="related-card__customer">Lorem Customer D</p>
+          <p class="related-card__outcome">Testing velocity across product teams.</p>
+        </article>
+        <article class="related-card">
+          <p class="related-card__kpi">12pt</p>
+          <p class="related-card__customer">Lorem Customer E</p>
+          <p class="related-card__outcome">Conversion lift sustained over a quarter.</p>
+        </article>
+        <article class="related-card">
+          <p class="related-card__kpi">57%</p>
+          <p class="related-card__customer">Lorem Customer F</p>
+          <p class="related-card__outcome">Lead increase from the redesigned site.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: CTA block. Tinted panel + primary pill + ghost. Stands in for webflow-cta-block-001. -->
+    <section class="section" aria-label="Call to action">
+      <div class="cta">
+        <div>
+          <p class="cta__title">Get started for free.</p>
+          <p class="cta__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Try
+            Lorem for as long as you like with our free Starter plan.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <a class="cta__primary" href="#">Get started, it's free</a>
+          <a class="cta__secondary" href="#">Watch demo</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

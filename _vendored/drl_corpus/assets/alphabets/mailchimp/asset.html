@@ -1,0 +1,324 @@
+<!--
+  Asset: mailchimp
+  Class: alphabets
+  Pattern: serif-display-sans-body, paper-and-ink, single-typeface-system
+  Inspired by: Mailchimp (mailchimp.com, /pricing)
+  Notes:
+    - The full Mailchimp typography vocabulary as one specimen. Display +
+      every heading carries Means Web serif; body, UI chrome, buttons,
+      legal carry Graphik Web sans. Source Code Pro for the rare mono
+      moment.
+    - Signature accent: Cavendish Yellow #ffe01b, the load-bearing brand
+      cue. Used on CTA fills and the highlight underline. Teal #4bc4c2
+      doubles as focus ring + secondary accent.
+    - Inline ornament: the yellow-block CTA fill, the underline-highlight
+      treatment on the headline accent word, and the brand-pill button
+      radius (6.25rem / 100px) are character moments specific to the
+      Mailchimp register, not tokens.
+    - Web-font substitutes: Means Web (Commercial Type) → Newsreader or
+      Source Serif 4 (open-license analogs with similar high-contrast
+      contemporary serif feel); Graphik Web (Commercial Type) → Inter
+      (humanist sans analog); mono → JetBrains Mono.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for proprietary Means Web / Graphik Web:
+   - Newsreader: contemporary serif analog to Means.
+   - Inter: humanist sans analog to Graphik.
+   - JetBrains Mono: stand-in for Source Code Pro.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* ---------- Marketing header block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Mailchimp uppercase Graphik kicker; rare on marketing surfaces
+       (sentence-case is the dominant register) but present on
+       categorical labels. */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  .display {
+    /* Means Web 64px (--display-text-size) at desktop. */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-variant-ligatures: none;
+  }
+  /* Inline ornament: Cavendish Yellow highlight bar behind the accent
+     word; this is the brand's signature emphasis move. */
+  .display .mark {
+    background: linear-gradient(180deg, transparent 60%, var(--ds-accent) 60%);
+    padding: 0 0.08em;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .lead {
+    /* Graphik 20px lead paragraph; --copy-medium-size at desktop. */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+    font-weight: 400;
+  }
+
+  .cta-row { display: flex; align-items: center; gap: var(--ds-space-4); flex-wrap: wrap; }
+
+  .cta {
+    /* Inline ornament: 6.25rem / 100px pill radius is the Mailchimp
+       button geometry. Graphik 500 weight on the label. */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: var(--ds-accent);
+    color: var(--ds-text);
+    padding: 14px 28px;
+    border: 0;
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) linear;
+  }
+  .cta:hover { background: #ffd400; }
+  .cta:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 3px; }
+
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-text);
+  }
+
+  /* ---------- Body article ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 64ch;
+  }
+  .body-block p em { font-style: italic; }
+  .body-block p a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-color: var(--ds-accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 2px;
+  }
+
+  /* H2 section head, Means serif. */
+  .subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-5) 0 0 0;
+    font-variant-ligatures: none;
+  }
+
+  /* H3 sub-section, Means serif. */
+  .subsub {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 110px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text-strong);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-variant-ligatures: none;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-relaxed);
+  }
+  .scale .step-sample.sans {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">Email · Automations</p>
+      <h1 class="display">Lorem ipsum dolor <span class="mark">sit amet</span>, consectetur adipiscing.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum magna at suscipit lacinia, eros nibh sodales lacus.</p>
+      <div class="cta-row">
+        <button class="cta">Start free trial</button>
+        <button class="cta cta--ghost">See pricing</button>
+      </div>
+    </header>
+
+    <section class="body-block">
+      <h2 class="subhead">Praesent nec elementum nibh</h2>
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur <a href="#">lacinia at lorem</a>, cras ut sollicitudin nibh.</p>
+
+      <h3 class="subsub">Cras ut sollicitudin nibh</h3>
+      <p>Aenean fermentum magna at suscipit lacinia, <em>eros nibh sodales</em> lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus.</p>
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum magna at suscipit lacinia eros nibh sodales lacus.</p>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">6xl serif</span>
+        <span class="step-size">80 / 1.00</span>
+        <span class="step-sample" style="font-size:80px;">Aa Bb Cc</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl serif</span>
+        <span class="step-size">64 / 1.13</span>
+        <span class="step-sample" style="font-size:64px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl serif</span>
+        <span class="step-size">48 / 1.00</span>
+        <span class="step-sample" style="font-size:48px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl serif</span>
+        <span class="step-size">40 / 1.00</span>
+        <span class="step-sample" style="font-size:40px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl serif</span>
+        <span class="step-size">32 / 1.13</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl serif</span>
+        <span class="step-size">24 / 1.20</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet consectetur adipiscing</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg sans</span>
+        <span class="step-size">20 / 1.40</span>
+        <span class="step-sample body" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base sans</span>
+        <span class="step-size">16 / 1.50</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm sans</span>
+        <span class="step-size">14 / 1.50</span>
+        <span class="step-sample sans" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs sans·u</span>
+        <span class="step-size">13 / 1.25</span>
+        <span class="step-sample sans" style="font-size:13px; text-transform:uppercase; letter-spacing:0.12em;">Lorem ipsum kicker eyebrow</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Means Web 400 / 500 italic</b></span>
+      <span>heading · <b>Means Web 400 (all H1-H6)</b></span>
+      <span>body · <b>Graphik Web 400 / 500</b></span>
+      <span>chrome · <b>Graphik Web 500 / 600</b></span>
+      <span>mono · <b>Source Code Pro 400</b></span>
+      <span>base · <b>16px / 24px (1.5)</b></span>
+      <span>display tracking · <b>-0.0625rem (-1px) on all headings</b></span>
+      <span>accent · <b>Cavendish Yellow #ffe01b; ink Peppercorn #231e15</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

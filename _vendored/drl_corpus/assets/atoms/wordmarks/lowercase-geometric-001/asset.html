@@ -1,0 +1,96 @@
+<!--
+  Asset: lowercase-geometric-001
+  Class: wordmarks
+  Pattern: single-typeface-system
+  Inspired by: Notion
+  Notes:
+    - All-lowercase wordmark in a humanist sans; modest weight, near-zero tracking.
+    - Type family and color are tokens; the optional page-sticker mark glyph
+      is inline character that the brand pairs with the wordmark.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>lowercase-geometric-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    text-transform: lowercase;     /* the defining move */
+  }
+  .wordmark--ui { font-size: var(--ds-text-base); }
+  .wordmark--ui .mark { width: 16px; height: 17px; }
+  .wordmark--display { font-size: var(--ds-text-4xl); }
+  .wordmark--display .mark { width: 56px; height: 58px; }
+  /* The Notion page-sticker mark, recreated as inline SVG character */
+  .mark {
+    color: var(--ds-text-strong);
+  }
+  .mark path {
+    fill: currentColor;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">native size (16px)</span>
+    <a class="wordmark wordmark--ui" href="#">
+      <svg class="mark" viewBox="0 0 33 34" fill="none" aria-hidden="true">
+        <path d="M3.8 3.3 L20.5 2.0 C22.6 1.9 23.1 2.0 24.4 2.9 L29.7 6.6 C30.6 7.3 30.9 7.5 30.9 8.2 V28.6 C30.9 29.9 30.4 30.7 28.8 30.8 L9.4 31.9 C8.1 32.0 7.6 31.8 6.9 31.0 L3.0 25.9 C2.3 25.0 2.0 24.3 2.0 23.5 V5.3 C2.0 4.3 2.5 3.4 3.8 3.3 Z M9 9 H22 V22 H9 Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      notion
+    </a>
+  </div>
+  <div class="stage">
+    <span class="state-label">display (64px)</span>
+    <a class="wordmark wordmark--display" href="#">
+      <svg class="mark" viewBox="0 0 33 34" fill="none" aria-hidden="true">
+        <path d="M3.8 3.3 L20.5 2.0 C22.6 1.9 23.1 2.0 24.4 2.9 L29.7 6.6 C30.6 7.3 30.9 7.5 30.9 8.2 V28.6 C30.9 29.9 30.4 30.7 28.8 30.8 L9.4 31.9 C8.1 32.0 7.6 31.8 6.9 31.0 L3.0 25.9 C2.3 25.0 2.0 24.3 2.0 23.5 V5.3 C2.0 4.3 2.5 3.4 3.8 3.3 Z" fill="currentColor"/>
+      </svg>
+      notion
+    </a>
+  </div>
+  <div class="stage">
+    <span class="state-label">type-only (no mark)</span>
+    <span class="wordmark wordmark--display">notion</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!--
+  Asset: vercel-deploy-form-001
+  Class: forms (whole)
+  Pattern: label-above, bordered-text-input, primary-square, property-value-row, search-with-kbd-hint
+  Inspired by: Vercel /new
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001         (dark dashboard palette context)
+    - type-pairings/grotesk-mono-001         (Geist Sans plus Geist Mono pairing)
+    - buttons/primary-square-001             (the Blue 9 Deploy CTA)
+    - inputs/text-bordered-001               (the bordered text input chrome)
+    - labels/form-label-required-001         (label-above plus required marker)
+    - form-groups/label-input-help-001       (label + input + hint composition)
+  Notes:
+    - Deploy-step form whole: page heading, lead, single elevated card
+      that holds four ordered steps (Framework, Git Repository, Project
+      Name, Environment Variables), and one primary Deploy CTA. The
+      framework picker is a small grid of 24px square logos; the repo
+      connector is a property-value row with a Cmd+K hint; the env-var
+      table is a two-column mono grid with an Add row affordance.
+    - Variables: every color, type size, label scale, spacing step,
+      radius. Inline: the framework-logo 24px square dimensions, the
+      kbd badge geometry, the env-var two-column grid template, the
+      ordered-step counter circle (a 24px disc with a numeric counter
+      that increments per section).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-deploy-form-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist Sans and Geist Mono are Vercel's variable type system; loaded
+     from the public CDN. Fallback to system-ui if the network is gone. -->
+<link rel="preconnect" href="https://assets.vercel.com" crossorigin/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Page column. Geist dashboards center on a ~720px measure for
+   * single-card forms; tight enough that no field stretches edge to
+   * edge, wide enough that the env-var table breathes. */
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Page heading and lead. Geist style: tight tracking on the title,
+   * muted lead paragraph one step smaller. */
+  .page-heading {
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-2) 0;
+    color: var(--ds-text-strong);
+  }
+  .page-lead {
+    margin: 0 0 var(--ds-space-8) 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    max-width: 56ch;
+  }
+
+  /* Form card. Elevated panel: surface-2 tinted background, 1px
+   * hairline border, 8px radius, generous interior padding. */
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+  }
+
+  /* Step. A numbered section inside the card. Counter sits in a 24px
+   * disc on the left of the legend; this is inline ornament. */
+  .step { counter-increment: step; margin-bottom: var(--ds-space-6); }
+  .step:last-of-type { margin-bottom: 0; }
+  .step__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .step__num {
+    /* 24px disc with the step counter; inline ornament specific to
+     * this whole, not a contract role. */
+    width: 24px; height: 24px;
+    border-radius: 9999px;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .step__num::before { content: counter(step, decimal-leading-zero); }
+  .step__title {
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .step__hint {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    margin: 0 0 var(--ds-space-4) 36px;   /* 24 disc + 12 gap aligns the hint under the title. */
+  }
+
+  /* Body container for the form layout. Counter reset on the form so
+   * the step numbers run from 01. */
+  form { counter-reset: step; margin: 0; }
+
+  /* Framework picker. Small grid of selectable square cards; one is
+   * active. 24px logo (inline geometry), framework name below. */
+  .frameworks {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-3);
+  }
+  .framework {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .framework:hover { border-color: var(--ds-text-muted); }
+  .framework[aria-pressed="true"] {
+    border-color: var(--ds-accent);
+    background: rgba(0,112,243,0.08);   /* Tinted blue fill on the selected framework; inline ornament. */
+  }
+  .framework__logo {
+    /* 24px square logo placeholder; the live surface renders an SVG
+     * framework mark here. Inline geometry; not a contract concern. */
+    width: 24px; height: 24px;
+    border-radius: var(--ds-radius-sm);
+    background: linear-gradient(135deg, var(--ds-text-muted), var(--ds-text));
+    opacity: 0.85;
+  }
+  .framework__name {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* Repo connector. Property-value row pattern: mono key on the left,
+   * sans value on the right, trailing Cmd+K hint badge. */
+  .repo {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+  }
+  .repo__icon {
+    /* 16px square placeholder for the Git provider glyph (GitHub,
+     * GitLab, Bitbucket icons in the live UI). */
+    width: 16px; height: 16px;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-text-muted);
+    flex-shrink: 0;
+  }
+  .repo__path {
+    flex: 1 1 auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .repo__branch {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .kbd {
+    /* Cmd+K hint badge. 2x small caps in a 4px-radius pill; inline
+     * geometry for this whole, not a contract role. */
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--ds-space-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-bg);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Label and input chrome. label-above pattern; required marker uses
+   * the accent (Vercel does not use red for required). */
+  .label {
+    display: block;
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-2);
+  }
+  .label__required {
+    color: var(--ds-accent);
+    margin-left: 4px;
+  }
+  .hint {
+    display: block;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    margin-top: var(--ds-space-2);
+  }
+  .input {
+    display: block;
+    width: 100%;
+    height: 40px;
+    margin: 0;
+    padding: 0 var(--ds-space-3);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    background: var(--ds-surface-2);
+    appearance: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .input::placeholder { color: var(--ds-text-muted); }
+  .input:hover { border-color: var(--ds-text-muted); }
+  .input:focus {
+    outline: none;
+    border-color: var(--ds-focus-ring);
+    box-shadow: var(--ds-shadow-lg);   /* Blue glow at focus. */
+  }
+
+  /* Environment variables table. Two-column mono grid: KEY and VALUE.
+   * Header row in uppercase mono micro caps; rows are 40px tall and
+   * separated by 1px hairlines. */
+  .envvars {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .envvars__row {
+    /* Inline grid; not a reusable contract concern. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .envvars__row + .envvars__row { border-top: 1px solid var(--ds-hairline); }
+  .envvars__head {
+    background: var(--ds-bg);
+  }
+  .envvars__head .envvars__cell {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-3);
+  }
+  .envvars__cell {
+    padding: 0;
+  }
+  .envvars__cell + .envvars__cell { border-left: 1px solid var(--ds-hairline); }
+  .envvars__input {
+    width: 100%;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: var(--ds-text);
+    padding: 0 var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    outline: none;
+  }
+  .envvars__input::placeholder { color: var(--ds-text-muted); opacity: 0.7; }
+  .envvars__input:focus { background: rgba(0,112,243,0.08); }   /* Subtle blue fill on focused cell; inline ornament. */
+
+  .envvars__add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-3);
+    background: transparent;
+    border: 0;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    cursor: pointer;
+    padding: var(--ds-space-2) 0;
+  }
+  .envvars__add:hover { color: var(--ds-text); }
+  .envvars__add::before {
+    content: "+";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+    font-size: var(--ds-text-sm);
+    line-height: 1;
+  }
+
+  /* Card footer with primary CTA. Right-aligned Deploy button. The
+   * button picks up shape from buttons/primary-square-001 and the
+   * Geist Blue 9 fill. */
+  .card__foot {
+    margin-top: var(--ds-space-6);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--ds-space-3);
+  }
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-2);
+    appearance: none;
+    border: 1px solid transparent;
+    background: var(--ds-accent);
+    color: #ffffff;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    height: 40px;
+    padding: 0 var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    letter-spacing: var(--ds-tracking-normal);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .button:hover { background: var(--ds-accent-2); }
+  .button:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+  }
+  .button--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border-color: var(--ds-border);
+  }
+  .button--ghost:hover { border-color: var(--ds-text-muted); background: var(--ds-surface-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <h1 class="page-heading">Lorem ipsum new project</h1>
+    <p class="page-lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Configure the framework, repository, and environment, then deploy.</p>
+
+    <section class="card" aria-labelledby="deploy-card-title">
+      <h2 id="deploy-card-title" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Deploy configuration</h2>
+
+      <form action="#" method="post" novalidate>
+
+        <!-- Step 1: framework picker -->
+        <div class="step">
+          <div class="step__head">
+            <span class="step__num" aria-hidden="true"></span>
+            <h3 class="step__title">Framework preset</h3>
+          </div>
+          <p class="step__hint">Lorem ipsum dolor sit amet; pick the runtime that matches your project.</p>
+          <div class="frameworks" role="radiogroup" aria-label="Framework preset">
+            <button type="button" class="framework" aria-pressed="true">
+              <span class="framework__logo" aria-hidden="true"></span>
+              <span class="framework__name">Lorem.js</span>
+            </button>
+            <button type="button" class="framework" aria-pressed="false">
+              <span class="framework__logo" aria-hidden="true"></span>
+              <span class="framework__name">Ipsum</span>
+            </button>
+            <button type="button" class="framework" aria-pressed="false">
+              <span class="framework__logo" aria-hidden="true"></span>
+              <span class="framework__name">Dolor</span>
+            </button>
+            <button type="button" class="framework" aria-pressed="false">
+              <span class="framework__logo" aria-hidden="true"></span>
+              <span class="framework__name">Sit</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: git repository connector -->
+        <div class="step">
+          <div class="step__head">
+            <span class="step__num" aria-hidden="true"></span>
+            <h3 class="step__title">Git repository</h3>
+          </div>
+          <p class="step__hint">Lorem ipsum, the repository to import. Use the command palette to switch.</p>
+          <div class="repo" role="group" aria-label="Connected repository">
+            <span class="repo__icon" aria-hidden="true"></span>
+            <span class="repo__path">lorem-ipsum-org/dolor-sit-amet</span>
+            <span class="repo__branch">main</span>
+            <span class="kbd" aria-hidden="true">Cmd K</span>
+          </div>
+        </div>
+
+        <!-- Step 3: project name -->
+        <div class="step">
+          <div class="step__head">
+            <span class="step__num" aria-hidden="true"></span>
+            <h3 class="step__title">Project name</h3>
+          </div>
+          <label class="label" for="project-name">Name<span class="label__required" aria-hidden="true">*</span></label>
+          <input class="input" id="project-name" name="project-name" type="text" autocomplete="off" placeholder="lorem-ipsum-dolor" value="lorem-ipsum-dolor"/>
+          <span class="hint">Lorem ipsum, must be unique within your team scope.</span>
+        </div>
+
+        <!-- Step 4: environment variables -->
+        <div class="step">
+          <div class="step__head">
+            <span class="step__num" aria-hidden="true"></span>
+            <h3 class="step__title">Environment variables</h3>
+          </div>
+          <p class="step__hint">Lorem ipsum, secrets and config are injected at build and runtime.</p>
+          <div class="envvars" role="table" aria-label="Environment variables">
+            <div class="envvars__row envvars__head" role="row">
+              <div class="envvars__cell" role="columnheader">Key</div>
+              <div class="envvars__cell" role="columnheader">Value</div>
+            </div>
+            <div class="envvars__row" role="row">
+              <div class="envvars__cell" role="cell">
+                <input class="envvars__input" type="text" aria-label="Key" placeholder="EXAMPLE_KEY" value="LOREM_API_URL"/>
+              </div>
+              <div class="envvars__cell" role="cell">
+                <input class="envvars__input" type="text" aria-label="Value" placeholder="value" value="https://lorem.ipsum/api"/>
+              </div>
+            </div>
+            <div class="envvars__row" role="row">
+              <div class="envvars__cell" role="cell">
+                <input class="envvars__input" type="text" aria-label="Key" placeholder="EXAMPLE_KEY" value="DOLOR_TOKEN"/>
+              </div>
+              <div class="envvars__cell" role="cell">
+                <input class="envvars__input" type="password" aria-label="Value" placeholder="value" value="loremipsumdolorsit"/>
+              </div>
+            </div>
+            <div class="envvars__row" role="row">
+              <div class="envvars__cell" role="cell">
+                <input class="envvars__input" type="text" aria-label="Key" placeholder="EXAMPLE_KEY"/>
+              </div>
+              <div class="envvars__cell" role="cell">
+                <input class="envvars__input" type="text" aria-label="Value" placeholder="value"/>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="envvars__add">Add another</button>
+        </div>
+
+        <div class="card__foot">
+          <button type="button" class="button button--ghost">Cancel</button>
+          <button type="submit" class="button">Deploy</button>
+        </div>
+
+      </form>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!--
+  Asset: loom-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: Loom (loom.com/customers/intercom)
+  Notes:
+    - Customer-story page skeleton in the Loom register: flush-top nav,
+      customer-logo + long descriptive H1 hero ("How Loom helped X ..."),
+      meta strip (use-case, industry, company-size), three-up metric band,
+      Overview / Challenges / Solution / Results narrative with H2 section
+      heads, Loom-video figure embeds, indigo-bullet lists, full-width
+      tinted pull quotes attributed by name + role + company, two-up related
+      stories grid, single sentence-case CTA card, multi-column footer.
+      Reading column ~68ch; page container ~1120px.
+    - Variable: section sequence, page max-width, vertical rhythm, type
+      role per slot, color slot mapping. Inline: reading column measure
+      (68ch), page max-width (1120px), bullet indigo marker geometry,
+      video-embed aspect ratio (16:9), customer-logo block geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter is Loom's effective web sans. Not loaded; the system-ui
+  fallback chain in tokens.css carries the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. ~1120px Loom marketing container. Inline value. */
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .page { padding-inline: var(--ds-space-8); } }
+
+  /* Reading column. ~68ch measure for Inter at 16px. Inline. */
+  .column { max-width: 68ch; margin: 0 auto; }
+
+  /* Nav: flush-top, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__links { display: none; gap: var(--ds-space-6); font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+  @media (min-width: 900px) { .nav__links { display: flex; } }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-2) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+  }
+
+  /* Major section rhythm. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) { .section { padding-block: var(--ds-space-12); } }
+  .section:last-of-type { border-bottom: 0; }
+
+  /* Hero. */
+  .hero__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-6);
+  }
+  .hero__logo::before {
+    /* Inline: simulated customer wordmark dot. Not a contract role. */
+    content: "";
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, var(--ds-accent), var(--ds-accent-2));
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(36px, 5vw, var(--ds-text-4xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .hero__meta dt {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-1);
+  }
+  .hero__meta dd { margin: 0; color: var(--ds-text); font-weight: 600; }
+
+  /* Metric band: three-up tiles, hairline chrome, no shadow at rest. */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 720px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
+  .metric {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    background: var(--ds-surface);
+  }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+    font-weight: 700;
+    margin: 0;
+  }
+  .metric__label {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-2);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Body H2. */
+  .h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+  .h2:first-child { margin-top: 0; }
+  p { margin: 0 0 var(--ds-space-5); }
+
+  /* Indigo-bullet list: accent square marker as visual lead-in. */
+  .list { list-style: none; padding: 0; margin: 0 0 var(--ds-space-6); }
+  .list li {
+    position: relative;
+    padding-left: var(--ds-space-5);
+    margin-bottom: var(--ds-space-3);
+  }
+  .list li::before {
+    /* Inline: 8px indigo square as bullet marker. Loom signature. */
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 8px; height: 8px;
+    background: var(--ds-accent);
+    border-radius: 2px;
+  }
+
+  /* Pull quote: full-width tinted lavender surface, large body. */
+  .quote {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+    margin: var(--ds-space-8) 0;
+  }
+  .quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .quote__attribution {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .quote__avatar {
+    /* Inline: 40px circular avatar placeholder. */
+    width: 40px; height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: linear-gradient(135deg, var(--ds-accent), var(--ds-accent-2));
+    flex-shrink: 0;
+  }
+  .quote__name { color: var(--ds-text); font-weight: 600; }
+
+  /* Loom video figure: 16:9 placeholder with play badge. */
+  .video {
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, #15131F 0%, #2A2440 100%);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-border);
+    margin: var(--ds-space-6) 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .video__play {
+    /* Inline: 64px play badge, Loom signature accent. */
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px; height: 64px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 22px;
+  }
+  .video__caption {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Related stories grid. */
+  .related__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .related__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 720px) { .related__grid { grid-template-columns: 1fr 1fr; } }
+  .related__card {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    background: var(--ds-surface);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .related__card:hover { border-color: var(--ds-accent); }
+  .related__logo {
+    width: 56px; height: 32px;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-xs);
+    margin-bottom: var(--ds-space-4);
+  }
+  .related__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  /* CTA: indigo-tinted card, sentence-case heading, single primary button. */
+  .cta {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10);
+    text-align: center;
+    margin: var(--ds-space-12) 0;
+  }
+  .cta__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-5);
+  }
+  .cta__button {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+  }
+  .cta__subtext {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-4);
+  }
+
+  /* Footer: multi-column mega-footer with hairline top rule. */
+  .footer {
+    border-top: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-10);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 720px) { .footer__grid { grid-template-columns: repeat(4, 1fr); } }
+  .footer__col h4 {
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .footer__col ul { list-style: none; padding: 0; margin: 0; }
+  .footer__col li {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .footer__legal {
+    border-top: 1px solid var(--ds-hairline);
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    justify-content: space-between;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav__wordmark">lorem.</div>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#">Product</a>
+      <a href="#">Solutions</a>
+      <a href="#">Resources</a>
+      <a href="#">Enterprise</a>
+      <a href="#">Pricing</a>
+      <a href="#">Contact sales</a>
+    </nav>
+    <a class="nav__cta" href="#">Get lorem for free</a>
+  </header>
+
+  <!-- HERO -->
+  <section class="section" aria-labelledby="hero-title">
+    <span class="hero__logo">Lorem ipsum</span>
+    <h1 class="hero__title" id="hero-title">
+      How lorem helped ipsum use dolor sit amet to differentiate consectetur and boost adipiscing rates by 19 percent.
+    </h1>
+    <dl class="hero__meta">
+      <div>
+        <dt>Use case</dt>
+        <dd>Lorem ipsum</dd>
+      </div>
+      <div>
+        <dt>Industry</dt>
+        <dd>Dolor sit amet</dd>
+      </div>
+      <div>
+        <dt>Company size</dt>
+        <dd>900 employees</dd>
+      </div>
+    </dl>
+
+    <!-- METRIC BAND -->
+    <div class="metrics" role="list">
+      <article class="metric" role="listitem">
+        <p class="metric__value">12 days</p>
+        <p class="metric__label">Lorem ipsum dolor sit amet, consectetur adipiscing elit saved yearly.</p>
+      </article>
+      <article class="metric" role="listitem">
+        <p class="metric__value">$120k</p>
+        <p class="metric__label">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </article>
+      <article class="metric" role="listitem">
+        <p class="metric__value">19%</p>
+        <p class="metric__label">Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- NARRATIVE BODY -->
+  <section class="section">
+    <div class="column">
+      <h2 class="h2">Overview</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+      <div class="quote">
+        <p class="quote__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, allowing us to create personalized lorem so quickly.</p>
+        <div class="quote__attribution">
+          <span class="quote__avatar" aria-hidden="true"></span>
+          <span>
+            <span class="quote__name">Lorem Ipsum</span> &middot; Sales Manager, Dolor Sit
+          </span>
+        </div>
+      </div>
+
+      <h2 class="h2">Challenges</h2>
+      <ul class="list">
+        <li>Balancing unique lorem while staying affordable and consistent across teams.</li>
+        <li>Driving conversations and revenue from cold ipsum without burning excessive sales calls.</li>
+      </ul>
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+
+      <figure class="video" aria-label="Lorem video figure">
+        <span class="video__play" aria-hidden="true">&#9658;</span>
+      </figure>
+      <p class="video__caption">Lorem ipsum dolor sit amet, watch the 90 second walkthrough.</p>
+
+      <h2 class="h2">Solution</h2>
+      <ul class="list">
+        <li>Record and edit personalized lorem with on-screen graphics in one pass.</li>
+        <li>Share instantly via lorem links pasted from the clipboard.</li>
+        <li>Enhance internal training adoption across distributed teams.</li>
+      </ul>
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <div class="quote">
+        <p class="quote__body">Straight out of the box, our reps were able to use lorem right away without sed do eiusmod tempor incididunt.</p>
+        <div class="quote__attribution">
+          <span class="quote__avatar" aria-hidden="true"></span>
+          <span>
+            <span class="quote__name">Lorem Ipsum</span> &middot; Sales Manager, Dolor Sit
+          </span>
+        </div>
+      </div>
+
+      <h2 class="h2">Results</h2>
+      <ul class="list">
+        <li>19 percent increase in cold ipsum reply rates across the year.</li>
+        <li>$120k from self-sourced outbound deals attributable to lorem outreach.</li>
+        <li>Differentiated personalized outreach that scales without adding headcount.</li>
+      </ul>
+      <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+    </div>
+  </section>
+
+  <!-- RELATED STORIES -->
+  <section class="section" aria-labelledby="related-heading">
+    <h2 class="related__heading" id="related-heading">Other stories</h2>
+    <div class="related__grid">
+      <a class="related__card" href="#">
+        <div class="related__logo" aria-hidden="true"></div>
+        <p class="related__title">How lorem improves employee productivity using ipsum and builds better products for clients.</p>
+      </a>
+      <a class="related__card" href="#">
+        <div class="related__logo" aria-hidden="true"></div>
+        <p class="related__title">How dolor forged a powerful one-team culture using lorem across remote offices.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section aria-labelledby="cta-heading">
+    <div class="cta">
+      <h2 class="cta__heading" id="cta-heading">Lorem powers great campaigns.</h2>
+      <a class="cta__button" href="#">Get lorem for free</a>
+      <p class="cta__subtext">For Mac, Windows, iOS, and Android.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Product</h4>
+        <ul>
+          <li>Lorem</li>
+          <li>Ipsum</li>
+          <li>Dolor</li>
+          <li>Sit amet</li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Solutions</h4>
+        <ul>
+          <li>Consectetur</li>
+          <li>Adipiscing</li>
+          <li>Eiusmod</li>
+          <li>Tempor</li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Resources</h4>
+        <ul>
+          <li>Incididunt</li>
+          <li>Labore</li>
+          <li>Dolore</li>
+          <li>Magna</li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <ul>
+          <li>Aliqua</li>
+          <li>Veniam</li>
+          <li>Nostrud</li>
+          <li>Exercitation</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">
+      <span>(c) 2026 Lorem Inc.</span>
+      <span>Privacy . Terms . Cookies</span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

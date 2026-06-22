@@ -1,0 +1,123 @@
+/*
+ * huggingface-testimonials-001 tokens
+ *
+ * Hugging Face's social-proof equivalent of a testimonials block: the
+ * "More than 50,000 organizations are using Hugging Face" section captured
+ * on the home page and an extended roster of the same pattern on /enterprise.
+ * HF does not ship customer-quote cards in the traditional "headshot + pull
+ * quote" register; the social-proof slot is filled by an organization roster
+ * grid that uses the same atoms cards lists across the rest of the platform
+ * (avatar circle + sentence-case org name + tier chip + model/follower
+ * counts in mono). The proof is community participation rendered as platform
+ * metadata, not curated marketing copy.
+ *
+ * Tokens cross-checked against the system alphabet at
+ * assets/alphabets/hugging-face/tokens.css and against home + /enterprise
+ * captured via WebFetch on 2026-05-20. Surface is pure white with near-black
+ * ink, hugging-face yellow accent reserved for hover and focus, link blue
+ * for the metadata counts, and a tiny PRO/Enterprise chip that uses the
+ * orange shoulder of the accent. Cards stay flat at rest with a 1px
+ * #E5E7EB hairline; this is HF's house chrome.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Page background; HF white. */
+  --ds-surface:      #FFFFFF;   /* Org card surface; flat against page. */
+  --ds-surface-2:    #F3F4F6;   /* Tier chip background and avatar wash. */
+  --ds-text:         #1F2937;   /* Near-black body and org-name ink. */
+  --ds-text-muted:   #6B7280;   /* Metadata "x models, y followers", subtitle "company / non-profit". */
+  --ds-text-strong:  #111827;   /* Section H2 "50,000 organizations" headline emphasis. */
+  --ds-border:       #E5E7EB;   /* Org card hairline; the only chrome cards carry. */
+  --ds-hairline:     #F3F4F6;   /* Sub-divider between header and roster grid. */
+  --ds-accent:       #FFD21E;   /* Hugging-face yellow; reserved for hover halo on the counter. */
+  --ds-accent-2:     #FF9D00;   /* PRO / Enterprise chip warm-orange shoulder. */
+  --ds-success:      #10B981;   /* Reserved; not used in this section. */
+  --ds-warning:      #F59E0B;
+  --ds-error:        #EF4444;
+  --ds-info:         #2563EB;   /* Link blue on the model / follower count tokens. */
+  --ds-focus-ring:   #FFD21E;   /* Yellow keyboard focus halo. */
+
+  /* ---------- Type families ----------
+   * Source Sans 3 (display + body) plus Source Code Pro on every count,
+   * model id, and tier chip. Inter / JetBrains Mono are local fallbacks
+   * for machines without the Adobe families.
+   */
+  --ds-font-display: "Source Sans 3", "Source Sans Pro", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Source Sans 3", "Source Sans Pro", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Source Code Pro", "IBM Plex Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --ds-font-accent:  "Source Sans 3", "Source Sans Pro", sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Tier chip "PRO", metadata "Updated 2h ago". */
+  --ds-text-sm:   14px;   /* Org-card subtitle and count row. */
+  --ds-text-base: 16px;   /* Body baseline; org-name on card. */
+  --ds-text-lg:   18px;   /* Lede paragraph under section head. */
+  --ds-text-xl:   22px;
+  --ds-text-2xl:  28px;   /* Section H2 lower bound. */
+  --ds-text-3xl:  36px;   /* Section H2 "More than 50,000 organizations". */
+  --ds-text-4xl:  44px;
+  --ds-text-5xl:  56px;
+  --ds-text-6xl:  64px;
+  --ds-text-7xl:  88px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;   /* Section H2. */
+  --ds-leading-normal:  1.55;   /* Body and org card. */
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;   /* Section H2. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;    /* Mono kicker "OUR COMMUNITY". */
+
+  /* ---------- Spacing ----------
+   * 4px base. Section rhythm at space-10 (64px); org card padding at
+   * space-4 (16px); grid gap at space-3 (12px) because HF rosters are
+   * dense by design.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;     /* Roster grid gap. */
+  --ds-space-4:  16px;     /* Card interior padding. */
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;     /* Avatar diameter on org cards. */
+  --ds-space-10: 64px;     /* Section vertical rhythm. */
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;     /* Tier chip; HF hard pill (not fully-round). */
+  --ds-radius-md:   8px;     /* Org card. */
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;  /* Avatar circle, PRO badge. */
+
+  /* ---------- Shadows ----------
+   * Flat at rest; hairline-as-chrome is the principle. A soft lift
+   * engages on hover; no theatrical drop shadow even at hover.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(17,24,39,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(17,24,39,0.05);
+  --ds-shadow-md:   0 4px 12px rgba(17,24,39,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(17,24,39,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(17,24,39,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

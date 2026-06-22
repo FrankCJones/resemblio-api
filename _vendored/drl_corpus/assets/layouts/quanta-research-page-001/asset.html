@@ -1,0 +1,511 @@
+<!--
+  Asset: quanta-research-page-001
+  Class: layouts
+  Pattern: editorial-hero, story-card-grid, mono-utility-pair
+  Inspired by: Quanta Magazine (quantamagazine.org/mathematics/)
+  Notes:
+    - Topic / research-index page skeleton: flush-top nav with serif
+      wordmark + topic strip + search, topic kicker plus serif title
+      hero ("What's up in Mathematics"), featured article tile
+      (illustration left, lowercase sans kicker, serif title, dek,
+      byline plus date), four-up recent-articles grid (illustration
+      thumb, lowercase sans kicker, serif title, byline plus date),
+      filter pills band ("Filter by Topics"), numbered pagination,
+      newsletter band, mega-footer.
+    - Variable: section sequence, typographic role per slot,
+      vertical rhythm. Inline: page max-width (1200px), four-up grid
+      breakpoints, featured tile two-column split (5/7), filter pill
+      shape.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-research-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos Headline / Tiempos Text and GT America are Quanta's
+  licensed faces. Source Serif 4 and Inter are the standalone analogs
+  carried in the fallback chains; no font is loaded so the asset opens
+  from disk against system fallbacks.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px lets the four-up grid breathe
+   * without pushing the topic title beyond a comfortable measure.
+   * Inline value; page-grid character, not a contract slot.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, serif wordmark on the left, topic link strip in
+   * the middle, search affordance on the right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Section rhythm. The topic-hub page is a sequence of sections
+   * separated by hairlines and generous block padding. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-10); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Topic hero. Lowercase sans kicker in violet sits above the serif
+   * title. No dek line; the title carries the page. Generous vertical
+   * gap between kicker and title and again between title and the
+   * featured tile.
+   */
+  .topic-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .topic-hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-10); }
+  }
+  .topic-kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-4);
+    text-transform: lowercase;
+  }
+  .topic-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+
+  /*
+   * Featured tile. Two-column split (illustration left, copy right)
+   * on desktop, stacks on mobile. The split is 5/7 so the title
+   * breathes inside its column.
+   */
+  .featured {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .featured {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--ds-space-8);
+    }
+  }
+  .featured__illustration {
+    aspect-ratio: 4 / 3;
+  }
+  .featured__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-3) 0 var(--ds-space-4);
+  }
+  .featured__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /*
+   * Card kicker / byline / date row. Lowercase sans kicker in violet
+   * sits above the serif title on every story tile and grid card.
+   * Byline and date sit in muted sans below the title, separated by
+   * a thin mid-dot.
+   */
+  .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin: 0;
+    text-transform: lowercase;
+  }
+  .meta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .meta__sep {
+    /* Mid-dot separator between byline and date. Inline ornament. */
+    margin-inline: var(--ds-space-2);
+  }
+
+  /*
+   * Recent-articles grid. Four columns on desktop, two on tablet,
+   * one on mobile. Each card is illustration (top), kicker, serif
+   * title, byline + date. No card chrome; the illustration acts as
+   * the only visual edge.
+   */
+  .recent-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .recent-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8) var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .recent-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .recent-grid { grid-template-columns: repeat(4, 1fr); } }
+  .card__thumb {
+    /* Story-card illustration thumb; 4/3 aspect locked. Inline value. */
+    aspect-ratio: 4 / 3;
+    margin-bottom: var(--ds-space-3);
+  }
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-2) 0 var(--ds-space-3);
+  }
+
+  /*
+   * Filter pills. Quanta's topic hubs surface a long block of topic
+   * tags above pagination. Pills are bordered with full radius; the
+   * active pill flips to filled violet on white text. The block wraps.
+   */
+  .filter-heading {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pill {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    background: var(--ds-bg);
+    cursor: pointer;
+  }
+  .pill[aria-pressed="true"] {
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    border-color: var(--ds-accent);
+  }
+
+  /*
+   * Pagination. Numbered links with previous and next chevrons. The
+   * active page lifts to violet text on paper; everything else is
+   * muted sans. Quanta runs into the dozens of pages on a topic hub.
+   */
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    flex-wrap: wrap;
+  }
+  .pagination__page {
+    color: var(--ds-text);
+    padding: var(--ds-space-2) var(--ds-space-3);
+  }
+  .pagination__page[aria-current="page"] {
+    color: var(--ds-accent);
+    font-weight: 600;
+  }
+
+  /*
+   * Newsletter band. Tinted surface with a hairline border. Title in
+   * serif, body in sans muted, inline form with an email input and a
+   * primary CTA. Sits inside the page container.
+   */
+  .newsletter {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-8);
+    text-align: center;
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .newsletter__body {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 48ch;
+  }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-3);
+    max-width: 480px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .newsletter__email {
+    flex: 1 1 240px;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-bg);
+    color: var(--ds-text);
+  }
+  .newsletter__cta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    border: 0;
+    cursor: pointer;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes / illustrations). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a quanta-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem Ipsum</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">topic-strip</span>
+        Physics . Mathematics . Biology . Computer Science . Topics . Archive
+      </div>
+      <div class="slot" style="min-width: 120px;">
+        <span class="slot__label">search</span>
+        Lorem
+      </div>
+    </nav>
+
+    <!-- Section: topic-hero. Lowercase sans kicker + serif title. No dek. -->
+    <header class="topic-hero" aria-label="Topic hero">
+      <p class="topic-kicker">lorem ipsum</p>
+      <h1 class="topic-title">What is up in lorem ipsum</h1>
+    </header>
+
+    <!-- Section: featured tile. Illustration + copy split. -->
+    <section class="section" aria-label="Featured article">
+      <article class="featured">
+        <div class="slot featured__illustration">
+          <span class="slot__label">featured-illustration</span>
+          Lorem ipsum hero illustration
+        </div>
+        <div>
+          <p class="kicker">lorem ipsum kicker</p>
+          <h2 class="featured__title">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do.</h2>
+          <p class="featured__dek">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+          </p>
+          <p class="meta">
+            By Lorem Ipsum
+            <span class="meta__sep">.</span>
+            May 18, 2026
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- Section: recent grid. Four-up illustrated story cards. -->
+    <section class="section" aria-label="Recent articles">
+      <h2 class="recent-heading">Recent lorem ipsum</h2>
+      <div class="recent-grid">
+        <article>
+          <div class="slot card__thumb">
+            <span class="slot__label">card-thumb</span>
+            Lorem
+          </div>
+          <p class="kicker">lorem ipsum</p>
+          <h3 class="card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+          <p class="meta">By Lorem<span class="meta__sep">.</span>May 17, 2026</p>
+        </article>
+        <article>
+          <div class="slot card__thumb">
+            <span class="slot__label">card-thumb</span>
+            Lorem
+          </div>
+          <p class="kicker">lorem ipsum</p>
+          <h3 class="card__title">Sed do eiusmod tempor incididunt ut labore.</h3>
+          <p class="meta">By Ipsum<span class="meta__sep">.</span>May 16, 2026</p>
+        </article>
+        <article>
+          <div class="slot card__thumb">
+            <span class="slot__label">card-thumb</span>
+            Lorem
+          </div>
+          <p class="kicker">lorem ipsum</p>
+          <h3 class="card__title">Ut enim ad minim veniam quis nostrud.</h3>
+          <p class="meta">By Dolor<span class="meta__sep">.</span>May 15, 2026</p>
+        </article>
+        <article>
+          <div class="slot card__thumb">
+            <span class="slot__label">card-thumb</span>
+            Lorem
+          </div>
+          <p class="kicker">lorem ipsum</p>
+          <h3 class="card__title">Excepteur sint occaecat cupidatat non proident.</h3>
+          <p class="meta">By Sit<span class="meta__sep">.</span>May 14, 2026</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: filter pills. Long wrapping block of topic tags. -->
+    <section class="section" aria-label="Filter by topics">
+      <p class="filter-heading">Filter by Topics</p>
+      <ul class="filter-pills">
+        <li><button type="button" class="pill" aria-pressed="true">all lorem</button></li>
+        <li><button type="button" class="pill">lorem ipsum</button></li>
+        <li><button type="button" class="pill">dolor sit</button></li>
+        <li><button type="button" class="pill">amet consectetur</button></li>
+        <li><button type="button" class="pill">adipiscing elit</button></li>
+        <li><button type="button" class="pill">sed do eiusmod</button></li>
+        <li><button type="button" class="pill">tempor incididunt</button></li>
+        <li><button type="button" class="pill">ut labore</button></li>
+        <li><button type="button" class="pill">et dolore magna</button></li>
+        <li><button type="button" class="pill">aliqua</button></li>
+        <li><button type="button" class="pill">ut enim</button></li>
+        <li><button type="button" class="pill">ad minim veniam</button></li>
+      </ul>
+    </section>
+
+    <!-- Section: pagination. Numbered with previous and next chevrons. -->
+    <section class="section" aria-label="Pagination">
+      <nav class="pagination" aria-label="Pages">
+        <a href="#" class="pagination__page" aria-label="Previous page">. Previous</a>
+        <a href="#" class="pagination__page" aria-current="page">1</a>
+        <a href="#" class="pagination__page">2</a>
+        <a href="#" class="pagination__page">3</a>
+        <a href="#" class="pagination__page">4</a>
+        <span aria-hidden="true">...</span>
+        <a href="#" class="pagination__page">68</a>
+        <a href="#" class="pagination__page" aria-label="Next page">Next .</a>
+      </nav>
+    </section>
+
+    <!-- Section: newsletter band. Tinted card inside page container. -->
+    <section class="section" aria-label="Newsletter">
+      <div class="newsletter">
+        <h2 class="newsletter__title">Get the lorem ipsum dispatch</h2>
+        <p class="newsletter__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <form class="newsletter__form" onsubmit="return false;">
+          <label class="visually-hidden" for="nl-email" style="position:absolute;left:-9999px;">Email address</label>
+          <input class="newsletter__email" id="nl-email" type="email" placeholder="you@lorem.ipsum"/>
+          <button class="newsletter__cta" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

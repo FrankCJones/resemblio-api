@@ -1,0 +1,154 @@
+/*
+ * pentagram alphabet tokens
+ *
+ * Pentagram's complete typography expression as one coherent vocabulary.
+ *
+ * One typeface does everything: F37 Plain (a Helvetica-adjacent neo-grotesque
+ * licensed from F37 Foundry) in three weights — Thin 350, Light 375, Regular
+ * 400. No serif, no mono, no display-only cut. The single-family-system is
+ * the Pentagram register; the rhythm of the body and the geometry of the
+ * display are the same face.
+ *
+ * Paper-and-ink palette: paper bg #ffffff, ink #1a1a1a (near-black, not pure
+ * black), muted #767676 for project metadata and captions, hairline #e3e4e5
+ * for the section rules and project-grid dividers. The one chromatic
+ * permission: Pentagram red #e61428, used only as the underline-on-hover
+ * link punctuation. Never as a fill, never as text, never as chrome. Red is
+ * a verb here, not an adjective.
+ *
+ * Token values extracted from
+ * https://www.pentagram.com/build/main/assets/index-D6ZeMubG.css
+ * via curl + grep on 2026-05-20. The CSS uses Pentagram's own --f-display-1
+ * through --f-heading-5 + --f-body-1/--f-body-2 + --f-caption + --f-number
+ * scale; mapped here to the library's --ds-* contract.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink. White paper, near-black ink, mid-grey muted, hairline
+   * grey for rules. Pentagram red is reserved for one moment only: the
+   * link-hover underline. The accent is doubled into the focus-ring slot
+   * because that is the same gesture.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper. Pure white; the gallery wall. */
+  --ds-surface:      #FFFFFF;   /* No raised surface; everything flush. */
+  --ds-surface-2:    #FAFAFA;   /* Scrollbar bg; one tick off paper. */
+  --ds-text:         #1A1A1A;   /* Ink rgb(26,26,26); near-black, not pure. */
+  --ds-text-muted:   #767676;   /* Project metadata, caption, byline. */
+  --ds-text-strong:  #000000;   /* Statement display (rare). */
+  --ds-border:       #E3E4E5;   /* Project-grid card edges. */
+  --ds-hairline:     #E3E4E5;   /* Section rules; swiss-rule kicker hairline. */
+  --ds-accent:       #E61428;   /* Pentagram red; link-hover underline ONLY. */
+  --ds-accent-2:     #E61428;   /* Single chromatic note; no secondary accent. */
+  --ds-success:      #1A1A1A;   /* No state color system; ink stands in. */
+  --ds-warning:      #1A1A1A;
+  --ds-error:        #E61428;
+  --ds-info:         #1A1A1A;
+  --ds-focus-ring:   #E61428;   /* Same red doubled into focus; brand affordance. */
+
+  /* ---------- Type families ----------
+   * Pentagram ships one face: F37 Plain. Three weights cover everything —
+   * Thin (350) for the largest statement display, Light (375) where the
+   * display steps to mid sizes, Regular (400) for body, headings 3-5,
+   * caption, number. The single-typeface-system is the Pentagram move:
+   * no editorial serif, no mono kicker, no display-only cut. Same face
+   * from 131px statement display down to 13px project caption.
+   *
+   * Web-fontless fallback is Helvetica Neue → Helvetica → Arial; the
+   * neo-grotesque structure transfers cleanly.
+   */
+  --ds-font-display: "F37 Plain", "Plain", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "F37 Plain", "Plain", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "F37 Plain", "Plain", "Helvetica Neue", Helvetica, Arial, sans-serif;  /* Same face; Pentagram doesn't ship a mono. */
+  --ds-font-accent:  "F37 Plain", "Plain", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Pentagram's own scale maps cleanly to the library contract:
+   *   --f-display-1: 3.625rem → 4.5625rem → 5.75rem → 8.1875rem
+   *                  (58 / 73 / 92 / 131px responsive)
+   *   --f-heading-1: 2.25 → 2.5625 → 2.875 → 3.25rem (36-52px)
+   *   --f-heading-2: 2 → 2.5625 → 2.875 → 4.0625rem (32-65px)
+   *   --f-heading-3: 1.75 → 2 → 2.25 → 2.5625rem (28-41px)
+   *   --f-heading-4: 1.5 → 1.75 → 2rem (24-32px)
+   *   --f-heading-5: 1 → 1.25 → 1.5rem (16-24px)
+   *   --f-body-1: 1rem (16px)
+   *   --f-body-2, --f-caption, --f-number: .8125rem (13px)
+   * Statement display steps up to 131px at the largest viewport; this is
+   * the oversized-statement register Pentagram is known for.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Caption / project metadata / number (.8125rem). */
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;   /* Body-1 (1rem). */
+  --ds-text-lg:   20px;
+  --ds-text-xl:   24px;   /* Heading-4 small end. */
+  --ds-text-2xl:  32px;   /* Heading-4 large end / Heading-2 small. */
+  --ds-text-3xl:  41px;   /* Heading-3 large end (2.5625rem). */
+  --ds-text-4xl:  52px;   /* Heading-1 large end (3.25rem). */
+  --ds-text-5xl:  65px;   /* Heading-2 large end (4.0625rem). */
+  --ds-text-6xl:  92px;   /* Display-1 desktop (5.75rem). */
+  --ds-text-7xl:  131px;  /* Display-1 1040+ statement (8.1875rem). */
+
+  /* ---------- Line heights ----------
+   * Tight at the top, snug in the middle, normal in body. Display sits at
+   * 1.0-1.1; headings at 1.05-1.2; body at 1.25 (a notch tighter than the
+   * SaaS 1.5 default — the swiss-grid register favors compactness).
+   */
+  --ds-leading-tight:   1.05;   /* Display-1 / Heading-1. */
+  --ds-leading-snug:    1.2;    /* Heading-3 / Heading-4 / Heading-5. */
+  --ds-leading-normal:  1.25;   /* Body / caption (measured). */
+  --ds-leading-relaxed: 1.4;
+  --ds-leading-loose:   1.6;
+
+  /* ---------- Tracking ----------
+   * Negative tracking on display and headings (neo-grotesque convention at
+   * large sizes); zero on body and caption. The largest statement display
+   * pulls to -0.04em; that is the visible Pentagram move at hero scale.
+   * Wide tracking is reserved for the rare uppercase swiss-rule kicker.
+   */
+  --ds-tracking-tight:  -0.02em;   /* Standard headings. */
+  --ds-tracking-normal: 0;          /* Body / caption. */
+  --ds-tracking-wide:   0.06em;    /* Uppercase swiss-rule kicker. */
+  --ds-tracking-wider:  0.12em;    /* Rare; project category lockup. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. The project grid's gutter and vertical rhythm sit at
+   * space-4 / space-5 (16-24px); section breaks at space-10 / space-12.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Zero radius across the board. The swiss-grid register is hard-edged;
+   * Pentagram's project cards, buttons, and form chrome all sit at 0.
+   * The full slot stays in the contract for compatibility but is unused.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * No shadows. Everything flush on the paper. The slots stay for contract
+   * completeness; assets that adopt the Pentagram register set them to none.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   none;
+  --ds-shadow-lg:   none;
+  --ds-shadow-2xl:  none;
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,116 @@
+/*
+ * vercel-customer-story-page-001 tokens
+ *
+ * Native token values for the Vercel customer-story skeleton, inspired by
+ * vercel.com/customers/<slug> (Sonos and Leonardo.AI stories inspected via
+ * WebFetch). The page rides the same Geist marketing chrome as the blog: a
+ * paper-white body, Geist near-black text, Geist Blue reserved for inline
+ * links and focus, and Geist Mono for utility metadata (date, products-used
+ * labels, outcome-metric units). The system manifest
+ * (systems/vercel/system.json) declares this vocabulary; values here mirror
+ * that and the system-tagged atoms shipped earlier (vercel-blog-page-001,
+ * vercel-sales-faq-001, mono-eyebrow-001, hairline-flat-001). WebFetch
+ * returned section order, content roles, byline structure, and confirmed
+ * paper-white palette / Geist Blue accent / sans + mono register but
+ * stripped inline computed styles. Numeric values follow the Geist system
+ * convention from the manifest design_principles rather than devtools reads.
+ *
+ * Layout-specific notes: the narrative reading column sits at ~64ch (inline
+ * rule in asset.html). The outcome-metrics band, products-used aside, CTA
+ * block, and related-grid all widen to the 1280px page container. The
+ * customer logo lockup in the hero is an inline display moment, not a
+ * contract slot.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body surface; Vercel customers default. */
+  --ds-surface:      #FAFAFA;   /* Outcome-metric tile lift; half-step above body. */
+  --ds-surface-2:    #F4F4F5;   /* Tinted surface; aside + related-card placeholders. */
+  --ds-text:         #171717;   /* Geist near-black body reading. */
+  --ds-text-muted:   #737373;   /* Byline, date, metric units, aside metadata. */
+  --ds-text-strong:  #0A0A0A;   /* Hero title display; one step heavier than body. */
+  --ds-border:       #E5E5E5;   /* Card edges, outcome-tile chrome, aside chrome. */
+  --ds-hairline:     rgba(0,0,0,0.08);  /* Section rule alpha. */
+  --ds-accent:       #0070F3;   /* Geist Blue; inline links, focus ring, metric value highlight. */
+  --ds-accent-2:     #171717;   /* Inversion accent; CTA pill in dark on light. */
+  --ds-success:      #17A34A;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #0070F3;
+  --ds-focus-ring:   #0070F3;   /* Geist Blue at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Geist marketing face, Geist Mono utility metadata. Open fallbacks so
+   * the asset renders standalone without licensed faces.
+   */
+  --ds-font-display: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Geist", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono date, product-used labels, metric units. */
+  --ds-text-sm:   14px;   /* Author byline, related-card meta, image caption. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph, pull-quote attribution name. */
+  --ds-text-xl:   24px;   /* Pull-quote body, body H3. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* CTA block heading. */
+  --ds-text-4xl:  56px;   /* Hero H1 display. */
+  --ds-text-5xl:  72px;   /* Outcome-metric value. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Hero title, outcome-metric value. */
+  --ds-leading-snug:    1.2;    /* Pull quote, body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.025em; /* Geist display squeeze. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;   /* Mono kicker / metric unit / aside label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Vercel's small-radii principle: nothing past 8px on cards; pills only
+   * for status dots, CTAs, and avatars.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;    /* Outcome-metric tile, aside, related-card. */
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadow is suppressed; tiles, aside, and
+   * cards lift via 1px border on tinted surface, not via cast shadow.
+   * Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

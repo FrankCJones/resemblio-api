@@ -1,0 +1,107 @@
+/*
+ * stack-trace-flag-001 tokens
+ *
+ * Sentry-inspired vertical stack of status flags. Each row is a service or
+ * component reporting its own state; the column of flags becomes a fleet
+ * dashboard at a glance. Native palette: Sentry's deep violet bg with
+ * magenta-pink accent.
+ *
+ * Values observed via devtools 2026-05-19 on sentry.io:
+ *   body bg: rgb(31, 22, 51) - deep violet
+ *   body text: rgb(255, 255, 255)
+ *   purple band: rgb(78, 42, 154)
+ *   magenta accent: rgb(253, 68, 176)
+ *   error red surfaced in palette: rgb(209, 105, 105)
+ *   body font: Rubik
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #1F1633;   /* Sentry hero bg rgb(31,22,51); deep violet. */
+  --ds-surface:      #2A1F45;   /* One step above bg; flag row chrome. */
+  --ds-surface-2:    #36284F;   /* Two steps above for hovered rows. */
+  --ds-text:         #FFFFFF;   /* Sentry body text. */
+  --ds-text-muted:   #B5A8CC;   /* Lifted lavender; metadata tier. */
+  --ds-text-strong:  #FFFFFF;
+  --ds-border:       #3D2D5A;   /* Row border one tone above surface. */
+  --ds-hairline:     #2A1F45;   /* Matches surface; the cheapest possible separator. */
+  --ds-accent:       #FD44B0;   /* Sentry magenta accent rgb(253,68,176). */
+  --ds-accent-2:     #4E2A9A;   /* Sentry purple band rgb(78,42,154); secondary emphasis. */
+  --ds-success:      #5BD68B;   /* Operational green; chosen to read clearly on the violet bg. */
+  --ds-warning:      #F2A640;   /* Amber. */
+  --ds-error:        #F97583;   /* Sentry error pink-red palette member. */
+  --ds-info:         #6A7AFF;   /* Indigo info. */
+  --ds-focus-ring:   #FD44B0;
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Rubik", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Rubik", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Roboto Mono", ui-monospace, SFMono-Regular, monospace;
+  --ds-font-accent:  "Rubik", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.5);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.6);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.7);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    1800ms;
+}

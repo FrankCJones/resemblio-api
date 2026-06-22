@@ -1,0 +1,398 @@
+<!--
+  Asset: substack-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, editorial-hero, serif-display-sans-body, paper-and-ink
+  Inspired by: Substack
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (white surface + near-black ink + one chromatic accent)
+    - type-pairings/sans-system-modern-001       (serif display paired with humanist sans body)
+    - headings/display-tight-001                 (editorial serif display headline)
+    - buttons/primary-square-001                 (orange rectangle CTA, small radius)
+    - cards/hairline-card-001                    (publication-card chrome below the hero)
+    - dividers/hairline-rule-001                 (Gray hairlines around the topbar)
+  Notes:
+    - Native context: substack.com and substack.com/about, captured via
+      WebFetch 2026-05-20. White canvas, an editorial serif H1 ("Make
+      money doing the work you believe in"), a single sans dek ("Old
+      media models are broken. Substack is building a new one that
+      puts writers, creators, and subscribers in charge."), paired
+      primary (orange-solid "Start your Substack") and secondary
+      (hairline-outline "Learn more") CTAs, and a "Who's here" featured-
+      publication grid (writer cards: avatar, publication name in serif,
+      author meta in sans, paid-subscriber pill) seated immediately
+      below the CTA row. Substack orange (#FF6719) is the documented
+      brand color and the only chromatic moment in the first viewport.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the writer-card paid-subscriber pill rgba glow on
+      hover uses an inline orange stop because the geometry has no
+      contract slot. The avatar gradient backgrounds on each
+      publication card are inline conic-gradient fallbacks standing in
+      for real publication imagery.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Spectral stands in for Substack's editorial display serif on
+     machines without the licensed face; Inter stands in for Soehne UI
+     sans across body, dek, CTA labels, and writer-card meta. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White canvas. The first viewport has exactly one
+   * chromatic moment: the Substack-orange primary CTA. Everything else
+   * is neutral, ruled by hairlines instead of shadows. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: orange wordmark left, sparse sans nav center, sign-in
+   * plus start-your-substack chip right. A single hairline separates
+   * the chrome from the canvas. */
+  .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-accent);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  /* Inline: the Substack S-mark glyph (orange rounded square enclosing
+   * three horizontal bars); no contract slot for arbitrary path data. */
+  .topbar__mark svg { width: 22px; height: 22px; display: block; }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 880px so the serif H1 holds a balanced
+   * two- or three-line shape. Generous vertical padding so the
+   * headline lands well below the chrome. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-10);
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* H1: the editorial serif signature. 56px baseline, scaling to 72px
+   * on wide viewports via clamp. text-wrap: balance holds the two- or
+   * three-line shape Substack's headline writers pace toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading, in muted gray. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* CTA row: orange-solid primary on the left, hairline-outline
+   * secondary on the right. Substack pairs "Start your Substack" with
+   * "Learn more" or "Sign in" on the marketing page. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 14px 22px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: Substack orange focus glow; the rgba stop is hero-
+     * specific and the gradient geometry has no contract slot. */
+    box-shadow: 0 0 0 4px rgba(255, 103, 25, 0.20);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface); }
+
+  /* Publication grid: the "Who's here" row Substack seats below the
+   * hero CTA. Three or four writer cards visible above the fold on
+   * desktop; each card is a hairline-bordered tile with a circular
+   * avatar, a serif publication title, a sans author meta line, and a
+   * small subscribe affordance. The grid is what separates this hero
+   * from a generic SaaS hero: Substack always shows the supply side
+   * of the network in the first viewport. */
+  .grid {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto var(--ds-space-16);
+    padding: 0 var(--ds-space-8);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--ds-space-5);
+  }
+  .grid__label {
+    grid-column: 1 / -1;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+  }
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    transition:
+      transform var(--ds-duration-normal) var(--ds-ease-emphasize),
+      box-shadow var(--ds-duration-normal) var(--ds-ease-emphasize);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .card__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ds-radius-full);
+    /* Inline: each avatar uses a unique conic gradient as a stand-in
+     * for real publication imagery. No contract slot for per-instance
+     * gradient stops. */
+    background: conic-gradient(from 90deg, #FF6719, #FFC371, #FF6719);
+  }
+  .card--two .card__avatar { background: conic-gradient(from 0deg, #1A8917, #5BC25F, #1A8917); }
+  .card--three .card__avatar { background: conic-gradient(from 180deg, #1A1A1A, #5C5C5C, #1A1A1A); }
+  .card--four .card__avatar { background: conic-gradient(from 270deg, #D9382F, #FFB199, #D9382F); }
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .card__meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+  .card__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-accent);
+    padding: 4px 8px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-bg);
+  }
+  .card__subscribe {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: #FFFFFF;
+    background: var(--ds-accent);
+    padding: 6px 12px;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-accent);
+    text-decoration: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a, .card { transition: none; }
+    .card:hover { transform: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: orange S-mark glyph. -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="4" fill="currentColor"/>
+        <rect x="6" y="7" width="12" height="2" fill="#FFFFFF"/>
+        <rect x="6" y="11" width="12" height="2" fill="#FFFFFF"/>
+        <path d="M6 15 L12 21 L18 15 Z" fill="#FFFFFF"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Adipiscing</a>
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+      nisi ut aliquip.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit</a>
+    </div>
+  </section>
+
+  <aside class="grid" aria-label="Lorem ipsum featured publications">
+    <span class="grid__label">Lorem Ipsum Dolor</span>
+
+    <article class="card card--one">
+      <div class="card__avatar" aria-hidden="true"></div>
+      <h3 class="card__title">Lorem Ipsum Dolor</h3>
+      <p class="card__meta">Sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+      <div class="card__footer">
+        <span class="card__pill">Lorem 12k</span>
+        <a href="#" class="card__subscribe">Subscribe</a>
+      </div>
+    </article>
+
+    <article class="card card--two">
+      <div class="card__avatar" aria-hidden="true"></div>
+      <h3 class="card__title">Consectetur Adipiscing</h3>
+      <p class="card__meta">Incididunt ut labore et dolore magna aliqua enim minim veniam.</p>
+      <div class="card__footer">
+        <span class="card__pill">Lorem 48k</span>
+        <a href="#" class="card__subscribe">Subscribe</a>
+      </div>
+    </article>
+
+    <article class="card card--three">
+      <div class="card__avatar" aria-hidden="true"></div>
+      <h3 class="card__title">Quis Nostrud</h3>
+      <p class="card__meta">Exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+      <div class="card__footer">
+        <span class="card__pill">Lorem 7k</span>
+        <a href="#" class="card__subscribe">Subscribe</a>
+      </div>
+    </article>
+
+    <article class="card card--four">
+      <div class="card__avatar" aria-hidden="true"></div>
+      <h3 class="card__title">Duis Aute Irure</h3>
+      <p class="card__meta">Dolor in reprehenderit in voluptate velit esse cillum dolore.</p>
+      <div class="card__footer">
+        <span class="card__pill">Lorem 22k</span>
+        <a href="#" class="card__subscribe">Subscribe</a>
+      </div>
+    </article>
+  </aside>
+</body>
+</html>

@@ -1,0 +1,125 @@
+/*
+ * loom-cta-block-001 tokens
+ *
+ * Tokens for Loom's recurring closing CTA pattern observed on
+ * www.loom.com/, /enterprise, and /pricing (WebFetch 2026-05-20).
+ * Light canvas, near-black ink, a single purple-blue accent carried
+ * by the primary "Get Loom for free" pill. Sentence-case copy, a
+ * mono kicker label cueing the section topic, and a hairline ghost
+ * secondary that holds the enterprise "Contact Sales" path at equal
+ * visual weight. Per the Loom system manifest design_principles:
+ * purple-blue-signature-accent, sentence-case-conversational-copy,
+ * subtle-rounded-corners-not-pills, hairline-card-chrome-no-shadows.
+ *
+ * The purple-blue accent (~#625DF5) is Loom's signature color and
+ * the load-bearing identity moment in this block. WebFetch did not
+ * expose computed values; the hex is consistent with Loom's brand
+ * palette across marketing surfaces over multiple years.
+ */
+:root {
+  /* ---------- Colors ----------
+   * The closing CTA sits flush on the light canvas. No card, no
+   * tinted band, no shadow at rest. The primary pill is the only
+   * saturated moment; the ghost secondary holds the second path
+   * with a hairline border.
+   */
+  --ds-bg:           #FFFFFF;   /* Loom canvas; pure white on marketing surfaces. */
+  --ds-surface:      #F7F7F9;   /* Reserved; subtle nested tint, unused on this asset. */
+  --ds-surface-2:    #EFEFF3;   /* Second-level surface; unused on this asset. */
+  --ds-text:         #1B1A24;   /* Loom ink; near-black with a faint cool cast. */
+  --ds-text-muted:   #5C5B6B;   /* Dek under the headline; one step lighter. */
+  --ds-text-strong:  #0F0E1A;   /* Headline color; strongest contrast against canvas. */
+  --ds-border:       #E5E5EA;   /* Ghost button border at rest; cool hairline. */
+  --ds-hairline:     #EEEEF1;   /* Section separator; rarely visible on the CTA itself. */
+  --ds-accent:       #625DF5;   /* Loom purple-blue signature; carries the primary pill. */
+  --ds-accent-2:     #4F4ADB;   /* Hover darken on the primary. */
+  --ds-success:      #2BB673;
+  --ds-warning:      #F2B544;
+  --ds-error:        #E5484D;
+  --ds-info:         #625DF5;
+  --ds-focus-ring:   #8771FF;   /* Lighter purple cast for the focus outline. */
+
+  /* ---------- Type families ----------
+   * Loom marketing is set in a humanist sans across the surface; no
+   * serif on closing CTAs. Inter stands in as the open-license proxy
+   * for the production face.
+   */
+  --ds-font-display: "Inter", "Söhne", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", "Söhne", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", "Söhne", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Headline target on the closing CTA is the 4xl step (around 56px
+   * on desktop) - Loom runs slightly larger closing display than
+   * Notion's equivalent. Kicker sits at xs mono uppercase.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Mono kicker label. */
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek under the headline. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;   /* CTA headline target on desktop. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.08;   /* Display headline. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.6;    /* Dek. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;   /* Headline. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.16em;    /* Mono kicker. */
+
+  /* ---------- Spacing ----------
+   * 4px grid. CTA block uses space-12 (96px) vertical padding, with
+   * space-3 (12px) between kicker and headline, space-5 (24px)
+   * between headline and dek, space-6 (32px) before the button row.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Subtle rounded corners on the buttons (8px, between Notion's 5px
+   * and a true pill). Loom sits more rounded than dev-tool hard
+   * corners but stops short of full-pill SaaS playfulness.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;     /* Loom button radius. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * No elevation at rest on the CTA block. Soft shadow available
+   * for product-screenshot frames elsewhere in the system.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(27, 26, 36, 0.04);
+  --ds-shadow-sm:   0 2px 6px rgba(27, 26, 36, 0.06);
+  --ds-shadow-md:   0 6px 14px rgba(27, 26, 36, 0.08);
+  --ds-shadow-lg:   0 14px 30px rgba(27, 26, 36, 0.12);
+  --ds-shadow-2xl:  0 24px 56px rgba(27, 26, 36, 0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

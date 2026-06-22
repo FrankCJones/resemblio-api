@@ -1,0 +1,356 @@
+<!--
+  Asset: figma-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, accent-on-neutral, pull-quote-callout
+  Inspired by: Figma blog (/blog/the-figma-agent-is-here, /blog/what-the-design-to-code-loop-unlocks)
+  Notes:
+    - Mechanic: design-tool editorial register on a paper-white Whyte
+      canvas. Category-tag row above the H1 carries plum links and
+      replaces the mono eyebrow used by dev-tool blogs (Vercel). Body
+      column at 720px keeps an editorial measure. Pull-quote callouts
+      on a tinted band, attributed to a named contributor, are the
+      signature interview-style move. Hairlines do all structural
+      chrome; the plum accent earns its visibility by carrying every
+      chromatic role on the page.
+    - Variable: paper-white bg, near-black ink, Figma plum accent,
+      Whyte family across display and body, 18px body at 1.6 leading,
+      56px H1, 720px body measure.
+    - Inline ornament: the 4px-wide plum vertical rule on the pull-
+      quote callout, the soft 12px radius on the callout band, the
+      circular author photos, the comma-separated author-name + role
+      byline format.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>figma-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for Whyte shipped by Figma.
+     JetBrains Mono substitutes for Whyte Mono. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered. The header column runs a touch
+   * wider than the body so the H1 can breathe; body holds at 720px.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ---------------- */
+  .article__header {
+    max-width: 820px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Category-tag kicker row. Figma posts run 4-7 small plum-accent
+   * link pills above the H1. Replaces the mono eyebrow used on
+   * dev-tool blogs. Wrap, soft-radius, sm size, plum text. */
+  .article__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-6);
+  }
+  .article__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-bg);
+    color: var(--ds-accent);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-normal);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__tag:hover {
+    background: var(--ds-surface);
+  }
+
+  /* H1 - bold sans, 4xl (56px), tight leading, negative tracking.
+   * Whyte at this step is what reads as Figma. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-4xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - lg (22px), muted, regular weight, one short paragraph.
+   * Both observed Figma posts ship a single-sentence dek. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  /* Byline strip - author photo (circular) + name + role + date.
+   * Hairline rule above and below the strip carries the section break.
+   * Multi-author posts stack each author block horizontally. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-6);
+    align-items: center;
+    padding: var(--ds-space-5) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .article__author {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .article__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    /* Inline ornament: circular author headshot, the Figma
+     * convention. Filled here with a tinted surface placeholder. */
+  }
+  .article__author-name {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    line-height: 1.3;
+  }
+  .article__author-role {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: 1.3;
+  }
+  .article__date {
+    margin-left: auto;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px - one step wider than Vercel's
+   * 680px to give the editorial register more breathing room.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - plum accent, hairline underline at
+   * rest. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: opacity var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    opacity: 0.78;
+  }
+
+  /* Subhead h2 - bold sans at 2xl, generous gap above. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-5);
+  }
+
+  /* ---------------- Pull-quote callout ----------------
+   * The signature Figma article move. A tinted warm-paper band, a
+   * 4px-wide plum vertical rule on the left, a large sans quote in
+   * the same Whyte display family, attribution beneath with the
+   * speaker's name in heavier weight and their role muted.
+   */
+  .article__callout {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-6) var(--ds-space-8);
+    background: var(--ds-surface);
+    border-left: 4px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    /* Inline ornament: the 4px plum vertical rule is the callout's
+     * signature; remove it and the band reads as a generic aside. */
+  }
+  .article__callout blockquote {
+    margin: 0 0 var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .article__callout-attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .article__callout-attribution strong {
+    color: var(--ds-text-strong);
+    font-weight: 600;
+  }
+
+  /* ---------------- Section break ---------------- */
+  .article__sectionbreak {
+    display: block;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) auto;
+    max-width: 160px;
+    /* Inline ornament: 160px short rule, centered. */
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__callout { padding: var(--ds-space-5) var(--ds-space-6); }
+    .article__callout blockquote { font-size: var(--ds-text-lg); }
+    .article__date { margin-left: 0; width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__tag { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+
+      <div class="article__tags">
+        <a class="article__tag" href="#">Lorem Ipsum</a>
+        <a class="article__tag" href="#">Dolor Sit</a>
+        <a class="article__tag" href="#">Consectetur</a>
+        <a class="article__tag" href="#">Adipiscing</a>
+        <a class="article__tag" href="#">Elit</a>
+      </div>
+
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit fusce</h1>
+
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit.</p>
+
+      <div class="article__meta">
+        <div class="article__author">
+          <span class="article__avatar" aria-hidden="true"></span>
+          <span>
+            <span class="article__author-name">Lorem Ipsum</span>
+            <span class="article__author-role">Product Manager, Lorem</span>
+          </span>
+        </div>
+        <div class="article__author">
+          <span class="article__avatar" aria-hidden="true"></span>
+          <span>
+            <span class="article__author-name">Dolor Amet</span>
+            <span class="article__author-role">Product Designer, Lorem</span>
+          </span>
+        </div>
+        <time class="article__date" datetime="2026-05-20">May 20, 2026</time>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum suspendisse potenti in hac habitasse platea dictumst.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <aside class="article__callout">
+        <blockquote>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa.</blockquote>
+        <div class="article__callout-attribution">
+          <strong>Lorem Ipsum</strong>
+          <span>Lorem Director, Dolor</span>
+        </div>
+      </aside>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae itaque earum rerum hic tenetur a sapiente delectus.</p>
+
+      <aside class="article__callout">
+        <blockquote>The curious lorem ipsum will be the winners here; sapien velit dignissim, in posuere libero augue ac magna integer non nibh.</blockquote>
+        <div class="article__callout-attribution">
+          <strong>Dolor Amet</strong>
+          <span>Lorem Engineer, Ipsum</span>
+        </div>
+      </aside>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla cras justo odio dapibus ac facilisis in egestas eget quam maecenas faucibus mollis interdum ipsum dolor sit amet.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

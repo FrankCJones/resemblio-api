@@ -1,0 +1,136 @@
+/*
+ * loom-pricing-page-001 tokens
+ *
+ * Native token values for the Loom pricing-page skeleton, inspired by
+ * loom.com/pricing (captured 2026-05-20 via WebFetch). Loom's marketing
+ * surface rides a paper-white background with near-black text and the
+ * signature Loom purple-blue accent (#625DF5) reserved for primary CTAs,
+ * the featured-tier highlight, and inline links. Sentence-case
+ * conversational copy, subtle rounded corners (not pills), hairline card
+ * chrome with cast shadows suppressed at rest. Sans-display + sans-body
+ * single-typeface system; mono reserved for metadata.
+ *
+ * WebFetch on loom.com/pricing returned the page section sequence (nav,
+ * hero "Choose the plan that fits your needs." with team-size slider and
+ * monthly/annually toggle plus "SAVE UP TO 17%" badge, four-tier
+ * pricing grid Starter / Business $18 / Business + AI $24 MOST POPULAR /
+ * Enterprise custom, a comparison feature table grouped into thirteen
+ * named categories (Workspace Members & Videos, Loom AI, Team Workspace,
+ * Video Recording, Video Editing, Custom Branding, Content Management,
+ * Video Analytics, Video Interaction, Security and Privacy, Admin
+ * Controls, Support, Integrations), a ten-item FAQ accordion led by
+ * pricing and security questions, a social-proof CTA band "More than 25
+ * million people across 400,000 companies choose Loom" with "Get Loom
+ * for Free" CTA and a six-logo customer strip, and a footer with a
+ * Contact Sales rail). Inline computed styles were stripped; numeric
+ * token values inherit the Loom system convention from
+ * systems/loom/system.json design_principles (purple-blue-signature-
+ * accent, sentence-case-conversational-copy, subtle-rounded-corners-
+ * not-pills, hairline-card-chrome-no-shadows-at-rest). Chrome MCP was
+ * not used this session.
+ *
+ * Layout-specific notes: the page container sits at 1200px on desktop;
+ * the pricing grid is four equal cards on wide screens and stacks two-up
+ * then one-up. The comparison table is full container-width with a
+ * sticky tier-header row. Tier cards take a 12px radius (md); the
+ * Business + AI featured card lifts via a 2px purple-blue border and a
+ * "MOST POPULAR" pill marker rather than full surface inversion. The
+ * brand accent #625DF5 is reserved for primary CTAs, the featured-tier
+ * border / pill, and inline links.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white pricing surface; Loom marketing default. */
+  --ds-surface:      #F7F7FA;   /* Half-step lift; non-featured tier card backgrounds, FAQ rest state. */
+  --ds-surface-2:    #EFEFF5;   /* Tinted surface; comparison-table category-band header strips. */
+  --ds-text:         #1F1F33;   /* Near-black text with cool indigo cast; body reading and table cells. */
+  --ds-text-muted:   #6B6B82;   /* Tier helper text, price-unit metadata, FAQ body. */
+  --ds-text-strong:  #0B0B1A;   /* Page H1, section heads, tier name and price display. */
+  --ds-border:       #E3E3EC;   /* Card and table edges. */
+  --ds-hairline:     rgba(11,11,26,0.08); /* FAQ dividers, table row rules, section breaks. */
+  --ds-accent:       #625DF5;   /* Loom signature purple-blue; primary CTA, featured-tier border, inline links. */
+  --ds-accent-2:     #FF4C8B;   /* Loom secondary magenta accent; reserved for decorative band moments. */
+  --ds-success:      #1FA66B;   /* Comparison-table "included" check glyph. */
+  --ds-warning:      #F2A341;
+  --ds-error:        #E5484D;
+  --ds-info:         #625DF5;
+  --ds-focus-ring:   #625DF5;   /* Brand purple-blue at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Loom ships a humanist-sans for display and body. We fall back through
+   * Inter and system-ui so the asset opens standalone without the
+   * licensed marketing face.
+   */
+  --ds-font-display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono tier label, table cell unit, "SAVE UP TO 17%" badge. */
+  --ds-text-sm:   14px;   /* Tier feature list, table cell text, FAQ utility. */
+  --ds-text-base: 16px;   /* Body reading default. */
+  --ds-text-lg:   20px;   /* Tier name, FAQ question. */
+  --ds-text-xl:   24px;   /* CTA band heading. */
+  --ds-text-2xl:  32px;   /* Section heads (Compare plans, FAQ). */
+  --ds-text-3xl:  40px;   /* Tier price display ($18). */
+  --ds-text-4xl:  52px;   /* Pricing hero H1. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* Hero H1, tier price. */
+  --ds-leading-snug:    1.2;    /* Section heads, tier name. */
+  --ds-leading-normal:  1.45;   /* Tier feature list, table cells. */
+  --ds-leading-relaxed: 1.6;    /* FAQ answer body. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Display sans squeeze on hero H1, tier price. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono tier label, "MOST POPULAR" pill, comparison category band. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Subtle-rounded-corners principle: tier cards at md (12px); the
+   * comparison-table outer chrome matches. Pills only for status badges
+   * (SAVE UP TO 17%, MOST POPULAR) and segmented toggles; CTAs take md
+   * radius (not full pill) per Loom's chrome.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;   /* Tier cards, table chrome, primary CTA button. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px; /* SAVE badge, MOST POPULAR pill, billing toggle. */
+
+  /* ---------- Shadows ----------
+   * Hairline-card-chrome principle: cast shadows suppressed at rest;
+   * cards lift via 1px border. Hover and modal slots retain shadow
+   * values for completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(11,11,26,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(11,11,26,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(11,11,26,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(11,11,26,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(11,11,26,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

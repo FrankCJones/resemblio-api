@@ -1,0 +1,777 @@
+<!--
+  Asset: substack-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, editorial-hero, story-card-grid, mega-footer
+  Inspired by: Substack (substack.com/about)
+  Notes:
+    - About-page skeleton for a creator-economy platform: top-bar nav
+      with dropdown menu cluster, an editorial mission hero ("Make money
+      doing the work you believe in"), a 4-up value-prop band, an
+      earnings-calculator card, a network-growth band with a centered
+      creator testimonial, a 4-up creator-types feature grid, a legal
+      support band (Substack Defender), an N-up creator-cards grid
+      ("Who's here") with a second testimonial inline, a 5-up
+      built-in-tools feature band with a third testimonial inline, a
+      final dual-CTA closing block, and a four-column mega-footer.
+      The about page argues by mechanics + social proof + feature
+      evidence; there is no founder narrative, no timeline, no team
+      grid (those sections genuinely absent from the live page).
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, reading column, section sequence, and
+      4-up / 5-up grid rhythm are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Substack ships an editorial serif (Quincy CL family) for
+  display and a humanist sans (Apercu / GT America in production) for
+  body. The marketing surface mirrors the writing surface so the about
+  page reads as continuous with a published newsletter. GT Super and
+  Inter are the open-source substitutes; Georgia is the system fallback.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px (Substack runs slightly wider than
+   * Notion; the creator-cards and feature grids breathe in 4-up at
+   * desktop). Gutter 24px on mobile, 48px on desktop. Inline value:
+   * 1200px; not a contract slot.
+   */
+  .page {
+    max-width: 1200px;             /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Narrow reading column for hero supporting copy and testimonial
+   * pull quotes. About 60ch keeps the editorial register intact. */
+  .column {
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a soft hairline rule between blocks. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section + .section { border-top: 1px solid var(--ds-hairline); }
+
+  /* Hero gets the extra vertical breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Sits flush at the top with a hairline rule beneath,
+   * no floating-pill chrome. The Substack canonical: orange wordmark
+   * left, dropdown menu triggers (Resources, Creators, Explore) center,
+   * "Start publishing" pill CTA plus "Sign in" right. Inline values:
+   * the 64px height and the sticky top offset are inline ornament
+   * specific to this nav shell, not contract slots.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.92);                /* paper glass; inline ornament */
+    backdrop-filter: saturate(180%) blur(20px);           /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 64px;                                         /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);                              /* signature orange wordmark */
+  }
+
+  /* Hero. Editorial register: large serif display headline centered,
+   * supporting paragraph, then a single primary-pill CTA. No hero
+   * illustration on the Substack about page; the headline carries
+   * the block. */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 16ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) auto 0;
+    max-width: 52ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta-wrap {
+    margin-top: var(--ds-space-8);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Value-prop band. 4-up grid of (bold short heading + 1-2 line
+   * support copy). No card chrome; the values sit directly on the
+   * page surface. Collapses to 2-up at tablet, 1-up at mobile. */
+  .value-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .value-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .value-grid { grid-template-columns: repeat(4, 1fr); } }
+  .value__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .value__body {
+    margin: 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+  }
+
+  /* Earnings calculator card. A single centered card with subtle
+   * surface and hairline border; holds the slider + price tier UI
+   * + computed earnings figure. The single card frame on the page. */
+  .calculator-card {
+    max-width: 880px;
+    margin: 0 auto;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+  }
+
+  /* Section heading shared style: small kicker above title, centered. */
+  .section-heading { margin-bottom: var(--ds-space-8); text-align: center; }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 24ch;
+  }
+  .section-heading__support {
+    margin: var(--ds-space-4) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Stats row inside the network-growth band. Three large numerals
+   * with kicker labels beneath; centered. */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    text-align: center;
+  }
+  @media (min-width: 768px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+  .stat__number {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    display: block;
+  }
+  .stat__label {
+    margin-top: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+  }
+
+  /* Inline testimonial blocks. Centered, italic editorial serif at
+   * 2xl with attribution beneath. The page carries three of these;
+   * each interrupts a feature band rather than living in a dedicated
+   * testimonials wall. */
+  .testimonial {
+    max-width: 760px;
+    margin: var(--ds-space-10) auto 0;
+    text-align: center;
+    padding-block: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .testimonial__text {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .testimonial__text { font-size: var(--ds-text-2xl); }
+  }
+  .testimonial__attribution {
+    display: block;
+    margin-top: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-style: normal;
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  /* Creator-types feature grid. 4-up at desktop, each cell is an
+   * image + heading + 2-line copy + inline "Learn more" link. No
+   * card chrome; the image is the frame. */
+  .feature-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .feature-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .feature-grid-4 { grid-template-columns: repeat(4, 1fr); } }
+  .feature__media {
+    aspect-ratio: 4 / 3;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    margin-bottom: var(--ds-space-5);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .feature__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .feature__body {
+    margin: 0 0 var(--ds-space-4);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+  }
+  .feature__link {
+    color: var(--ds-accent);
+    font-weight: 600;
+  }
+
+  /* Legal-support band. Two-column at desktop (heading left,
+   * description + inline link right); collapses to 1-up at mobile.
+   * Sits on the surface tone, not stark white. */
+  .legal-band {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+  }
+  @media (min-width: 768px) { .legal-band { grid-template-columns: 1fr 1.6fr; } }
+
+  /* Creator cards grid ("Who's here"). 4-up at desktop, each card
+   * has a hairline border, logo + creator name kicker + publication
+   * title + 2-line description. The page ships 16 of these; the
+   * skeleton shows 8 to demonstrate the rhythm. */
+  .creator-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .creator-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .creator-grid { grid-template-columns: repeat(4, 1fr); } }
+  .creator-card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+  }
+  .creator__logo {
+    width: 56px; height: 56px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    margin-bottom: var(--ds-space-4);
+  }
+  .creator__name {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-1);
+  }
+  .creator__publication {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    line-height: var(--ds-leading-snug);
+  }
+  .creator__body {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+  }
+
+  /* Built-in tools band. 5-up alternating image-text blocks; the
+   * skeleton shows 5 entries stacked vertically with a media frame
+   * + heading + copy. */
+  .tools-stack {
+    display: grid;
+    gap: var(--ds-space-10);
+  }
+  .tool-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: center;
+  }
+  @media (min-width: 768px) { .tool-row { grid-template-columns: 1fr 1fr; } }
+  .tool-row__media {
+    aspect-ratio: 16 / 10;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tool-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .tool-row__body {
+    margin: 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+  }
+
+  /* Final CTA band. Centered closing call-to-action, two buttons
+   * (primary orange pill + secondary "Talk to our team about
+   * Enterprise" ghost). Sits on the surface tone with rounded
+   * corners for a deliberate close. */
+  .section--cta-final {
+    text-align: center;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    margin-top: var(--ds-space-10);
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .cta__headline { font-size: var(--ds-text-4xl); }
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-8);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Footer band: full-width, sits outside .page container, single
+   * hairline rule above. Substack ships a four-column footer
+   * (Discover / Creators / Company / Resources) plus app-download
+   * badges and a legal line. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/substack-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 420px;">
+          <span class="slot__label">dropdown-cluster</span>
+          Resources / Creators / Explore
+        </div>
+        <div class="slot" style="min-width: 220px;">
+          <span class="slot__label">auth-and-cta</span>
+          Sign in / Start publishing (orange pill)
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: hero. Editorial register, centered, large serif headline, supporting paragraph, single orange-pill primary CTA. No hero illustration. -->
+    <section class="section section--hero" aria-label="Hero">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-wrap">
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">primary-cta-orange-pill</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: 4-up value props (free to start / earn right away / build audience / grow faster). No card chrome. -->
+    <section class="section" aria-label="Value propositions">
+      <div class="value-grid">
+        <div>
+          <h3 class="value__title">Lorem ipsum dolor</h3>
+          <p class="value__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        </div>
+        <div>
+          <h3 class="value__title">Lorem ipsum dolor</h3>
+          <p class="value__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        </div>
+        <div>
+          <h3 class="value__title">Lorem ipsum dolor</h3>
+          <p class="value__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        </div>
+        <div>
+          <h3 class="value__title">Lorem ipsum dolor</h3>
+          <p class="value__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: earnings calculator. Single centered card with slider UI; the only true card frame on the page. -->
+    <section class="section" aria-label="Earnings calculator">
+      <div class="section-heading">
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="calculator-card">
+        <div class="slot" style="min-height: 220px;">
+          <span class="slot__label">slider-with-tier-pricing-and-computed-earnings</span>
+          Lorem ipsum dolor sit amet
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: network growth. Section heading + 3-up stats row + inline testimonial breaking the band. -->
+    <section class="section" aria-label="Network growth">
+      <div class="section-heading">
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+        <p class="section-heading__support">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+      </div>
+      <div class="stats-row">
+        <div>
+          <span class="stat__number">99M+</span>
+          <span class="stat__label">Lorem ipsum</span>
+        </div>
+        <div>
+          <span class="stat__number">1M+</span>
+          <span class="stat__label">Lorem ipsum dolor</span>
+        </div>
+        <div>
+          <span class="stat__number">30%+</span>
+          <span class="stat__label">Lorem ipsum</span>
+        </div>
+      </div>
+      <figure class="testimonial">
+        <p class="testimonial__text">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna.
+        </p>
+        <span class="testimonial__attribution">Lorem Ipsum, Lorem Publication</span>
+      </figure>
+    </section>
+
+    <!-- Section: creator-types feature grid (media companies / writers / podcasters / experts). 4-up at desktop. -->
+    <section class="section" aria-label="Creator types">
+      <div class="section-heading">
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="feature-grid-4">
+        <div>
+          <div class="feature__media slot"><span class="slot__label">image</span>4:3 frame</div>
+          <h3 class="feature__title">Lorem ipsum</h3>
+          <p class="feature__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+          <a class="feature__link" href="#">Lorem more</a>
+        </div>
+        <div>
+          <div class="feature__media slot"><span class="slot__label">image</span>4:3 frame</div>
+          <h3 class="feature__title">Lorem ipsum</h3>
+          <p class="feature__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+          <a class="feature__link" href="#">Lorem more</a>
+        </div>
+        <div>
+          <div class="feature__media slot"><span class="slot__label">image</span>4:3 frame</div>
+          <h3 class="feature__title">Lorem ipsum</h3>
+          <p class="feature__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+          <a class="feature__link" href="#">Lorem more</a>
+        </div>
+        <div>
+          <div class="feature__media slot"><span class="slot__label">image</span>4:3 frame</div>
+          <h3 class="feature__title">Lorem ipsum</h3>
+          <p class="feature__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+          <a class="feature__link" href="#">Lorem more</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: legal support band (Substack Defender). 2-up split: heading left, description + link right. Surface-tinted. -->
+    <section class="section" aria-label="Legal support">
+      <div class="legal-band">
+        <div>
+          <h2 class="section-heading__title" style="text-align: left; max-width: none;">Lorem ipsum dolor.</h2>
+        </div>
+        <div>
+          <p class="value__body" style="font-size: var(--ds-text-lg);">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p style="margin-top: var(--ds-space-4);">
+            <a class="feature__link" href="#">Lorem ipsum about Lorem</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: who's here creator-cards grid (16 on live page; 8 shown here). Inline testimonial breaks the band near the bottom. -->
+    <section class="section" aria-label="Featured creators">
+      <div class="section-heading">
+        <span class="section-heading__kicker">Lorem ipsum</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+        <p class="section-heading__support">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor.
+        </p>
+      </div>
+      <div class="creator-grid">
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="creator-card">
+          <div class="creator__logo"></div>
+          <span class="creator__name">Lorem Ipsum</span>
+          <h3 class="creator__publication">Lorem Publication</h3>
+          <p class="creator__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+      </div>
+      <figure class="testimonial">
+        <p class="testimonial__text">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore.
+        </p>
+        <span class="testimonial__attribution">Lorem Ipsum, Lorem Publication</span>
+      </figure>
+    </section>
+
+    <!-- Section: built-in tools (5 alternating image-text rows). Inline testimonial breaks the band at the end. -->
+    <section class="section" aria-label="Built-in tools">
+      <div class="section-heading">
+        <h2 class="section-heading__title">Lorem ipsum dolor.</h2>
+      </div>
+      <div class="tools-stack">
+        <div class="tool-row">
+          <div class="tool-row__media slot"><span class="slot__label">product-shot</span>16:10 frame</div>
+          <div>
+            <h3 class="tool-row__title">Lorem ipsum dolor sit.</h3>
+            <p class="tool-row__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+        </div>
+        <div class="tool-row">
+          <div>
+            <h3 class="tool-row__title">Lorem ipsum dolor.</h3>
+            <p class="tool-row__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <div class="tool-row__media slot"><span class="slot__label">product-shot</span>16:10 frame</div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-row__media slot"><span class="slot__label">product-shot</span>16:10 frame</div>
+          <div>
+            <h3 class="tool-row__title">Lorem ipsum dolor.</h3>
+            <p class="tool-row__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+        </div>
+        <div class="tool-row">
+          <div>
+            <h3 class="tool-row__title">Lorem ipsum dolor sit amet.</h3>
+            <p class="tool-row__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <div class="tool-row__media slot"><span class="slot__label">product-shot</span>16:10 frame</div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-row__media slot"><span class="slot__label">product-shot</span>16:10 frame</div>
+          <div>
+            <h3 class="tool-row__title">Lorem ipsum dolor.</h3>
+            <p class="tool-row__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+        </div>
+      </div>
+      <figure class="testimonial">
+        <p class="testimonial__text">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna.
+        </p>
+        <span class="testimonial__attribution">Lorem Ipsum, Lorem Publication</span>
+      </figure>
+    </section>
+
+    <!-- Section: final closing CTA. Dual-button (primary orange pill + ghost enterprise CTA). Surface-tinted background. -->
+    <section class="section--cta-final" aria-label="Closing CTA">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur.</h2>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">primary-cta-orange-pill</span>
+          Lorem ipsum
+        </div>
+        <div class="slot" style="min-width: 240px;">
+          <span class="slot__label">secondary-ghost-cta</span>
+          Lorem enterprise
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/substack-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (4 link columns: Discover / Creators / Company / Resources + app-download badges + legal line)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

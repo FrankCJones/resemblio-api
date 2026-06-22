@@ -1,0 +1,102 @@
+<!--
+  Asset: text-underline-001
+  Class: inputs
+  Pattern: (none in TAXONOMY; underline-only input pattern)
+  Inspired by: Notion
+  Notes:
+    - Borderless text input; the input itself carries zero chrome. Label floats above in muted ink, a 1px hairline underlines the input field, thickens to ink on focus.
+    - The underline is the only structural mark; everything else is type rhythm.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>text-underline-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- NotionInter is Notion's Inter variant; system Inter is the close fallback. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-bottom: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-border); /* underline-only chrome at rest */
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .field-label {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: none;
+  }
+  .field-input {
+    background: transparent;
+    color: var(--ds-text);
+    border: 0;
+    padding: 0;
+    height: 26px; /* inline: Notion signup input height */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    outline: none;
+  }
+  .field-input::placeholder { color: var(--ds-text-muted); }
+  .field.is-focus,
+  .field:focus-within { border-bottom: 2px solid var(--ds-focus-ring); padding-bottom: 7px; }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block { padding-top: var(--ds-space-5); border-top: 1px solid var(--ds-border); }
+  .block:first-child { border-top: 0; padding-top: 0; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="block">
+      <div class="state-label">rest</div>
+      <div class="field">
+        <label class="field-label" for="i1">Email address</label>
+        <input class="field-input" id="i1" type="email" placeholder="name@example.com"/>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">focus</div>
+      <div class="field is-focus">
+        <label class="field-label" for="i2">Email address</label>
+        <input class="field-input" id="i2" type="email" placeholder="name@example.com"/>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">filled</div>
+      <div class="field">
+        <label class="field-label" for="i3">Email address</label>
+        <input class="field-input" id="i3" type="email" value="lorem@ipsum.co"/>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

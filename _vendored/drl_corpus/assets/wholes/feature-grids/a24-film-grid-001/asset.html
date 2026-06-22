@@ -1,0 +1,366 @@
+<!--
+  Asset: a24-film-grid-001
+  Class: feature-grids (whole)
+  Pattern: story-card-grid, image-bleed, mono-eyebrow
+  Inspired by: A24 Films (a24films.com home + /films)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/a24-cinematic-palette-001 (cinema-black, paper-white)
+    - type-pairings/a24-cinematic-pair-001   (Inter Tight display + mono kicker)
+  Notes:
+    - A24's /films catalog presents the work as an editorial film magazine,
+      not a marketing storefront. The grid groups by section ("Upcoming",
+      "All Films"); each tile is a 16x9 poster-art still that DOES the
+      coloring, with mono release date above and "Directed by X" credit
+      below. Status ("Coming Soon") sits in mono, tracked wide.
+    - The mechanic to steal: the poster carries the chromatic load, so the
+      surround stays disciplined ink. No card chrome, no shadow lift, no
+      accent badge - the still IS the visual event. Hover lifts the title
+      from paper-white to pure white; the still itself stays put.
+    - Three columns at desktop, two at tablet, one at mobile. Mobile uses
+      the 8x10 portrait crop (the source ships both) so the type-stack
+      below stays readable on phone.
+    - Lorem ipsum throughout. Real tokens.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-film-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Tight stands in for A24's GT America / Söhne register. Open-licensed
+     and proportionally close. JetBrains Mono carries the date / status. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-8) var(--ds-space-5);
+  }
+
+  .a24-catalog {
+    max-width: 1480px;
+    margin: 0 auto;
+  }
+
+  /* Section heading. Mixed-case display sans, tracked-tight. Sits flush left
+   * above the grid, with the mono section-count to the right. */
+  .a24-section {
+    padding-top: var(--ds-space-10);
+  }
+  .a24-section + .a24-section {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  .a24-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--ds-space-8);
+    gap: var(--ds-space-5);
+  }
+
+  .a24-section__title {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+
+  .a24-section__count {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-weight: 400;
+    font-size: var(--ds-text-xs);
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* The grid. Three columns at desktop, two at tablet, one at mobile.
+   * Gap is generous; the cinema field is meant to breathe between stills. */
+  .a24-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-8) var(--ds-space-5);
+  }
+
+  @media (max-width: 1024px) {
+    .a24-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .a24-grid { grid-template-columns: 1fr; gap: var(--ds-space-10); }
+  }
+
+  /* Tile. Link-as-block, no card chrome. The poster carries the visual weight;
+   * the type stack below is editorial credits, not a marketing caption. */
+  .a24-tile {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* The poster. 16x9 on desktop, 8x10 (portrait) on mobile - matches the
+   * dual crops A24's CDN serves. The image is the dominant visual event;
+   * it bleeds to the tile edge with only a 2px near-sharp radius. */
+  .a24-tile__poster {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-xs);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--ds-border);
+  }
+  @media (max-width: 640px) {
+    .a24-tile__poster { aspect-ratio: 8 / 10; }
+  }
+
+  /* Stand-in for the poster art. In production this is an <img> sourced
+   * from atwenty-four.transforms.svdcdn.com. Here, a per-tile washed
+   * gradient stands in so the asset opens standalone. Each wash is inline
+   * ornament - one-off per-tile character, not a contract role. */
+  .a24-tile__poster-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #3A2B1F 0%, #1A0F08 100%);
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .a24-tile--rust   .a24-tile__poster-fill { background: linear-gradient(160deg, #6A2A1E 0%, #1A0806 100%); }
+  .a24-tile--moss   .a24-tile__poster-fill { background: linear-gradient(160deg, #2E3A24 0%, #0F1408 100%); }
+  .a24-tile--bone   .a24-tile__poster-fill { background: linear-gradient(160deg, #C8B8A0 0%, #5A4E3E 100%); }
+  .a24-tile--blue   .a24-tile__poster-fill { background: linear-gradient(160deg, #1F3548 0%, #07101A 100%); }
+  .a24-tile--ochre  .a24-tile__poster-fill { background: linear-gradient(160deg, #A07A35 0%, #2E2110 100%); }
+  .a24-tile--ink    .a24-tile__poster-fill { background: linear-gradient(160deg, #2A2522 0%, #0A0908 100%); }
+
+  /* Optional status pip. Mono uppercase, tracked wide. Sits over the
+   * poster at top-left, with a hairline backplate for legibility against
+   * arbitrary art. "Coming Soon" / "In Theaters" / etc. */
+  .a24-tile__status {
+    position: absolute;
+    top: var(--ds-space-3);
+    left: var(--ds-space-3);
+    padding: 4px 8px;
+    /* 4/8 inline: this is a tight chip padding tuned to 12px mono,
+     * not a contract role. */
+    background: rgba(10, 9, 8, 0.7);
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    border-radius: var(--ds-radius-xs);
+    /* Faint hairline so the chip reads as a label, not a button. */
+    box-shadow: var(--ds-shadow-xs);
+  }
+
+  /* Meta stack below the poster. Three rows: mono date kicker, mixed-case
+   * title, muted "Directed by" credit. No card chrome, no separator rule -
+   * the visual weight of the poster does the framing. */
+  .a24-tile__meta {
+    padding-top: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+
+  .a24-tile__date {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    line-height: 1;
+  }
+
+  .a24-tile__title {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .a24-tile__director {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Hover. Restrained. The title lifts to pure white; the poster art
+   * scales by 2% inside its frame (the frame's overflow:hidden masks
+   * the bleed). No shadow, no card lift. Editorial register. */
+  .a24-tile:hover .a24-tile__title,
+  .a24-tile:focus-visible .a24-tile__title {
+    color: var(--ds-text-strong);
+  }
+  .a24-tile:hover .a24-tile__poster-fill,
+  .a24-tile:focus-visible .a24-tile__poster-fill {
+    transform: scale(1.02);
+  }
+
+  .a24-tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .a24-tile__poster-fill { transition: none; }
+    .a24-tile:hover .a24-tile__poster-fill { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="a24-catalog">
+
+    <section class="a24-section" aria-labelledby="sect-upcoming">
+      <header class="a24-section__head">
+        <h2 class="a24-section__title" id="sect-upcoming">Upcoming</h2>
+        <p class="a24-section__count">04 / Lorem</p>
+      </header>
+
+      <div class="a24-grid">
+
+        <a class="a24-tile a24-tile--rust" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+            <span class="a24-tile__status" aria-label="Status">Coming Soon</span>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">May 29, 2026</p>
+            <h3 class="a24-tile__title">Lorem Ipsum Dolor</h3>
+            <p class="a24-tile__director">Directed by Aenean Posuere</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--moss" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+            <span class="a24-tile__status" aria-label="Status">Coming Soon</span>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">July 17, 2026</p>
+            <h3 class="a24-tile__title">Sit Amet Consectetur</h3>
+            <p class="a24-tile__director">Directed by Maecenas Vulputate</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--bone" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+            <span class="a24-tile__status" aria-label="Status">Coming Soon</span>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">September 4, 2026</p>
+            <h3 class="a24-tile__title">Vestibulum Auctor</h3>
+            <p class="a24-tile__director">Directed by Quisque Tincidunt</p>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="a24-section" aria-labelledby="sect-all">
+      <header class="a24-section__head">
+        <h2 class="a24-section__title" id="sect-all">All Films</h2>
+        <p class="a24-section__count">2025</p>
+      </header>
+
+      <div class="a24-grid">
+
+        <a class="a24-tile a24-tile--blue" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">2025</p>
+            <h3 class="a24-tile__title">Adipiscing Elit Sed</h3>
+            <p class="a24-tile__director">Directed by Donec Pharetra</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--ochre" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">2025</p>
+            <h3 class="a24-tile__title">Eiusmod Tempor</h3>
+            <p class="a24-tile__director">Directed by Suspendisse Lacinia</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--ink" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">2025</p>
+            <h3 class="a24-tile__title">Incididunt Labore</h3>
+            <p class="a24-tile__director">Directed by Curabitur Faucibus</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--rust" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">2025</p>
+            <h3 class="a24-tile__title">Magna Aliqua Ut</h3>
+            <p class="a24-tile__director">Directed by Fusce Convallis</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--moss" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">2025</p>
+            <h3 class="a24-tile__title">Enim Veniam Quis</h3>
+            <p class="a24-tile__director">Directed by Praesent Egestas</p>
+          </div>
+        </a>
+
+        <a class="a24-tile a24-tile--bone" href="#">
+          <div class="a24-tile__poster">
+            <div class="a24-tile__poster-fill"></div>
+          </div>
+          <div class="a24-tile__meta">
+            <p class="a24-tile__date">2025</p>
+            <h3 class="a24-tile__title">Nostrud Exercitation</h3>
+            <p class="a24-tile__director">Directed by Sed Ullamcorper</p>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

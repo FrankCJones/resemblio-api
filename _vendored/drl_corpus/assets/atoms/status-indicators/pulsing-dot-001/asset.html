@@ -1,0 +1,106 @@
+<!--
+  Asset: pulsing-dot-001
+  Class: status-indicators
+  Pattern: (none)
+  Inspired by: Vercel (Geist status indicator on vercel.com/contact/sales)
+  Notes:
+    - Three states: operational (steady green), checking (pulsing blue), incident (steady red).
+    - Pulse is reserved for in-progress; steady states never animate.
+    - Dot diameter and label size are variables; the pulse keyframe shape is inline ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pulsing-dot-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist family; the marketing system Vercel ships across vercel.com. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-5);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* The indicator is the focus of this asset: a 10px dot, fully round,
+   * inline-flex with its uppercase mono label. The label inherits the dot's
+   * color so the pair reads as a single state token. */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    line-height: 1;
+  }
+
+  .status__dot {
+    /* Exact Vercel indicator dimensions observed via devtools 2026-05-19. */
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    flex-shrink: 0;
+    display: inline-block;
+    background: currentColor;
+  }
+
+  .status--ok      { color: var(--ds-success); }
+  .status--check   { color: var(--ds-info); }
+  .status--down    { color: var(--ds-error); }
+
+  /* Pulse only on the in-progress ("check") state. The steady states sit
+   * still; reserving motion for live work is the canonical move. */
+  @media (prefers-reduced-motion: no-preference) {
+    .status--check .status__dot {
+      animation: ds-pulse var(--ds-duration-slow) var(--ds-ease-standard) infinite;
+    }
+  }
+
+  @keyframes ds-pulse {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .meta {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-top: var(--ds-space-5);
+  }
+</style>
+</head>
+<body>
+  <span class="status status--ok">
+    <span class="status__dot" aria-hidden="true"></span>
+    Lorem ipsum operational
+  </span>
+
+  <span class="status status--check" role="status" aria-live="polite">
+    <span class="status__dot" aria-hidden="true"></span>
+    Lorem ipsum checking
+  </span>
+
+  <span class="status status--down">
+    <span class="status__dot" aria-hidden="true"></span>
+    Lorem ipsum incident
+  </span>
+
+  <div class="meta">Lorem ipsum dolor sit amet</div>
+</body>
+</html>

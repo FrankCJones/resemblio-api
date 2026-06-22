@@ -1,0 +1,112 @@
+/*
+ * codrops-image-trail-001 tokens
+ *
+ * Hover-driven image reveal motion primitive inspired by the Codrops (Tympanus)
+ * playground demo "Grid Item Reveal Animation on Hover" (March 2024). The
+ * native mechanic clips images on a 10x10 grid from a zero-area edge polygon
+ * out to a full rectangle on hover, paired with brightness 300% to 100% and
+ * a 1.5 to 1 inner scale over GSAP duration 0.95 on the power4 curve. Colors
+ * and type honor the source's dark-portfolio register: pure-black field,
+ * warm-grey body, off-white titles, mustard hover accent.
+ */
+:root {
+  /* Colors - source literals from :root in base.css */
+  --ds-bg:          #000000;            /* The demo's --color-bg literal. */
+  --ds-surface:     #0E0E0E;            /* One step above page; quiet card field. */
+  --ds-surface-2:   #161616;            /* Second tier for image frames at rest. */
+  --ds-text:        #777674;            /* The demo's --color-text and --color-link literal. */
+  --ds-text-muted:  #555452;            /* Quieter metadata grey, derived from --color-text. */
+  --ds-text-strong: #FFFFFF;            /* The demo's --color-title and --color-link-works literal. */
+  --ds-border:      #2A2A28;            /* Inferred hairline; warm-neutral to match text. */
+  --ds-hairline:    #1A1A18;            /* Subtler divider for stage rules. */
+  --ds-accent:      #F4D88C;            /* The demo's --color-link-hover mustard accent. */
+  --ds-accent-2:    #EEAE30;            /* The demo's --color-link-works-current saturated mustard. */
+  --ds-success:     #2E8B57;
+  --ds-warning:     #EEAE30;            /* Same mustard reused for warning slot in this register. */
+  --ds-error:       #C92A2A;
+  --ds-info:        #F4D88C;
+  --ds-focus-ring:  #F4D88C;            /* Mustard hover color escalates as the focus ring. */
+
+  /* Type - source uses Onest sans across the whole site
+   * The Onest family is open-source; loaded via Google Fonts in asset.html. */
+  --ds-font-display: "Onest", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Onest", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "Menlo", monospace;
+  --ds-font-accent:  "Onest", system-ui, -apple-system, sans-serif;
+
+  /* Type sizes - source uses root font-size: 12.5px and clamp(2rem, 8vw, 9rem)
+   * for the page title; we map the title moment to 6xl/7xl steps. */
+  --ds-text-2xs: 10px;
+  --ds-text-xs:  12px;
+  --ds-text-sm:  14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:  19px;
+  --ds-text-xl:  24px;                  /* Source's .frame__works links bump from 1.5rem (~19px). */
+  --ds-text-2xl: 32px;
+  --ds-text-3xl: 44px;
+  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;
+  --ds-text-6xl: 96px;
+  --ds-text-7xl: 144px;                 /* Hero title upper bound; ~9rem at 16px root. */
+
+  /* Line heights - source sets line-height: 0.9 on the main title, 1.4 on tagline */
+  --ds-leading-tight:   1;              /* Title hugs; the demo runs 0.9 for the main moment. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.4;            /* Source tagline literal. */
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking - source relies on uppercase + Onest's native spacing; no overrides */
+  --ds-tracking-tight:  -0.015em;       /* Display titles lean tight. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;         /* Uppercase nav labels. */
+  --ds-tracking-wider:  0.14em;         /* Mono metadata rows. */
+
+  /* Spacing - source --page-padding is 1.5rem mobile / 2.5rem desktop;
+   * grid-row-gap 1rem, grid-column-gap 2rem on the frame. */
+  --ds-space-0: 0;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;                   /* 1rem grid-row-gap literal. */
+  --ds-space-5: 24px;                   /* 1.5rem mobile page padding literal. */
+  --ds-space-6: 32px;                   /* 2rem grid-column-gap literal. */
+  --ds-space-8: 48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii - source uses no rounding on images, .frame__menu is sharp */
+  --ds-radius-none: 0;                  /* The image frames are sharp; the source uses 0. */
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* Shadows - source uses none on the grid; we declare a quiet scale for
+   * the stage furniture (label chips, replay button) and keep grid items flat. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 1px 1px rgba(0,0,0,0.18);
+  --ds-shadow-sm:  0 2px 6px rgba(0,0,0,0.22);
+  --ds-shadow-md:  0 6px 18px rgba(0,0,0,0.3);
+  --ds-shadow-lg:  0 18px 40px rgba(0,0,0,0.42);
+  --ds-shadow-2xl: 0 32px 80px rgba(0,0,0,0.5);
+
+  /* Motion - clip-path hover reveal pairing
+   * The source uses GSAP 'power4' (in and out) at duration 0.95s for the
+   * reveal and 'sine.in' for the nav fade-in. CSS approximations:
+   * power4.out is ~ cubic-bezier(0.16, 1, 0.3, 1); we map that onto
+   * --ds-ease-emphasize for the headline moment.
+   * duration-slow (950ms) matches the source's 0.95s tween length.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.16, 1, 0.3, 1);   /* Native 'power4.out'; the curve this primitive demonstrates. */
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  600ms;          /* Title and video fade tier; matches source's 0.6s. */
+  --ds-duration-slow:    950ms;          /* The image reveal duration this primitive uses; matches GSAP duration 0.95. */
+}

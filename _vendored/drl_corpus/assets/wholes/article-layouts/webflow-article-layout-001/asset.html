@@ -1,0 +1,339 @@
+<!--
+  Asset: webflow-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, accent-on-neutral, callout-aside
+  Inspired by: Webflow blog (/blog/introducing-webflow-aeo, /blog/simplified-plans-and-updated-pricing-2026)
+  Notes:
+    - Mechanic: visual-tool marketing register on a white canvas. Webflow
+      Blue (#146EF5) does inline links, the category kicker, and the focus
+      ring; gray-600 (#5A5A5A) carries dek, byline, and date. WF Visual
+      Sans owns display and body; hairlines do all structural chrome.
+      Byline includes author plus role in the same line (the Webflow
+      convention - "Caroline Ren, Product Marketing Lead").
+    - Variable: white bg, near-black ink, Webflow Blue accent, WF Visual
+      Sans family, 16px body at 1.6 leading, 64px H1, 40px H2.
+    - Inline ornament: the 720px body measure, the bullet glyph separating
+      author from role in the byline, the tinted gray-100 callout panel
+      with a left blue bar, the avatar monogram circle.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for WF Visual Sans Variable.
+     Both are humanist sans with weight axes and screen-tuned metrics. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Centered container; header runs to 760px, body column to 720px.
+   * Webflow's actual blog runs a wider 800px-ish measure; we tighten one
+   * step to keep the asset reading as the editorial register it surfaces.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ---------------- */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Category kicker - sentence-case, Webflow Blue accent, no uppercase.
+   * The Webflow convention is a normal-case category label (e.g. "Inside
+   * Webflow") that links back to the category index, NOT the mono
+   * uppercase eyebrow that dev-tool sites ship. Holding it in the accent
+   * color is the load-bearing move - the category reads as a link, not
+   * as decoration. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-accent);
+    text-decoration: none;
+    margin-bottom: var(--ds-space-5);
+  }
+  .article__kicker:hover { color: var(--ds-accent-2); }
+
+  /* Article headline - WF Visual Sans at the H1 step (64px desktop),
+   * tight leading, mild negative tracking. The face carries the
+   * personality; no need to crush tracking further. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - sans at lg (20px), muted gray-600, regular weight. The Webflow
+   * blog reliably ships a one-paragraph dek that tells the reader what
+   * the post argues; it sits between the H1 and the byline. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  /* Byline block - author monogram circle, author name + role on one line,
+   * then publish + last-updated dates on a second line. The author/role
+   * pairing is the Webflow convention; both blog posts inspected ship
+   * this format ("Caroline Ren, Product Marketing Lead"). */
+  .article__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-5);
+    padding-bottom: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .article__avatar {
+    /* Inline ornament: 40px circle avatar monogram. Webflow uses real
+     * author photos; we render a colored monogram for the asset demo. */
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .article__byline-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+  }
+  .article__author {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .article__author a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .article__author a:hover { color: var(--ds-accent); }
+  .article__role {
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    /* Inline ornament: bullet glyph separating name and role. Webflow's
+     * byline runs the two as a comma-separated pair; the bullet here
+     * sharpens the visual rhythm without changing the semantic order. */
+  }
+  .article__role::before {
+    content: "·";
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-text-muted);
+  }
+  .article__dates {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+  .article__dates time + time::before {
+    content: "Updated";
+    margin: 0 var(--ds-space-2) 0 var(--ds-space-3);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px. Reading register sits at 16px / 1.6;
+   * Webflow's body anchor. One step below Vercel's 18px / 1.6 (their
+   * dev-tool reading register) and one step above the SaaS 14/1.5 default.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: var(--ds-space-10) auto 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link - Webflow Blue at rest with a hairline underline; deepens
+   * to Blue-600 on hover. The underline-at-rest is the Webflow blog
+   * convention (different from the dev-tool default of no-underline). */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* H2 subhead inside body - WF Visual Sans at H3 step (40px), the
+   * inside-content section head Webflow ships on /blog posts. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-5);
+  }
+
+  /* Inline code - Inconsolata on a faint gray-100 inset chip. Reserved
+   * for short identifiers inside prose. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.92em;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.1em 0.4em;
+  }
+
+  /* ---------------- Callout panel ----------------
+   * Tinted gray-100 panel with a leading blue bar. On the Webflow blog
+   * this is where customer testimonials and product-quote callouts live
+   * (both inspected posts shipped this pattern - the AEO post had two
+   * customer testimonial callouts; the pricing post had timeline-box
+   * callouts in the same chrome).
+   */
+  .article__callout {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-6) var(--ds-space-8);
+    margin: var(--ds-space-8) 0;
+    position: relative;
+    /* Inline ornament: a 4px Webflow Blue bar on the leading edge.
+     * Marks the panel as an authored aside; not a contract slot. */
+  }
+  .article__callout::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--ds-space-5);
+    bottom: var(--ds-space-5);
+    width: 4px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+  }
+  .article__callout p {
+    margin: 0 0 var(--ds-space-3);
+    color: var(--ds-text);
+  }
+  .article__callout p:last-child { margin-bottom: 0; }
+  .article__callout cite {
+    display: block;
+    font-style: normal;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-weight: 500;
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__body h2 { font-size: var(--ds-text-xl); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__kicker { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <a class="article__kicker" href="#">Lorem Ipsum</a>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula longum</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos lectus.</p>
+      <div class="article__byline">
+        <div class="article__avatar" aria-hidden="true">LI</div>
+        <div class="article__byline-meta">
+          <span class="article__author">
+            <a href="#">Lorem Ipsum</a><span class="article__role">Dolor Sit Amet Lead</span>
+          </span>
+          <span class="article__dates">
+            <time datetime="2026-04-13">April 13, 2026</time>
+            <time datetime="2026-04-24">April 24, 2026</time>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. The token <code>--ds-accent</code> carries the single chromatic role.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <aside class="article__callout">
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        <cite>Lorem Ipsum, Dolor Sit Amet at Consectetur Inc.</cite>
+      </aside>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. <a href="#">Nemo enim ipsam voluptatem</a> quia voluptas sit aspernatur aut odit aut fugit.</p>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+
+      <h2>Pellentesque habitant morbi</h2>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit nullam id dolor.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

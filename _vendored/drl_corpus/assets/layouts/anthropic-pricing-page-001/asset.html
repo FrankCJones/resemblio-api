@@ -1,0 +1,485 @@
+<!--
+  Asset: anthropic-pricing-page-001
+  Class: layouts
+  Pattern: three-tier-pricing-table, feature-comparison-matrix, faq-accordion, paper-and-ink
+  Inspired by: Anthropic (anthropic.com/pricing, redirects to claude.com/pricing)
+  Notes:
+    - Pricing-page skeleton in the Anthropic warm-paper register: nav,
+      pricing-hero, three-up pricing-table with one recommended tier,
+      full feature-comparison table, faq band, cta band, mega-footer.
+    - Tier cards and the recommended-tier ring are the variables; hairline
+      rules, surface color, and section padding rhythm match the other
+      Anthropic system layouts so the three compose into one page.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-pricing-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. 1280px max-width with 24px (mobile) / 48px (desktop)
+   * gutters; same as the other anthropic system layouts so the three
+   * compose without a step change. Inline value: 1280px; not a contract slot.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Section rhythm. 96px desktop, 48px mobile, hairline between every
+   * section. Hero gets the extra step (128px) for emphasis.
+   */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Slot placeholder treatment (recurs across system layouts). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Nav: flush-top, hairline beneath. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero. Editorial statement + dek + plan-question utility link. */
+  .hero__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin-top: var(--ds-space-6);
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /*
+   * Pricing table: three-up tier cards on desktop, stacked on mobile.
+   * The middle card is the recommended tier; it gets the clay-crimson
+   * ring and a small badge above the price figure. All three cards
+   * sit on white surface; the recommended card stays the same surface
+   * color to keep parity, marked only by the ring (the affordance is
+   * geometry, not chroma).
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .tier-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-6); }
+  }
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier--recommended {
+    border: 2px solid var(--ds-accent);
+    border-radius: var(--ds-radius-lg);
+    position: relative;
+  }
+  .tier__badge {
+    position: absolute;
+    top: calc(var(--ds-space-3) * -1);
+    left: var(--ds-space-6);
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+  }
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+  }
+  .tier__price-figure {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-unit {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__cta {
+    /* Inline pattern; downstream replaced by a real button atom. */
+    display: inline-block;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    background: var(--ds-text-strong);
+    color: var(--ds-surface);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    border-radius: var(--ds-radius-sm);
+    text-align: center;
+  }
+  .tier--recommended .tier__cta { background: var(--ds-accent); }
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .tier__features li::before {
+    /* Inline check-glyph; not a contract slot, named here as ornament. */
+    content: "+";
+    color: var(--ds-accent);
+    margin-right: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+  }
+
+  /*
+   * Feature comparison table. Sticky header row on desktop; row
+   * dividers at hairline weight; first column reads left-aligned,
+   * tier columns center-aligned. Categories grouped by a sub-header
+   * row that spans all columns.
+   */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare-table th, .compare-table td {
+    text-align: left;
+    padding: var(--ds-space-4) var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .compare-table thead th {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+  }
+  .compare-table tbody td {
+    text-align: center;
+    color: var(--ds-text-muted);
+  }
+  .compare-table .group-row th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    padding-top: var(--ds-space-6);
+    background: var(--ds-surface-2);
+  }
+
+  /* FAQ band: stacked question/answer rows separated by hairline. */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-5);
+  }
+  .faq-item:last-child { border-bottom: 0; }
+  .faq-item__q {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .faq-item__a {
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+    margin: 0;
+  }
+
+  /* CTA band: centered statement + ink-fill primary button. */
+  .cta {
+    text-align: center;
+    padding-block: var(--ds-space-10);
+  }
+  .cta__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    max-width: 32ch;
+    margin: 0 auto var(--ds-space-6);
+  }
+
+  /* Footer band: full-width outside .page. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/anthropic-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Try Lorem
+      </div>
+    </nav>
+
+    <!-- Section: pricing-hero. Editorial statement, no imagery. -->
+    <section class="section section--hero" aria-label="Pricing hero">
+      <p class="hero__kicker">Lorem ipsum pricing</p>
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua ut
+        enim ad minim veniam.
+      </p>
+    </section>
+
+    <!-- Section: pricing-table. Three tiers, middle one recommended. -->
+    <section class="section" aria-label="Plans">
+      <div class="tier-grid">
+
+        <article class="tier">
+          <h2 class="tier__name">Lorem</h2>
+          <div class="tier__price">
+            <span class="tier__price-figure">$0</span>
+            <span class="tier__price-unit">/ lorem</span>
+          </div>
+          <a class="tier__cta" href="#">Lorem ipsum</a>
+          <ul class="tier__features">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Incididunt ut labore</li>
+          </ul>
+        </article>
+
+        <article class="tier tier--recommended">
+          <span class="tier__badge">Lorem ipsum</span>
+          <h2 class="tier__name">Ipsum</h2>
+          <div class="tier__price">
+            <span class="tier__price-figure">$17</span>
+            <span class="tier__price-unit">/ lorem</span>
+          </div>
+          <a class="tier__cta" href="#">Lorem dolor</a>
+          <ul class="tier__features">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Incididunt ut labore et dolore</li>
+            <li>Magna aliqua ut enim ad</li>
+            <li>Minim veniam quis nostrud</li>
+          </ul>
+        </article>
+
+        <article class="tier">
+          <h2 class="tier__name">Dolor</h2>
+          <div class="tier__price">
+            <span class="tier__price-figure">$100</span>
+            <span class="tier__price-unit">/ lorem</span>
+          </div>
+          <a class="tier__cta" href="#">Lorem sit amet</a>
+          <ul class="tier__features">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Incididunt ut labore et dolore</li>
+            <li>Magna aliqua</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: feature-comparison. Full matrix; rows grouped by category. -->
+    <section class="section" aria-label="Feature comparison">
+      <table class="compare-table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">Lorem</th>
+            <th scope="col">Lorem</th>
+            <th scope="col">Ipsum</th>
+            <th scope="col">Dolor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-row"><th scope="rowgroup" colspan="4">Lorem ipsum category</th></tr>
+          <tr><th scope="row">Lorem ipsum dolor</th><td>&bull;</td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Sit amet consectetur</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Adipiscing elit sed</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+
+          <tr class="group-row"><th scope="rowgroup" colspan="4">Dolor sit category</th></tr>
+          <tr><th scope="row">Eiusmod tempor incididunt</th><td>&bull;</td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Ut labore et dolore</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Magna aliqua ut enim</th><td></td><td></td><td>&bull;</td></tr>
+
+          <tr class="group-row"><th scope="rowgroup" colspan="4">Amet consectetur category</th></tr>
+          <tr><th scope="row">Minim veniam quis</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Nostrud exercitation ullamco</th><td></td><td></td><td>&bull;</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: faq. Stacked Q/A rows. -->
+    <section class="section" aria-label="Frequently asked questions">
+      <div class="slot" style="background: transparent; border: 0; padding: 0; margin-bottom: var(--ds-space-6); color: var(--ds-text);">
+        <span class="slot__label">section-heading</span>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3 class="faq-item__q">Lorem ipsum dolor sit amet consectetur?</h3>
+          <p class="faq-item__a">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-item__q">Sed do eiusmod tempor incididunt ut labore?</h3>
+          <p class="faq-item__a">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-item__q">Duis aute irure dolor in reprehenderit?</h3>
+          <p class="faq-item__a">
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa
+            qui officia deserunt mollit anim id est laborum.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-item__q">Voluptate velit esse cillum dolore?</h3>
+          <p class="faq-item__a">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: cta. Centered statement + ink-fill primary button slot. -->
+    <section class="section" aria-label="Closing call to action">
+      <div class="cta">
+        <p class="cta__statement">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        <div class="slot" style="display: inline-block; min-width: 180px; background: transparent;">
+          <span class="slot__label">cta-button-pair</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band, full-width. Stands in for wholes/footers/anthropic-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

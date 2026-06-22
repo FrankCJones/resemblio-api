@@ -1,0 +1,166 @@
+<!--
+  Asset: byline-portrait-avatar-001
+  Class: avatars
+  Pattern: (none)
+  Inspired by: Robin Sloan
+  Notes:
+    - The portrait carries no chrome: no border-radius, no ring, no card, no caption frame. The raw photo IS the byline. Inspected via WebFetch on robinsloan.com/about which returned the literal img tag with no class and no inline styles.
+    - Variable parts: portrait aspect ratio, max-width, surface palette. Inline ornament: the "by" connector and the dotted dateline rule. Both are one-off character moments that do not earn contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>byline-portrait-avatar-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Filosofia, Trade Gothic Next, and Kyrios are commercial faces (Emigre, Linotype, Stephen Nixon). The asset uses system fallbacks; the comment in tokens.css records the live stack. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  /* The byline section header. Kyrios-style serif at display-snug; reads as a writer's chapter header rather than a UI label. */
+  .section-eyebrow {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .section-title {
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-6) 0;
+  }
+
+  /* The portrait itself. No border-radius, no border, no shadow. Aspect ratio holds 7:8 to match the source 840x960 ratio. The wrapper exists only to bound the max-width and reserve aspect-ratio space; nothing visual on it. */
+  .portrait {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 7 / 8;
+    margin: 0 0 var(--ds-space-6) 0;
+    background-image: linear-gradient(160deg, #C9A77E 0%, #8C5A38 55%, #4A2E1F 100%);
+    /* inline gradient: stands in for the photographic portrait; the variable parts are size and aspect-ratio, the gradient itself is placeholder ornament */
+    border-radius: var(--ds-radius-none); /* the load-bearing detail: zero corner radius */
+  }
+
+  /* The byline strip - lorem name, italic role, dotted rule. The role italic is the editorial signal; the dotted rule is a one-off ornament tuned to a personal-site register. */
+  .byline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .byline .connector {
+    color: var(--ds-text-muted);
+    font-style: italic;
+    font-family: var(--ds-font-accent);
+    margin-right: var(--ds-space-1);
+  }
+  .byline .author-name {
+    font-family: var(--ds-font-body);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .byline .author-role {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    color: var(--ds-text-muted);
+  }
+
+  .dateline {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    border-top: 1px dotted var(--ds-border); /* inline: dotted rule is character-specific; not a hairline contract value */
+    padding-top: var(--ds-space-3);
+    margin-top: var(--ds-space-6);
+  }
+  .dateline a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .dateline a:hover { color: var(--ds-accent-2); }
+
+  /* Three-up demo strip for sizing variants on the same untreated-portrait pattern */
+  .variants {
+    margin-top: var(--ds-space-12);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+    align-items: end;
+  }
+  .variant { text-align: left; }
+  .variant .label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-top: var(--ds-space-3);
+  }
+  .variant-sm .portrait { max-width: 120px; margin: 0; }
+  .variant-md .portrait { max-width: 180px; margin: 0; }
+  .variant-lg .portrait { max-width: 240px; margin: 0; }
+
+  hr.section-rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) 0;
+  }
+</style>
+</head>
+<body>
+  <section class="stage">
+    <p class="section-eyebrow">About the writer</p>
+    <h2 class="section-title">Lorem ipsum dolor sit amet</h2>
+    <div class="portrait" role="img" aria-label="Portrait of the author (placeholder)"></div>
+    <p class="byline">
+      <span class="connector">by</span>
+      <span class="author-name">Lorem Ipsum</span>,
+      <span class="author-role">a writer, printer, and manufacturer</span>
+    </p>
+    <p class="dateline">
+      Maecenas tempus, Oakland &middot; <a href="#">consectetur adipiscing elit</a>
+    </p>
+
+    <hr class="section-rule"/>
+
+    <div class="variants">
+      <figure class="variant variant-sm">
+        <div class="portrait" role="img" aria-label="Portrait small"></div>
+        <figcaption class="label">small</figcaption>
+      </figure>
+      <figure class="variant variant-md">
+        <div class="portrait" role="img" aria-label="Portrait medium"></div>
+        <figcaption class="label">medium</figcaption>
+      </figure>
+      <figure class="variant variant-lg">
+        <div class="portrait" role="img" aria-label="Portrait large"></div>
+        <figcaption class="label">large</figcaption>
+      </figure>
+    </div>
+  </section>
+</body>
+</html>

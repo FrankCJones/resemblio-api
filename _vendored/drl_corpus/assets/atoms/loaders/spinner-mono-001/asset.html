@@ -1,0 +1,148 @@
+<!--
+  Asset: spinner-mono-001
+  Class: loaders
+  Pattern: (none)
+  Inspired by: Vercel Geist (12-bar opacity-cycle spinner on vercel.com)
+  Notes:
+    - Twelve radial bars share one center; each bar fades opacity 1 -> 0.15 on a staggered cycle.
+    - No element ever literally rotates; the spin illusion comes from sequential opacity drops.
+    - Three sizes shown (16px button-inline, 24px form-row, 32px page-loader); single accent color.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>spinner-mono-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+    align-items: flex-start;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    font-family: var(--ds-font-mono);
+  }
+
+  /* Spinner: a fixed square frame whose --spinner-size drives every internal
+   * measurement. The twelve bars are absolutely positioned children, each
+   * rotated to its station around the center, then translated outward so
+   * they read as radial spokes. */
+  .spinner {
+    --spinner-size: 24px;
+    --bar-color: var(--ds-text-strong);
+    position: relative;
+    width: var(--spinner-size);
+    height: var(--spinner-size);
+    color: var(--bar-color);
+    flex-shrink: 0;
+  }
+  .spinner--sm { --spinner-size: 16px; }
+  .spinner--md { --spinner-size: 24px; }
+  .spinner--lg { --spinner-size: 32px; }
+
+  .bar {
+    position: absolute;
+    top: 0;
+    left: calc(50% - (var(--spinner-size) / 24));
+    width: calc(var(--spinner-size) / 12);
+    height: calc(var(--spinner-size) * 0.28);
+    background: currentColor;
+    border-radius: var(--ds-radius-full);
+    transform-origin: center calc(var(--spinner-size) / 2);
+    opacity: 0.15;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bar {
+      animation: ds-spinner-opacity var(--ds-duration-slow) linear infinite;
+    }
+  }
+  @keyframes ds-spinner-opacity {
+    0%   { opacity: 1; }
+    100% { opacity: 0.15; }
+  }
+
+  /* Twelve bars, one per clock hour. Each is rotated 30deg further than the
+   * previous, and starts its opacity cycle 1/12th of the cycle later. */
+  .bar:nth-child(1)  { transform: rotate(  0deg); animation-delay: 0s; }
+  .bar:nth-child(2)  { transform: rotate( 30deg); animation-delay: -0.1s; }
+  .bar:nth-child(3)  { transform: rotate( 60deg); animation-delay: -0.2s; }
+  .bar:nth-child(4)  { transform: rotate( 90deg); animation-delay: -0.3s; }
+  .bar:nth-child(5)  { transform: rotate(120deg); animation-delay: -0.4s; }
+  .bar:nth-child(6)  { transform: rotate(150deg); animation-delay: -0.5s; }
+  .bar:nth-child(7)  { transform: rotate(180deg); animation-delay: -0.6s; }
+  .bar:nth-child(8)  { transform: rotate(210deg); animation-delay: -0.7s; }
+  .bar:nth-child(9)  { transform: rotate(240deg); animation-delay: -0.8s; }
+  .bar:nth-child(10) { transform: rotate(270deg); animation-delay: -0.9s; }
+  .bar:nth-child(11) { transform: rotate(300deg); animation-delay: -1.0s; }
+  .bar:nth-child(12) { transform: rotate(330deg); animation-delay: -1.1s; }
+
+  /* Button with inline spinner for the small-size demo row. */
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    height: 32px;
+    padding: 0 var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+  .button .spinner { --bar-color: var(--ds-bg); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <button class="button" type="button" aria-busy="true">
+      <span class="spinner spinner--sm" role="status" aria-label="Loading">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </span>
+      Lorem ipsum
+    </button>
+    <span>16px, inline button</span>
+  </div>
+
+  <div class="row">
+    <span class="spinner spinner--md" role="status" aria-label="Loading">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </span>
+    <span>24px, form row</span>
+  </div>
+
+  <div class="row">
+    <span class="spinner spinner--lg" role="status" aria-label="Loading">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </span>
+    <span>32px, page loader</span>
+  </div>
+</body>
+</html>

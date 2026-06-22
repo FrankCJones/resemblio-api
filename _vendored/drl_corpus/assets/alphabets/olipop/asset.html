@@ -1,0 +1,349 @@
+<!--
+  Asset: olipop
+  Class: alphabets
+  Pattern: serif-display-sans-body, mono-utility-pair, mono-eyebrow, primary-pill, oversized-statement
+  Inspired by: Olipop (drinkolipop.com homepage, product navigation cards)
+  Notes:
+    - The full Olipop typography vocabulary as one specimen: WindsorEF
+      UltraHeavy weight 900 for every display moment, Ano humanist sans
+      for body and button chrome, mono reserved strictly for functional-
+      claim eyebrows ("9G PREBIOTICS", "2-5G SUGAR").
+    - Button labels run sentence-case in Ano weight 600-700, NOT all-caps.
+      The retro-soda chunky display carries personality; chrome stays calm.
+    - Inline ornament: the pill button radius, the candy-bright color
+      blocking (mint / pink / yellow / forest), and the forest-on-cream
+      brand chord are character moments specific to this surface.
+    - Web-font substitutes: WindsorEF -> Alfa Slab One (chunky display
+      analog, open-license); Ano -> Manrope (humanist sans analog);
+      mono -> JetBrains Mono.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for proprietary WindsorEF / Ano:
+   - Alfa Slab One: chunky retro display analog for WindsorEF UltraHeavy.
+   - Manrope: humanist sans analog for Ano body and button chrome.
+   - JetBrains Mono: stand-in for functional-claim eyebrow mono.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* ---------- Hero display block ---------- */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+  }
+
+  .eyebrow-mono {
+    /* Mono claim eyebrow. STRICT use: functional benefits only. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-success);
+    margin: 0;
+  }
+
+  .display-hero {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);   /* 88px hero. */
+    font-weight: 900;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Button row (pill chrome) ---------- */
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ds-font-body);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    border: 0;
+    text-decoration: none;
+  }
+
+  /* Primary forest pill (the Olipop CTA). */
+  .btn--primary {
+    background: var(--ds-text-strong);
+    color: #FFFFFF;
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    padding: var(--ds-space-2) var(--ds-space-4);
+  }
+
+  /* Secondary outline pill. */
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 0.8px solid var(--ds-border);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 4px 20px;
+  }
+
+  /* Action-yellow pill. */
+  .btn--accent {
+    background: var(--ds-accent);
+    color: var(--ds-text);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    padding: 11px 30px;
+  }
+
+  /* ---------- Section heads ---------- */
+  .h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);   /* 40px (measured live). */
+    font-weight: 900;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);    /* 24px. */
+    font-weight: 900;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* ---------- Body article ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+  }
+  .body-block p a {
+    color: var(--ds-text-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 600;
+  }
+
+  /* ---------- Claims band (mono eyebrows + value) ---------- */
+  .claims {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-5);
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-text-strong);
+  }
+  .claims .claim {
+    display: flex; flex-direction: column; gap: var(--ds-space-1);
+  }
+  .claims .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+  }
+  .claims .value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 900;
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 110px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label,
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text-strong);
+    line-height: 1.05;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 900;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-strong);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 600; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <!-- Hero display moment: chunky retro-soda WindsorEF on cream. -->
+    <header class="hero">
+      <p class="eyebrow-mono">9G PREBIOTICS · 2-5G SUGAR</p>
+      <h1 class="display-hero">Lorem ipsum dolor sit amet</h1>
+      <p class="dek">Consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus.</p>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="#">Shop All</a>
+        <a class="btn btn--ghost" href="#">Shop 9g Fiber</a>
+        <a class="btn btn--accent" href="#">Accept Offer</a>
+      </div>
+    </header>
+
+    <section class="claims" aria-label="Functional claims band">
+      <div class="claim"><span class="label">Fiber</span><span class="value">9g</span></div>
+      <div class="claim"><span class="label">Sugar</span><span class="value">2-5g</span></div>
+      <div class="claim"><span class="label">Calories</span><span class="value">35</span></div>
+    </section>
+
+    <section class="body-block">
+      <h2 class="h2">Shop limited edition flavors</h2>
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus. Praesent <a href="#">nec elementum nibh</a> sapien at lorem fermentum vivamus.</p>
+      <h3 class="h3">Donec ut tortor</h3>
+      <p>Aenean fermentum magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia.</p>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">6xl display</span>
+        <span class="step-size">88 / 1.05</span>
+        <span class="step-sample" style="font-size:88px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">64 / 1.05</span>
+        <span class="step-sample" style="font-size:64px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">40 / 1.10</span>
+        <span class="step-sample" style="font-size:40px;">Shop limited edition flavors</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">24 / 1.10</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg body</span>
+        <span class="step-size">18 / 1.40</span>
+        <span class="step-sample body" style="font-size:18px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">16 / 1.40</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm button</span>
+        <span class="step-size">14 / 1.20</span>
+        <span class="step-sample body" style="font-size:14px; font-weight:600;">Shop All 9g Fiber</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono</span>
+        <span class="step-size">12 / 1.20</span>
+        <span class="step-sample mono" style="font-size:12px;">9G PREBIOTICS · CLAIM EYEBROW</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>WindsorEF UltraHeavy 900</b></span>
+      <span>body · <b>Ano 400 / 600 / 700</b></span>
+      <span>button label · <b>Ano 600-700, sentence-case (not all-caps)</b></span>
+      <span>mono eyebrow · <b>JetBrains Mono 600, claims only</b></span>
+      <span>base · <b>16px / 22.4px (~1.40)</b></span>
+      <span>brand chord · <b>forest #034638 on cream #FFFBF5</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

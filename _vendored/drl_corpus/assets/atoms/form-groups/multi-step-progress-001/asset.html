@@ -1,0 +1,162 @@
+<!--
+  Asset: multi-step-progress-001
+  Class: form-groups
+  Pattern: label-above
+  Inspired by: Anthropic (Claude contact-sales)
+  Notes:
+    - Progress strip sits above the active form group; current step is filled, completed steps carry a check, future steps are muted outline.
+    - The strip is connected by a thin progress rail behind the step dots; the rail fills to the current step.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>multi-step-progress-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Anthropic Sans is the shipped face; system-ui is the fallback. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-4);
+  }
+  .progress {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-bottom: var(--ds-space-8);
+    gap: 0;
+  }
+  .progress::before {
+    content: "";
+    position: absolute;
+    left: 14px;                           /* inline: pulls the rail inside the first dot center */
+    right: 14px;                          /* inline: stops the rail at the last dot center */
+    top: 14px;                            /* inline: vertical center of the 28px dots */
+    height: 1px;
+    background: var(--ds-border);
+    z-index: 0;
+  }
+  .progress::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    width: calc((100% - 28px) * 2 / 3);   /* inline: fills two of three rail segments at "step 3 of 4" */
+    top: 14px;
+    height: 1px;
+    background: var(--ds-accent);
+    z-index: 1;
+  }
+  .step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-2);
+    text-align: center;
+  }
+  .step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-bg);             /* paper bg so the rail looks broken by the dot */
+    border: 1px solid var(--ds-border);
+    color: var(--ds-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .step.is-done .step-dot {
+    background: var(--ds-accent);
+    border-color: var(--ds-accent);
+    color: var(--ds-surface);
+  }
+  .step.is-current .step-dot {
+    background: var(--ds-text);
+    border-color: var(--ds-text);
+    color: var(--ds-bg);
+  }
+  .step-caption {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .step.is-current .step-caption {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .field-label {
+    color: var(--ds-text);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+  }
+  .field-input {
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border: 0.8px solid var(--ds-border); /* inline: 0.8px hairline matches Anthropic's computed border */
+    border-radius: var(--ds-radius-lg);
+    padding: 16px 24px;                   /* inline: Anthropic input padding 16px 24px */
+    height: 56px;                         /* inline: Anthropic input height */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    outline: none;
+  }
+  .field-input::placeholder { color: var(--ds-text-muted); }
+  .field-input:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .field-help {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    margin-top: var(--ds-space-1);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="state-label">step 3 of 4 - active</div>
+    <div class="progress" aria-label="Form progress">
+      <div class="step is-done"><div class="step-dot">&#10003;</div><div class="step-caption">Lorem</div></div>
+      <div class="step is-done"><div class="step-dot">&#10003;</div><div class="step-caption">Ipsum</div></div>
+      <div class="step is-current"><div class="step-dot">3</div><div class="step-caption">Dolor</div></div>
+      <div class="step"><div class="step-dot">4</div><div class="step-caption">Amet</div></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="i1">Lorem ipsum dolor</label>
+      <input class="field-input" id="i1" type="text" placeholder="Sit amet consectetur"/>
+      <p class="field-help">Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+    </div>
+  </div>
+</body>
+</html>

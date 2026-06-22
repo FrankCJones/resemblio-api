@@ -1,0 +1,136 @@
+/*
+ * vercel-testimonials-001 tokens
+ *
+ * Native token values for the Vercel customers-page testimonial / quote-card
+ * treatment, captured via WebFetch on https://vercel.com/customers 2026-05-20.
+ * Light Geist canvas (background-1 light), Gray 12 ink for the quote body,
+ * Gray 9 for attribution role, Gray 4 hairlines as the only chrome. Geist Blue
+ * 9 is reserved as the single accent moment (the case-study link arrow on
+ * hover) so the testimonial surface stays monochrome until the visitor
+ * commits.
+ *
+ * Geist Sans carries both the oversized customer-quote body and the
+ * attribution name line; Geist Mono carries the small uppercase
+ * "Customer Story" kicker and the company line below the name. Values
+ * cross-checked against the published Geist scale (vercel.com/geist/colors,
+ * vercel.com/geist/typography) and the Vercel-system siblings
+ * vercel-hero-001 and vercel-deploy-form-001's tokens.css — this asset is
+ * the light-mode counterpart on the customers surface.
+ *
+ * All variable names come from TOKEN_CONTRACT.md.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Geist's light surface system. The customers grid sits on background-1
+   * light; each quote card uses background-2 light as a faint lift so the
+   * hairline border reads against the page. Gray 12 carries the quote body;
+   * Gray 9 the role line; Gray 11 the name. Blue 9 is held back for the
+   * "Read case study" arrow on hover. */
+  --ds-bg:           #FFFFFF;   /* Geist background-1 light; the customers grid canvas. */
+  --ds-surface:      #FAFAFA;   /* Geist background-2 light; quote card fill. */
+  --ds-surface-2:    #F2F2F2;   /* Geist Gray 2 light; avatar placeholder wash. */
+  --ds-text:         #171717;   /* Geist Gray 12 light; the quote body ink. */
+  --ds-text-muted:   #666666;   /* Geist Gray 9 light; attribution role and kicker. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for the attribution name. */
+  --ds-border:       #EAEAEA;   /* Geist Gray 4 light; card hairline ring. */
+  --ds-hairline:     #EAEAEA;   /* Same Gray 4; the divider rule above attribution. */
+  --ds-accent:       #0070F3;   /* Geist Blue 9; case-study link arrow on hover only. */
+  --ds-accent-2:     #3291FF;   /* Geist Blue 10; sub-hover lift on the arrow. */
+  --ds-success:      #0070F3;
+  --ds-warning:      #F5A623;   /* Geist Amber 9. */
+  --ds-error:        #E5484D;   /* Geist Red 9. */
+  --ds-info:         #0070F3;
+  --ds-focus-ring:   #0070F3;   /* Blue 9; clickable card focus ring. */
+
+  /* ---------- Type families ----------
+   * Single Geist Sans system across display and body; Geist Mono on the
+   * kicker and company line so the attribution row carries the dev-tool
+   * "metadata as mono" cue. */
+  --ds-font-display: "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Geist Mono", "Geist Mono Variable", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Geist marketing scale. The quote body bounds to 24-32px (--ds-text-xl
+   * to --ds-text-2xl) so it reads as a pull-quote without competing with
+   * page H1s. Kicker at 12px mono; name at 16px; role and company at 14px. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono "CUSTOMER STORY" kicker. */
+  --ds-text-sm:   14px;   /* Attribution role / company line. */
+  --ds-text-base: 16px;   /* Attribution name line. */
+  --ds-text-lg:   20px;
+  --ds-text-xl:   24px;   /* Quote body lower bound (mobile). */
+  --ds-text-2xl:  32px;   /* Quote body upper bound (desktop). */
+  --ds-text-3xl:  48px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;    /* Quote body; tight enough to feel deliberate. */
+  --ds-leading-normal:  1.5;    /* Attribution stack. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * The 32px quote pulls a small negative tracking step so it reads as
+   * Geist display rather than oversized body. The mono kicker gets the
+   * wider tracking step. */
+  --ds-tracking-tight:  -0.02em;   /* Quote body at 24-32px. */
+  --ds-tracking-normal: -0.01em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;    /* Mono kicker + company line. */
+
+  /* ---------- Spacing ----------
+   * Card internal rhythm. 32-48px padding, 24px between the kicker and the
+   * quote, 24px between the quote and the attribution rule, 16px between
+   * the rule and the attribution row. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;     /* Rule to attribution row. */
+  --ds-space-5:  24px;     /* Kicker to quote, quote to rule. */
+  --ds-space-6:  32px;     /* Card vertical padding. */
+  --ds-space-8:  48px;     /* Card horizontal padding on wide viewports. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Geist signature: 6-8px on card chrome. No pills on Vercel; the
+   * customers-page cards are small-radius rectangles. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;     /* Logo chip radius. */
+  --ds-radius-lg:   8px;     /* Card chrome. */
+  --ds-radius-full: 9999px;  /* Reserved; the asset uses no pills. */
+
+  /* ---------- Shadows ----------
+   * Geist convention on light surfaces: hairlines do the chrome work, not
+   * shadows. The card uses a 1px ring (via box-shadow) so the corner
+   * radius stays crisp at the rounded edges. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);   /* Card at rest: hairline ring, no drop. */
+  --ds-shadow-md:   0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px var(--ds-border);  /* Card on hover: sub-pixel lift retained. */
+  --ds-shadow-lg:   0 0 0 4px rgba(0,112,243,0.20);   /* Focus glow if card becomes a link. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Geist transitions: 150ms standard for hover, 80ms instant for the
+   * arrow nudge. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

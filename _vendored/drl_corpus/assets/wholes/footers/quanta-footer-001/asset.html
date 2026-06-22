@@ -1,0 +1,404 @@
+<!--
+  Asset: quanta-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, paper-and-ink, serif-display-sans-body
+  Inspired by: Quanta Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-with-violet-001 (paper-and-ink palette with deep violet accent; pending sibling)
+    - type-pairings/quanta-science-pair-001 (Tiempos serif + GT America sans)
+    - kickers/quanta-section-001            (lowercase-sans violet kicker)
+    - links/footer-link-quiet-001           (muted rest, ink hover)
+    - dividers/hairline-rule-001            (band-separating rule)
+    - inputs/text-bordered-001              (newsletter signup field)
+  Notes:
+    - Quanta footer voice: paper-white field, near-black ink, one deep
+      violet accent that lights up only the lowercase kicker and the
+      Simons Foundation attribution link. Tiempos serif carries the
+      mission line; humanist sans carries everything functional.
+    - Variable rhythm: editorial mission line on the left, four topic
+      columns in the middle, newsletter band, hairline, social row +
+      copyright + Simons attribution + legal row. The lowercase sans
+      kicker is the transferable system trick.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 stands in for Tiempos (display + body). Inter stands
+     in for GT America (humanist sans for kicker, links, legal). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* Footer band. Generous vertical padding sets the editorial breathing
+   * room above and below. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+  }
+
+  .footer__inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Upper band: editorial mission on the left, topic + about columns on
+   * the right. The mission line is the only Tiempos moment in the
+   * footer; everything else stays sans. */
+  .footer__upper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+    gap: var(--ds-space-10);
+    align-items: start;
+  }
+  @media (max-width: 880px) {
+    .footer__upper { grid-template-columns: 1fr; }
+  }
+
+  /* Wordmark + mission. The wordmark uses humanist sans at 2xl with
+   * negative tracking; the mission line drops to serif at lg, relaxed
+   * leading, near-black ink. */
+  .footer__mark {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    text-decoration: none;
+    display: inline-block;
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  .footer__mission {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 36ch;
+  }
+
+  /* Topic + about column grid. Four columns wide; collapses to two then
+   * one. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-8) var(--ds-space-6);
+  }
+  @media (max-width: 880px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Lowercase sans kicker. Pattern from kickers/quanta-section-001. The
+   * violet accent is the only chromatic moment in the link grid. */
+  .footer__col-kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-4) 0;
+    /* Lowercase, deliberately. Inverts the standard uppercase eyebrow
+     * convention; this is the Quanta system's signature kicker move. */
+    text-transform: lowercase;
+  }
+
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  .footer__link {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-text); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  /* Newsletter band. Quanta places this above the legal hairline; the
+   * input uses a bordered chrome (not underline) because the editorial
+   * field reads more inviting with the full input frame. */
+  .footer__news {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--ds-space-8);
+    align-items: end;
+  }
+  @media (max-width: 880px) {
+    .footer__news { grid-template-columns: 1fr; }
+  }
+
+  .footer__news-copy h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .footer__news-copy p {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  .footer__news-form {
+    display: flex;
+    gap: var(--ds-space-2);
+  }
+  .footer__news-input {
+    flex: 1;
+    appearance: none;
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__news-input::placeholder { color: var(--ds-text-muted); }
+  .footer__news-input:focus {
+    outline: none;
+    border-color: var(--ds-accent);
+  }
+  .footer__news-submit {
+    appearance: none;
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__news-submit:hover { background: var(--ds-accent); }
+  .footer__news-submit:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Hairline rule. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Legal band: social row left, copyright + Simons attribution +
+   * privacy / terms / AI policy on the right. */
+  .footer__legal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: var(--ds-space-6);
+    align-items: start;
+  }
+  @media (max-width: 880px) {
+    .footer__legal { grid-template-columns: 1fr; }
+  }
+
+  .footer__social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+  }
+  .footer__social a {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__social a:hover { color: var(--ds-text); }
+
+  .footer__legal-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Simons Foundation attribution. The foundation link is the second
+   * place violet appears in the footer; everything else around it stays
+   * muted ink. */
+  .footer__attribution a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__attribution a:hover { color: var(--ds-accent-2); }
+
+  .footer__policies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-4);
+  }
+  .footer__policies a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__policies a:hover { color: var(--ds-text); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link,
+    .footer__news-input,
+    .footer__news-submit,
+    .footer__social a,
+    .footer__attribution a,
+    .footer__policies a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <div class="footer__upper">
+        <div class="footer__brand">
+          <a class="footer__mark" href="#" aria-label="Lorem ipsum home">Lorem Ipsum</a>
+          <p class="footer__mission">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+        </div>
+
+        <div class="footer__grid">
+          <nav aria-label="Lorem topics">
+            <p class="footer__col-kicker">lorem</p>
+            <ul class="footer__col-list">
+              <li><a class="footer__link" href="#">Lorem ipsum</a></li>
+              <li><a class="footer__link" href="#">Dolor sit amet</a></li>
+              <li><a class="footer__link" href="#">Consectetur</a></li>
+              <li><a class="footer__link" href="#">Adipiscing elit</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Ipsum topics">
+            <p class="footer__col-kicker">ipsum</p>
+            <ul class="footer__col-list">
+              <li><a class="footer__link" href="#">Sed do eiusmod</a></li>
+              <li><a class="footer__link" href="#">Tempor incididunt</a></li>
+              <li><a class="footer__link" href="#">Ut labore</a></li>
+              <li><a class="footer__link" href="#">Dolore magna</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Dolor about">
+            <p class="footer__col-kicker">dolor</p>
+            <ul class="footer__col-list">
+              <li><a class="footer__link" href="#">Ut enim ad minim</a></li>
+              <li><a class="footer__link" href="#">Veniam quis</a></li>
+              <li><a class="footer__link" href="#">Nostrud exercitation</a></li>
+              <li><a class="footer__link" href="#">Ullamco laboris</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Amet account">
+            <p class="footer__col-kicker">amet</p>
+            <ul class="footer__col-list">
+              <li><a class="footer__link" href="#">Nisi ut aliquip</a></li>
+              <li><a class="footer__link" href="#">Ex ea commodo</a></li>
+              <li><a class="footer__link" href="#">Consequat duis</a></li>
+              <li><a class="footer__link" href="#">Aute irure dolor</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <section class="footer__news" aria-labelledby="news-heading">
+        <div class="footer__news-copy">
+          <h3 id="news-heading">Lorem ipsum highlights to your inbox.</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore.</p>
+        </div>
+        <form class="footer__news-form" action="#" method="post" novalidate>
+          <label class="visually-hidden" for="news-email" style="position:absolute;left:-9999px;">Email address</label>
+          <input class="footer__news-input" id="news-email" type="email" inputmode="email" placeholder="email@lorem.ipsum" autocomplete="email"/>
+          <button class="footer__news-submit" type="submit">Subscribe</button>
+        </form>
+      </section>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__legal">
+        <ul class="footer__social" aria-label="Social">
+          <li><a href="#">Lorem</a></li>
+          <li><a href="#">Ipsum</a></li>
+          <li><a href="#">Dolor</a></li>
+          <li><a href="#">Sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Elit</a></li>
+        </ul>
+
+        <div class="footer__legal-right">
+          <p>All Rights Reserved &copy; 2026</p>
+          <p class="footer__attribution">
+            An editorially independent publication supported by the <a href="#">Lorem Foundation</a>.
+          </p>
+          <ul class="footer__policies" aria-label="Policies">
+            <li><a href="#">Terms &amp; Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">AI Editorial Policy</a></li>
+            <li><a href="#">Accessibility</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

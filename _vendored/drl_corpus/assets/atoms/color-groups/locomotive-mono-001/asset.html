@@ -1,0 +1,204 @@
+<!--
+  Asset: locomotive-mono-001
+  Class: color-groups
+  Pattern: monochrome-palette, paper-and-ink
+  Inspired by: Locomotive (locomotive.ca)
+  Notes:
+    - Studio-portfolio monochrome: warm cream paper, pure black ink, with a
+      pure-white card surface and a black inversion surface as first-class peers.
+    - All palette roles are variables (contract). The split demo (cream half /
+      black half) is asset-specific layout ornament that documents how the two
+      surface modes coexist; the layout itself is not a token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-mono-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* Asset-local reset. The harness wraps in an iframe but we assume nothing. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    min-height: 100vh;
+  }
+
+  /* The overline label: 1.6px black rule above a uppercase title. Mirrors
+   * Locomotive's c-section-overline construction observed on the live site. */
+  .overline {
+    border-top: 1.6px solid var(--ds-border);
+    padding-top: var(--ds-space-3);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+  }
+  .overline__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .overline__meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Two-mode grid: the palette is shown in both its cream-surface and
+   * black-surface presentations side by side, because both are canonical
+   * to this palette and one without the other misrepresents the system. */
+  .modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+  }
+  .mode {
+    padding: var(--ds-space-5);
+    border: 1.6px solid var(--ds-border);
+  }
+  .mode--paper {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+  }
+  .mode--ink {
+    background: var(--ds-surface-2);
+    color: var(--ds-accent-2);
+    /* On the ink surface the border collapses against the background; the
+     * cream inverse takes over the framing job. Asset-specific decision. */
+    border-color: var(--ds-accent-2);
+  }
+  .mode__label {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-4);
+  }
+
+  /* Swatch row inside each mode. Auto-fill keeps swatches comfortable
+   * without dictating an exact count. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: var(--ds-space-2);
+  }
+  .swatch {
+    padding: var(--ds-space-3);
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid currentColor;
+    background: var(--c);
+  }
+  .swatch__role {
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .swatch__hex {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: 0;
+  }
+  .swatch--on-light { color: #000; }
+  .swatch--on-dark  { color: #FAF9F5; }
+
+  /* Info swatch: the rare electric-blue moment. The hairline ring around it
+   * documents how the focus-ring presentation reads against either surface. */
+  .swatch--info {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: -6px;
+  }
+
+  /* Footer line restates the lorem character of the demo. */
+  .footnote {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+  <div class="overline">
+    <div class="overline__title">locomotive-mono-001</div>
+    <div class="overline__meta">color-groups · studio-portfolio</div>
+  </div>
+
+  <div class="modes">
+    <section class="mode mode--paper" aria-label="Paper surface mode">
+      <div class="mode__label">Lorem · paper surface</div>
+      <div class="grid">
+        <div class="swatch swatch--on-light" style="--c: var(--ds-bg);">
+          <span class="swatch__role">bg</span>
+          <span class="swatch__hex">#FAF9F5</span>
+        </div>
+        <div class="swatch swatch--on-light" style="--c: var(--ds-surface);">
+          <span class="swatch__role">surface</span>
+          <span class="swatch__hex">#FFFFFF</span>
+        </div>
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-text);">
+          <span class="swatch__role">text</span>
+          <span class="swatch__hex">#000000</span>
+        </div>
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-text-muted);">
+          <span class="swatch__role">muted</span>
+          <span class="swatch__hex">#30302E</span>
+        </div>
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-text-strong);">
+          <span class="swatch__role">strong</span>
+          <span class="swatch__hex">#141413</span>
+        </div>
+        <div class="swatch swatch--on-light swatch--info" style="--c: var(--ds-surface); color: var(--ds-info);">
+          <span class="swatch__role">info</span>
+          <span class="swatch__hex">#312DFB</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="mode mode--ink" aria-label="Ink surface mode">
+      <div class="mode__label">Lorem · ink surface</div>
+      <div class="grid">
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-surface-2);">
+          <span class="swatch__role">surface-2</span>
+          <span class="swatch__hex">#000000</span>
+        </div>
+        <div class="swatch swatch--on-light" style="--c: var(--ds-accent-2);">
+          <span class="swatch__role">accent-2</span>
+          <span class="swatch__hex">#FAF9F5</span>
+        </div>
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-text-strong);">
+          <span class="swatch__role">strong</span>
+          <span class="swatch__hex">#141413</span>
+        </div>
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-text-muted);">
+          <span class="swatch__role">muted</span>
+          <span class="swatch__hex">#30302E</span>
+        </div>
+        <div class="swatch swatch--on-dark swatch--info" style="--c: var(--ds-surface-2);">
+          <span class="swatch__role">focus</span>
+          <span class="swatch__hex">#312DFB</span>
+        </div>
+        <div class="swatch swatch--on-dark" style="--c: var(--ds-success);">
+          <span class="swatch__role">success</span>
+          <span class="swatch__hex">#1F8A4B</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="footnote">Lorem ipsum dolor sit amet · two surfaces, one ink</div>
+</body>
+</html>

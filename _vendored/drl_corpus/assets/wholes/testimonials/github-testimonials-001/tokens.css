@@ -1,0 +1,145 @@
+/*
+ * github-testimonials-001 tokens
+ *
+ * Native token values for the GitHub customer-stories testimonial treatment,
+ * captured via WebFetch on https://github.com/customer-stories and
+ * https://github.com/features/copilot on 2026-05-20. GitHub runs a light
+ * surface on the customer-stories index: white canvas, near-black ink for the
+ * quote body, mid-gray for role and company metadata, and the signature
+ * GitHub green held back for the case-study link affordance. The Copilot
+ * page sits above on a near-black hero surface, but the testimonial section
+ * lifts into the same light register so the quote rhythm reads identically
+ * across the marketing system.
+ *
+ * The display family is Mona Sans (GitHub's variable display sans introduced
+ * in the late-2022 rebrand); body and metadata sit on the same family in
+ * lighter weights. Mono utility renders via the open-source MonaspaceNeon
+ * face, used here for the small "Customer Story" kicker and the company
+ * line in the attribution row. Avatars are present on this asset (the
+ * differentiator from a Vercel-style anonymous quote card); they render as
+ * 48px circles with a 1px Border-default ring so they sit cleanly on the
+ * white card.
+ *
+ * Tokens cross-checked against the GitHub Primer light color and type scale
+ * (primer.style/primitives) and the GitHub system manifest's
+ * design_principles list. Values:
+ *   - fg.default (#1F2328) on canvas.default (#FFFFFF)
+ *   - fg.muted   (#59636E) for role/kicker
+ *   - border.default (#D1D9E0) for card hairline and avatar ring
+ *   - success.emphasis (#1F883D) for the case-study link arrow on hover
+ *
+ * All variable names come from TOKEN_CONTRACT.md.
+ */
+:root {
+  /* ---------- Colors ----------
+   * GitHub Primer light. White canvas, near-black ink, mid-gray metadata,
+   * gray-200 hairline ring. Primer's green-emphasis is the only chromatic
+   * moment, reserved for the case-study arrow on hover. */
+  --ds-bg:           #FFFFFF;   /* Primer canvas.default; the customer-stories grid canvas. */
+  --ds-surface:      #F6F8FA;   /* Primer canvas.subtle; the avatar/logo chip wash and section band. */
+  --ds-surface-2:    #EAEEF2;   /* Primer canvas.inset; nested chip fill. */
+  --ds-text:         #1F2328;   /* Primer fg.default; the quote body ink. */
+  --ds-text-muted:   #59636E;   /* Primer fg.muted; attribution role and mono kicker. */
+  --ds-text-strong:  #0A0C10;   /* Primer fg.onEmphasis-adjacent; reserved for attribution name. */
+  --ds-border:       #D1D9E0;   /* Primer border.default; card hairline ring and avatar ring. */
+  --ds-hairline:     #D1D9E0;   /* Same gray-200; divider rule above attribution row. */
+  --ds-accent:       #1F883D;   /* Primer success.emphasis; GitHub green on case-study link hover only. */
+  --ds-accent-2:     #1A7F37;   /* Primer success.fg darker step; sub-hover lift on the arrow. */
+  --ds-success:      #1F883D;   /* GitHub green. */
+  --ds-warning:      #9A6700;   /* Primer attention.fg. */
+  --ds-error:        #CF222E;   /* Primer danger.fg. */
+  --ds-info:         #0969DA;   /* Primer accent.fg; reserved, not used in the asset itself. */
+  --ds-focus-ring:   #0969DA;   /* Primer accent.emphasis; keyboard focus ring on the card link. */
+
+  /* ---------- Type families ----------
+   * Mona Sans across display and body (the GitHub 2022+ rebrand face).
+   * Monaspace Neon on the mono kicker and company line so attribution
+   * carries the dev-tool "metadata as mono" cue. */
+  --ds-font-display: "Mona Sans", "Mona Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Mona Sans", "Mona Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "Monaspace Neon", "MonaspaceNeon", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --ds-font-accent:  "Mona Sans", "Mona Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * GitHub marketing scale. The quote body bounds to 20-28px so it reads as
+   * a pull quote without competing with the section H2 above. Kicker at
+   * 12px mono; name at 16px sans; role and company at 14px. Avatars are
+   * 48px (declared in --ds-space-8). */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono "CUSTOMER STORY" kicker. */
+  --ds-text-sm:   14px;   /* Attribution role and company line. */
+  --ds-text-base: 16px;   /* Attribution name line. */
+  --ds-text-lg:   18px;
+  --ds-text-xl:   24px;   /* Quote body lower bound (mobile). */
+  --ds-text-2xl:  28px;   /* Quote body upper bound (desktop). */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.25;   /* Quote body; tight enough to feel deliberate. */
+  --ds-leading-normal:  1.5;    /* Attribution stack. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * GitHub Primer body sits near zero; display has a light negative tracking
+   * at the 24-28px step. Mono kicker pulls the wider tracking. */
+  --ds-tracking-tight:  -0.015em;  /* Quote body at 24-28px. */
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.1em;     /* Mono kicker and company line. */
+
+  /* ---------- Spacing ----------
+   * Card internal rhythm. 24-32px padding, 24px between kicker and quote,
+   * 24px between quote and divider, 16px between divider and attribution
+   * row, 12px between avatar and name stack. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;     /* Avatar to name-stack gap. */
+  --ds-space-4:  16px;     /* Divider to attribution row. */
+  --ds-space-5:  24px;     /* Kicker to quote, quote to divider. */
+  --ds-space-6:  32px;     /* Card padding on wide viewports; avatar size + reserve. */
+  --ds-space-8:  48px;     /* Avatar diameter. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;     /* Section vertical padding. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Primer convention: 6-12px on card chrome, full-pill for avatars and
+   * logo chips. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;     /* Logo chip radius in the proof strip. */
+  --ds-radius-md:   8px;     /* Card chrome inner. */
+  --ds-radius-lg:   12px;    /* Card chrome outer. */
+  --ds-radius-full: 9999px;  /* Avatars; 48px circles with 1px ring. */
+
+  /* ---------- Shadows ----------
+   * Primer light: hairlines carry chrome, not drop shadows. The card uses a
+   * 1px ring (box-shadow) so the 12px corner radius stays crisp at rest.
+   * Hover adds a sub-pixel lift. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);   /* Card at rest: hairline ring, no drop. */
+  --ds-shadow-md:   0 1px 3px rgba(31,35,40,0.04), 0 0 0 1px var(--ds-border);  /* Card on hover: sub-pixel lift retained. */
+  --ds-shadow-lg:   0 0 0 3px rgba(9,105,218,0.30);   /* Focus glow if card is the link. */
+  --ds-shadow-2xl:  0 20px 40px rgba(31,35,40,0.08);
+
+  /* ---------- Motion ----------
+   * Primer transitions: 150ms standard for hover, 80ms instant for the
+   * arrow nudge. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

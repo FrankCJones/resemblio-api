@@ -1,0 +1,340 @@
+<!--
+  Asset: anthropic
+  Class: alphabets
+  Pattern: sans-display-serif-body, single-typeface-system, mono-utility-pair, mono-eyebrow, lead-paragraph, drop-cap, small-caps-lead-in, editorial-label-italic
+  Inspired by: Anthropic (anthropic.com, /research, /news)
+  Notes:
+    - The full Anthropic typography vocabulary as one specimen: display
+      anthropicSerif, body anthropicSerif, accent anthropicSans for chrome
+      and kickers, mono for technical labels.
+    - Editorial moves on display: lead paragraph (dek), drop-cap, small-caps
+      lead-in word, italic byline, uppercase sans eyebrow above title.
+    - Inline ornament: the clay-crimson byline rule, the drop-cap geometry,
+      and the asterism divider are character moments specific to this
+      specimen; they are not tokens.
+    - Web-font substitutes: anthropicSerif → Newsreader (Tiempos analog,
+      open-license); anthropicSans → Inter (Söhne analog); mono → JetBrains
+      Mono. The system's structure transfers via the fallback chain.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for the proprietary anthropicSerif / anthropicSans:
+   - Newsreader: contemporary serif close to Tiempos in contrast and rhythm.
+   - Inter: humanist sans close to Söhne for chrome / kicker register.
+   - JetBrains Mono: stand-in for anthropicMono.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    /* Newsreader's optical-size axis picks the tighter face at display sizes. */
+    font-optical-sizing: auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 64ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* ---------- Editorial header block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+
+  .eyebrow {
+    /* Anthropic uppercase sans kicker. */
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);          /* 52px, the measured news H1. */
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* Italic accent word inside the headline; editorial print convention. */
+  .title em { font-style: italic; font-weight: 500; }
+
+  .byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Inline ornament: clay-crimson byline separator dot. Character moment, not a token. */
+  .byline .author { font-style: italic; color: var(--ds-text); }
+  .byline .sep {
+    display: inline-block;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+  }
+
+  /* ---------- Lead paragraph (dek) ---------- */
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);            /* 20px lead paragraph. */
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+  .lead em { font-style: italic; }
+
+  /* ---------- Body article ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Drop-cap on the first paragraph. Inline ornament: the geometry (4-line
+   * descent, anthropicSerif weight 700) is asset-specific, not tokenized. */
+  .body-block p.opening::first-letter {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: 4.2em;
+    line-height: 0.88;
+    float: left;
+    padding: 4px 10px 0 0;
+    color: var(--ds-accent);
+  }
+
+  /* Small-caps lead-in on the opening paragraph. */
+  .body-block p.opening .leadin {
+    font-family: var(--ds-font-accent);
+    font-variant-caps: all-small-caps;
+    letter-spacing: var(--ds-tracking-wide);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  .body-block p em { font-style: italic; }
+  .body-block p a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Subhead (H2) */
+  .subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-5) 0 0 0;
+  }
+
+  /* Editorial italic label (per TAXONOMY editorial-label-italic). */
+  .ed-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-style: italic;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* ---------- Asterism divider ---------- */
+  /* Inline ornament: three-dot asterism; print-editorial section break. */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    letter-spacing: 0.6em;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    margin: 0;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 96px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text-strong);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-relaxed);
+  }
+  .scale .step-sample.sans {
+    font-family: var(--ds-font-accent);
+    letter-spacing: 0;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">Research · Interpretability</p>
+      <h1 class="title">Lorem ipsum dolor <em>sit amet</em>, consectetur adipiscing elit.</h1>
+      <p class="byline">
+        <span>by <span class="author">Aenean fermentum</span></span>
+        <span class="sep" aria-hidden="true"></span>
+        <span>May 20, 2026</span>
+      </p>
+    </header>
+
+    <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. <em>Aenean fermentum</em>, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem.</p>
+
+    <section class="body-block">
+      <p class="opening">
+        <span class="leadin">Quisque eu</span> magna at suscipit lacinia consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus. Praesent <a href="#">nec elementum nibh</a> sapien at lorem fermentum vivamus.
+      </p>
+
+      <p>Aenean fermentum magna at suscipit lacinia, <em>eros nibh sodales</em> lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus.</p>
+
+      <p class="asterism">⁂</p>
+
+      <h2 class="subhead">Praesent nec elementum nibh sapien</h2>
+
+      <p class="ed-label">Note from the author.</p>
+
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia.</p>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">7xl serif</span>
+        <span class="step-size">120 / 1.05</span>
+        <span class="step-sample" style="font-size:120px;">Aa Bb Cc</span>
+      </div>
+      <div class="row">
+        <span class="step-label">6xl serif</span>
+        <span class="step-size">88 / 1.05</span>
+        <span class="step-sample" style="font-size:88px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl serif</span>
+        <span class="step-size">64 / 1.05</span>
+        <span class="step-sample" style="font-size:64px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl serif</span>
+        <span class="step-size">52 / 1.10</span>
+        <span class="step-sample" style="font-size:52px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl serif</span>
+        <span class="step-size">32 / 1.20</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl serif</span>
+        <span class="step-size">26 / 1.20</span>
+        <span class="step-sample" style="font-size:26px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg serif</span>
+        <span class="step-size">20 / 1.55</span>
+        <span class="step-sample body" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base serif</span>
+        <span class="step-size">17 / 1.55</span>
+        <span class="step-sample body" style="font-size:17px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm sans</span>
+        <span class="step-size">14 / 1.40</span>
+        <span class="step-sample sans" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs sans·u</span>
+        <span class="step-size">13 / 1.40</span>
+        <span class="step-sample sans" style="font-size:13px; text-transform:uppercase; letter-spacing:0.16em;">Lorem ipsum dolor kicker eyebrow</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>anthropicSerif 700 / 500 italic</b></span>
+      <span>body · <b>anthropicSerif 400 / 400 italic</b></span>
+      <span>chrome · <b>anthropicSans 500 / 600</b></span>
+      <span>mono · <b>anthropicMono 400</b></span>
+      <span>base · <b>17px / 26.35px (~1.55)</b></span>
+      <span>scale · <b>~1.25 ratio; hand-tuned editorial display steps</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!--
+  Asset: label-input-help-001
+  Class: form-groups
+  Pattern: label-above
+  Inspired by: Linear
+  Notes:
+    - Label sits above the input; help text sits below at the same muted gray.
+    - On error, the help-text slot swaps to the error color and the input border tints red.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>label-input-help-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Variable is Linear's shipped face; system Inter is the closest fallback. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 760px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 640px) {
+    .stage { grid-template-columns: 1fr; }
+  }
+  .panel {
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-4);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .field-label {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .field-input {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 0.8px solid var(--ds-border); /* inline: 0.8px matches Linear's sub-pixel hairline */
+    border-radius: var(--ds-radius-md);
+    padding: 0 10px;                      /* inline: matches Linear's 10px horizontal pad on a 40px row */
+    height: 40px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    outline: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .field-input::placeholder { color: var(--ds-text-muted); }
+  .field-input:focus-visible,
+  .field-input.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 1px;
+  }
+  .field-help {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-normal);
+    margin-top: var(--ds-space-1);
+  }
+  .field.is-error .field-input {
+    border-color: var(--ds-error);
+  }
+  .field.is-error .field-help {
+    color: var(--ds-error);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="panel">
+      <div class="state-label">rest</div>
+      <div class="field">
+        <label class="field-label" for="i1">Lorem nomen</label>
+        <input class="field-input" id="i1" type="text" placeholder="Ipsum dolor"/>
+        <p class="field-help">Lorem ipsum dolor sit amet, consectetur.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="state-label">filled</div>
+      <div class="field">
+        <label class="field-label" for="i2">Lorem electronicus</label>
+        <input class="field-input" id="i2" type="email" value="lorem@ipsum.dev"/>
+        <p class="field-help">Lorem ipsum dolor sit amet, consectetur.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="state-label">focus</div>
+      <div class="field">
+        <label class="field-label" for="i3">Lorem societas</label>
+        <input class="field-input is-focus" id="i3" type="text" placeholder="Ipsum Industries"/>
+        <p class="field-help">Lorem ipsum dolor sit amet, consectetur.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="state-label">error</div>
+      <div class="field is-error">
+        <label class="field-label" for="i4">Lorem electronicus</label>
+        <input class="field-input" id="i4" type="email" value="not-an-email"/>
+        <p class="field-help">Lorem ipsum dolor sit amet consectetur.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

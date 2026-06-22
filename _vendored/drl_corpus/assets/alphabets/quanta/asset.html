@@ -1,0 +1,348 @@
+<!--
+  Asset: quanta
+  Class: alphabets
+  Pattern: serif-display-sans-body, mono-utility-pair, lead-paragraph, paper-and-ink
+  Inspired by: Quanta Magazine (quantamagazine.org, science article pages)
+  Notes:
+    - The full Quanta typography vocabulary as one specimen: display
+      Tiempos Headline, body Tiempos Text, accent GT America for kicker
+      and byline, JetBrains Mono for the rare technical label.
+    - Signature inversion: the kicker is LOWERCASE sans colored violet
+      (#4A2D7E), inverting the magazine convention of uppercase eyebrows.
+      The lowercase plus saturated color is the brand cue.
+    - Editorial moves on display: lowercase violet kicker, italic-byline,
+      figure-credit-in-violet, generous 1.65 body leading at 17px base.
+    - Inline ornament: the violet figure-credit color and the hairline
+      section break are character moments specific to this specimen;
+      they are not separate tokens.
+    - Web-font substitutes: Tiempos Headline / Tiempos Text → Source
+      Serif 4 (open-license contemporary serif with optical sizing);
+      GT America → Inter; JetBrains Mono stays.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for the licensed Tiempos and GT America:
+   - Source Serif 4: contemporary serif close to Tiempos in contrast,
+     variable optical-size axis covers display and reading registers.
+   - Inter: humanist sans close to GT America for kicker/byline.
+   - JetBrains Mono: stand-in for mono technical labels.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    /* Source Serif 4's optical-size axis picks the tighter face at display. */
+    font-optical-sizing: auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 68ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* ---------- Editorial header block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+
+  .kicker {
+    /* Quanta's signature lowercase violet sans kicker. */
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);          /* 56px feature article H1. */
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  /* Italic accent word inside the headline; editorial print convention. */
+  .title em { font-style: italic; font-weight: 500; }
+
+  .dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);            /* 19px lead paragraph. */
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: var(--ds-space-3) 0 0 0;
+    max-width: 60ch;
+    font-weight: 400;
+  }
+  .dek em { font-style: italic; }
+
+  .byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-4) 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .byline .author { color: var(--ds-text); font-weight: 500; }
+  /* Inline ornament: muted middle dot byline separator. */
+  .byline .sep {
+    display: inline-block;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--ds-text-muted);
+  }
+
+  /* ---------- Body article ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);          /* 17px reading. */
+    line-height: var(--ds-leading-relaxed);  /* 1.65 leading. */
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .body-block p em { font-style: italic; }
+  .body-block p a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgba(74, 45, 126, 0.4);
+  }
+  .body-block p a:hover { color: var(--ds-accent-2); }
+
+  /* Subhead (H2) */
+  .subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);           /* 32px section heading. */
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-5) 0 0 0;
+  }
+
+  /* ---------- Figure with credit ---------- */
+  .figure {
+    margin: var(--ds-space-3) 0 0 0;
+    display: flex; flex-direction: column; gap: var(--ds-space-2);
+  }
+  .figure .frame {
+    /* Placeholder figure surface; tinted to read as illustration. */
+    background: linear-gradient(135deg, #EFE9F6 0%, #F5EEF7 50%, #ECE4F2 100%);
+    border: 1px solid var(--ds-border);
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ds-radius-xs);
+  }
+  .figure figcaption {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+  }
+  /* Figure credit: violet sans, signature Quanta detail. */
+  .figure .credit {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-accent);
+    letter-spacing: var(--ds-tracking-wide);
+    margin-top: var(--ds-space-1);
+  }
+
+  /* ---------- Hairline divider ---------- */
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-3) 0;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 110px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-relaxed);
+  }
+  .scale .step-sample.sans {
+    font-family: var(--ds-font-accent);
+    letter-spacing: 0;
+  }
+  .scale .step-sample.sans-kicker {
+    font-family: var(--ds-font-accent);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="kicker">mathematics</p>
+      <h1 class="title">Lorem ipsum dolor <em>sit amet</em> consectetur adipiscing elit nullam</h1>
+      <p class="dek">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. <em>Aenean fermentum</em>, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem fermentum.</p>
+      <p class="byline">
+        <span>By <span class="author">Aenean Fermentum</span> and <span class="author">Lucia Reading</span></span>
+        <span class="sep" aria-hidden="true"></span>
+        <span>May 20, 2026</span>
+      </p>
+    </header>
+
+    <hr class="rule"/>
+
+    <section class="body-block">
+      <p>Quisque eu magna at suscipit lacinia consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus. Praesent <a href="#">nec elementum nibh sapien</a> at lorem fermentum vivamus, donec ut tortor in nisi consectetur lacinia.</p>
+
+      <p>Aenean fermentum magna at suscipit lacinia, <em>eros nibh sodales</em> lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus tempor at, praesent nec elementum nibh sapien.</p>
+
+      <figure class="figure">
+        <div class="frame" role="img" aria-label="Illustration placeholder"></div>
+        <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit curabitur.</figcaption>
+        <p class="credit">Lukas Schlagenhauf for Quanta Magazine</p>
+      </figure>
+
+      <h2 class="subhead">Praesent nec elementum nibh sapien</h2>
+
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem fermentum vivamus.</p>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">7xl serif</span>
+        <span class="step-size">120 / 1.10</span>
+        <span class="step-sample" style="font-size:120px;">Aa Bb Cc</span>
+      </div>
+      <div class="row">
+        <span class="step-label">6xl serif</span>
+        <span class="step-size">88 / 1.10</span>
+        <span class="step-sample" style="font-size:88px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl serif</span>
+        <span class="step-size">72 / 1.10</span>
+        <span class="step-sample" style="font-size:72px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl serif</span>
+        <span class="step-size">56 / 1.10</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl serif</span>
+        <span class="step-size">32 / 1.20</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl serif</span>
+        <span class="step-size">24 / 1.20</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg serif</span>
+        <span class="step-size">19 / 1.65</span>
+        <span class="step-sample body" style="font-size:19px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base serif</span>
+        <span class="step-size">17 / 1.65</span>
+        <span class="step-sample body" style="font-size:17px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm sans</span>
+        <span class="step-size">14 / 1.50</span>
+        <span class="step-sample sans" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs sans·lo</span>
+        <span class="step-size">13 / 1.50</span>
+        <span class="step-sample sans-kicker" style="font-size:13px;">mathematics &middot; physics &middot; biology &middot; computer science</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Tiempos Headline 600 / 500 italic</b></span>
+      <span>body · <b>Tiempos Text 400 / 400 italic</b></span>
+      <span>chrome · <b>GT America 500 / 600</b></span>
+      <span>mono · <b>JetBrains Mono 400</b></span>
+      <span>base · <b>17px / ~1.65 leading</b></span>
+      <span>scale · <b>~1.25 ratio; hand-tuned at editorial display steps</b></span>
+      <span>accent · <b>#4A2D7E lowercase kicker + figure credit + inline link</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

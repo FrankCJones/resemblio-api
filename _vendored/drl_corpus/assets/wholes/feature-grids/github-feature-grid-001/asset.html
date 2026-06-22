@@ -1,0 +1,361 @@
+<!--
+  Asset: github-feature-grid-001
+  Class: feature-grids
+  Pattern: story-card-grid
+  Inspired by: GitHub (github.com/features, github.com/features/copilot)
+  Notes:
+    - Product-pillar tile grid on near-black canvas; hairline-bordered tiles
+      one notch above bg with a product screenshot or code snippet as the
+      visual hook, sans display headline, single-line dek, and a trailing
+      "Learn more" arrow link in GitHub blue.
+    - Variable: every color, font, spacing, radius from the contract.
+      Inline: the placeholder screenshot/code SVGs (one-off card ornaments)
+      and the code-snippet panel coloring (a one-off character moment that
+      mirrors a GitHub PR diff field, not a contract role).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-feature-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  GitHub ships Mona Sans and Hubot Sans as its proprietary marketing faces.
+  These are not free Google Fonts, so the cascade falls to system-ui in the
+  standalone render; the contract slot still records the canonical face name.
+-->
+<style>
+  /* Reset only what the asset needs; the harness handles cross-asset normalization. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. Keeps the grid centered and bounds the measure. */
+  .fg {
+    max-width: 1248px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  /* Section head above the grid. GitHub uses a sentence-case kicker plus a
+     confident display headline; no rule between them on this surface. */
+  .fg__head {
+    margin-bottom: var(--ds-space-8);
+    max-width: 60ch;
+  }
+
+  .fg__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .fg__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    max-width: 24ch;
+  }
+
+  .fg__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Grid: 3 columns at desktop (the dominant /features pattern), 2 at midsize,
+     1 at narrow. */
+  .fg__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-4);
+  }
+
+  @media (max-width: 960px) {
+    .fg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .fg__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. Hairline border on canvas-subtle. */
+  .fg__tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover {
+    border-color: #58A6FF; /* accent.fg lift; on hover the hairline takes the
+                              accent. Inline because it is a single state shift
+                              specific to this surface. */
+  }
+
+  /* Hook panel. Screenshot or code snippet on canvas-inset. */
+  .fg__hook {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-hairline);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .fg__hook svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Tile text block. */
+  .fg__tile-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  .fg__tile-dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  /* In-tile link. GitHub blue, trailing arrow. */
+  .fg__tile-link {
+    margin-top: auto;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__tile-link:hover { color: var(--ds-accent-2); }
+  .fg__tile-link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  .fg__tile-link::after {
+    content: "→";
+    font-family: var(--ds-font-body);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__tile-link:hover::after { transform: translateX(3px); }
+
+  /* Code snippet character: mirrors a GitHub diff field; inline because the
+     green-add / red-remove gutter is a one-off ornament, not a contract role. */
+  .codeline { font-family: var(--ds-font-mono); font-size: 11px; }
+  .codeline-add  { fill: rgba(63,185,80,0.18); }
+  .codeline-del  { fill: rgba(248,81,73,0.18); }
+</style>
+</head>
+<body>
+  <section class="fg" aria-labelledby="fg-title">
+    <header class="fg__head">
+      <p class="fg__kicker">Lorem features</p>
+      <h2 id="fg-title" class="fg__title">Ipsum dolor sit amet, consectetur adipiscing.</h2>
+      <p class="fg__dek">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+    </header>
+
+    <div class="fg__grid">
+      <!-- Tile 1 — screenshot hook (Copilot register) -->
+      <article class="fg__tile">
+        <div class="fg__hook" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#21262D"/>
+            <rect x="0" y="0" width="320" height="24" fill="#161B22"/>
+            <circle cx="14" cy="12" r="4" fill="#F85149"/>
+            <circle cx="28" cy="12" r="4" fill="#D29922"/>
+            <circle cx="42" cy="12" r="4" fill="#3FB950"/>
+            <rect x="16" y="40" width="80" height="8" rx="2" fill="#30363D"/>
+            <rect x="16" y="56" width="180" height="8" rx="2" fill="#30363D"/>
+            <rect x="16" y="72" width="140" height="8" rx="2" fill="#30363D"/>
+            <rect x="16" y="92" width="220" height="8" rx="2" fill="#2F81F7" opacity="0.5"/>
+            <rect x="16" y="108" width="160" height="8" rx="2" fill="#30363D"/>
+            <rect x="16" y="124" width="200" height="8" rx="2" fill="#30363D"/>
+            <rect x="16" y="140" width="120" height="8" rx="2" fill="#30363D"/>
+            <rect x="16" y="160" width="80" height="20" rx="6" fill="#1F883D"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Lorem ipsum dolor sit amet consectetur</h3>
+        <p class="fg__tile-dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <a class="fg__tile-link" href="#">Lorem more</a>
+      </article>
+
+      <!-- Tile 2 — code snippet hook (Actions/CLI register) -->
+      <article class="fg__tile">
+        <div class="fg__hook" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#0D1117"/>
+            <rect class="codeline-add" x="0" y="20" width="320" height="14"/>
+            <rect class="codeline-del" x="0" y="64" width="320" height="14"/>
+            <text class="codeline" x="14" y="16" fill="#7D8590">1</text>
+            <text class="codeline" x="36" y="16" fill="#E6EDF3">name: ci</text>
+            <text class="codeline" x="14" y="32" fill="#7D8590">2</text>
+            <text class="codeline" x="36" y="32" fill="#3FB950">+ on: [push]</text>
+            <text class="codeline" x="14" y="48" fill="#7D8590">3</text>
+            <text class="codeline" x="36" y="48" fill="#E6EDF3">jobs:</text>
+            <text class="codeline" x="14" y="64" fill="#7D8590">4</text>
+            <text class="codeline" x="36" y="64" fill="#E6EDF3">  build:</text>
+            <text class="codeline" x="14" y="76" fill="#7D8590">5</text>
+            <text class="codeline" x="36" y="76" fill="#F85149">-     runs-on: ubuntu-22</text>
+            <text class="codeline" x="14" y="92" fill="#7D8590">6</text>
+            <text class="codeline" x="36" y="92" fill="#E6EDF3">    runs-on: ubuntu-latest</text>
+            <text class="codeline" x="14" y="108" fill="#7D8590">7</text>
+            <text class="codeline" x="36" y="108" fill="#E6EDF3">    steps:</text>
+            <text class="codeline" x="14" y="124" fill="#7D8590">8</text>
+            <text class="codeline" x="36" y="124" fill="#E6EDF3">      - uses: actions/checkout@v4</text>
+            <text class="codeline" x="14" y="140" fill="#7D8590">9</text>
+            <text class="codeline" x="36" y="140" fill="#E6EDF3">      - run: npm test</text>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Sit amet adipiscing elit sed do eiusmod</h3>
+        <p class="fg__tile-dek">Tempor incididunt ut labore et dolore magna aliqua ut enim ad minim.</p>
+        <a class="fg__tile-link" href="#">Lorem more</a>
+      </article>
+
+      <!-- Tile 3 — security/dashboard hook -->
+      <article class="fg__tile">
+        <div class="fg__hook" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#21262D"/>
+            <rect x="16" y="20" width="288" height="32" rx="6" fill="#161B22" stroke="#30363D"/>
+            <circle cx="32" cy="36" r="5" fill="#3FB950"/>
+            <rect x="48" y="32" width="120" height="8" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="240" y="30" width="48" height="12" rx="6" fill="#1F883D"/>
+            <rect x="16" y="64" width="288" height="32" rx="6" fill="#161B22" stroke="#30363D"/>
+            <circle cx="32" cy="80" r="5" fill="#D29922"/>
+            <rect x="48" y="76" width="160" height="8" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="240" y="74" width="48" height="12" rx="6" fill="#D29922" opacity="0.2"/>
+            <rect x="16" y="108" width="288" height="32" rx="6" fill="#161B22" stroke="#30363D"/>
+            <circle cx="32" cy="124" r="5" fill="#F85149"/>
+            <rect x="48" y="120" width="140" height="8" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="240" y="118" width="48" height="12" rx="6" fill="#F85149" opacity="0.2"/>
+            <rect x="16" y="152" width="288" height="32" rx="6" fill="#161B22" stroke="#30363D"/>
+            <circle cx="32" cy="168" r="5" fill="#2F81F7"/>
+            <rect x="48" y="164" width="100" height="8" rx="2" fill="#E6EDF3" opacity="0.7"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Dolore magna aliqua enim ad minim veniam</h3>
+        <p class="fg__tile-dek">Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+        <a class="fg__tile-link" href="#">Lorem more</a>
+      </article>
+
+      <!-- Tile 4 — pull request review hook -->
+      <article class="fg__tile">
+        <div class="fg__hook" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#21262D"/>
+            <rect x="16" y="20" width="288" height="16" rx="3" fill="#30363D"/>
+            <rect x="16" y="44" width="288" height="1" fill="#30363D"/>
+            <rect x="16" y="60" width="80" height="100" rx="6" fill="#161B22"/>
+            <circle cx="36" cy="78" r="6" fill="#2F81F7"/>
+            <rect x="48" y="74" width="40" height="6" rx="2" fill="#7D8590"/>
+            <rect x="24" y="96" width="64" height="6" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="24" y="108" width="48" height="6" rx="2" fill="#7D8590"/>
+            <rect x="24" y="128" width="56" height="20" rx="6" fill="#1F883D"/>
+            <rect x="112" y="60" width="192" height="100" rx="6" fill="#161B22"/>
+            <rect x="124" y="76" width="40" height="6" rx="2" fill="#7D8590"/>
+            <rect x="124" y="92" width="120" height="6" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="124" y="108" width="160" height="6" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="124" y="124" width="100" height="6" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="124" y="140" width="80" height="14" rx="4" fill="#2F81F7" opacity="0.4"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Veniam quis nostrud exercitation ullamco</h3>
+        <p class="fg__tile-dek">Laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor.</p>
+        <a class="fg__tile-link" href="#">Lorem more</a>
+      </article>
+
+      <!-- Tile 5 — codespaces / environment hook -->
+      <article class="fg__tile">
+        <div class="fg__hook" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#0D1117"/>
+            <rect x="16" y="20" width="60" height="160" rx="4" fill="#161B22"/>
+            <rect x="22" y="32" width="48" height="6" rx="2" fill="#7D8590"/>
+            <rect x="22" y="46" width="40" height="6" rx="2" fill="#30363D"/>
+            <rect x="22" y="58" width="44" height="6" rx="2" fill="#30363D"/>
+            <rect x="22" y="70" width="36" height="6" rx="2" fill="#30363D"/>
+            <rect x="22" y="84" width="48" height="6" rx="2" fill="#2F81F7"/>
+            <rect x="84" y="20" width="220" height="20" rx="4" fill="#161B22"/>
+            <rect x="92" y="28" width="60" height="4" rx="2" fill="#7D8590"/>
+            <rect x="84" y="48" width="220" height="132" rx="4" fill="#161B22"/>
+            <text class="codeline" x="92" y="68" fill="#E6EDF3">function fetchUser(id) {</text>
+            <text class="codeline" x="92" y="82" fill="#E6EDF3">  return db</text>
+            <text class="codeline" x="92" y="96" fill="#E6EDF3">    .table('users')</text>
+            <text class="codeline" x="92" y="110" fill="#E6EDF3">    .where({ id })</text>
+            <text class="codeline" x="92" y="124" fill="#E6EDF3">    .first()</text>
+            <text class="codeline" x="92" y="138" fill="#E6EDF3">}</text>
+            <rect x="92" y="152" width="80" height="14" rx="4" fill="#1F883D" opacity="0.85"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Consequat duis aute irure dolor reprehenderit</h3>
+        <p class="fg__tile-dek">In voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.</p>
+        <a class="fg__tile-link" href="#">Lorem more</a>
+      </article>
+
+      <!-- Tile 6 — discussions / community hook -->
+      <article class="fg__tile">
+        <div class="fg__hook" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#21262D"/>
+            <rect x="16" y="20" width="288" height="56" rx="8" fill="#161B22" stroke="#30363D"/>
+            <circle cx="36" cy="40" r="10" fill="#2F81F7"/>
+            <rect x="56" y="32" width="60" height="8" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="56" y="46" width="200" height="6" rx="2" fill="#7D8590"/>
+            <rect x="56" y="58" width="160" height="6" rx="2" fill="#7D8590"/>
+            <rect x="36" y="88" width="268" height="56" rx="8" fill="#161B22" stroke="#30363D"/>
+            <circle cx="56" cy="108" r="10" fill="#3FB950"/>
+            <rect x="76" y="100" width="80" height="8" rx="2" fill="#E6EDF3" opacity="0.7"/>
+            <rect x="76" y="114" width="180" height="6" rx="2" fill="#7D8590"/>
+            <rect x="76" y="126" width="140" height="6" rx="2" fill="#7D8590"/>
+            <rect x="16" y="156" width="120" height="24" rx="6" fill="#2F81F7" opacity="0.3"/>
+            <rect x="32" y="164" width="88" height="8" rx="2" fill="#58A6FF"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Occaecat cupidatat non proident sunt in culpa</h3>
+        <p class="fg__tile-dek">Qui officia deserunt mollit anim id est laborum sed ut perspiciatis unde.</p>
+        <a class="fg__tile-link" href="#">Lorem more</a>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

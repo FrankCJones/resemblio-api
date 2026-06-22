@@ -1,0 +1,334 @@
+<!--
+  Asset: cursor-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet, mono-eyebrow
+  Inspired by: Cursor (https://cursor.com, https://cursor.com/pricing)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001       (near-white surface with cyan accent)
+    - type-pairings/grotesk-mono-001       (Inter sans body + mono labels)
+    - links/footer-link-mono-001           (muted-gray link rest, ink hover)
+    - kickers/mono-eyebrow-001             (mono uppercase column headers)
+    - wordmarks/custom-display-001         (Cursor wordmark with chevron mark)
+    - dividers/hairline-rule-001           (hairline between link grid and meta row)
+  Notes:
+    - Four-column link grid (Product, Resources, Company, Legal) above a
+      hairline meta row carrying wordmark, SOC 2 badge, locale toggle,
+      socials, and copyright. No newsletter; Cursor does not run one.
+    - Variable: every color, every type step, every spacing rhythm. Inline:
+      the chevron-mark SVG path and the locale-toggle caret geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter + GeistMono approximation; Cursor's marketing build uses Inter Display + GeistMono. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+  }
+
+  /* Outer wrapper; Cursor's marketing surface uses a content-width column. */
+  .ftr {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--ds-text-muted);
+  }
+
+  /* Four-column link grid. Cursor groups Product / Resources / Company /
+   * Legal; the asymmetry across columns is list length, not template. */
+  .ftr__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-8) var(--ds-space-6);
+    padding-bottom: var(--ds-space-10);
+  }
+  @media (max-width: 800px) { .ftr__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .ftr__grid { grid-template-columns: 1fr; } }
+
+  /* Column header. Mono uppercase 12px with wide tracking; ink not muted
+   * so the column groupings read cleanly above the muted link list. */
+  .ftr__col-h {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Link list. Inter 14px muted gray; ink + underline on hover. */
+  .ftr__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .ftr__link {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: 1.4;
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__link:hover { color: var(--ds-text-strong); text-decoration: underline; text-underline-offset: 3px; }
+  .ftr__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+  /* Trailing diagonal arrow for outbound items. Inline ornament: a single
+   * unicode glyph rather than a tokenized icon system. */
+  .ftr__link[data-out]::after {
+    content: " \2197"; /* NE arrow */
+    font-size: 0.9em;
+    color: var(--ds-text-muted);
+  }
+
+  /* Hairline rule between the link grid and the meta row. */
+  .ftr__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-border);
+    margin: 0;
+  }
+
+  /* Meta row: brand + SOC 2 badge on the left; locale, socials, copyright on
+   * the right. Wraps cleanly on small viewports. */
+  .ftr__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    padding-top: var(--ds-space-6);
+    flex-wrap: wrap;
+  }
+
+  /* Brand cluster: chevron mark plus wordmark. */
+  .ftr__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+  .ftr__mark { width: 20px; height: 20px; display: block; color: var(--ds-text); }
+  .ftr__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* SOC 2 trust badge. Mono utility face, small, on a quiet surface. */
+  .ftr__soc {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: 4px var(--ds-space-3);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-wide);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__soc:hover { color: var(--ds-text); }
+  .ftr__soc-tick { color: var(--ds-success); width: 12px; height: 12px; display: block; }
+
+  /* Right cluster: locale toggle, socials, copyright. */
+  .ftr__meta-r {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    flex-wrap: wrap;
+  }
+
+  /* Locale toggle. Quiet field with a caret; opens a list in real use. */
+  .ftr__locale {
+    appearance: none;
+    border: 1px solid var(--ds-border);
+    background: var(--ds-surface);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    padding: 6px var(--ds-space-4) 6px var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    /* Inline ornament: caret glyph drawn into the background, not tokenized. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' fill='none' stroke='%236B6B6B' stroke-width='1.4' stroke-linecap='round'><path d='M1 1 L5 5 L9 1'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 10px 6px;
+    padding-right: 26px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__locale:hover { color: var(--ds-text); border-color: #D4D4D4; }
+  .ftr__locale:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Social row. Square hit areas; icons in muted gray; lift on hover. */
+  .ftr__socials { display: inline-flex; align-items: center; gap: var(--ds-space-1); }
+  .ftr__social {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__social:hover { color: var(--ds-text); }
+  .ftr__social svg { width: 16px; height: 16px; display: block; }
+
+  /* Copyright. Smallest type, all-the-way-muted. */
+  .ftr__copy {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    padding-top: var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ftr__link, .ftr__soc, .ftr__locale, .ftr__social { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="ftr" aria-labelledby="ftr-heading">
+    <h2 id="ftr-heading" style="position:absolute;left:-9999px">Lorem ipsum footer</h2>
+
+    <!-- Four-column link grid: column headers are mono uppercase; links are muted sans. -->
+    <div class="ftr__grid">
+      <div>
+        <h3 class="ftr__col-h">Lorem</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Ipsum dolor</a></li>
+          <li><a class="ftr__link" href="#">Sit amet</a></li>
+          <li><a class="ftr__link" href="#">Consectetur</a></li>
+          <li><a class="ftr__link" href="#">Adipiscing elit</a></li>
+          <li><a class="ftr__link" href="#">Sed do eiusmod</a></li>
+          <li><a class="ftr__link" href="#">Tempor incididunt</a></li>
+          <li><a class="ftr__link" href="#">Ut labore</a></li>
+          <li><a class="ftr__link" href="#">Magna aliqua</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Ipsum</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Enim ad minim</a></li>
+          <li><a class="ftr__link" href="#">Veniam quis</a></li>
+          <li><a class="ftr__link" href="#">Nostrud</a></li>
+          <li><a class="ftr__link" href="#">Exercitation</a></li>
+          <li><a class="ftr__link" href="#">Ullamco laboris</a></li>
+          <li><a class="ftr__link" href="#">Nisi ut aliquip</a></li>
+          <li><a class="ftr__link" href="#">Ex ea commodo</a></li>
+          <li><a class="ftr__link" data-out href="#">Status</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Dolor</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Consequat duis</a></li>
+          <li><a class="ftr__link" href="#">Aute irure</a></li>
+          <li><a class="ftr__link" href="#">Reprehenderit</a></li>
+          <li><a class="ftr__link" href="#">Voluptate velit</a></li>
+          <li><a class="ftr__link" href="#">Esse cillum</a></li>
+          <li><a class="ftr__link" href="#">Fugiat nulla</a></li>
+          <li><a class="ftr__link" data-out href="#">Pariatur</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Sit Amet</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Excepteur sint</a></li>
+          <li><a class="ftr__link" href="#">Occaecat cupidatat</a></li>
+          <li><a class="ftr__link" href="#">Non proident</a></li>
+          <li><a class="ftr__link" href="#">Sunt in culpa</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Hairline rule between link grid and meta row. -->
+    <hr class="ftr__rule"/>
+
+    <!-- Meta row: wordmark + trust badge left; locale + socials + copyright right. -->
+    <div class="ftr__meta">
+      <div style="display:inline-flex; align-items:center; gap: var(--ds-space-5); flex-wrap: wrap;">
+        <a class="ftr__brand" href="#" aria-label="Lorem home">
+          <!-- Inline ornament: chevron-style mark, hand-tuned geometry. -->
+          <svg class="ftr__mark" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="M3 4 L10 1 L17 4 L17 16 L10 19 L3 16 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M10 1 L10 19 M3 4 L17 16 M17 4 L3 16" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+          </svg>
+          <span class="ftr__name">Lorem</span>
+        </a>
+
+        <a class="ftr__soc" href="#" aria-label="SOC 2 certified">
+          <svg class="ftr__soc-tick" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+            <path d="M2 6.5 L5 9.5 L10 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>SOC 2 Certified</span>
+        </a>
+      </div>
+
+      <div class="ftr__meta-r">
+        <label style="position:absolute;left:-9999px" for="ftr-locale">Language</label>
+        <select class="ftr__locale" id="ftr-locale">
+          <option>English</option>
+          <option>简体中文</option>
+          <option>日本語</option>
+          <option>繁體中文</option>
+          <option>Español</option>
+          <option>Français</option>
+          <option>Português</option>
+          <option>한국어</option>
+          <option>Deutsch</option>
+          <option>हिन्दी</option>
+        </select>
+
+        <div class="ftr__socials">
+          <a class="ftr__social" href="#" aria-label="X">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M11.7 1.5h2.4l-5.3 6.1 6.2 7.9h-4.8l-3.8-4.9-4.3 4.9H-.3l5.6-6.5L-.6 1.5h4.9l3.4 4.5 4-4.5zm-.8 12.6h1.3L4.3 2.8H2.9l8 11.3z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="LinkedIn">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M3 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zM3.2 6h2.6v8H3.2V6zm4.4 0H10v1.1c.4-.7 1.3-1.3 2.5-1.3 2 0 2.7 1.3 2.7 3.1V14H12.6V9.4c0-1-.4-1.7-1.4-1.7-.9 0-1.4.6-1.4 1.7V14H7.6V6z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="YouTube">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M15.4 4.6a2 2 0 0 0-1.4-1.4C12.7 2.9 8 2.9 8 2.9s-4.7 0-6 .3a2 2 0 0 0-1.4 1.4C.3 5.9.3 8 .3 8s0 2.1.3 3.4a2 2 0 0 0 1.4 1.4c1.3.3 6 .3 6 .3s4.7 0 6-.3a2 2 0 0 0 1.4-1.4c.3-1.3.3-3.4.3-3.4s0-2.1-.3-3.4zM6.5 10.6V5.4l4.3 2.6-4.3 2.6z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <p class="ftr__copy">© 2026 Lorem Ipsum, Inc. · Dolor sit amet consectetur adipiscing.</p>
+  </footer>
+</body>
+</html>

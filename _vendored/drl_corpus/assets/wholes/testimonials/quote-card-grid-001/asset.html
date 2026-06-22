@@ -1,0 +1,279 @@
+<!--
+  Asset: quote-card-grid-001
+  Class: testimonials (whole)
+  Pattern: accent-on-neutral, primary-pill (n/a - no CTA), mono-eyebrow, pull-quote-breakout
+  Inspired by: Pitch (pitch.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (warm-paper palette context)
+    - type-pairings/sans-system-modern-001  (display + body + mono families)
+    - cards/hairline-flat-001               (card frame pattern)
+    - body-text/pull-quote-breakout-001     (quote treatment)
+    - avatars/avatar-with-name-001          (attribution row pattern)
+    - kickers/mono-eyebrow-001              (section kicker)
+  Notes:
+    - Four-card grid (two-by-two on desktop, single column on mobile). Each
+      card carries an open-quote glyph in coral, a multi-line quote in
+      near-black, then a divider, then attribution row with avatar plus
+      name plus title plus company.
+    - Variable: palette, type, card frame, avatar, kicker. Inline: the
+      open-quote ornamental glyph sizing and the coral fill (a one-off
+      character moment specific to this whole's voice).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quote-card-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. The cream surface is the whole point of this composition;
+   * white cards lift off it without needing a shadow. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  .section {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Section header. The kicker borrows from kickers/mono-eyebrow-001 and
+   * the headline from a tight display sans, sized down from a hero. */
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    max-width: 56ch;
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .section__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* The grid. Two-up on desktop, one-up on mobile. The gap is generous
+   * so the cards do not read as a continuous block. */
+  .grid {
+    display: grid;
+    gap: var(--ds-space-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* The card. From cards/hairline-flat-001 - hairline border, light
+   * elevation, soft radius. The card is white against cream; that
+   * delta alone is the lift. */
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    box-shadow: var(--ds-shadow-sm);
+    transition:
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+
+  /* Open-quote ornament. Inline character: the coral glyph is the
+   * single chromatic moment in the composition. Sized at 64px to read
+   * as a deliberate typographic mark rather than punctuation. The fill
+   * uses --ds-accent directly. */
+  .card__mark {
+    font-family: var(--ds-font-display);
+    font-size: 64px;
+    line-height: 0.75;
+    color: var(--ds-accent);
+    /* Inline ornament: negative top margin compensates for the glyph's
+     * built-in ascent so the quote that follows sits closer than default. */
+    margin-bottom: calc(var(--ds-space-2) * -1);
+    user-select: none;
+  }
+
+  /* Quote text. Pulled from body-text/pull-quote-breakout-001 but
+   * sized down to fit the card grid (this is not a single breakout
+   * quote, it is one of four). */
+  .card__quote {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    text-wrap: pretty;
+  }
+
+  /* Divider above attribution. Hairline-thin, full-width inside the card. */
+  .card__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    border: 0;
+    margin: 0;
+  }
+
+  /* Attribution row. From avatars/avatar-with-name-001 - circular avatar
+   * left, name and title stacked right, logo aligned far right. */
+  .card__attrib {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .card__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background:
+      linear-gradient(135deg,
+        color-mix(in oklab, var(--ds-accent) 35%, white 50%),
+        color-mix(in oklab, var(--ds-accent-2) 30%, white 50%));
+    /* Inline ornament: a tinted gradient stands in for a real headshot.
+     * In a real deployment this would be a real photo; the gradient
+     * preserves the composition's geometry. */
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+    flex-shrink: 0;
+  }
+  .card__who {
+    display: flex;
+    flex-direction: column;
+    line-height: var(--ds-leading-snug);
+    flex: 1;
+    min-width: 0;
+  }
+  .card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  .card__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .card__logo {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-1) var(--ds-space-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+    /* The logo slot is rendered as a mono wordmark stand-in. A real
+     * deployment swaps this for an <img> or inline SVG mark. */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-label="Lorem ipsum testimonials">
+    <header class="section__head">
+      <span class="section__kicker">Lorem ipsum testimonials</span>
+      <h2 class="section__h2">Dolor sit amet consectetur adipiscing elit sed do.</h2>
+    </header>
+
+    <div class="grid">
+      <article class="card">
+        <span class="card__mark" aria-hidden="true">&ldquo;</span>
+        <p class="card__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua quis nostrud.</p>
+        <hr class="card__rule"/>
+        <div class="card__attrib">
+          <span class="card__avatar" aria-hidden="true">AB</span>
+          <span class="card__who">
+            <span class="card__name">Aenean Bibendum</span>
+            <span class="card__title">CEO at Lorem Co.</span>
+          </span>
+          <span class="card__logo">LOREM</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="card__mark" aria-hidden="true">&ldquo;</span>
+        <p class="card__quote">Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, libero risus eleifend nibh.</p>
+        <hr class="card__rule"/>
+        <div class="card__attrib">
+          <span class="card__avatar" aria-hidden="true">CD</span>
+          <span class="card__who">
+            <span class="card__name">Cras Dignissim</span>
+            <span class="card__title">Design Lead at Ipsum Inc.</span>
+          </span>
+          <span class="card__logo">IPSUM</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="card__mark" aria-hidden="true">&ldquo;</span>
+        <p class="card__quote">Vivamus sit amet sapien velit. Sed vitae lacus eu mi tincidunt finibus. Phasellus aliquam diam et metus pulvinar, ut placerat ipsum tristique.</p>
+        <hr class="card__rule"/>
+        <div class="card__attrib">
+          <span class="card__avatar" aria-hidden="true">EF</span>
+          <span class="card__who">
+            <span class="card__name">Etiam Fringilla</span>
+            <span class="card__title">VP Sales at Dolor Group</span>
+          </span>
+          <span class="card__logo">DOLOR</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="card__mark" aria-hidden="true">&ldquo;</span>
+        <p class="card__quote">Donec euismod, sapien at finibus rhoncus, nibh felis ultrices arcu, ac viverra ligula erat in nisl. Mauris non quam tristique luctus.</p>
+        <hr class="card__rule"/>
+        <div class="card__attrib">
+          <span class="card__avatar" aria-hidden="true">GH</span>
+          <span class="card__who">
+            <span class="card__name">Gravida Habitant</span>
+            <span class="card__title">Head of Product at Sit Labs</span>
+          </span>
+          <span class="card__logo">SIT</span>
+        </div>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

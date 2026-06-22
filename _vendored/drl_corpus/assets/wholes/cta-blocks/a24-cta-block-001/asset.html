@@ -1,0 +1,226 @@
+<!--
+  Asset: a24-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses paper-and-ink + display-editorial + serif-display-sans-body + primary-square + bordered-text-input + label-above)
+  Inspired by: A24 (a24films.com, a24films.com/films)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/a24-cinematic-palette-001       (warm cinema-black bg, paper-white text, no chromatic accent)
+    - type-pairings/a24-cinematic-pair-001         (title-card serif display, mono supporting line)
+    - buttons/a24-cinematic-001                    (2px near-sharp radius slab button)
+    - inputs/text-bordered-001                     (hairline-bordered email input)
+    - dividers/hairline-rule-001                   (warm hairline above the block)
+  Notes:
+    - The block sits flush on the warm cinema-black page surface. A single
+      hairline above it separates the CTA from the films grid that came
+      before. No card, no fill, no shadow.
+    - Title-card serif headline ("Want More A24?" voice), mono supporting
+      line, email input next to a near-sharp paper-slab button, mono
+      privacy-policy disclaimer below. Left-aligned, narrow editorial
+      column.
+    - Inline ornament: the 2px button radius and the all-mono supporting
+      line are A24-system signatures. The button reverses to paper on the
+      black field; the "accent" is the inverse, not a chromatic hue.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Open-license substitutes for the proprietary A24 faces:
+     Newsreader stands in for the Tiempos / Times Now title-card serif
+     register; JetBrains Mono stands in for Söhne Mono on supporting line
+     and input chrome; Inter is the humanist-sans fallback for the rare
+     UI moment. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: warm cinema-black. The CTA sits inline on the page
+   * surface; one hairline above is the only separator. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container that holds the hairline rule and
+   * the content column. The rule spans the reading width above the
+   * block. */
+  .cta {
+    width: 100%;
+    max-width: 960px;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-10);
+  }
+
+  /* Content column: left-aligned narrow editorial measure. A24's
+   * newsletter block sits inside the marketing column rather than
+   * spanning the full bleed. */
+  .cta__content {
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: title-card serif at editorial display step. Tight
+   * leading, slight negative tracking. The font swaps to Newsreader as
+   * the open-license stand-in for the Tiempos/Times Now register A24
+   * uses on title cards. */
+  .cta__h2 {
+    font-family: "Newsreader", var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-4xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 14ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the short title-card
+     * headline from orphaning a single word. */
+  }
+
+  /* Supporting line: mono at sm. The mono family carries the editorial
+   * weight; no need for italic or color shift. Sits muted on the field. */
+  .cta__lead {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* Form row: email input on the left, slab button on the right.
+   * Wraps on narrow widths so the button drops below the field. */
+  .cta__form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: var(--ds-space-2);
+    width: 100%;
+    max-width: 480px;
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Email input: hairline border, near-sharp 2px radius, mono type for
+   * the placeholder and entered value so the input reads as titlecard
+   * credit line. */
+  .cta__input {
+    flex: 1 1 240px;
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__input::placeholder {
+    color: var(--ds-text-muted);
+    text-transform: lowercase;
+    /* Inline ornament: placeholder stays lowercase per the live block's
+     * "email" placeholder casing. */
+  }
+  .cta__input:hover { border-color: var(--ds-text-muted); }
+  .cta__input:focus-visible {
+    outline: none;
+    border-color: var(--ds-focus-ring);
+    box-shadow: 0 0 0 1px var(--ds-focus-ring);
+  }
+
+  /* Submit button: paper-slab on the cinema-black field. Sans label
+   * (Inter standing in for GT America) at sm, slight positive tracking
+   * so it reads as title-card label rather than UI shout. 2px radius
+   * matches the input; together they read as a single deliberate pair. */
+  .cta__submit {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__submit:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__submit:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Disclaimer: mono at xs, muted. The privacy-policy link is an inline
+   * paper-white pull, no underline at rest. */
+  .cta__fineprint {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+  .cta__fineprint a {
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-border);
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__fineprint a:hover { border-bottom-color: var(--ds-text); }
+  .cta__fineprint a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__input, .cta__submit, .cta__fineprint a {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet?</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla. Non saepe, sed satis.</p>
+      <form class="cta__form" action="#" method="post" novalidate>
+        <label class="visually-hidden" for="cta-email" style="position:absolute;left:-9999px;">Lorem ipsum</label>
+        <input class="cta__input" id="cta-email" type="email" name="email" placeholder="email" autocomplete="email"/>
+        <button class="cta__submit" type="submit">Lorem</button>
+      </form>
+      <p class="cta__fineprint">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus <a href="#">lorem ipsum dolor</a>.</p>
+    </div>
+  </section>
+</body>
+</html>

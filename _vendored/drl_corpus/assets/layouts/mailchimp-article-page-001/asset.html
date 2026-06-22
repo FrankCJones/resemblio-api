@@ -1,0 +1,684 @@
+<!--
+  Asset: mailchimp-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, callout-aside, story-card-grid, mega-footer
+  Inspired by: Mailchimp (mailchimp.com/resources/<article>)
+  Notes:
+    - Single-article page skeleton for Mailchimp resources: flush-top nav,
+      article hero (breadcrumb + kicker tag + display title + sans byline
+      with avatar + publish date + hero illustration band), narrow single
+      column body with expert-tip callouts, inline figures, comparison
+      table, sidebar CTA pin (Cavendish Yellow), author bio card, related
+      articles list, newsletter signup band, mega-footer.
+    - Variable: section sequence, page max-width, vertical rhythm,
+      typographic role per slot. Inline: article-column measure (680px),
+      page max-width (1280px), avatar circle, hero illustration aspect
+      ratio. Cavendish Yellow surface is the one signature accent.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Graphik is Mailchimp's marketing face; the asset does not load
+  it. The fallback chains in tokens.css (Helvetica Neue, Inter) carry the
+  humanist sans register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so nav, related list, newsletter
+   * band, and footer breathe. The article-column inside is narrower.
+   * Inline value.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. Mailchimp's reading rhythm sits at ~680px (about a
+   * 40em measure with 17px body). This measure is article-specific
+   * character, not a contract slot, so it lives inline.
+   */
+  .column {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  /* Yellow CTA pill: Cavendish Yellow surface with ink text; the one
+   * full-color affordance in the nav. Inline weight choice. */
+  .nav__cta {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop; hairline rule
+   * separates body, related, newsletter, footer. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Article hero. Breadcrumb sits at the top in muted small-caps tracking,
+   * then a kicker tag pill (yellow on ink), then a display title at 4xl
+   * with modest tight tracking, sans byline row with circular avatar and
+   * publish date, then a wide illustration band beneath. The hero band
+   * runs full-width inside the .page container, not the narrow column.
+   */
+  .article-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-10); }
+  }
+  .breadcrumb {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+  }
+  .breadcrumb__sep { color: var(--ds-text-muted); }
+  .kicker-tag {
+    display: inline-block;
+    background: var(--ds-accent);          /* Cavendish Yellow surface. */
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-5);
+  }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 18ch;
+  }
+  .article-dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 56ch;
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-8);
+  }
+  .byline-author {
+    font-size: var(--ds-text-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+  }
+  /* Byline avatar: 32px circle. Inline ornament. */
+  .byline-author__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  .byline-date {
+    font-size: var(--ds-text-sm);
+  }
+  /* Hero illustration band: wide image surface that sits between the
+   * byline and the article body. Inline aspect ratio. */
+  .hero-illustration {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 16 / 7;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+
+  /*
+   * Article body. Lead paragraph one step larger than body. Body uses
+   * humanist sans at 17px on 1.6 leading. H2 and H3 break the column.
+   * Inline links pick up the peacock teal accent with an underline; the
+   * underline is the affordance.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body ul { padding-left: var(--ds-space-5); }
+  .article-body li + li { margin-top: var(--ds-space-2); }
+  .article-body figure { margin: var(--ds-space-8) 0; }
+  .article-body figcaption {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-top: var(--ds-space-3);
+  }
+
+  /*
+   * Expert-tip callout. Mailchimp's signature inline aside: warm off-white
+   * surface, hairline border, md radius, H4-as-title on a yellow
+   * underline. Sits inside the article column.
+   */
+  .expert-tip {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    margin-top: var(--ds-space-6);
+  }
+  .expert-tip__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    /* Yellow highlight under the title. Inline ornament. */
+    box-shadow: inset 0 -6px 0 var(--ds-accent);
+    display: inline;
+    padding-inline: 2px;
+  }
+  .expert-tip__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: var(--ds-space-3) 0 0;
+  }
+
+  /*
+   * Comparison table. Sits inside the article column at full column
+   * width. Hairline grid, mono-uppercase column heads, yellow underline
+   * on the header row.
+   */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+  }
+  .compare th, .compare td {
+    border: 1px solid var(--ds-border);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    text-align: left;
+    vertical-align: top;
+  }
+  .compare thead th {
+    background: var(--ds-surface);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-strong);
+    text-transform: uppercase;
+    font-size: var(--ds-text-xs);
+    border-bottom: 3px solid var(--ds-accent);
+  }
+
+  /*
+   * Inline sidebar CTA pin. Mailchimp's signature mid-article promotion:
+   * Cavendish Yellow surface, ink text, md radius. Full column width.
+   */
+  .cta-pin {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+    display: grid;
+    gap: var(--ds-space-3);
+  }
+  .cta-pin__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    margin: 0;
+  }
+  .cta-pin__body { font-size: var(--ds-text-sm); margin: 0; }
+  .cta-pin__button {
+    justify-self: start;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+  }
+
+  /*
+   * Author bio card. Sits below the article body. Warm tinted surface
+   * with hairline border and md radius; avatar on the left, name + role +
+   * short bio on the right. The only raised-surface moment outside the
+   * yellow accent surfaces.
+   */
+  .author-bio {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: var(--ds-space-5);
+    align-items: start;
+  }
+  .author-bio__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .author-bio__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-1);
+  }
+  .author-bio__role {
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .author-bio__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /*
+   * Related articles. Section heading then three-up card grid: desktop 3
+   * columns, tablet 2, mobile 1. Sits inside the page container so it
+   * breathes wider than the article column.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /*
+   * Newsletter signup band. Full-width Cavendish Yellow surface with ink
+   * heading, sans body copy, and a flush input + ink-button group on the
+   * right. The yellow surface is the signature Mailchimp moment at the
+   * page close, before the footer.
+   */
+  .newsletter {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .newsletter { grid-template-columns: 1fr 1fr; }
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .newsletter__body { font-size: var(--ds-text-base); margin: 0; max-width: 40ch; }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+  .newsletter__input {
+    flex: 1 1 220px;
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: inherit;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+  }
+  .newsletter__button {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border: 0;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    cursor: pointer;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container. Stands
+   * in for a mailchimp-tagged mega-footer (Products / Resources /
+   * Community / Company / Help columns plus legal row). */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a mailchimp-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <a class="nav__cta" href="#">Start free</a>
+    </nav>
+
+    <!-- Section: article-hero. Breadcrumb, kicker, title, dek, byline, illustration. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="breadcrumb">
+          <span>Lorem Library</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Explore Topics</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem Content</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem Campaign Ideas</span>
+        </p>
+        <span class="kicker-tag">Lorem Content</span>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+        <p class="article-dek">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            Posted by Lorem Ipsum
+          </span>
+          <span class="byline-date">Apr 10, 2026</span>
+        </div>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <span>Lorem hero illustration band</span>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Narrow reading column with expert tips, table, CTA pin. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris.
+        </p>
+        <ul>
+          <li>Lorem ipsum dolor sit amet, consectetur adipiscing.</li>
+          <li>Sed do eiusmod tempor incididunt ut labore et dolore.</li>
+          <li>Ut enim ad minim veniam, quis nostrud exercitation.</li>
+        </ul>
+
+        <aside class="expert-tip" aria-label="Expert tip">
+          <p class="expert-tip__title">Expert tip</p>
+          <p class="expert-tip__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+        </aside>
+
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.
+        </p>
+
+        <figure>
+          <div class="slot" style="aspect-ratio: 16 / 9;">
+            <span class="slot__label">inline-illustration</span>
+            Lorem ipsum infographic figure
+          </div>
+          <figcaption>
+            Lorem ipsum figure caption explaining the illustration above.
+          </figcaption>
+        </figure>
+
+        <h3>Lorem comparison subsection</h3>
+        <table class="compare" aria-label="Lorem comparison">
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Primary purpose</th>
+              <th>Key benefit</th>
+              <th>Expert strategy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lorem A</td>
+              <td>Lorem ipsum dolor</td>
+              <td>Lorem ipsum dolor</td>
+              <td>Lorem ipsum dolor sit</td>
+            </tr>
+            <tr>
+              <td>Lorem B</td>
+              <td>Lorem ipsum dolor</td>
+              <td>Lorem ipsum dolor</td>
+              <td>Lorem ipsum dolor sit</td>
+            </tr>
+            <tr>
+              <td>Lorem C</td>
+              <td>Lorem ipsum dolor</td>
+              <td>Lorem ipsum dolor</td>
+              <td>Lorem ipsum dolor sit</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <aside class="cta-pin" aria-label="Inline CTA">
+          <p class="cta-pin__title">Lorem ipsum dolor sit amet</p>
+          <p class="cta-pin__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore.
+          </p>
+          <a class="cta-pin__button" href="#">Lorem free</a>
+        </aside>
+
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: author-bio. Single tinted card, narrow column. -->
+    <section class="section" aria-label="Author bio">
+      <div class="column">
+        <div class="author-bio">
+          <div class="author-bio__avatar" aria-hidden="true"></div>
+          <div>
+            <p class="author-bio__name">Lorem Ipsum</p>
+            <p class="author-bio__role">Lorem Role / Lorem Team</p>
+            <p class="author-bio__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+              do eiusmod tempor incididunt ut labore et dolore magna.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related-articles. Three-up grid, full page width. -->
+    <section class="section" aria-label="Related articles">
+      <h2 class="related-heading">Related articles</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: newsletter-band. Cavendish Yellow signature surface. -->
+    <section class="section" aria-label="Newsletter signup" style="border-bottom: 0;">
+      <div class="newsletter">
+        <div>
+          <p class="newsletter__title">Lorem ipsum sit amet consectetur</p>
+          <p class="newsletter__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore.
+          </p>
+        </div>
+        <form class="newsletter__form" onsubmit="return false;" aria-label="Newsletter form">
+          <label for="lorem-email" class="visually-hidden" style="position:absolute;left:-9999px;">Email</label>
+          <input class="newsletter__input" id="lorem-email" type="email" placeholder="lorem@ipsum.com" />
+          <button class="newsletter__button" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit (Products / Resources / Community / Company / Help).
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

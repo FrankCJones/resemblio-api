@@ -1,0 +1,358 @@
+<!--
+  Asset: loom-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, pull-quote-breakout, callout-aside
+  Inspired by: Loom blog (loom.com/blog redirects to atlassian.com/blog/loom)
+  Notes:
+    - Mechanic: SaaS-blog long-form reading shell as it exists on Loom's
+      editorial surface today. White canvas, near-black cool ink, single
+      sans family across display and body, a topic kicker reading "Loom"
+      linked to the apps=loom filtered index, large bold sans H1, a
+      date-plus-author byline, and a left-accent pull-quote block that
+      interrupts the column for an attributed customer voice. The Loom
+      signature purple-blue carries the single chromatic role.
+    - Variable: white canvas, near-black ink, Loom purple-blue accent,
+      Charlie / Inter family, 16px body at 1.65 leading, 40-48px H1.
+    - Inline ornament: the 720px body measure, the 56px circular author
+      avatar, the 4px-wide left accent rule on the pull quote.
+    - Provenance note: loom.com/blog now 308-redirects to
+      atlassian.com/blog/loom (post-acquisition). Both sample posts were
+      inspected at the Atlassian domain on 2026-05-20; the shell is the
+      current Loom reading surface, not a pre-acquisition era capture.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for Charlie Sans / Charlie Display,
+     the Atlassian-shipped neue-grotesque used on the Loom blog. Same
+     humanist neue-grotesque register; near-identical x-height. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure throughout. The
+   * column holds at 720px for prose and stretches to 1080px only for the
+   * outer container padding; figures and pull quotes do not break out.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Topic kicker (linked "Loom" tag), H1, then a date + author byline
+   * row with a 56px circular avatar. The Atlassian blog ships date
+   * adjacent to the topic kicker; we put date in the byline row so the
+   * H1 sits flush against the kicker, the cleaner of the two arrangements
+   * observed across the two sample posts.
+   */
+  .article__header {
+    max-width: 720px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Topic kicker - small uppercase sans, accent-colored link. The Loom
+   * blog ships the topic name as a link back to the filtered index. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    text-decoration: none;
+    margin: 0 0 var(--ds-space-5);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__kicker:hover,
+  .article__kicker:focus-visible { color: var(--ds-accent-2); }
+
+  /* Article headline - sans at 3xl-4xl, tight leading, gentle negative
+   * tracking. The Atlassian-Loom blog ships display headings in Charlie
+   * Display; Inter at the same step is the closest free-font analog. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-4xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  /* Byline block - 56px circular author avatar adjacent to a two-line
+   * "<name>" + "<role>, <org>" composition, with the publish date
+   * underneath. The avatar is one step smaller than the Notion 96px;
+   * Atlassian's blog uses the smaller author chip register. */
+  .article__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin: 0;
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .article__byline-photo {
+    /* Inline ornament: 56px circular avatar. A specific size on a
+     * specific component, not a contract-slot decision. */
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    flex: 0 0 56px;
+    background-image: linear-gradient(135deg, #C8C5F7 0%, #625DF5 100%);
+    /* Placeholder fill in the Loom accent gradient; a real photo replaces
+     * this in production. */
+  }
+  .article__byline-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .article__byline-name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .article__byline-meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .article__byline-meta a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .article__byline-meta a:hover { color: var(--ds-accent); }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px. Reading register at 16px / 1.65
+   * sits in the SaaS-blog default; the surface is a publishing chrome,
+   * not an editorial chrome.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Lead paragraph - one step larger and a touch lighter ink to read as
+   * the article opener without becoming a separate component. */
+  .article__body p.lead {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-6);
+  }
+
+  /* Inline link inside prose - purple-blue at rest, deeper on hover,
+   * underline always present at offset 3px. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* H2 subhead inside body - sans at 2xl, generous gap above. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+
+  /* H3 sub-subhead - one step down from H2. */
+  .article__body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-3);
+  }
+
+  /* Inline code - mono chip on the surface, hairline border. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.88em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.06em 0.36em;
+  }
+
+  /* ---------------- Pull quote ----------------
+   * The signature Atlassian-Loom blog callout: a left-accent bordered
+   * quote block that interrupts the column for an attributed customer
+   * voice. Background is the cool off-white surface; the 4px purple-blue
+   * left rule is the Loom chromatic moment that earns the page its
+   * brand identity inside the Atlassian publishing chrome.
+   */
+  .article__pullquote {
+    background: var(--ds-surface);
+    border-left: 4px solid var(--ds-accent);
+    border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-6) var(--ds-space-5);
+    margin: var(--ds-space-10) 0;
+  }
+  .article__pullquote-text {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    font-style: italic;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .article__pullquote-attr {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .article__pullquote-attr strong {
+    color: var(--ds-text);
+    font-weight: 600;
+  }
+
+  /* ---------------- Image figure ----------------
+   * Section-anchor image frames. 16px-radius rounded corners on a faint
+   * surface, soft cool shadow lift, optional caption beneath.
+   */
+  .article__figure {
+    margin: var(--ds-space-10) 0;
+  }
+  .article__figure-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-border);
+    box-shadow: var(--ds-shadow-md);
+    background-image:
+      linear-gradient(135deg, #EEF0F4 0%, #C8C5F7 60%, #625DF5 130%);
+    /* Inline ornament: a Loom-tinted gradient placeholder; in production
+     * a Loom-recording screenshot replaces this. The frame chrome
+     * (radius + hairline + soft shadow) is the transferable pattern. */
+  }
+  .article__figure-caption {
+    margin: var(--ds-space-3) 0 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    text-align: left;
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-2xl); }
+    .article__byline-photo { width: 48px; height: 48px; flex-basis: 48px; }
+    .article__pullquote { padding: var(--ds-space-5); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__kicker { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <a class="article__kicker" href="#">Loom</a>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula vivamus</h1>
+      <div class="article__byline">
+        <div class="article__byline-photo" aria-hidden="true"></div>
+        <div class="article__byline-text">
+          <p class="article__byline-name">Lorem Ipsum</p>
+          <p class="article__byline-meta">Product Marketing Manager &middot; <time datetime="2026-05-20">May 20, 2026</time></p>
+        </div>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus aenean fermentum magna at suscipit.</p>
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. The token <code>--ds-accent</code> carries the single chromatic role.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros faucibus.</p>
+
+      <figure class="article__figure">
+        <div class="article__figure-frame" role="img" aria-label="Lorem ipsum diagram placeholder"></div>
+        <figcaption class="article__figure-caption">Lorem ipsum dolor sit amet consectetur. A screenshot of a Loom recording surface in context.</figcaption>
+      </figure>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem.</p>
+
+      <aside class="article__pullquote">
+        <p class="article__pullquote-text">Lorem ipsum dolor sit amet consectetur adipiscing elit; vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla per saecula.</p>
+        <p class="article__pullquote-attr"><strong>Lorem Ipsum</strong>, Head of Operations at Lorem Corp</p>
+      </aside>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia.</p>
+
+      <h3>Pellentesque habitant morbi</h3>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit nullam id dolor varius lorem.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

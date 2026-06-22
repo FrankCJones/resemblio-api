@@ -1,0 +1,116 @@
+/*
+ * olipop-footer-001 tokens
+ *
+ * Native token values for the Olipop site footer. The footer inverts the
+ * candy-bright body palette: the rest of the page lives on soft peach
+ * rgb(255,225,217) with forest-green ink; the footer drops the surface
+ * to forest green rgb(3,70,56) and lifts the ink to cream
+ * rgb(255,246,234). Same brand palette, swapped figure-ground.
+ *
+ * Color values cross-referenced from sibling asset
+ * heroes/olipop-product-hero-001 (devtools_computed_style on
+ * drinkolipop.com, 2026-05-19, score A). Footer structure (column
+ * groupings, newsletter copy, social list, legal links) extracted via
+ * webfetch_html_inspection on drinkolipop.com 2026-05-20; Shopify
+ * storefronts strip inline styles from WebFetch markdown, so the chrome
+ * adopts the sibling Olipop tokens rather than re-measured pixel reads.
+ *
+ * Composition atoms: color-groups/candy-bright-001 (palette family,
+ * inverted figure-ground), headings/retro-soda-001 (WindsorEF wordmark
+ * moment), buttons/soft-pill-pink-001 (forest-green pill pattern,
+ * inverted to cream-on-green), kickers/mono-eyebrow-001 (uppercase
+ * Ano column kickers in lieu of a mono register, Olipop's substitute).
+ */
+:root {
+  /* ---------- Colors ---------- */
+  /* The footer is the inverted half of the Olipop palette; --ds-bg picks
+   * up the forest green that elsewhere is the CTA fill. */
+  --ds-bg:           #034638;   /* Olipop forest green rgb(3,70,56); the footer surface. Elsewhere this color is the CTA pill fill. */
+  --ds-surface:      #14433D;   /* Olipop deep body ink rgb(20,67,61); a one-step-lifted band (newsletter strip). */
+  --ds-surface-2:    #0A3128;   /* Olipop sub-label ink rgb(10,49,40); deeper still; used for the input field surface. */
+  --ds-text:         #FFF6EA;   /* Olipop cream rgb(255,246,234); the cream-on-green inversion is the footer's whole mechanic. */
+  --ds-text-muted:   #FFE1D9;   /* Olipop body peach rgb(255,225,217); secondary lift; sits a step quieter than the cream. */
+  --ds-text-strong:  #FFF6EA;   /* Cream at full strength; wordmark and column kickers read here. */
+  --ds-border:       #98E1C3;   /* Olipop mint rgb(152,225,195); newsletter input underline and CTA pill ring. */
+  --ds-hairline:     #14433D;   /* Deep body ink; the subtle divider between sitemap row and legal row. */
+  --ds-accent:       #98E1C3;   /* Olipop mint rgb(152,225,195); the secondary-button surface, here the link hover lift. */
+  --ds-accent-2:     #FCC100;   /* Olipop yellow rgb(252,193,0); reserved for the focus ring and the B-corp mark callout. */
+  --ds-success:      #98E1C3;   /* Mint doubles as success in this palette. */
+  --ds-warning:      #FCC100;   /* Olipop yellow. */
+  --ds-error:        #FFB8B3;   /* Olipop section pink rgb(255,184,179); lifted to read on the green surface. */
+  --ds-info:         #98E1C3;   /* Mint; the palette refuses a separate info hue. */
+  --ds-focus-ring:   #FCC100;   /* Olipop yellow; high-contrast against the forest-green field. */
+
+  /* ---------- Type families ---------- */
+  /* Olipop pairs Ano (Schick Toikka) for body and WindsorEF for chunky
+   * display moments. Open-licensed fallbacks chain through Inter and
+   * Cooper Std so the chunky-soft register survives even without the
+   * licensed faces. Olipop ships no monospace family; the mono slot
+   * points back at Ano upper-cased with wide tracking, which is the
+   * site's actual substitute for a mono kicker register. */
+  --ds-font-display: "WindsorEF", "Cooper Std", "Georgia", serif;
+  --ds-font-body:    "Ano", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Ano", "Inter", system-ui, sans-serif;
+  --ds-font-accent:  "WindsorEF", "Cooper Std", "Georgia", serif;
+
+  /* ---------- Type sizes ---------- */
+  /* Same scale as the sibling product-hero asset; the footer binds the
+   * wordmark at 7xl (statement display) and column kickers at xs/sm. */
+  --ds-text-2xs:  10px;   --ds-text-xs:   12px;   --ds-text-sm:   14px;
+  --ds-text-base: 16px;   --ds-text-lg:   19px;   --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;   --ds-text-3xl:  44px;   --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   --ds-text-6xl:  88px;   --ds-text-7xl:  140px;
+
+  /* ---------- Line heights ---------- */
+  /* Windsor wordmark compresses below 1.0 at statement size; body and
+   * link rows take the normal step. */
+  --ds-leading-tight:   0.95;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  /* Windsor wants a touch of negative; Ano-as-kicker wants wider; the
+   * legal microcopy takes the widest step. */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.08em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ---------- */
+  /* Matches the sibling product-hero scale exactly. */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  /* The Subscribe pill clips at full; the input takes the lg step. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   24px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  /* Olipop footer surfaces sit flat; the only lift is the 1.5px mint
+   * ring that the secondary-button atom contributes on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1.5px #98E1C3;
+  --ds-shadow-sm:   0 1px 0 rgba(255,246,234,0.15);
+  --ds-shadow-md:   0 6px 20px rgba(0,0,0,0.25);
+  --ds-shadow-lg:   0 18px 40px rgba(0,0,0,0.32);
+  --ds-shadow-2xl:  0 36px 72px rgba(0,0,0,0.40);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

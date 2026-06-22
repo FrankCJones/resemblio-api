@@ -1,0 +1,91 @@
+<!--
+  Asset: custom-display-001
+  Class: wordmarks
+  Pattern: single-typeface-system
+  Inspired by: Pentagram
+  Notes:
+    - Distinctive geometric-sans wordmark; the custom letterform cuts are
+      the brand's signature.
+    - Type family slot is the contract; the perfect-circle "o" and the
+      angled cut on the "a" come from the licensed face. A trailing red
+      square is the studio's color accent and stays inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>custom-display-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  /* Native: matches the 19px header height Pentagram ships */
+  .wordmark--ui { font-size: var(--ds-text-lg); }
+  /* Display: shows the custom letterform character at scale */
+  .wordmark--display { font-size: var(--ds-text-5xl); }
+  /* The trailing accent square is inline: studio convention, not a token role */
+  .accent-dot {
+    display: inline-block;
+    width: 0.18em;
+    height: 0.18em;
+    background: var(--ds-accent);
+    align-self: center;
+    margin-left: 0.08em;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">native size (19px)</span>
+    <a class="wordmark wordmark--ui" href="#">Pentagram</a>
+  </div>
+  <div class="stage">
+    <span class="state-label">display (80px)</span>
+    <a class="wordmark wordmark--display" href="#">Pentagram</a>
+  </div>
+  <div class="stage">
+    <span class="state-label">with studio accent</span>
+    <a class="wordmark wordmark--display" href="#">
+      Pentagram<span class="accent-dot" aria-hidden="true"></span>
+    </a>
+  </div>
+</body>
+</html>

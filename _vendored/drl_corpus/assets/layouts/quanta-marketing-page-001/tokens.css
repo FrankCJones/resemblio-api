@@ -1,0 +1,140 @@
+/*
+ * quanta-marketing-page-001 tokens
+ *
+ * Homepage layout skeleton for Quanta Magazine. Inherits the Quanta
+ * three-family editorial system (Tiempos Headline / Tiempos Text /
+ * GT America) and the single deep-violet accent established in the
+ * existing system-tagged atoms and the article-layout sibling
+ * (quanta-science-article-001). Paper-and-ink page surface; violet
+ * reserved for kickers, inline links, and the newsletter band CTA.
+ *
+ * Source inspected via WebFetch 2026-05-20: quantamagazine.org
+ * (homepage). Section sequence, kicker labels, topic categories, and
+ * tile composition captured verbatim from the live HTML; numeric
+ * token values (violet #4A2D7E, 17px body, Tiempos display register)
+ * inherit the Quanta system convention from systems/quanta/system.json
+ * design_principles rather than from devtools reads. Quanta is one of
+ * the editorial-publication sources whose CSS modules WebFetch strips.
+ *
+ * Free-font analogs in asset.html:
+ *   - Source Serif 4 substitutes for Tiempos Headline / Tiempos Text.
+ *   - Inter substitutes for GT America.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper page with near-black ink. Violet is the single distinctive
+   * color and appears only on lowercase kickers, inline links, and the
+   * newsletter band primary CTA. Hairlines do every section-break job.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper. The whole page sits on plain white. */
+  --ds-surface:      #FAFAFA;   /* Half-step lift; newsletter band fill, most-read sidebar. */
+  --ds-surface-2:    #F2F2F2;   /* Second lift; podcast feature surround, audio-player chrome. */
+  --ds-text:         #1A1A1A;   /* Body and headline near-black; reads as ink on paper. */
+  --ds-text-muted:   #6B6B6B;   /* Byline, kicker-secondary, footer link rest state. */
+  --ds-text-strong:  #000000;   /* Pure black for the hero article title. */
+  --ds-border:       #E5E5E5;   /* Tile edge, video-card frame. */
+  --ds-hairline:     #EDEDED;   /* Section divider; carries the entire page rhythm. */
+  --ds-accent:       #4A2D7E;   /* Quanta deep violet; lowercase kickers, inline links. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet for hover and focus on accent. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #C77700;
+  --ds-error:        #B3261E;
+  --ds-info:         #4A2D7E;
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet, visible against paper. */
+
+  /* ---------- Type families ----------
+   * Three families, three jobs. Serif owns reading and the hero title;
+   * humanist sans owns the lowercase kicker and metadata; mono is held
+   * in reserve and rarely appears on the homepage.
+   */
+  --ds-font-display: "Tiempos Headline", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Editorial scale. Body sits at 17px. Tile titles climb to 24-28px;
+   * the hero feature title takes the 42-56px step. Lowercase kickers
+   * sit at 13-14px on positive tracking.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Tile titles take snug (1.2); body and description take relaxed
+   * (1.55-1.65) to support science-reading at length.
+   */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Serif display takes a touch of negative tracking. Lowercase sans
+   * kicker takes positive 0.04em; rare mono labels take 0.14em.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Generous editorial rhythm. Sections separated by 64-96px on
+   * desktop; tile gaps at 32-48px. Hero gets one extra step.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Sharp corners. Editorial pages avoid pills; tile images and video
+   * cards take the smallest visible step.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairlines do the separation work. Shadows reserved for the rare
+   * hover-lift on a tile.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

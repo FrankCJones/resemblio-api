@@ -1,0 +1,125 @@
+/*
+ * huggingface-pricing-table-001 tokens
+ *
+ * Native token values for Hugging Face's pricing page (https://huggingface.co/pricing).
+ * Captured 2026-05-20 via webfetch_html_inspection. Provenance score B.
+ *
+ * The pricing surface inherits the HF alphabet: pure-white canvas, near-black
+ * ink, warm-yellow accent (#FFD21E) borrowed from the hugging-face emoji.
+ * The Team tier is recommended; HF marks it with the yellow accent stroke
+ * (the same yellow that brands the wordmark). Source Sans 3 for type;
+ * Source Code Pro for mono labels in the compute sub-table (instance ids,
+ * vCPU counts, $/hour values read at small sizes).
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure white surface, near-black ink, signature warm-yellow accent.
+   * Secondary accent is the warmer orange used on PRO badges and hardware
+   * status chips. Info blue is the platform link color used on /pricing
+   * for "Learn more" references and the compute-pricing breadcrumb.
+   */
+  --ds-bg:           #FFFFFF;   /* Page background. Pure white. */
+  --ds-surface:      #FFFFFF;   /* Tier card surface, flat against page. */
+  --ds-surface-2:    #F9FAFB;   /* Inset strip for the compute sub-table rows. */
+  --ds-text:         #1F2937;   /* Near-black body ink. Slate-900 register. */
+  --ds-text-muted:   #6B7280;   /* Feature-list secondary, /month suffix, sub-table headers. */
+  --ds-text-strong:  #111827;   /* Price digits and tier names. */
+  --ds-border:       #E5E7EB;   /* Tier card hairline. The only chrome non-recommended cards carry. */
+  --ds-hairline:     #F3F4F6;   /* Sub-divider inside cards and the sub-table row separator. */
+  --ds-accent:       #FFD21E;   /* Hugging-face yellow. The Team tier ring + Get Pro CTA. */
+  --ds-accent-2:     #FF9D00;   /* Warmer orange used on hover and the Most-popular pill. */
+  --ds-success:      #10B981;   /* Feature-list check glyph; "FREE" status on Spaces hardware rows. */
+  --ds-warning:      #F59E0B;
+  --ds-error:        #EF4444;
+  --ds-info:         #2563EB;   /* Link blue used in "Learn more" anchors and sub-table footnotes. */
+  --ds-focus-ring:   #FFD21E;   /* Yellow halo on :focus-visible; high contrast on white. */
+
+  /* ---------- Type families ----------
+   * Source Sans 3 for all sans; Source Code Pro for mono. Both Adobe
+   * open-source families; the pair is itself a small open-source flag.
+   */
+  --ds-font-display: "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Source Code Pro", "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --ds-font-accent:  "Source Sans 3", "Source Sans Pro", sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Tier name 22px; price digit 44px ("$9 / $20 / $50"); /month suffix 14-16px;
+   * feature list 14-15px; compute sub-table rows 13-14px mono.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Sub-table secondary metadata, "Most popular" pill. */
+  --ds-text-sm:   14px;   /* Feature list, CTA label, compute-row default. */
+  --ds-text-base: 16px;   /* Body lede default. */
+  --ds-text-lg:   18px;   /* Section lede paragraph. */
+  --ds-text-xl:   22px;   /* Tier name "PRO Account / Team / Enterprise". */
+  --ds-text-2xl:  28px;   /* Section head. */
+  --ds-text-3xl:  36px;   /* Pricing-page H1 lower bound. */
+  --ds-text-4xl:  44px;   /* Price numeral "$50". */
+  --ds-text-5xl:  56px;
+  --ds-text-6xl:  64px;
+  --ds-text-7xl:  88px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.55;
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* "MOST POPULAR" pill, sub-table category headers. */
+
+  /* ---------- Spacing ----------
+   * 4px base. Tier card interior at space-6 (32px); grid gap at space-4 (16px);
+   * the compute sub-table sits with tighter row padding (space-2 / space-3) so
+   * a dense table of 18+ hardware rows still scans on a single viewport.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Tier cards at 12px (lg); CTA button at 8px (md); "Most popular" pill at
+   * 9999px (full); sub-table cells flush, no radius.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome. Cards stay flat at rest; the Team-tier emphasis is
+   * the yellow ring, not elevation. Hover engages a soft lift.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(17,24,39,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(17,24,39,0.05);
+  --ds-shadow-md:   0 4px 12px rgba(17,24,39,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(17,24,39,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(17,24,39,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

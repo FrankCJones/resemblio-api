@@ -1,0 +1,274 @@
+<!--
+  Asset: vercel-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, accent-on-neutral
+  Inspired by: Vercel blog (/blog/ai-gateway-production-index)
+  Notes:
+    - Mechanic: dev-tool long-form reading register on a white Geist canvas.
+      One chromatic role (Geist Blue #0070F3) does inline links and focus
+      ring. Hairlines do all structural chrome (date strip rule, section
+      breaks, no shadows). Geist Sans owns display and body; Geist Mono is
+      held back for the technical kicker only.
+    - Variable: the white bg, Gray 12 ink, Geist Blue accent, Geist Sans
+      family, 18px body at 1.6 leading, 56px H1.
+    - Inline ornament: the 680px body measure, the pipe glyph between the
+      author names and the date in the byline strip, the centered 120px
+      short hairline section break.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for Geist Sans shipped by Vercel.
+     JetBrains Mono substitutes for Geist Mono on the technical kicker. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure throughout. Vercel's
+   * blog does not break to wider measures for figures; the column holds.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Optional mono kicker, sans h1 at 4xl, sans dek at lg, hairline date
+   * strip with pipe-separated authors + date. Order follows the live
+   * Vercel /blog/<slug> chrome.
+   */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-8);
+    text-align: left;
+  }
+
+  /* Technical kicker - mono, uppercase, muted; optional. The observed
+   * Vercel post had no kicker, but the asset surfaces the Geist-system
+   * eyebrow as the canonical chrome when an article belongs to a series
+   * or a product surface (e.g. "Engineering", "Changelog"). */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  /* Article headline - sans at 4xl (56px), tight leading, negative
+   * tracking. Geist Sans at this step is what reads as Vercel. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - sans at lg (22px), muted, regular weight. Always present on
+   * the observed Vercel post; reads as a one-paragraph lead beneath the
+   * H1 and tells the reader what the post argues. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Hairline date strip - sans authors + pipe-separator + sans date,
+   * sitting alone above a hairline rule. The live Vercel post renders
+   * authors and date pipe-separated on a single line ("Published: May
+   * 12, 2026 | Authors: Harpreet Arora, Yvonne Zhou"); the asset keeps
+   * the order compact and adds the hairline above. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__meta a {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .article__meta a:hover { color: var(--ds-accent); }
+  .article__meta .pipe {
+    color: var(--ds-text-muted);
+    /* Inline ornament: pipe glyph separating author group from the date;
+     * the Vercel byline strip's signature separator. */
+  }
+  .article__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 680px. Reading register sits at 18px / 1.6;
+   * the dev-tool reading move - one step above the SaaS 16/1.5 default,
+   * one step below Linear's 18/1.65 editorial-shaded blog.
+   */
+  .article__body {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - Geist Blue accent, hairline underline at
+   * rest, lifted blue on hover. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside body - sans at xl, generous gap above. Vercel
+   * subheads use the same Geist family at a smaller display step;
+   * negative tracking carried through. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* Inline code - Geist Mono on a faint inset chip. Reserved for short
+   * identifiers inside prose. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.92em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.06em 0.32em;
+  }
+
+  /* ---------------- Section break ----------------
+   * Hairline rule between major sections. Vercel posts more often rely
+   * on whitespace alone; this asset surfaces the rule as the canonical
+   * editorial chrome and constrains it to a short centered hairline.
+   */
+  .article__sectionbreak {
+    display: block;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) auto;
+    max-width: 120px;
+    /* Inline ornament: 120px max width keeps the rule short and centered
+     * rather than running the full measure; a single-purpose decoration,
+     * not a contract slot. */
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__meta a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <span class="article__kicker">Lorem Ipsum</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos.</p>
+      <div class="article__meta">
+        <a href="#">Lorem Ipsum</a>,
+        <a href="#">Dolor Amet</a>
+        <span class="pipe" aria-hidden="true">|</span>
+        <time datetime="2026-05-12">May 12, 2026</time>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. The token <code>--ds-accent</code> carries the single chromatic role.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. <a href="#">Nemo enim ipsam voluptatem</a> quia voluptas sit aspernatur aut odit aut fugit.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h2>Pellentesque habitant morbi tristique</h2>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit nullam id dolor.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum dolorem.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

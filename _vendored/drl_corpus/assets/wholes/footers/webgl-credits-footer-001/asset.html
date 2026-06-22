@@ -1,0 +1,284 @@
+<!--
+  Asset: webgl-credits-footer-001
+  Class: footers (whole)
+  Pattern: minimal-footer, primary-pill
+  Inspired by: Bruno Simon (bruno-simon.com, via brunosimon/folio-2019)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/candy-bright-001        (closest playful-warm palette stand-in)
+    - type-pairings/display-distinctive-001 (closest distinctive-display stand-in)
+    - buttons/webgl-3d-001                  (exact Bruno overlay answer pill)
+  Notes:
+    - This is the footer-equivalent of an immersive WebGL portfolio: a
+      floating bottom-right credits overlay that breaks the 3D scene
+      with a flat 2D dialogue bubble plus 'yes/no' answer pills, and
+      the author's name + role + year. Honors the 2019 era of the
+      source documented in the MIT-licensed folio-2019 repo.
+    - Variable: the dialogue gradient stops, the bubble border, the
+      pill radius, and the 500ms ease-emphasize all come from tokens.
+      Inline ornaments: the exact 40px float offset, the bubble's
+      gradient angles, the SVG character placeholder geometry, the
+      tail triangle on the bubble, and the per-pill hover scale.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webgl-credits-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Comic Neue: the Bruno Simon signature; gives the overlay its
+     hand-drawn schoolyard voice against the polished 3D scene. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+
+  /* Scene. A near-black backdrop with a faint warm horizon glow to
+   * imply the 3D twilight road the source overlays on. The grid lines
+   * are a flat illustrative shorthand; the real source renders a full
+   * Three.js scene. */
+  body {
+    background:
+      radial-gradient(60% 40% at 50% 100%,
+        color-mix(in oklab, var(--ds-accent) 22%, transparent),
+        transparent 70%),
+      linear-gradient(180deg, #0a0a0a 0%, var(--ds-bg) 100%);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Faux ground grid. Inline ornament; not part of the credits footer
+   * pattern, but it anchors the overlay against an implied 3D plane
+   * the way the source does. */
+  .scene::before {
+    content: "";
+    position: absolute;
+    inset: 60% 0 0 0;
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(255,255,255,0.06) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(0deg,
+        rgba(255,255,255,0.04) 0 1px, transparent 1px 48px);
+    transform: perspective(600px) rotateX(60deg);
+    transform-origin: top center;
+    pointer-events: none;
+  }
+
+  /* The credits overlay. Source positions absolute at bottom:40px
+   * right:40px width:420px. The 40px offset is a hand-tuned magic
+   * number specific to this overlay; kept inline. */
+  .credits {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--ds-space-3);
+    user-select: none;
+  }
+
+  /* The dialogue bubble. Native: linear-gradient(#fdb572ab, #fdb5721a),
+   * 2px solid #ffffff border, border-radius 8px, padding ~15px 20px.
+   * The 18px / 700 font is the canonical Comic Neue dialogue size. */
+  .credits__bubble {
+    position: relative;
+    background: linear-gradient(180deg,
+      var(--ds-surface) 0%,
+      var(--ds-surface-2) 100%);
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    color: var(--ds-text);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    transition:
+      transform var(--ds-duration-slow) var(--ds-ease-emphasize),
+      opacity var(--ds-duration-slow) 200ms var(--ds-ease-emphasize);
+  }
+
+  /* Bubble tail. Inline ornament: a small white-bordered notch on the
+   * bottom-left of the bubble pointing at the character placeholder.
+   * The two-triangle stack creates the border-plus-fill effect without
+   * SVG. */
+  .credits__bubble::after,
+  .credits__bubble::before {
+    content: "";
+    position: absolute;
+    left: 28px;
+    bottom: -14px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  .credits__bubble::before {
+    border-width: 14px 12px 0 12px;
+    border-color: var(--ds-border) transparent transparent transparent;
+  }
+  .credits__bubble::after {
+    border-width: 11px 9px 0 9px;
+    border-color: var(--ds-surface-2) transparent transparent transparent;
+    left: 31px;
+    bottom: -10px;
+  }
+
+  /* The answer pill row. Source uses .answer pills 10px 15px padding,
+   * 8px radius, .is-yes white bg with peach text, .is-no transparent
+   * with gradient outline. */
+  .credits__answers {
+    display: flex;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-3);
+  }
+  .credits__pill {
+    appearance: none;
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 10px 15px;   /* Inline: native source values. */
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-base);
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      transform var(--ds-duration-fast) var(--ds-ease-emphasize),
+      background var(--ds-duration-fast) var(--ds-ease-emphasize);
+  }
+  .credits__pill--yes {
+    background: rgba(255, 255, 255, 0.75);   /* Native .is-yes opacity. */
+    color: var(--ds-accent);
+  }
+  .credits__pill--no {
+    background: transparent;
+    color: var(--ds-text);
+  }
+  .credits__pill:hover { transform: scale(1.04); }
+  .credits__pill:active { transform: scale(0.98); }
+  .credits__pill:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Character placeholder. Inline ornament: a flat SVG silhouette in
+   * place of the source's 132x118 pixel-art boy sprite. The arm-wave
+   * keyframe approximates @keyframes boyArmWave (0 to 15deg, 3s
+   * infinite ease-in-out) without a sprite sheet. */
+  .credits__boy {
+    position: absolute;
+    left: 8px;
+    bottom: calc(100% + 18px);
+    width: 92px;
+    height: 92px;
+    pointer-events: none;
+  }
+  .credits__boy svg { width: 100%; height: 100%; display: block; }
+  .credits__boy .arm {
+    transform-origin: 30px 38px;
+    animation: boyArm 3s infinite ease-in-out;
+  }
+  @keyframes boyArm {
+    0%, 100% { transform: rotate(0deg); }
+    50%      { transform: rotate(15deg); }
+  }
+
+  /* Credits row. Below the bubble, name + role + year as a tight
+   * single-line. Uses mono for the year per source convention (year
+   * is metadata; the name is voice). */
+  .credits__line {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    width: 100%;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .credits__name {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    font-size: var(--ds-text-base);
+  }
+  .credits__role { flex: 1; font-style: italic; }
+  .credits__year {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /* Sound toggle / scene controls. The source carries no inline
+   * volume button in 2019; recent iterations added one. We include a
+   * single icon button here because credits overlays often need it,
+   * styled with the same border-and-radius idiom as the answer pills. */
+  .credits__toggle {
+    appearance: none;
+    background: transparent;
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    color: var(--ds-text);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-emphasize);
+  }
+  .credits__toggle:hover {
+    background: rgba(255, 255, 255, 0.10);
+  }
+  .credits__toggle svg { width: 14px; height: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .credits__bubble,
+    .credits__pill,
+    .credits__toggle { transition: none; }
+    .credits__boy .arm { animation: none; }
+  }
+</style>
+</head>
+<body class="scene">
+  <aside class="credits" aria-label="Site credits and welcome">
+    <div class="credits__boy" aria-hidden="true">
+      <!-- Flat SVG placeholder for the source's pixel-art boy sprite. -->
+      <svg viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="46" cy="28" r="18" fill="#f8d7b3"/>
+        <rect x="32" y="46" width="28" height="32" rx="6" fill="#3b6cf2"/>
+        <rect class="arm" x="24" y="48" width="8" height="22" rx="4" fill="#f8d7b3"/>
+        <rect x="60" y="48" width="8" height="22" rx="4" fill="#f8d7b3"/>
+        <circle cx="40" cy="26" r="2" fill="#1a1a1a"/>
+        <circle cx="52" cy="26" r="2" fill="#1a1a1a"/>
+      </svg>
+    </div>
+
+    <div class="credits__bubble" role="status">
+      Lorem ipsum dolor sit amet! Consectetur adipiscing elit?
+      <div class="credits__answers">
+        <a href="#" class="credits__pill credits__pill--yes">Lorem ipsum</a>
+        <a href="#" class="credits__pill credits__pill--no">Dolor sit</a>
+      </div>
+    </div>
+
+    <div class="credits__line">
+      <span class="credits__name">Lorem Ipsum</span>
+      <span class="credits__role">Dolor sit amet, consectetur</span>
+      <span class="credits__year">MMXXVI</span>
+      <button type="button" class="credits__toggle" aria-label="Toggle sound">
+        <svg viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+          <path d="M2 5h3l3-3v10L5 9H2z"/>
+          <path d="M10 4q2 2 0 6" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+</body>
+</html>

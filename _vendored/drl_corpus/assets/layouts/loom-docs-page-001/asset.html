@@ -1,0 +1,604 @@
+<!--
+  Asset: loom-docs-page-001
+  Class: layouts
+  Pattern: docs-three-column, sticky-sidebar-nav, toc-rail, prev-next-pager
+  Inspired by: Loom Help Center (support.atlassian.com/loom; the live Loom docs surface is hosted on Atlassian's Charlie design system after the 2024 Atlassian acquisition)
+  Notes:
+    - The skeleton is the load-bearing decision: full-width sticky top
+      nav (Atlassian header band with Loom wordmark and Cloud-product
+      switcher), centered three-column body (sticky sidebar tree, article
+      column with breadcrumb + body + screenshot/video slots, sticky TOC
+      rail), prev/next pager, thin legal footer. Asset chrome reads
+      light-canvas with Loom-purple as the only chromatic accent;
+      Atlassian-blue is reserved for secondary link states. Sentence-case
+      copy throughout per Loom's voice register.
+    - Sidebar items, TOC anchors, breadcrumb, and pager labels are lorem
+      ipsum placeholders. The structural variables captured: 260px / 1fr
+      / 220px column widths, sticky behavior on both rails, 760px article
+      reading column, hairline-border card chrome (no shadows at rest),
+      screenshot frame and video embed slots inside the article column.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-docs-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* Reset only what this layout needs. Cross-asset reset lives in the harness. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Top nav band. Two-row Atlassian-style header: thin top bar with
+   * Atlassian wordmark + product switcher, second row with Loom wordmark
+   * and primary docs nav. Both rows full-width, sticky to viewport top,
+   * single hairline rule under the second row.
+   */
+  .topnav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topnav__meta {
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+  .topnav__meta-inner,
+  .topnav__inner {
+    max-width: 1280px;                /* Atlassian docs container max-width, inline value. */
+    margin: 0 auto;
+    padding: var(--ds-space-2) var(--ds-space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .topnav__meta-inner {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .topnav__inner {
+    padding-top: var(--ds-space-4);
+    padding-bottom: var(--ds-space-4);
+  }
+  .topnav__atlassian {
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .topnav__product {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    flex-shrink: 0;
+  }
+  .topnav__product-tag {
+    /* Inline: Loom-purple chip next to wordmark identifies the product cloud. */
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-size: var(--ds-text-xs);
+    padding: 2px 8px;
+    border-radius: var(--ds-radius-sm);
+    margin-left: var(--ds-space-2);
+    vertical-align: middle;
+    font-weight: 500;
+  }
+  .topnav__links {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .topnav__spacer { flex: 1; }
+  .topnav__search {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    min-width: 280px;                 /* search-input minimum width, inline value. */
+  }
+  .topnav__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+
+  /*
+   * Body shell. Three columns: 260px sidebar / fluid article / 220px
+   * TOC. Max width 1280px centered. On tablet TOC drops; on mobile both
+   * rails drop to a drawer (drawer chrome elided here).
+   */
+  .shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .shell { grid-template-columns: 260px minmax(0, 1fr); }
+  }
+  @media (min-width: 1200px) {
+    .shell { grid-template-columns: 260px minmax(0, 1fr) 220px; }
+  }
+
+  /*
+   * Sidebar nav. Sticky to top-nav offset. Collapsible group headers
+   * uppercase tracked. Children at sm. Current item gets a Loom-purple
+   * left-edge rule and a faint surface-2 tint.
+   */
+  .sidebar {
+    position: sticky;
+    top: 96px;                        /* Inline: cumulative height of the two-row top nav. */
+    align-self: start;
+    padding-block: var(--ds-space-6);
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    border-right: 1px solid var(--ds-hairline);
+    padding-right: var(--ds-space-4);
+  }
+  .sidebar__group { margin-bottom: var(--ds-space-6); }
+  .sidebar__group-label {
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .sidebar__item {
+    display: block;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .sidebar__item--current {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+    box-shadow: inset 2px 0 0 var(--ds-accent);
+    font-weight: 500;
+  }
+  .sidebar__item--nested { padding-left: var(--ds-space-5); }
+
+  /*
+   * Article column. Max measure 760px. Page title H1 at 3xl; section H2
+   * at xl; body at base reading; lead paragraph at lg.
+   */
+  .article {
+    padding-block: var(--ds-space-8);
+    max-width: 760px;                 /* Article reading-column max-width, inline value. */
+  }
+  .article__breadcrumb {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article__h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    font-weight: 600;
+  }
+  .article__lead {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .article__h2 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+    font-weight: 600;
+  }
+  .article p { margin: 0 0 var(--ds-space-5); }
+  .article a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /* Callout block. Tip variant uses Loom-purple left-edge rule on a faint surface tint. */
+  .callout {
+    background: var(--ds-surface-2);
+    border-left: 3px solid var(--ds-accent);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+    margin: var(--ds-space-5) 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /*
+   * Screenshot frame. Hairline-bordered, rounded, light fill. Stands
+   * in for product screenshots embedded between body paragraphs.
+   */
+  .screenshot {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 16 / 9;
+    margin: var(--ds-space-5) 0;
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /*
+   * Video embed frame. Same rounded hairline chrome, with a Loom-purple
+   * play-glyph centerpiece to signal a Loom recording embed.
+   */
+  .video-embed {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 16 / 9;
+    margin: var(--ds-space-5) 0;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .video-embed__play {
+    /* Inline: Loom-purple play disc; the brand's recording signifier. */
+    width: 64px;
+    height: 64px;
+    border-radius: 9999px;
+    background: var(--ds-accent);
+    display: grid;
+    place-items: center;
+    color: #FFFFFF;
+    font-size: var(--ds-text-xl);
+  }
+
+  /* Card grid inside the article (related topics, sub-section index). */
+  .card-grid {
+    display: grid;
+    gap: var(--ds-space-4);
+    grid-template-columns: 1fr;
+    margin: var(--ds-space-5) 0;
+  }
+  @media (min-width: 640px) { .card-grid--2 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 900px) { .card-grid--3 { grid-template-columns: repeat(3, 1fr); } }
+
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card:hover { border-color: var(--ds-accent); }
+  .card__title {
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .card__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+    line-height: var(--ds-leading-normal);
+  }
+  .card__link {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    font-weight: 500;
+  }
+
+  /* Prev/next pager. Sits at the end of the article column above the footer. */
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .pager__cell {
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .pager__cell:hover { border-color: var(--ds-accent); }
+  .pager__cell--next { text-align: right; }
+  .pager__direction {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-1);
+  }
+  .pager__label {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    font-weight: 500;
+  }
+
+  /* TOC rail (right). Sticky. Hairline left-edge rule. Current anchor in Loom purple. */
+  .toc {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    padding-block: var(--ds-space-8);
+    padding-left: var(--ds-space-5);
+    border-left: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-xs);
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+  }
+  .toc__label {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+    font-weight: 600;
+  }
+  .toc__anchor {
+    display: block;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-1) 0;
+    line-height: var(--ds-leading-normal);
+  }
+  .toc__anchor--current { color: var(--ds-accent); font-weight: 500; }
+  .toc__anchor--nested { padding-left: var(--ds-space-3); }
+
+  /* Footer band. Thin legal strip, full-width, single hairline above. */
+  .footer {
+    border-top: 1px solid var(--ds-hairline);
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-6);
+    background: var(--ds-surface);
+  }
+  .footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    flex-wrap: wrap;
+  }
+  .footer__links { display: flex; gap: var(--ds-space-5); }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-nav. Two-row Atlassian header band with Loom product tag. -->
+  <header class="topnav" aria-label="Primary">
+    <div class="topnav__meta">
+      <div class="topnav__meta-inner">
+        <span class="topnav__atlassian">Lorem Atlassian Support</span>
+        <span class="topnav__spacer"></span>
+        <a href="#">Lorem apps</a>
+        <a href="#">Ipsum status</a>
+        <a href="#">Sign in</a>
+      </div>
+    </div>
+    <div class="topnav__inner">
+      <span class="topnav__product">Lorem<span class="topnav__product-tag">Cloud</span></span>
+      <nav class="topnav__links" aria-label="Primary links">
+        <a href="#">Documentation</a>
+        <a href="#">Knowledge base</a>
+        <a href="#">Resources</a>
+        <a href="#">Contact us</a>
+      </nav>
+      <span class="topnav__spacer"></span>
+      <span class="topnav__search">Lorem ipsum&hellip; <span style="opacity:.5;">/</span></span>
+      <a class="topnav__cta" href="#">Get started</a>
+    </div>
+  </header>
+
+  <!-- Body shell: sidebar + article + TOC rail. -->
+  <div class="shell">
+
+    <!-- Left rail: sidebar navigation tree. -->
+    <aside class="sidebar" aria-label="Documentation navigation">
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Get started</div>
+        <a class="sidebar__item" href="#">Lorem intro</a>
+        <a class="sidebar__item sidebar__item--current" href="#">Create your first recording</a>
+        <a class="sidebar__item" href="#">Understand your account</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Set up your recorder</div>
+        <a class="sidebar__item" href="#">Install on your device</a>
+        <a class="sidebar__item" href="#">Choose your recording mode</a>
+        <a class="sidebar__item sidebar__item--nested">Lorem desktop</a>
+        <a class="sidebar__item sidebar__item--nested">Lorem browser</a>
+        <a class="sidebar__item sidebar__item--nested">Lorem mobile</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Sharing and collaboration</div>
+        <a class="sidebar__item" href="#">Sharing options</a>
+        <a class="sidebar__item" href="#">Embed videos</a>
+        <a class="sidebar__item" href="#">Team collaboration</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Account management</div>
+        <a class="sidebar__item" href="#">Invite team members</a>
+        <a class="sidebar__item" href="#">Inspect video data</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Billing and plans</div>
+        <a class="sidebar__item" href="#">Discover the plans</a>
+        <a class="sidebar__item" href="#">Upgrade or cancel</a>
+      </div>
+
+    </aside>
+
+    <!-- Article column. Pattern: docs-article. Section sequence captured from the live Loom docs surface. -->
+    <main class="article" aria-label="Article">
+
+      <div class="article__breadcrumb">Lorem &middot; Ipsum &middot; Dolor</div>
+
+      <h1 class="article__h1" id="lorem-h1">Lorem ipsum dolor sit amet</h1>
+
+      <p class="article__lead">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+
+      <!-- Body block: tip callout. -->
+      <div class="callout">
+        <strong>Lorem tip.</strong> Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua.
+      </div>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. <a href="#">Sed do
+        eiusmod tempor</a> incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam.
+      </p>
+
+      <!-- Body block: screenshot frame. -->
+      <figure class="screenshot" aria-label="Product screenshot placeholder">Lorem screenshot</figure>
+
+      <!-- Section H2. -->
+      <h2 class="article__h2" id="step-one">Lorem step one</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+
+      <!-- Body block: Loom video embed placeholder. -->
+      <div class="video-embed" aria-label="Loom video embed placeholder">
+        <div class="video-embed__play" aria-hidden="true">&#9654;</div>
+      </div>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim
+        ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+        ut aliquip ex ea commodo consequat.
+      </p>
+
+      <!-- Section H2: card index of sub-topics. -->
+      <h2 class="article__h2" id="related">Lorem related topics</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+
+      <div class="card-grid card-grid--3">
+        <div class="card">
+          <h3 class="card__title">Lorem topic one</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <a class="card__link" href="#">View topic &rarr;</a>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem topic two</h3>
+          <p class="card__body">Sed do eiusmod tempor incididunt ut labore et dolore.</p>
+          <a class="card__link" href="#">View topic &rarr;</a>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem topic three</h3>
+          <p class="card__body">Ut enim ad minim veniam, quis nostrud exercitation.</p>
+          <a class="card__link" href="#">View topic &rarr;</a>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem topic four</h3>
+          <p class="card__body">Duis aute irure dolor in reprehenderit in voluptate.</p>
+          <a class="card__link" href="#">View topic &rarr;</a>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem topic five</h3>
+          <p class="card__body">Excepteur sint occaecat cupidatat non proident.</p>
+          <a class="card__link" href="#">View topic &rarr;</a>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem topic six</h3>
+          <p class="card__body">Sunt in culpa qui officia deserunt mollit anim.</p>
+          <a class="card__link" href="#">View topic &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Section H2. -->
+      <h2 class="article__h2" id="next-steps">Lorem next steps</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore.
+      </p>
+
+      <!-- Prev/next pager. -->
+      <nav class="pager" aria-label="Page navigation">
+        <a class="pager__cell" href="#">
+          <span class="pager__direction">&larr; Previous</span>
+          <span class="pager__label">Lorem intro</span>
+        </a>
+        <a class="pager__cell pager__cell--next" href="#">
+          <span class="pager__direction">Next &rarr;</span>
+          <span class="pager__label">Understand your account</span>
+        </a>
+      </nav>
+
+    </main>
+
+    <!-- Right rail: TOC. Pattern: toc-rail. -->
+    <aside class="toc" aria-label="On this page">
+      <div class="toc__label">On this page</div>
+      <a class="toc__anchor toc__anchor--current" href="#lorem-h1">Lorem ipsum dolor</a>
+      <a class="toc__anchor" href="#step-one">Lorem step one</a>
+      <a class="toc__anchor toc__anchor--nested" href="#">Lorem detail</a>
+      <a class="toc__anchor toc__anchor--nested" href="#">Lorem variation</a>
+      <a class="toc__anchor" href="#related">Lorem related topics</a>
+      <a class="toc__anchor" href="#next-steps">Lorem next steps</a>
+    </aside>
+
+  </div>
+
+  <!-- Footer band. Thin legal strip. Not a mega-footer. -->
+  <footer class="footer" aria-label="Footer">
+    <div class="footer__inner">
+      <span>&copy; Lorem ipsum dolor sit amet</span>
+      <div class="footer__links">
+        <a href="#">Accessibility</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Security</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

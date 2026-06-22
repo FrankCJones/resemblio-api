@@ -1,0 +1,124 @@
+<!--
+  Asset: pulsing-dots-001
+  Class: loaders
+  Pattern: (none)
+  Inspired by: Anthropic (warm paper palette and slate-900 ink for chat-typing indicator)
+  Notes:
+    - Three 8px ink dots in a row; each pulses opacity 0.2 -> 1 -> 0.2 on a 1.4s loop.
+    - Stagger between dots is 200ms; cycle reads as "...thinking" rather than three independent blinkers.
+    - Three demos: bare row, inline with leading label, and embedded in an assistant chat bubble.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pulsing-dots-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+    align-items: flex-start;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    font-family: var(--ds-font-mono);
+  }
+
+  /* Dot cluster: three 8px circles in a flex row with even spacing. */
+  .dots {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    height: 16px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-text-strong);
+    opacity: 0.2;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dot {
+      animation: ds-pulse var(--ds-duration-slow) var(--ds-ease-emphasize) infinite;
+    }
+  }
+  @keyframes ds-pulse {
+    0%, 80%, 100% { opacity: 0.2; }
+    40%           { opacity: 1.0; }
+  }
+
+  /* Stagger of 200ms across the three dots; the third dot's pulse begins
+   * 400ms after the first, so the wave reads as a left-to-right rhythm. */
+  .dot:nth-child(1) { animation-delay: 0ms; }
+  .dot:nth-child(2) { animation-delay: 200ms; }
+  .dot:nth-child(3) { animation-delay: 400ms; }
+
+  /* Chat bubble demo. */
+  .bubble {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    max-width: 320px;
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  .bubble-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+</style>
+</head>
+<body>
+  <div class="row">
+    <span class="dots" role="status" aria-label="Loading">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </span>
+    <span>bare row</span>
+  </div>
+
+  <div class="row">
+    <span>Lorem ipsum is thinking</span>
+    <span class="dots" role="status" aria-label="Thinking">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </span>
+  </div>
+
+  <div class="bubble" role="status" aria-busy="true" aria-label="Assistant is typing">
+    <span class="bubble-label">Assistant</span>
+    <span class="dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </span>
+  </div>
+</body>
+</html>

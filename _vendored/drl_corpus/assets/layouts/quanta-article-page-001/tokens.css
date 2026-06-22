@@ -1,0 +1,144 @@
+/*
+ * quanta-article-page-001 tokens
+ *
+ * Native token values for the Quanta Magazine science-article page skeleton,
+ * inspired by quantamagazine.org/<feature-article>. Quanta's article register
+ * is editorial paper-and-ink with a single deep-violet accent reserved for
+ * the lowercase sans kicker and inline-link affordance, a serif body at the
+ * 17px / 1.65 leading reading rhythm, and a generous narrow column.
+ *
+ * Source inspected via WebFetch 2026-05-20:
+ * /what-do-godels-incompleteness-theorems-truly-mean-20260518/
+ * Quanta is blocked from Claude in Chrome MCP (live navigation rejected).
+ * WebFetch returned section order, content roles, and the lowercase-violet
+ * kicker / mono date / serif body register. Numeric token values (#4A2D7E
+ * violet, 17px body, 1.65 leading, three-family Tiempos + GT America + mono
+ * stack) inherit the Quanta system convention documented in
+ * systems/quanta/system.json design_principles and the existing system
+ * atoms (kickers/quanta-section-001, type-pairings/quanta-science-pair-001,
+ * article-layouts/quanta-science-article-001) rather than from devtools.
+ *
+ * Free-font analogs in asset.html:
+ *   - Source Serif 4 substitutes for Tiempos Headline / Tiempos Text.
+ *   - Inter substitutes for GT America.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink page with a single editorial accent. Violet shows up
+   * only on the lowercase sans kicker, inline links inside the body
+   * column, and figure-caption credit lines.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper. Article hero and body both sit on plain white. */
+  --ds-surface:      #FAFAFA;   /* Pull-quote inset surface; one half-step off paper. */
+  --ds-surface-2:    #F2F2F2;   /* Newsletter band and related-reading strip. */
+  --ds-text:         #1A1A1A;   /* Body serif and display headline; ink-feel near-black. */
+  --ds-text-muted:   #6B6B6B;   /* Byline, mono date, figure captions, footer fine print. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for rare emphasis inside body. */
+  --ds-border:       #E5E5E5;   /* Figure frame, related-card edges, footer block edges. */
+  --ds-hairline:     #EDEDED;   /* Section divider rules between hero / body / related. */
+  --ds-accent:       #4A2D7E;   /* Quanta signature deep violet; kicker, inline links, credits. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet for hover/focus on accent. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #C77700;
+  --ds-error:        #B3261E;
+  --ds-info:         #4A2D7E;
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet ring, readable against paper. */
+
+  /* ---------- Type families ----------
+   * Three families, three jobs. Serif owns reading and the display title;
+   * humanist sans owns nav, kickers, bylines, and figure captions; mono
+   * carries the date stamp and any technical caption.
+   */
+  --ds-font-display: "Tiempos Headline", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Body sits at 17px between UI 16 and editorial 18 because Quanta
+   * optimizes for long-form science reading. Lead paragraph and pull-quote
+   * step up to 19px (lg). Article headline lands at 56px (4xl) for the
+   * feature register.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;   /* Mono date stamp, footnote markers. */
+  --ds-text-sm:   14px;   /* Byline, figure caption, related-card meta. */
+  --ds-text-base: 17px;   /* Body serif reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph, pull-quote body. */
+  --ds-text-xl:   24px;   /* Body H3 subheads, newsletter band heading. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads, related-reading heading. */
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;   /* Article H1 display title. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Body sits at relaxed 1.65 because science articles run long; extra
+   * leading reduces fatigue at the 17px reading size.
+   */
+  --ds-leading-tight:   1.1;    /* Display headline. */
+  --ds-leading-snug:    1.2;    /* Section heads. */
+  --ds-leading-normal:  1.5;    /* Lead paragraph. */
+  --ds-leading-relaxed: 1.65;   /* Body reading default. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Display serif carries a touch of negative tracking. Lowercase sans
+   * kicker takes positive 0.04em to feel intentional rather than
+   * accidental lowercase.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Editorial vertical rhythm: generous gaps between kicker, title,
+   * deck, byline, illustration, and the body that follows.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Sharp corners almost everywhere; figure frames and related cards
+   * sit at the smallest visible step.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial pages prefer hairlines to shadows. Values declared for
+   * contract completeness; only the related-card hover uses sm.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

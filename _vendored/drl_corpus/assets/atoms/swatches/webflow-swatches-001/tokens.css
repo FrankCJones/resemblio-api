@@ -1,0 +1,188 @@
+/*
+ * webflow alphabet tokens
+ *
+ * Webflow's complete typography expression as one coherent vocabulary.
+ *
+ * One custom variable face does almost the entire job: WF Visual Sans
+ * Variable, a foundry-proprietary humanist sans with explicit weight (wght)
+ * and optical size (opsz) axes. A sibling face, WFVisualSans-Mono, is
+ * loaded only for the "Machine Mode" interactive demo block on the
+ * homepage; the rest of the marketing surface stays single-family. The
+ * lone third face is Inconsolata, used inside rich-text inline-code
+ * blocks. So the alphabet is effectively one face with axes, plus a mono
+ * reserved for a single narrative moment.
+ *
+ * The system is light-mode-native (#FFFFFF body with near-black #080808
+ * ink). The dark mirror swaps to black surface, white ink, while the
+ * Webflow Blue #146EF5 accent stays constant across both. Blue is the
+ * one chromatic punctuation in marketing chrome: primary CTA fill, focus
+ * outline, scrollbar thumb, hover underlines.
+ *
+ * The signature scale is fluid clamps, not steps. H1 ranges 44px to 80px
+ * across viewports (2.75rem to 5rem); H0 ranges 48px to 112px (3rem to
+ * 7rem); H2 ranges 32px to 56px (2rem to 3.5rem). The site never reads
+ * the same size at desktop and mobile, but the proportions stay locked.
+ * Body anchors at 16px / 1.6 paragraph-body and 14px / 1.6 paragraph-sm.
+ * Display sits at modest weight 600 with a tiny negative tracking on H1
+ * (-0.01em); other heads sit at 0em tracking. Eyebrows are 500 weight,
+ * 0em tracking, 1.4 line-height (not the uppercase wide-mono kicker that
+ * dev-tool sites use; Webflow's eyebrow is a normal-case sans label).
+ *
+ * Values are extracted from the live shipped marketing-main CSS bundle
+ * (cdn.prod.website-files.com/.../marketing-main.webflow...opt.min.css)
+ * fetched 2026-05-20 and verified against marketing-main.shared CSS,
+ * the inline @font-face declarations in the homepage HTML, and the
+ * pricing-page DOM.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure white body with near-black ink #080808 and one saturated blue.
+   * Webflow's gray scale is computed (gray-100 #F0F0F0 through gray-900
+   * #171717) and the marketing surface uses gray-100 as the secondary
+   * background card panel, gray-200 #D8D8D8 as the visible border, and
+   * gray-600 #5A5A5A as text-secondary. The chromatic restraint outside
+   * the blue accent is the load-bearing decision.
+   */
+  --ds-bg:           #FFFFFF;   /* --colors--background light mode; pure white. */
+  --ds-surface:      #FFFFFF;   /* Card surface; flat against bg with hairline border. */
+  --ds-surface-2:    #F0F0F0;   /* --colors--secondary-background; gray-100 panel. */
+  --ds-text:         #080808;   /* --colors--text; near-black, not pure #000. */
+  --ds-text-muted:   #5A5A5A;   /* --colors--text-secondary; gray-600. */
+  --ds-text-strong:  #080808;   /* Display ink matches body ink; no separate emphasis. */
+  --ds-border:       #D8D8D8;   /* --colors--border; gray-200, the visible card edge. */
+  --ds-hairline:     #F0F0F0;   /* Subtler still; section breaks and faint dividers. */
+  --ds-accent:       #146EF5;   /* --_color---primary--webflow-blue; the brand. */
+  --ds-accent-2:     #0055D4;   /* --_color---primary--blue-600; pressed / hover state. */
+  --ds-success:      #00C875;   /* Operational green; reserved status indicator. */
+  --ds-warning:      #F5A623;   /* Amber warning; reserved status indicator. */
+  --ds-error:        #EE0000;   /* Red error; reserved status indicator. */
+  --ds-info:         #146EF5;   /* Matches accent. */
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * WF Visual Sans Variable is a custom foundry-proprietary face with
+   * weight (wght) and optical size (opsz) axes. The marketing CSS pins
+   * font-variation-settings to "wght" 500 / "opsz" 20 for buttons and
+   * "wght" 550 / "opsz" 20 for caption-highlight numbers. Arial is the
+   * documented fallback for visitors whose browsers do not load the
+   * variable woff2.
+   *
+   * WFVisualSans-Mono is the sibling mono used only for the "Machine
+   * Mode" demo block (an experimental robotic-typography moment on the
+   * homepage). It is loaded across nine weights (200 to 900) but ships
+   * inline in one styled component, not as part of the broader system.
+   *
+   * Inconsolata is loaded only for inline code blocks in rich-text
+   * content (article body and docs).
+   */
+  --ds-font-display: "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-mono:    "WFVisualSans-Mono", "Inconsolata", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "WFVisualSans-Mono", "Inconsolata", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * 16px base (1rem). Webflow's display tier is fluid: every head from
+   * H4 up uses clamp() so it scales between mobile and desktop bounds.
+   * The values below are the desktop ceilings (the upper clamp bound).
+   * H0 ceilings at 112px (7rem); H1 at 80px (5rem); H2 at 56px (3.5rem).
+   * Mobile floors: H0 48px, H1 44px, H2 32px. The system never reads as
+   * the same scale at 375px and 1440px; the clamp interpolates.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;  /* 0.8rem; --_typography---caption--font-size. */
+  --ds-text-sm:   14px;    /* 0.875rem; --_typography---paragraph-sm. */
+  --ds-text-base: 16px;    /* 1rem; --_typography---paragraph-body. */
+  --ds-text-lg:   20px;    /* 1.25rem desktop; --_typography---paragraph-lg ceiling. */
+  --ds-text-xl:   32px;    /* 2rem desktop; --_typography---paragraph-xl ceiling. */
+  --ds-text-2xl:  40px;    /* 2.5rem desktop; H3 ceiling. */
+  --ds-text-3xl:  56px;    /* 3.5rem desktop; H2 ceiling. */
+  --ds-text-4xl:  64px;    /* Intermediate display step. */
+  --ds-text-5xl:  80px;    /* 5rem desktop; H1 ceiling. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;   /* 7rem desktop; H0 ceiling, the editorial statement step. */
+
+  /* ---------- Line heights ----------
+   * Display sits at 1.04 (the tightest ratio in the system, applied to
+   * H0/H1/H2 alike). Subheads relax to 1.2 (H3/H4) then 1.3 (H5) and 1.4
+   * (H6/eyebrow). Body paragraph at 1.6 (the most generous reading
+   * height of any dev-tool-adjacent marketing system in the corpus).
+   */
+  --ds-leading-tight:   1.04;   /* H0 / H1 / H2 display. */
+  --ds-leading-snug:    1.2;    /* H3 / H4. */
+  --ds-leading-normal:  1.6;    /* Paragraph body and sm reading. */
+  --ds-leading-relaxed: 1.5;    /* Paragraph lg lead. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Only H1 carries a non-zero tracking (-0.01em). Every other display
+   * head and the body all sit at 0em. Buttons sit at -0.01em (matching
+   * H1) on labels. Webflow's typography is deliberately not "tightened"
+   * the way Linear or Vercel display tracks are; the face has enough
+   * personality on its own that the tracking stays neutral.
+   */
+  --ds-tracking-tight:  -0.01em;   /* H1 display and button labels. */
+  --ds-tracking-normal: 0em;       /* H0 / H2 through H6, body, eyebrow. */
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid in the contract; Webflow's native rhythm is rem-based
+   * (0.25rem / 0.5rem / 1rem / 1.5rem / 2rem / 3rem / 4rem / 6rem). The
+   * contract slots below are mapped to the closest Webflow rhythm step.
+   * Marketing section internal padding lands at space-10 (64px / 4rem);
+   * card padding at space-6 / space-8 (32 / 48).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;     /* Card horizontal padding. */
+  --ds-space-8:  48px;     /* Card vertical padding. */
+  --ds-space-10: 64px;     /* Marketing section rhythm; 4rem. */
+  --ds-space-12: 96px;     /* 6rem; major section break. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * The signature card radius is 0.5rem (8px) and the signature CTA
+   * radius is 0.25rem (4px). Webflow does not use pills outside of
+   * small badges; the visual register is subtle rounding, never the
+   * fully-rounded Linear pill. Larger panels (pricing card, demo block)
+   * climb to 1rem (16px).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;    /* --_components---button--border-radius; CTA pill. */
+  --ds-radius-md:   8px;    /* Card surface; 0.5rem. */
+  --ds-radius-lg:   16px;   /* Featured panel, pricing card; 1rem. */
+  --ds-radius-full: 9999px; /* Small badges, status dots. */
+
+  /* ---------- Shadows ----------
+   * Webflow's marketing chrome is hairline-driven, not shadow-driven.
+   * Cards at rest carry a 1px solid border rather than a drop shadow;
+   * lift comes from a subtle 2px / 8% black on hover. The vast majority
+   * of marketing surfaces show no elevation at all.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* ---------- Motion ----------
+   * Standard cubic-bezier(0.4,0,0.2,1) for most UI; emphasis curve on
+   * hero reveals and machine-mode toggles. Tooltip and dropdown
+   * transitions run at 300ms ease (observed inline in the homepage CSS).
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

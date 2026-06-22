@@ -1,0 +1,79 @@
+<!--
+  Asset: ease-standard-snap-001
+  Class: motion-primitives
+  Pattern: (none - scales and motion primitives are visualizations, not patterns)
+  Inspired by: Material Design, modern UI motion conventions
+  Notes:
+    - Demonstrates ease-standard + duration-fast (150ms) on a translating
+      block that loops with @keyframes.
+    - The motion runs at idle so the asset shows the motion live when opened.
+    - Respects prefers-reduced-motion.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ease-standard-snap-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg); color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-5);
+    min-height: 100vh;
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .label {
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .stage {
+    position: relative;
+    height: 80px;
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+    overflow: hidden;
+  }
+  .puck {
+    position: absolute;
+    top: 50%; left: 8px;
+    width: 56px; height: 56px;
+    margin-top: -28px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    /* The motion: animate transform across the stage and back. The animation
+     * iteration uses the asset's curve and duration as the keyframe interval. */
+    animation: slide 2400ms infinite var(--ds-ease-standard);
+  }
+  @keyframes slide {
+    0%, 100% { transform: translateX(0); }
+    /* Hold briefly at each end so the eye sees the curve clearly. */
+    40%, 60% { transform: translateX(calc(100vw - 56px - 16px - 32px)); }
+  }
+  .meta-row {
+    display: flex; gap: var(--ds-space-5);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted); letter-spacing: 0.04em;
+  }
+  .meta-row b { color: var(--ds-text); font-weight: 500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .puck { animation: none; transform: translateX(calc(50vw - 28px)); }
+  }
+</style>
+</head>
+<body>
+  <div class="label">motion · ease-standard-snap-001</div>
+  <div class="stage"><div class="puck"></div></div>
+  <div class="meta-row">
+    <span>ease · <b>cubic-bezier(0.4, 0, 0.2, 1)</b></span>
+    <span>duration · <b>150ms (fast)</b></span>
+  </div>
+</body>
+</html>

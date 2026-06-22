@@ -1,0 +1,732 @@
+<!--
+  Asset: loom-marketing-page-001
+  Class: layouts
+  Pattern: single-cta-hero, product-shot-hero, flush-top-nav, bento-grid, mega-footer
+  Inspired by: Loom (loom.com)
+  Notes:
+    - Marketing homepage skeleton: flush-top nav, single-CTA product-shot
+      hero with recorder-overlay screenshot, customer trust strip, AI feature
+      band, core screen-recorder feature with tabbed product shot, three
+      alternating-side feature blocks (edit / share / engage), enterprise
+      security band, four-up use-case tile grid (Sales / Engineering /
+      Support / Design), single quoted-card testimonial carousel, end CTA
+      with platform subtext, mega-footer.
+    - Variable: section sequence, container width, vertical rhythm.
+      Inline: container max-width (1200px), hero recorder overlay aspect
+      ratio, feature-block flip cadence, four-up bento break.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Loom's marketing surface runs on a humanist sans (Inter-stack
+  class). Faces are not loaded in the asset; the system fallback chain in
+  tokens.css carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1200px matches the Loom marketing rhythm;
+   * tighter than Vercel (1280) and Linear (1320) and same as Airtable. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  .section { padding-block: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-bottom: 1px solid var(--ds-hairline); }
+
+  /* Hero. Single primary CTA over a product-shot well that holds a
+   * recorder-overlay screenshot. The recorder overlay is Loom's signature
+   * marketing move; the hero foregrounds the product capture moment. */
+  .hero {
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-12);
+    }
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 18ch;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-4xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 58ch;
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid var(--ds-accent);
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Hero product canvas. A large rounded screenshot well with a
+   * recorder-overlay accent. The overlay is the Loom signature; inline
+   * geometry (circle at corner) stands in for the real recorder bubble. */
+  .hero__product-canvas {
+    position: relative;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    max-width: 1080px;
+    box-shadow: var(--ds-shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    overflow: hidden;
+  }
+  /* Recorder-overlay circle: bottom-left, accent ring, mimics the camera
+   * bubble Loom composites over the captured surface. Inline ornament. */
+  .hero__recorder-overlay {
+    position: absolute;
+    bottom: var(--ds-space-5);
+    left: var(--ds-space-5);
+    width: 96px;
+    height: 96px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    border: 3px solid var(--ds-accent);
+    box-shadow: var(--ds-shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Customer trust strip. Centered label + horizontal logo row. */
+  .logo-strip {
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+    text-align: center;
+  }
+  .logo-strip__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-5);
+  }
+  .logo-strip__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (min-width: 640px) { .logo-strip__row { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .logo-strip__row { grid-template-columns: repeat(6, 1fr); } }
+  .logo-strip__cell {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-tight);
+    text-align: center;
+  }
+
+  /* Section heading register. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 28ch;
+  }
+  @media (min-width: 1024px) {
+    .section-heading { font-size: var(--ds-text-3xl); margin-bottom: var(--ds-space-8); }
+  }
+  .section-sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 64ch;
+  }
+
+  /* AI feature band. Two-column highlight with a "New" badge in the copy
+   * column. Loom's recent AI-bug-reports / Jira integration sits here. */
+  .ai-band {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+  }
+  @media (min-width: 900px) {
+    .ai-band { grid-template-columns: 1fr 1fr; gap: var(--ds-space-10); padding: var(--ds-space-10); }
+  }
+  .ai-band__badge {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-full);
+    padding: 2px var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-4);
+  }
+  .ai-band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .ai-band__body {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .ai-band__visual {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 4 / 3;
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Core feature section (screen recorder) with tab row of example clips. */
+  .core-feature {
+    text-align: center;
+  }
+  .tab-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    margin-bottom: var(--ds-space-8);
+  }
+  .tab {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+  }
+  .tab[aria-selected="true"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface);
+    border-color: var(--ds-accent);
+  }
+  .core-feature__visual {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    max-width: 1000px;
+    box-shadow: var(--ds-shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Stacked feature row. Heading-and-body left, product-shot well right;
+   * alternates side every other row. Three blocks: edit / share / engage. */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .feature-row { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+    .feature-row--flip > .feature-row__visual { order: -1; }
+  }
+  .feature-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .feature-row__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .feature-row__cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-accent);
+  }
+  .feature-row__visual {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 4 / 3;
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Enterprise security band. Centered, tinted, single CTA. */
+  .enterprise-band {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-12) var(--ds-space-8);
+    text-align: center;
+  }
+  .enterprise-band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .enterprise-band__title { font-size: var(--ds-text-3xl); }
+  }
+  .enterprise-band__body {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 56ch;
+  }
+
+  /* Use-case tile grid. Four tiles, even 4-up on desktop, 2-up tablet. */
+  .use-case-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) {
+    .use-case-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .use-case-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .use-case-tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .use-case-tile__media {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .use-case-tile__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-accent);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .use-case-tile__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .use-case-tile__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+
+  /* Testimonial card. Single quoted card; centered, lifted. */
+  .testimonial {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10);
+    text-align: center;
+    box-shadow: var(--ds-shadow-md);
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  @media (min-width: 768px) {
+    .testimonial__quote { font-size: var(--ds-text-2xl); }
+  }
+  .testimonial__author {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* End CTA section. Type-led, single primary CTA, platform subtext. */
+  .end-cta {
+    text-align: center;
+    padding-block: var(--ds-space-16);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .end-cta__platforms {
+    margin-top: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page container. */
+  .footer-band {
+    background: var(--ds-surface-2);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a loom-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 220px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Sign in / Get Loom
+      </div>
+    </nav>
+
+    <!-- Section: hero. Single primary CTA + recorder-overlay product canvas. -->
+    <header class="hero" aria-label="Hero">
+      <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Lorem ipsum</a>
+      </div>
+      <div class="hero__product-canvas" role="img" aria-label="Product canvas with recorder overlay">
+        Product canvas screenshot
+        <span class="hero__recorder-overlay" aria-hidden="true">REC</span>
+      </div>
+    </header>
+
+    <!-- Section: customer trust strip. -->
+    <section class="logo-strip" aria-label="Customers">
+      <span class="logo-strip__label">Lorem ipsum 400,000 dolor sit amet</span>
+      <div class="logo-strip__row" role="list">
+        <span class="logo-strip__cell" role="listitem">Lorem</span>
+        <span class="logo-strip__cell" role="listitem">Ipsum</span>
+        <span class="logo-strip__cell" role="listitem">Dolor</span>
+        <span class="logo-strip__cell" role="listitem">Sit</span>
+        <span class="logo-strip__cell" role="listitem">Amet</span>
+        <span class="logo-strip__cell" role="listitem">Adipiscing</span>
+      </div>
+    </section>
+
+    <!-- Section: AI feature band. Two-column with badge. -->
+    <section class="section" aria-label="AI feature">
+      <div class="ai-band">
+        <div>
+          <span class="ai-band__badge">New</span>
+          <h2 class="ai-band__title">Lorem ipsum dolor sit amet AI consectetur.</h2>
+          <p class="ai-band__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua.
+          </p>
+          <a href="#" class="feature-row__cta">Lorem ipsum -&gt;</a>
+        </div>
+        <div class="ai-band__visual">AI feature visual</div>
+      </div>
+    </section>
+
+    <!-- Section: core screen-recorder feature with tab row of example clips. -->
+    <section class="section section--ruled core-feature" aria-label="Screen recorder feature">
+      <h2 class="section-heading" style="margin-inline: auto;">
+        Lorem ipsum dolor sit amet consectetur adipiscing.
+      </h2>
+      <p class="section-sub" style="margin-inline: auto;">
+        Consectetur adipiscing elit. Sed do eiusmod tempor. Incididunt.
+      </p>
+      <div class="tab-row" role="tablist">
+        <span class="tab" role="tab" aria-selected="true">Lorem ipsum</span>
+        <span class="tab" role="tab" aria-selected="false">Dolor sit amet</span>
+        <span class="tab" role="tab" aria-selected="false">Consectetur</span>
+      </div>
+      <div class="core-feature__visual">Product capture example</div>
+    </section>
+
+    <!-- Section: alternating-side feature blocks (edit / share / engage). -->
+    <section class="section" aria-label="Feature blocks">
+      <article class="feature-row">
+        <div>
+          <h3 class="feature-row__title">Lorem ipsum dolor sit amet</h3>
+          <p class="feature-row__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+          </p>
+          <a href="#" class="feature-row__cta">Lorem ipsum -&gt;</a>
+        </div>
+        <div class="feature-row__visual">Edit feature shot</div>
+      </article>
+
+      <article class="feature-row feature-row--flip">
+        <div>
+          <h3 class="feature-row__title">Dolor sit amet consectetur</h3>
+          <p class="feature-row__body">
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa
+            qui officia deserunt mollit anim id est laborum.
+          </p>
+          <a href="#" class="feature-row__cta">Dolor sit -&gt;</a>
+        </div>
+        <div class="feature-row__visual">Share feature shot</div>
+      </article>
+
+      <article class="feature-row">
+        <div>
+          <h3 class="feature-row__title">Consectetur adipiscing elit</h3>
+          <p class="feature-row__body">
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur.
+          </p>
+          <a href="#" class="feature-row__cta">Consectetur -&gt;</a>
+        </div>
+        <div class="feature-row__visual">Engage feature shot</div>
+      </article>
+    </section>
+
+    <!-- Section: use-case tile grid (Sales / Engineering / Support / Design). -->
+    <section class="section section--ruled" aria-label="Use cases">
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur.</h2>
+      <div class="use-case-grid" role="list">
+        <article class="use-case-tile" role="listitem">
+          <div class="use-case-tile__media">Sales tile media</div>
+          <span class="use-case-tile__kicker">Lorem</span>
+          <h3 class="use-case-tile__title">Lorem ipsum dolor</h3>
+          <p class="use-case-tile__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor.
+          </p>
+        </article>
+        <article class="use-case-tile" role="listitem">
+          <div class="use-case-tile__media">Engineering tile media</div>
+          <span class="use-case-tile__kicker">Ipsum</span>
+          <h3 class="use-case-tile__title">Dolor sit amet</h3>
+          <p class="use-case-tile__body">
+            Ut enim ad minim veniam, quis nostrud exercitation.
+          </p>
+        </article>
+        <article class="use-case-tile" role="listitem">
+          <div class="use-case-tile__media">Support tile media</div>
+          <span class="use-case-tile__kicker">Dolor</span>
+          <h3 class="use-case-tile__title">Consectetur adipiscing</h3>
+          <p class="use-case-tile__body">
+            Duis aute irure dolor in reprehenderit in voluptate.
+          </p>
+        </article>
+        <article class="use-case-tile" role="listitem">
+          <div class="use-case-tile__media">Design tile media</div>
+          <span class="use-case-tile__kicker">Amet</span>
+          <h3 class="use-case-tile__title">Eiusmod tempor incididunt</h3>
+          <p class="use-case-tile__body">
+            Excepteur sint occaecat cupidatat non proident.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: single quoted-card testimonial. -->
+    <section class="section" aria-label="Testimonial">
+      <div class="testimonial">
+        <blockquote class="testimonial__quote">
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        </blockquote>
+        <div class="testimonial__author">
+          Lorem Ipsum, Head of Async, Dolor
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: enterprise band. Tinted, centered, single CTA. -->
+    <section class="section" aria-label="Enterprise">
+      <div class="enterprise-band">
+        <h2 class="enterprise-band__title">Lorem ipsum dolor sit amet enterprise.</h2>
+        <p class="enterprise-band__body">
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua.
+        </p>
+        <a href="#" class="cta--ghost">Lorem ipsum</a>
+      </div>
+    </section>
+
+    <!-- Section: end CTA with platform subtext. -->
+    <section class="end-cta" aria-label="Final CTA">
+      <h2 class="section-heading" style="margin-inline: auto; max-width: 20ch;">
+        Lorem ipsum dolor sit amet.
+      </h2>
+      <a href="#" class="cta--primary">Lorem ipsum</a>
+      <p class="end-cta__platforms">
+        Lorem Mac, Windows, iOS, Android.
+      </p>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for a
+       loom-tagged footers/* whole (mega-footer with link columns + social
+       row + legal row). -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (link columns + social + legal)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

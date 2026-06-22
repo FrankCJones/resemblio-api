@@ -1,0 +1,147 @@
+/*
+ * locomotive-hero-001 tokens
+ *
+ * Native token values for the Locomotive homepage hero, captured via Claude
+ * in Chrome devtools on https://locomotive.ca/en 2026-05-20. The hero is a
+ * full-bleed looping background video with an oversized white kinetic H1
+ * ("Locomotive(R) Digital-first Design Agency") on top, flanked by
+ * decorative emoji glyphs that read as printers' marks. The H1 carries
+ * a data-allow-shuffle attribute - on hover, the letters shuffle through
+ * randomized glyphs before settling back; the rendered HTML captures the
+ * static end-state. The cream-paper-with-black-ink-electric-blue-accent
+ * register that defines the Locomotive system at large lives one section
+ * below the hero (case-study grid) and inside the menu drawer (electric
+ * #312DFB fill); the hero itself rides a dark video and uses the cream
+ * paper only in the negative-space the camera reveals.
+ *
+ * H1: LocomotiveNew custom face, 70px, weight 400, line-height 77px,
+ * pure white. Body / nav: HelveticaNowDisplay, 26px nav links in pure
+ * black against the cream paper page (after the video crops). Electric
+ * accent: rgb(49, 45, 251) = #312DFB on the menu-drawer background.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * The hero composites two color systems: the video layer is dark (near
+   * black) with white kinetic type on top; below the fold, the page
+   * reverts to cream paper with pure-black ink and an electric-blue
+   * accent reserved for the menu drawer and live links.
+   */
+  --ds-bg:           #0A0A0A;   /* Near-black; the visual ground behind the hero video while it loads or crops. */
+  --ds-surface:      #F8F6F1;   /* Cream paper; the Locomotive ground below the fold, captured from the case-study grid. */
+  --ds-surface-2:    #FFFFFF;   /* Pure white; reserved for image tiles framed against the cream page. */
+  --ds-text:         #FFFFFF;   /* Pure white; the kinetic H1 sits on the dark video. */
+  --ds-text-muted:   #8A8783;   /* Warm gray; metadata against cream paper. */
+  --ds-text-strong:  #000000;   /* Pure black; nav links, body copy below the fold on cream. */
+  --ds-border:       #0A0A0A;   /* Near-ink border; hairline rules between hero and case-study rows. */
+  --ds-hairline:     #1A1A1A;   /* 1.6px-thick hairline (Locomotive principle: rules are structural beats, not whispers). */
+  --ds-accent:       #312DFB;   /* Electric blue; menu drawer fill, live link state. The studio's signature accent. */
+  --ds-accent-2:     #1F1AC9;   /* Pressed/hover deeper blue. */
+  --ds-success:      #1F7A4D;
+  --ds-warning:      #C68A14;
+  --ds-error:        #C0211A;
+  --ds-info:         #312DFB;   /* Same blue does info duty; the studio runs one accent. */
+  --ds-focus-ring:   #312DFB;   /* Electric blue ring on cream is unambiguous; reads on the dark video too. */
+
+  /* ---------- Type families ----------
+   * LocomotiveNew is the studio's custom display face used only on the
+   * statement H1. HelveticaNowDisplay carries marketing body and nav.
+   * No mono on the hero surface; reserved for case-study metadata
+   * (step numbers, captions) below the fold.
+   */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * H1 sets at 70px on desktop (5xl step); scales down on narrow
+   * viewports via clamp. Nav links a flat 26px (xl step) - unusually
+   * large for a top bar, part of the studio's oversized register.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;
+  --ds-text-xl:   26px;    /* Nav link size - oversized for a top bar. */
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  70px;    /* Hero H1 native size. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  140px;   /* Reserved for kinetic case-study covers, not used in hero. */
+
+  /* ---------- Line heights ----------
+   * 77px line height on a 70px H1 (= 1.1); tight enough to read as one
+   * mass but loose enough that the shuffle animation doesn't collide.
+   */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.1;     /* Hero H1 ratio. */
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Hero content sits 24-32px from the left edge on desktop;
+   * the H1 caption block clears 64-96px from the top of the viewport.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Zero-radius across the system. Locomotive holds hard corners on
+   * principle; the only rounded thing is the cursor affordance and the
+   * "Let's talk" pill (handled by accent atoms, not the hero).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * No elevation. The dark video carries every separation moment.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 8px 20px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ----------
+   * Standard ease at 240ms is the page's default; the H1 shuffle
+   * animation runs faster (60-80ms per glyph swap) and is documented
+   * inline in asset.html since it is character-specific, not a contract
+   * value. Lenis smooth-scroll drives the page scroll; not represented
+   * as a token (it is a library, not an easing curve).
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;   /* H1 shuffle per-glyph step. */
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

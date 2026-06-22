@@ -1,0 +1,114 @@
+/*
+ * webflow-testimonials-001 tokens
+ *
+ * Webflow's customer-story register, scoped to the testimonials block on
+ * the homepage carousel and the customer-card grid at webflow.com/customers.
+ * Tokens mirror the webflow alphabet: pure-white surface, near-black ink,
+ * one saturated brand blue, and the proprietary WF Visual Sans Variable
+ * face standing in via Arial / system-ui on machines without the woff2.
+ *
+ * The testimonials block is hairline-driven rather than shadow-driven:
+ * cards rest as flat panels with a 1px gray-200 border (#D8D8D8) and lift
+ * to a soft 2-4% black shadow on hover. The brand blue (#146EF5) appears
+ * only on the read-story link arrow and the focus ring; the rest of the
+ * card stays monochrome. The kicker above each quote is a stat-style
+ * label in sans (not a wide-tracked mono eyebrow); the company is
+ * identified by its SVG wordmark logo, never a round avatar photo.
+ */
+:root {
+  /* Colors. */
+  --ds-bg:           #FFFFFF;   /* Page surface; pure white. */
+  --ds-surface:      #FFFFFF;   /* Card surface; flat against bg with hairline border. */
+  --ds-surface-2:    #F0F0F0;   /* Gray-100 panel; the carousel rail backdrop on mobile. */
+  --ds-text:         #080808;   /* --colors--text; near-black quote ink. */
+  --ds-text-muted:   #5A5A5A;   /* Gray-600; role line and metadata. */
+  --ds-text-strong:  #080808;   /* Stat kicker and name share the body ink. */
+  --ds-border:       #D8D8D8;   /* Gray-200; the visible card edge. */
+  --ds-hairline:     #F0F0F0;   /* Gray-100; the in-card divider above attribution. */
+  --ds-accent:       #146EF5;   /* Webflow Blue; arrow on hover, focus ring. */
+  --ds-accent-2:     #0055D4;   /* Blue-600; pressed state for the read-story link. */
+  --ds-success:      #00C875;   /* Reserved status indicator; not used here. */
+  --ds-warning:      #F5A623;   /* Reserved status indicator; not used here. */
+  --ds-error:        #EE0000;   /* Reserved status indicator; not used here. */
+  --ds-info:         #146EF5;   /* Matches accent. */
+  --ds-focus-ring:   #146EF5;   /* Brand blue at full strength on :focus-visible. */
+
+  /* Type families. WF Visual Sans Variable carries display and body; the
+   * mono slot is held by the proprietary mono sibling with Inconsolata
+   * fallback, but this asset stays single-family across the card. */
+  --ds-font-display: "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-mono:    "WFVisualSans-Mono", "Inconsolata", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "WFVisualSans-Mono", "Inconsolata", ui-monospace, monospace;
+
+  /* Type sizes. Quote sits at H4 ceiling (~24-32px clamp). Stat kicker at
+   * paragraph-xl (~32px) is the visual headline of the card. Body for
+   * role line at paragraph-sm (14px). Logo wordmark rendered at ~28px. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;
+  --ds-text-sm:   14px;     /* Role line. */
+  --ds-text-base: 16px;     /* Name. */
+  --ds-text-lg:   20px;
+  --ds-text-xl:   24px;     /* Quote body lower bound. */
+  --ds-text-2xl:  32px;     /* Quote ceiling; stat kicker headline. */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;
+
+  /* Line heights. Quote uses snug 1.2; body 1.6. */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.2;     /* Quote and stat kicker. */
+  --ds-leading-normal:  1.6;     /* Role, attribution body. */
+  --ds-leading-relaxed: 1.5;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking. Only the stat kicker carries -0.01em; the rest neutral. */
+  --ds-tracking-tight:  -0.01em;   /* Stat headline and quote. */
+  --ds-tracking-normal: 0em;       /* Body, role, name. */
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* Spacing. Card internal padding at 2rem (32px); rhythm between quote
+   * and attribution at 1.5rem (24px); section padding at 4rem (64px). */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;     /* Quote-to-attribution gap. */
+  --ds-space-6:  32px;     /* Card padding. */
+  --ds-space-8:  48px;     /* Card padding on >=720px. */
+  --ds-space-10: 64px;     /* Section rhythm. */
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii. Card sits at 8px; the small inline tag pills (if shown) at 4px;
+   * never the fully-rounded Linear pill. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;     /* Card surface. */
+  --ds-radius-lg:   16px;    /* Featured / hero panel variant. */
+  --ds-radius-full: 9999px;
+
+  /* Shadows. Hairline-as-chrome at rest; subtle lift on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* Motion. Standard cubic for hover; 300ms for the carousel slide. */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

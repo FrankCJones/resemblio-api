@@ -1,0 +1,192 @@
+<!--
+  Asset: olipop-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, accent-on-neutral, display-editorial
+  Inspired by: Olipop (drinkolipop.com homepage "Why OLIPOP?" band)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/candy-bright-001    (Olipop forest+mint+peach palette)
+    - headings/retro-soda-001          (WindsorEF section heading)
+    - kickers/mono-eyebrow-001         (uppercase mono kicker above the band)
+  Notes:
+    - Olipop ships a customer-quote band of four short excerpts on the
+      peach homepage surface. No avatars, no star ratings, no attribution
+      lines - the quotes themselves carry the weight. Each tile uses a
+      cream fill that lifts off the peach page, with an oversized forest
+      green WindsorEF quote-mark glyph as the visual hook. Section heading
+      is the chunky retro Windsor revival; kicker is the small mono
+      eyebrow.
+    - Variable: every palette color, every type family, the spacing
+      rhythm, the radius on the tile, all bound to contract tokens.
+      Inline: the oversized-glyph translate offset and the negative-margin
+      glyph anchor are character-specific tuning of the WindsorEF quote
+      mark; the 3-up-on-desktop / 1-up-on-mobile grid breakpoint is
+      composition geometry, not a named token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-testimonials-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- WindsorEF is licensed and not on Google Fonts. Bevan and Fraunces 9pt
+     Soft are open-license cousins that carry the chunky-slabby Windsor
+     register; Bevan is the closer match in weight and width. Inter stands
+     in for Ano (Schick Toikka body sans); JetBrains Mono carries the small
+     kicker label. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bevan&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Peach surface. The whole band sits flat on the page color; no card,
+   * no shadow, no chrome. Generous vertical padding so the section reads
+   * as a deliberate break, not a strip glued to neighboring content. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  .band {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Section header. The kicker is mono uppercase wide-tracked; the heading
+   * is the WindsorEF chunky face Olipop uses for every section title. */
+  .band__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    align-items: center;
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto;
+  }
+  .band__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .band__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Grid: 3-up on desktop, single column under 720px. The brief shows a
+   * 4-quote band on the live homepage; this asset captures the same
+   * mechanic with three quotes (the additional quote on the homepage is
+   * the same pattern repeated; the third tile here demonstrates the
+   * mechanism without padding the asset). */
+  .grid {
+    display: grid;
+    gap: var(--ds-space-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Tile: cream rectangle on the peach page. The fill carries the quote;
+   * Olipop avoids deep elevation, so the only lift is the surface delta
+   * (cream vs peach). Generous interior padding so the WindsorEF quote
+   * mark has room to breathe at display size. */
+  .tile {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Oversized opening-quote glyph. The single chromatic moment in the
+   * tile - forest green on cream, at WindsorEF display size. The glyph
+   * functions as the brand stamp; it is the only ornament. */
+  .tile__mark {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-6xl);
+    line-height: 1;
+    color: var(--ds-accent);
+    font-weight: 400;
+    /* Inline ornament: lift the glyph above the baseline grid by half a
+     * cap-height so the closing typographic counter does not collide with
+     * the quote line below. Character-dependent, not promoted to a slot. */
+    margin: 0 0 calc(var(--ds-space-6) * -1);
+    transform: translateY(0.18em);
+    user-select: none;
+  }
+
+  /* The quote itself. Body sans, set at the larger reading step. Olipop
+   * keeps body type in Ano even for callouts; the chunky drama lives in
+   * the surrounding glyphs and headings, not the quote body. Forest-green
+   * ink on cream reads dark enough to function as near-black. */
+  .tile__quote {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    text-wrap: pretty;
+  }
+
+  /* Alt-tile fills: Olipop rotates the cream tile through mint and peach
+   * supporting fills on adjacent surfaces. Two helper classes carry the
+   * variation without changing the geometry. */
+  .tile--mint  { background: var(--ds-accent-2); }
+  .tile--pink  { background: var(--ds-surface-2); }
+
+  /* Reduced motion: no transitions exist on this asset; left as a
+   * scaffold so a future motion variant can opt in cleanly. */
+  @media (prefers-reduced-motion: reduce) {
+    /* nothing to disable yet */
+  }
+</style>
+</head>
+<body>
+  <section class="band" aria-label="Lorem ipsum customer testimonials">
+    <header class="band__head">
+      <p class="band__kicker">Lorem ipsum dolor</p>
+      <h2 class="band__h2">Sit amet consectetur adipiscing elit sed do.</h2>
+    </header>
+
+    <div class="grid">
+      <article class="tile">
+        <span class="tile__mark" aria-hidden="true">&ldquo;</span>
+        <p class="tile__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </article>
+
+      <article class="tile tile--mint">
+        <span class="tile__mark" aria-hidden="true">&ldquo;</span>
+        <p class="tile__quote">Curabitur nec libero non nisi convallis fringilla et bibendum velit. Aenean fermentum, magna at suscipit lacinia.</p>
+      </article>
+
+      <article class="tile tile--pink">
+        <span class="tile__mark" aria-hidden="true">&ldquo;</span>
+        <p class="tile__quote">Vivamus sit amet sapien velit. Sed vitae lacus eu mi tincidunt finibus, ut placerat ipsum tristique a nibh felis.</p>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

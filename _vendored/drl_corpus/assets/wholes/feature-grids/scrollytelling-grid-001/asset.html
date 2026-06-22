@@ -1,0 +1,372 @@
+<!--
+  Asset: scrollytelling-grid-001
+  Class: feature-grids (whole)
+  Pattern: bento-grid, asymmetric-grid, mono-utility-pair, warm-earth-palette
+  Inspired by: The Pudding (pudding.cool)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001         (warm paper palette)
+    - type-pairings/sans-system-modern-001 (Inter + JetBrains Mono pairing)
+    - cards/hairline-flat-001             (flat hairline card frame)
+    - headings/scrolly-data-001           (oversized sans display)
+    - kickers/numbered-section-001        (issue numbers as kickers)
+    - badges/category-saturated-badge-001 (filter chips at top)
+  Notes:
+    - The Pudding's homepage archive is a numbered index of data essays.
+      Each card is an issue: number (#217), date, thumbnail, lowercase
+      title, brief description. Filter chips above the grid switch
+      view modes (All, Faves, Popular, Video, Audio). The grid mood
+      is editorial-archive, not portfolio-tile.
+    - The mechanic this whole demonstrates: numbering an archive turns
+      a feed into a publication. The kicker mono "#217" plus the date
+      gives the grid a magazine-issue register that ordinary card grids
+      miss. The lowercase title is a Pudding-specific voice mark.
+    - Variable: every palette, type, spacing token comes from the
+      atoms. Inline: the thumbnail SVG placeholders (asset-specific
+      art that doesn't belong in any atom), the 3-column responsive
+      grid columns, and the exact two-row card aspect ratio.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>scrollytelling-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* Wrapper centers and bounds reading width for the masthead block
+   * and for the grid. The grid itself spans wider than the masthead
+   * because the cards carry their own measure inside. */
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Masthead ----------
+   * Section heading + brief dek. Pattern from headings/scrolly-data-001:
+   * oversized sans, mild negative tracking, mono kicker above. */
+  .masthead {
+    max-width: 720px;
+    margin-bottom: var(--ds-space-10);
+  }
+  .masthead__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+  }
+  .masthead__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-5);
+    text-wrap: balance;
+  }
+  .masthead__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Filter chips ----------
+   * Pattern from badges/category-saturated-badge-001. The active chip
+   * carries the rust accent; idle chips are hairlined paper. The chip
+   * row sits above a hairline that visually anchors the grid below. */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    padding-bottom: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    margin-bottom: var(--ds-space-8);
+  }
+  .chip {
+    appearance: none;
+    border: 1px solid var(--ds-border);
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 6px var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .chip:hover {
+    background: var(--ds-surface);
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--ds-accent);
+    border-color: var(--ds-accent);
+    color: #FFFFFF;   /* Inline: pure white only inside the accent chip for max contrast against rust. */
+  }
+  .chip:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ---------- The grid ----------
+   * Three-column responsive grid. Pudding's homepage feels denser than
+   * a 2-up; 3-up at desktop with 24px gap is the editorial register.
+   * Auto-fit lets it collapse to 2-up and 1-up at narrow widths. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--ds-space-6);
+  }
+
+  /* ---------- Story card ----------
+   * Pattern from cards/hairline-flat-001: flat surface, hairline edge,
+   * no shadow at rest, soft lift on hover. The card is a full link
+   * (semantic <a>) wrapping the whole tile so the entire surface is
+   * the click target. */
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform var(--ds-duration-normal) var(--ds-ease-emphasize),
+      box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-md);
+    border-color: var(--ds-text);
+  }
+  .card:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Thumbnail. Each card carries an inline SVG placeholder; in the
+   * source these are illustrated essay thumbnails. The 4:3 aspect
+   * keeps the grid rhythm tidy. Inline ornament: the swatch fills
+   * are asset-specific characters of each fake essay. */
+  .card__thumb {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: block;
+  }
+  .card__thumb svg { display: block; width: 100%; height: 100%; }
+
+  /* Card body. Metadata row (issue number + date) sits above the title;
+   * description below. The metadata row uses mono; the title is sans
+   * display at xl; description is body muted. */
+  .card__body {
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    flex: 1;
+  }
+  .card__meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .card__issue { font-weight: 500; }   /* Issue number reads slightly heavier than date. */
+  .card__date  { font-weight: 400; }
+
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    text-transform: lowercase;   /* Inline: lowercase titles are a Pudding voice mark, not a token. */
+  }
+  .card:hover .card__title { color: var(--ds-text-strong); }
+
+  .card__dek {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="masthead">
+      <div class="masthead__kicker">Issue archive · 2009 - lorem</div>
+      <h1 class="masthead__h1">Lorem ipsum dolor sit amet, data essays consectetur.</h1>
+      <p class="masthead__dek">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, in pellentesque massa. Aenean fermentum, magna at suscipit lacinia.</p>
+    </header>
+
+    <nav class="filters" aria-label="Filter stories by type">
+      <button type="button" class="chip" aria-pressed="true">All</button>
+      <button type="button" class="chip" aria-pressed="false">Our Faves</button>
+      <button type="button" class="chip" aria-pressed="false">Popular</button>
+      <button type="button" class="chip" aria-pressed="false">Updating</button>
+      <button type="button" class="chip" aria-pressed="false">Your Input</button>
+      <button type="button" class="chip" aria-pressed="false">Video</button>
+      <button type="button" class="chip" aria-pressed="false">Audio</button>
+    </nav>
+
+    <section class="grid" aria-label="Essay archive">
+
+      <a class="card" href="#">
+        <div class="card__thumb" aria-hidden="true">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#F0E9DC"/>
+            <circle cx="120" cy="150" r="60" fill="#C0492C"/>
+            <circle cx="220" cy="170" r="40" fill="#2B5F8A"/>
+            <circle cx="290" cy="120" r="28" fill="#1A1A1A"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="card__issue">#217</span>
+            <span class="card__date">May 2026</span>
+          </div>
+          <h2 class="card__title">lorem similes</h2>
+          <p class="card__dek">Lorem ipsum dolor sit amet, adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <div class="card__thumb" aria-hidden="true">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#E8E2D5"/>
+            <rect x="40" y="80" width="80" height="180" fill="#1A1A1A"/>
+            <rect x="140" y="120" width="80" height="140" fill="#C0492C"/>
+            <rect x="240" y="60" width="80" height="200" fill="#2B5F8A"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="card__issue">#216</span>
+            <span class="card__date">Mar 2026</span>
+          </div>
+          <h2 class="card__title">consectetur dolor</h2>
+          <p class="card__dek">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <div class="card__thumb" aria-hidden="true">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#FBF8F3"/>
+            <path d="M40 240 L120 100 L200 200 L280 80 L360 180" stroke="#C0492C" stroke-width="6" fill="none"/>
+            <circle cx="120" cy="100" r="6" fill="#1A1A1A"/>
+            <circle cx="200" cy="200" r="6" fill="#1A1A1A"/>
+            <circle cx="280" cy="80" r="6" fill="#1A1A1A"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="card__issue">#215</span>
+            <span class="card__date">Feb 2026</span>
+          </div>
+          <h2 class="card__title">happy ipsum</h2>
+          <p class="card__dek">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.</p>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <div class="card__thumb" aria-hidden="true">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#F0E9DC"/>
+            <rect x="60" y="60" width="280" height="180" fill="#2B5F8A" opacity="0.18"/>
+            <rect x="60" y="60" width="280" height="40" fill="#2B5F8A"/>
+            <rect x="60" y="120" width="180" height="20" fill="#1A1A1A"/>
+            <rect x="60" y="160" width="220" height="20" fill="#1A1A1A"/>
+            <rect x="60" y="200" width="140" height="20" fill="#C0492C"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="card__issue">#214</span>
+            <span class="card__date">Feb 2026</span>
+          </div>
+          <h2 class="card__title">veniam adipiscing</h2>
+          <p class="card__dek">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.</p>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <div class="card__thumb" aria-hidden="true">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#FBF8F3"/>
+            <circle cx="200" cy="150" r="90" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+            <circle cx="200" cy="150" r="60" fill="none" stroke="#C0492C" stroke-width="2"/>
+            <circle cx="200" cy="150" r="30" fill="#2B5F8A"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="card__issue">#213</span>
+            <span class="card__date">Dec 2025</span>
+          </div>
+          <h2 class="card__title">musical lorem</h2>
+          <p class="card__dek">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque.</p>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <div class="card__thumb" aria-hidden="true">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="300" fill="#E8E2D5"/>
+            <polygon points="200,40 360,260 40,260" fill="#C0492C"/>
+            <polygon points="200,120 280,240 120,240" fill="#1A1A1A"/>
+          </svg>
+        </div>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="card__issue">#212</span>
+            <span class="card__date">Nov 2025</span>
+          </div>
+          <h2 class="card__title">democracia ipsum</h2>
+          <p class="card__dek">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia.</p>
+        </div>
+      </a>
+
+    </section>
+
+  </div>
+</body>
+</html>

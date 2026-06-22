@@ -1,0 +1,261 @@
+<!--
+  Asset: notion-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, monochrome-palette, paper-and-ink
+  Inspired by: Notion (/customers index and /customers/openai story page)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001          (warm cream page, near-black ink)
+    - type-pairings/sans-system-modern-001 (Inter across display and body)
+    - cards/warm-paper-rule-001            (hairline-edge card, 12px radius, no shadow at rest)
+    - avatars/circle-photo-001             (round headshot)
+    - kickers/mono-eyebrow-001             (reserved; not used on this card, register comes from the company logo lockup)
+  Notes:
+    - The mechanic is restraint. One quote at lead-paragraph scale, sentence
+      case, ink-on-paper. The attribution stacks under the quote with a
+      circular headshot left, name + role on top line, company logo lockup
+      on the second line. No left rule, no display-scale quote mark, no
+      drop shadow; the hairline edge carries the card.
+    - Variable: every color, type size, spacing step, radius. Inline
+      ornament: the muted company-name color shift (--ds-text-muted) and
+      the lock-up gap between the company logo chip and the company name.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-testimonials-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter matches Notion's shipped body and display family across the marketing surface. Single-family system; the asset does not load mono or serif. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm cream page lets the near-white card surface lift by
+   * the smallest possible step. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Grid of two quote cards. Notion presents these as a two-up at desktop
+   * width on /customers; collapses to one column below. */
+  .quote-grid {
+    width: 100%;
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  /* The card. Hairline edge stands in for the border so the 12px corner
+   * stays crisp. No drop shadow at rest; the warm-paper register holds. */
+  .quote-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition: box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card:hover { box-shadow: var(--ds-shadow-md); }
+
+  /* Company logo lockup at the top of the card; chip + wordmark. Notion
+   * uses this slot to anchor brand recognition before the reader hits
+   * the quote. Placeholder chip uses two stop gradient to imply a logo. */
+  .quote-card__lockup {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+
+  .quote-card__logo-chip {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-sm);
+    /* Inline ornament: placeholder logo chip. Real implementations swap
+     * in an SVG wordmark or product mark. */
+    background: linear-gradient(135deg, #191919 0%, #4A4A4A 100%);
+    flex-shrink: 0;
+  }
+
+  .quote-card__company {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Quote body. Sentence case verbatim from Notion's source. Inter at
+   * lead-paragraph scale, not display; the restraint is the point. */
+  .quote-card__quote {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Internal divider above attribution; the only hairline inside the card. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-1) 0 0 0;
+  }
+
+  /* Attribution row: round headshot left, name + role stacked. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Round headshot. Placeholder warm-gradient circle stands in for a real
+   * portrait; Notion ships actual photographs of the named person. */
+  .quote-card__headshot {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background:
+      radial-gradient(circle at 30% 30%, #C8B89E, #8A7A60);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    flex-shrink: 0;
+  }
+
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  /* Name: the load-bearing attribution line. Slightly heavier than the
+   * quote body so the eye lands on the human before the role. */
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Role + company on one muted line. Sentence-style separator; Notion
+   * uses a comma to join role and company ("GTM, OpenAI"). */
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Trailing link: the only accent color on the card. Notion's
+   * "Read the full story" pattern with a trailing arrow. */
+  .quote-card__link {
+    align-self: flex-start;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:hover { color: var(--ds-accent-2); }
+
+  .quote-card__link:hover .quote-card__link-arrow {
+    transform: translateX(2px);
+  }
+
+  .quote-card__link-arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-card__link,
+    .quote-card__link-arrow { transition: none; }
+  }
+
+  @media (max-width: 520px) {
+    .quote-card { padding: var(--ds-space-4); }
+  }
+</style>
+</head>
+<body>
+  <section class="quote-grid" aria-label="Customer testimonials">
+
+    <figure class="quote-card">
+      <div class="quote-card__lockup">
+        <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+        <span class="quote-card__company">Lorem Ipsum</span>
+      </div>
+      <blockquote class="quote-card__quote">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla.
+      </blockquote>
+      <hr class="quote-card__rule" aria-hidden="true"/>
+      <figcaption class="quote-card__attribution">
+        <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+        <span class="quote-card__person">
+          <span class="quote-card__name">Aenean Tortor</span>
+          <span class="quote-card__role">Head of Engineering, Lorem Ipsum</span>
+        </span>
+      </figcaption>
+      <a class="quote-card__link" href="#">
+        Read the full story
+        <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </figure>
+
+    <figure class="quote-card">
+      <div class="quote-card__lockup">
+        <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+        <span class="quote-card__company">Dolor Sit Amet</span>
+      </div>
+      <blockquote class="quote-card__quote">
+        Curabitur eros nulla, eleifend nec consectetur a, hendrerit ac arcu. Pellentesque habitant morbi tristique senectus et netus.
+      </blockquote>
+      <hr class="quote-card__rule" aria-hidden="true"/>
+      <figcaption class="quote-card__attribution">
+        <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+        <span class="quote-card__person">
+          <span class="quote-card__name">Vivamus Nullam</span>
+          <span class="quote-card__role">CEO and Co-founder, Dolor Sit Amet</span>
+        </span>
+      </figcaption>
+      <a class="quote-card__link" href="#">
+        Read the full story
+        <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </figure>
+
+  </section>
+</body>
+</html>

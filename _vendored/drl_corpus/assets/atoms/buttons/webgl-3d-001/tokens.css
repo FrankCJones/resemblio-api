@@ -1,0 +1,132 @@
+/*
+ * webgl-3d-001 tokens
+ *
+ * Bruno Simon-inspired overlay button. The 3D driving-game site renders
+ * everything in WebGL, but the character dialogue overlay (the "Threejs
+ * Journey" assistant) breaks the canvas with a flat, hand-drawn answer
+ * pill. Comic Neue 700 carries the playful voice; the orange-cream
+ * gradient bubble reads as a comic speech balloon stacked on top of the
+ * 3D scene. The "Yes" button is a near-white pill with the same warm
+ * orange used as its label color, so the button echoes the bubble it
+ * lives inside.
+ *
+ * Token strategy: every color, type size, spacing, and radius declared
+ * by the contract is set. The bubble's exact gradient stops (the
+ * #fdb572ab to #fdb5721a alpha fade) live inline in asset.html as
+ * asset-specific ornament; they are a single creative moment, not a
+ * named role.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Native context: a flat 2D overlay floats over a tan/sand WebGL
+   * desert scene. Background here is the warm cream that anchors the
+   * bubble; accent is the signature orange. */
+  --ds-bg:           #FDB572;   /* Bubble base orange; rgb(253,181,114) from main.css gradient stop. */
+  --ds-surface:      #FFE7CF;   /* Lifted cream surface; interpolated from the gradient's faded end (#fdb5721a over white). */
+  --ds-surface-2:    #FFF4E6;   /* Lightest cream; for nested cards. Interpolated. */
+  --ds-text:         #FFFFFF;   /* Message text color, observed verbatim in .message rule. */
+  --ds-text-muted:   #FFD4A8;   /* Softer cream-orange for secondary type. */
+  --ds-text-strong:  #FFFFFF;   /* Same as text; the design uses weight, not color, for emphasis. */
+  --ds-border:       #FFFFFF;   /* The 2px white border around the bubble; observed in .message border. */
+  --ds-hairline:     #FFE7CF80; /* Half-opacity cream; subtle separator inside warm surface. */
+  --ds-accent:       #FEAE69;   /* "Yes" button label color rgb(254,174,105); observed in main.css. */
+  --ds-accent-2:     #FDB572;   /* Hover state shift; one tone deeper. */
+  --ds-success:      #6EBE7A;   /* Friendly green. The site doesn't use one; chosen to fit the palette. */
+  --ds-warning:      #F2A640;   /* Amber that lives in the same warm family. */
+  --ds-error:        #E25C5C;   /* Soft red for destructive actions inside this warm context. */
+  --ds-info:         #6FA8DC;   /* Cool blue contrast for info; not from the site. */
+  --ds-focus-ring:   #FFFFFF;   /* White ring against the orange bubble keeps focus visible without breaking the comic style. */
+
+  /* ---------- Type families ----------
+   * The site loads exactly one face: Comic Neue 700 from Google Fonts,
+   * loaded with display=block. That single decision carries the entire
+   * tonal register of the overlay UI. */
+  --ds-font-display: "Comic Neue", "Comic Sans MS", cursive, sans-serif;
+  --ds-font-body:    "Comic Neue", "Comic Sans MS", cursive, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Comic Neue", "Comic Sans MS", cursive, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * The dialogue is anchored at 18px (observed in .message font-size).
+   * That sits between base and lg in the contract. The rest of the
+   * scale is the standard modular set. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   18px;   /* Dialogue and answer-button label size, verbatim from main.css. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Comic Neue runs at natural tracking; no negative tracking on the
+   * dialogue size. Wider tracking reserved for any small-caps moments. */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid. The dialogue panel uses 40px from edge (observed
+   * bottom: 40px, right: 40px) which maps to --ds-space-8. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * The bubble and pill both use 8px radius (observed border-radius:
+   * 8px in .message). Mapped to --ds-radius-md. The pill mood comes
+   * from the answer buttons being shorter than tall, plus 8px corners,
+   * not from a full 9999px round. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;   /* Bubble and answer-pill corner, verbatim from main.css. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * The overlay sits on a 3D scene; soft drop shadows give it lift
+   * over the WebGL canvas without competing with the scene's own
+   * baked lighting. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-sm:   0 2px 6px rgba(0,0,0,0.12);
+  --ds-shadow-md:   0 6px 16px rgba(0,0,0,0.18);
+  --ds-shadow-lg:   0 16px 40px rgba(0,0,0,0.22);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.28);
+
+  /* ---------- Motion ----------
+   * The site's signature transition is cubic-bezier(0.5, 0, 0.25, 1)
+   * over 500ms for the bubble enter, with a faster 200ms ease-in-out
+   * for hover scale. Mapped to emphasize + fast. */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.5, 0, 0.25, 1);   /* Observed verbatim from .message transition. */
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    200ms;   /* Hover scaleX duration, verbatim. */
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;   /* Bubble enter duration, verbatim. */
+}

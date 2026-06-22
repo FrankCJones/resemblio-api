@@ -1,0 +1,169 @@
+/*
+ * locomotive alphabet tokens
+ *
+ * Locomotive's complete typography expression as one coherent vocabulary.
+ *
+ * Two faces carry the system. LocomotiveNew (a PP-foundry custom display
+ * neo-grotesque shipped at weight 400 but cut Light) handles every display
+ * step from the 110px kinetic statement down to H6. HelveticaNowDisplay
+ * handles body, navigation, and project-credit metadata. There is no actual
+ * mono face in the deliverable CSS; step numbers and utility labels ride
+ * tabular-nums on HelveticaNow. The mono slot below points at a system mono
+ * fallback so the contract is honored for assets that want a true mono.
+ *
+ * Palette is paper-and-ink with one electric accent. Paper is true #FFFFFF
+ * (the cream perception on locomotive.ca comes from imagery layered on the
+ * page; the actual --color-bg is white). Ink is pure #000000. The accent
+ * is the unmistakable Locomotive electric blue #312DFB, used in the slide-up
+ * menu's --menu-color-bg and as the kinetic-headline hover fill. Red #DA382E
+ * appears once in the system for legal/error punctuation only.
+ *
+ * Token values extracted from
+ * https://locomotive.ca/assets/styles/main.css?v=1773158732955
+ * via curl + grep on 2026-05-20. Locomotive's own --font-size, --font-size-h1
+ * through --font-size-h6, and --font-size-huge variables resolve against a
+ * 15px html base (1rem = 15px). Cross-checked against
+ * https://locomotive.ca/en (home) and https://locomotive.ca/en/work/scout-motors
+ * (case study).
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink with one electric blue. Pure white paper, pure black ink,
+   * mid-grey muted for project metadata, hairline grey for the 1-to-2px
+   * section rules. Electric blue is the menu surface and the kinetic-headline
+   * hover state; never used as a passive fill.
+   */
+  --ds-bg:           #FFFFFF;   /* --color-bg. Paper. CSS-true white. */
+  --ds-surface:      #FFFFFF;   /* No raised cards; everything flush. */
+  --ds-surface-2:    #F0F4F7;   /* Cookie-consent block bg; one tick off paper. */
+  --ds-text:         #000000;   /* --color. Pure black ink. */
+  --ds-text-muted:   #5E6266;   /* Cookie-consent secondary; project meta. */
+  --ds-text-strong:  #000000;   /* Same as text; no stronger ink. */
+  --ds-border:       #D4DAE0;   /* Hairline divider, hover state. */
+  --ds-hairline:     #E9EFF4;   /* Thinnest section rule (1.6px in source). */
+  --ds-accent:       #312DFB;   /* --menu-color-bg. Locomotive electric blue. */
+  --ds-accent-2:     #312DFB;   /* No secondary; the blue is the single note. */
+  --ds-success:      #000000;   /* No success color system. */
+  --ds-warning:      #DA382E;   /* Source secondary red; legal-only punctuation. */
+  --ds-error:        #DA382E;
+  --ds-info:         #000000;
+  --ds-focus-ring:   #312DFB;   /* Electric blue doubled into focus. */
+
+  /* ---------- Type families ----------
+   * LocomotiveNew is the custom display face (a PP-foundry / Pangram Pangram
+   * cut; shipped at weight 400 but optically Light). HelveticaNowDisplay
+   * carries body and metadata. The two-family system is the Locomotive move:
+   * display is characterful and kinetic-aware, body is the workhorse
+   * grotesque. No serif. No display-only weight other than the single 400.
+   *
+   * Mono slot below points at a system mono fallback. The source ships no
+   * mono face; step numbers in the case-study walkthrough ride
+   * HelveticaNowDisplay with tabular-nums on. Assets adopting this register
+   * for true mono utility (code blocks, step counters that need character
+   * width parity) can keep the system stack.
+   */
+  --ds-font-display: "LocomotiveNew", "PP LocomotiveNew", -apple-system, BlinkMacSystemFont, "avenir next", avenir, "segoe ui", "helvetica neue", helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+  --ds-font-body:    "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "avenir next", avenir, "segoe ui", "helvetica neue", helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+  --ds-font-mono:    ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;  /* Source ships no mono; system fallback for step-number utility. */
+  --ds-font-accent:  "LocomotiveNew", "PP LocomotiveNew", "HelveticaNowDisplay", sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Locomotive's scale resolves against a 15px html base (1rem = 15px).
+   * Source values:
+   *   --font-size: 15px (responsive 15 → 17 → 19 → 21px at wider viewports)
+   *   --font-size-h1: 4.6667rem (70px desktop) → 3.333rem (50px md) → 2.4rem (36px mobile)
+   *   --font-size-h2: 1.7333rem (26px)
+   *   --font-size-h3: 1.4667rem (22px)
+   *   --font-size-h4: 1.3333rem (20px)
+   *   --font-size-h5: 1.2rem (18px)
+   *   --font-size-h6: 1.0667rem (16px)
+   *   --font-size-medium: 1.7333rem (26px) → 1.6rem (24px md) → 18px mobile
+   *   --font-size-huge: 7.6389vw (~110px at 1440 viewport) → 40px mobile
+   * The huge step is the kinetic-headline class .-huge that animates on
+   * hover; the static end-state captured here is the resting size at desktop.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Captions, project credits at small viewport. */
+  --ds-text-sm:   15px;   /* Base body at 1280-1599 viewport. */
+  --ds-text-base: 17px;   /* Body 1600+ viewport (font-size escalates with screen). */
+  --ds-text-lg:   20px;   /* H4 (1.333rem). */
+  --ds-text-xl:   22px;   /* H3 (1.467rem). */
+  --ds-text-2xl:  26px;   /* H2 / font-size-medium (1.733rem). */
+  --ds-text-3xl:  40px;   /* font-size-huge at mobile. */
+  --ds-text-4xl:  50px;   /* H1 at md (3.333rem). */
+  --ds-text-5xl:  70px;   /* H1 at desktop (4.667rem). */
+  --ds-text-6xl:  90px;   /* Kinetic statement at 1200 viewport (7.639vw). */
+  --ds-text-7xl:  110px;  /* Kinetic statement at 1440+ (7.639vw resting). */
+
+  /* ---------- Line heights ----------
+   * Display sits at 1.1 (kinetic-friendly; the type animates and needs
+   * vertical room to drift). Headings at 1.1-1.2. Body reads at the default
+   * source line-height which is unset on most rules and inherits from html;
+   * the c-button line-height resolves to 1.2, the article body resolves
+   * closer to 1.4. The relaxed step is reserved for long-form WYSIWYG.
+   */
+  --ds-leading-tight:   1.1;    /* Display, kinetic huge, H1. */
+  --ds-leading-snug:    1.2;    /* H2-H6, c-button. */
+  --ds-leading-normal:  1.4;    /* Body, project-credit grid. */
+  --ds-leading-relaxed: 1.55;   /* Long-form article body. */
+  --ds-leading-loose:   1.75;
+
+  /* ---------- Tracking ----------
+   * Locomotive runs at zero tracking across the system. The kinetic huge
+   * headline carries a hair-negative -0.01em at desktop; H1 and H2 stay
+   * neutral. Uppercase utility labels (the rare nav category lockup) pick up
+   * positive tracking. Wider tracking is unused.
+   */
+  --ds-tracking-tight:  -0.01em;   /* Kinetic huge at desktop. */
+  --ds-tracking-normal: 0;          /* Headings + body. */
+  --ds-tracking-wide:   0.06em;    /* Uppercase utility labels. */
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px-ish base; the source resolves against a 15px rem so values land
+   * slightly off the standard 8-point grid. Section breaks use the spacing
+   * scale: --spacing-huge = 200, --spacing-big = 150, --spacing-large = 80.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  14px;  --ds-space-4:  20px;  --ds-space-5:  30px;
+  --ds-space-6:  40px;  --ds-space-8:  52px;  --ds-space-10: 80px;
+  --ds-space-12: 150px; --ds-space-16: 200px; --ds-space-32: 250px;
+
+  /* ---------- Radii ----------
+   * Zero radius across the entire system. Locomotive's swiss-grid register
+   * is hard-cornered; case-study cards, image frames, buttons, and form
+   * chrome all sit at 0. The full slot stays for contract compatibility.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * No shadows. Everything flush. Kinetic transforms carry the depth cue
+   * instead (scale, translate, blur on hover).
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   none;
+  --ds-shadow-lg:   none;
+  --ds-shadow-2xl:  none;
+
+  /* ---------- Motion ----------
+   * Locomotive's signature easing is cubic-bezier(0.215, 0.61, 0.355, 1) —
+   * a soft ease-out cubic the case-study walkthroughs use on every step
+   * transition (300ms typical). The standard slot doubles as the kinetic
+   * default; emphasize ramps quicker for hover affordance.
+   */
+  --ds-ease-standard:    cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    600ms;
+}

@@ -1,0 +1,722 @@
+<!--
+  Asset: webflow-pricing-page-001
+  Class: layouts
+  Pattern: tiered-pricing-grid, comparison-feature-table, faq-accordions, segmented-switch, mega-footer
+  Inspired by: Webflow (webflow.com/pricing)
+  Notes:
+    - Pricing-page skeleton: nav (flush-top), pricing hero (H1 + dek + trusted-logo strip), Monthly/Yearly segmented toggle, Site Plans tiered-pricing-grid (three cards: Starter free / Basic / Premium with the Premium card lifted as recommended via a Webflow-Blue ring and a "New" pill), Platform Plans tiered-pricing-grid (two cards: Team / Enterprise), comparison-feature-table (gray-100 category bands across Publishing / Site Features / CMS / Usage / SEO / AI / Interactions / Cloud / Security / Support), FAQ accordion, mega-footer.
+    - Variable: section sequence, tier count per band (3 then 2), comparison-table category banks, toggle labels. Inline: 1280px page container, three-column then two-column tier grids, blue ring on recommended card, CTA pill radius (4px), "New" badge geometry, segmented-switch geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-pricing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: WF Visual Sans Variable is foundry-proprietary and not
+  loaded in the asset; Arial fallback in tokens.css carries the register
+  so the file opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1280px max; Webflow's marketing gutter. Inline. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top with hairline below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  .section { padding-block: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /* Pricing hero: H1 + dek + small trusted-logo strip below. */
+  .pricing-hero { text-align: center; padding-block: var(--ds-space-12) var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .pricing-hero { padding-block: var(--ds-space-16) var(--ds-space-10); }
+  }
+  .pricing-hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 18ch;
+  }
+  .pricing-hero__dek {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 56ch;
+  }
+
+  /* Trusted-logo strip: thin row of muted greyed marks under the dek. */
+  .trusted-strip {
+    display: flex;
+    justify-content: center;
+    gap: var(--ds-space-6);
+    flex-wrap: wrap;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /*
+   * Segmented switch (Monthly / Yearly). Pill container with two
+   * mutually exclusive labels; the active one fills with white card and
+   * carries a faint border. "Save up to 40%" sits beside as a small
+   * accent label.
+   */
+  .toggle-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-10);
+  }
+  .seg-switch {
+    display: inline-flex;
+    background: var(--ds-surface-2);
+    padding: var(--ds-space-1);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+  }
+  .seg-switch__opt {
+    padding: var(--ds-space-2) var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    cursor: pointer;
+  }
+  .seg-switch__opt[aria-pressed="true"] {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+  }
+  .toggle-row__save {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    font-weight: 500;
+  }
+
+  /* Band heading above each tier grid. */
+  .band-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .band-sub {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 64ch;
+  }
+
+  /*
+   * Tier grid. Three equal cards on desktop for Site Plans; two equal
+   * cards for Platform Plans. The recommended card lifts via a 2px
+   * Webflow-Blue ring and a "New" pill rather than card inversion;
+   * inline because both choices are page-specific.
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .tier-grid--3 { grid-template-columns: repeat(3, 1fr); }
+    .tier-grid--2 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .tier-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+  .tier-card--featured {
+    /* Recommended tier lift: 2px Webflow-Blue ring, hairline-as-chrome. */
+    box-shadow: 0 0 0 2px var(--ds-accent);
+    border-color: var(--ds-accent);
+  }
+  .tier-card__badge {
+    position: absolute;
+    top: -10px;
+    left: var(--ds-space-6);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .tier-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .tier-card__dek {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+    min-height: 3em;
+  }
+  .tier-card__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier-card__price-unit {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+  }
+  .tier-card__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier-card__feature {
+    display: flex;
+    gap: var(--ds-space-2);
+  }
+  .tier-card__feature::before {
+    content: "+";
+    color: var(--ds-accent);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* CTA: square-ish 4px radius (Webflow signature), blue fill on
+     primary, hairline ghost on secondary. */
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    text-align: center;
+    align-self: stretch;
+    cursor: pointer;
+  }
+  .cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+  }
+
+  /*
+   * Comparison feature table. Container-width, hairline-bordered.
+   * Category bands sit in gray-100 surface-2 with sans-bold heading
+   * text (not the mono-uppercase Vercel strip; Webflow's eyebrow is
+   * normal-case sans). Cells render check (included), em-marker
+   * (not_available), numeric usage limits, or "Custom" for Enterprise.
+   */
+  .compare-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .compare-table-wrap {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    text-align: left;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .compare-table tbody tr.category-band td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody td {
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare-table tbody tr:first-child td { border-top: 0; }
+  .compare-table .feature-cell { color: var(--ds-text); }
+  .compare-table .cell-tier { color: var(--ds-text); width: 18%; }
+  .compare-table .glyph-included { color: var(--ds-success); font-weight: 600; }
+  .compare-table .glyph-na { color: var(--ds-text-muted); }
+  .compare-table .cell-unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * FAQ accordion. Hairline-divided rows; sans question on the left,
+   * "+" / "-" affordance on the right.
+   */
+  .faq-list { border-top: 1px solid var(--ds-hairline); }
+  .faq-item { border-bottom: 1px solid var(--ds-hairline); }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--ds-space-5) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+  }
+  .faq-item[open] summary::after { content: "-"; }
+  .faq-item__body {
+    padding-bottom: var(--ds-space-6);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+  }
+  .faq-item__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /* Final CTA band: centered, narrow, primary pill. */
+  .final-cta {
+    text-align: center;
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .final-cta h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-5);
+    color: var(--ds-text-strong);
+  }
+  .final-cta p {
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 56ch;
+    margin-inline: auto;
+  }
+
+  /* Footer band. */
+  .footer-band {
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a webflow-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 200px;">
+        <span class="slot__label">login + cta</span>
+        Lorem login / Get started
+      </div>
+    </nav>
+
+    <!-- Section: pricing hero. H1 + dek + trusted-logo strip. -->
+    <header class="pricing-hero" aria-label="Pricing hero">
+      <h1 class="pricing-hero__title">Lorem ipsum dolor pricing.</h1>
+      <p class="pricing-hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="trusted-strip" aria-label="Trusted by">
+        <span>Lorem co</span>
+        <span>Ipsum inc</span>
+        <span>Dolor lab</span>
+        <span>Sit amet</span>
+        <span>Consectetur</span>
+      </div>
+    </header>
+
+    <!-- Section: Monthly/Yearly toggle. Segmented switch + save-up-to label. -->
+    <div class="toggle-row" role="group" aria-label="Billing period">
+      <div class="seg-switch" role="tablist">
+        <button class="seg-switch__opt" role="tab" aria-pressed="false">Lorem monthly</button>
+        <button class="seg-switch__opt" role="tab" aria-pressed="true">Lorem yearly</button>
+      </div>
+      <span class="toggle-row__save">Save up to lorem%</span>
+    </div>
+
+    <!-- Section: Site Plans tiered-pricing-grid. Three cards; Premium recommended. -->
+    <section class="section" aria-label="Site plans">
+      <h2 class="band-heading">Lorem site plans</h2>
+      <p class="band-sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. For
+        single-site projects with custom domain.
+      </p>
+      <div class="tier-grid tier-grid--3">
+
+        <article class="tier-card" aria-label="Starter tier">
+          <h3 class="tier-card__name">Lorem Starter</h3>
+          <p class="tier-card__dek">Lorem ipsum free entry for hobby projects.</p>
+          <p class="tier-card__price">$0<span class="tier-card__price-unit"> / lorem forever</span></p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum subdomain</li>
+            <li class="tier-card__feature">Consectetur 2 static pages</li>
+            <li class="tier-card__feature">Sed 1 GB bandwidth</li>
+            <li class="tier-card__feature">Eiusmod 50 form submissions</li>
+            <li class="tier-card__feature">Tempor lorem badge</li>
+          </ul>
+          <a class="cta cta--ghost" href="#">Start lorem free</a>
+        </article>
+
+        <article class="tier-card" aria-label="Basic tier">
+          <h3 class="tier-card__name">Lorem Basic</h3>
+          <p class="tier-card__dek">Lorem ipsum custom-domain marketing pages.</p>
+          <p class="tier-card__price">$15<span class="tier-card__price-unit"> / lorem month, yearly</span></p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum custom domain</li>
+            <li class="tier-card__feature">Consectetur 300 static pages</li>
+            <li class="tier-card__feature">Sed 10 GB bandwidth</li>
+            <li class="tier-card__feature">Eiusmod unlimited submissions</li>
+            <li class="tier-card__feature">Tempor remove lorem badge</li>
+          </ul>
+          <a class="cta cta--ghost" href="#">Choose lorem basic</a>
+        </article>
+
+        <article class="tier-card tier-card--featured" aria-label="Premium tier (recommended)">
+          <span class="tier-card__badge">New</span>
+          <h3 class="tier-card__name">Lorem Premium</h3>
+          <p class="tier-card__dek">Lorem ipsum CMS + components for content-rich sites.</p>
+          <p class="tier-card__price">$25<span class="tier-card__price-unit"> / lorem month, yearly</span></p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum CMS included</li>
+            <li class="tier-card__feature">Consectetur 50 GB to 2.5 TB</li>
+            <li class="tier-card__feature">Sed code components</li>
+            <li class="tier-card__feature">Eiusmod site search</li>
+            <li class="tier-card__feature">Tempor lorem AI credits</li>
+          </ul>
+          <a class="cta cta--primary" href="#">Choose lorem premium</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: Platform Plans tiered-pricing-grid. Two cards; Team recommended. -->
+    <section class="section" aria-label="Platform plans">
+      <h2 class="band-heading">Lorem platform plans</h2>
+      <p class="band-sub">
+        Lorem ipsum dolor sit amet for teams running multiple sites with
+        governance and shared libraries.
+      </p>
+      <div class="tier-grid tier-grid--2">
+
+        <article class="tier-card tier-card--featured" aria-label="Team tier (recommended)">
+          <span class="tier-card__badge">New</span>
+          <h3 class="tier-card__name">Lorem Team</h3>
+          <p class="tier-card__dek">Lorem ipsum collaborative platform for in-house teams.</p>
+          <p class="tier-card__price">$2,500<span class="tier-card__price-unit"> / lorem month, annual</span></p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem site and workspace</li>
+            <li class="tier-card__feature">Consectetur localization</li>
+            <li class="tier-card__feature">Sed publishing workflows</li>
+            <li class="tier-card__feature">Eiusmod governance basics</li>
+            <li class="tier-card__feature">Tempor lorem AI credits</li>
+          </ul>
+          <a class="cta cta--primary" href="#">Contact lorem sales</a>
+        </article>
+
+        <article class="tier-card" aria-label="Enterprise tier">
+          <h3 class="tier-card__name">Lorem Enterprise</h3>
+          <p class="tier-card__dek">Lorem ipsum custom for global organizations.</p>
+          <p class="tier-card__price">Custom<span class="tier-card__price-unit"> / contact sales</span></p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem granular permissions</li>
+            <li class="tier-card__feature">Consectetur custom roles</li>
+            <li class="tier-card__feature">Sed dedicated account manager</li>
+            <li class="tier-card__feature">Eiusmod enhanced SLAs</li>
+            <li class="tier-card__feature">Tempor SSO and SCIM</li>
+          </ul>
+          <a class="cta cta--ghost" href="#">Contact lorem sales</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: comparison-feature-table. Category-banded; sans bold band heads. -->
+    <section class="section" aria-label="Compare site plans">
+      <h2 class="compare-heading">Compare lorem site plans</h2>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Starter</th>
+              <th scope="col">Basic</th>
+              <th scope="col">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="category-band"><td colspan="4">Lorem Publishing</td></tr>
+            <tr>
+              <td class="feature-cell">Lorem ipsum subdomain hosting</td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Consectetur custom domain</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Sed remove lorem badge</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="4">Lorem CMS</td></tr>
+            <tr>
+              <td class="feature-cell">Eiusmod CMS items</td>
+              <td class="cell-tier"><span class="cell-unit">0</span></td>
+              <td class="cell-tier"><span class="cell-unit">2,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">10,000</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Tempor publishing workflows</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="4">Lorem Usage</td></tr>
+            <tr>
+              <td class="feature-cell">Incididunt bandwidth</td>
+              <td class="cell-tier"><span class="cell-unit">1 GB</span></td>
+              <td class="cell-tier"><span class="cell-unit">10 GB</span></td>
+              <td class="cell-tier"><span class="cell-unit">50 GB+</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Ut labore CDN edge points</td>
+              <td class="cell-tier"><span class="cell-unit">Global</span></td>
+              <td class="cell-tier"><span class="cell-unit">Global</span></td>
+              <td class="cell-tier"><span class="cell-unit">Global</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="4">Lorem AI</td></tr>
+            <tr>
+              <td class="feature-cell">Et dolore AI credits / mo</td>
+              <td class="cell-tier"><span class="cell-unit">200</span></td>
+              <td class="cell-tier"><span class="cell-unit">1,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">5,000</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="4">Lorem Security</td></tr>
+            <tr>
+              <td class="feature-cell">Magna DDoS protection</td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Aliqua two-factor auth</td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[v]</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section: FAQ accordion. Hairline-divided rows. -->
+    <section class="section" aria-label="Pricing FAQ">
+      <h2 class="compare-heading">Lorem ipsum questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>Lorem ipsum workspace versus site plan?</summary>
+          <div class="faq-item__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. <a href="#">Lorem ipsum link</a>
+            for further reading.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Consectetur how many workspaces lorem?</summary>
+          <div class="faq-item__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Sed do eiusmod cancellation policy?</summary>
+          <div class="faq-item__body">
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+            aute irure dolor in reprehenderit in voluptate velit esse.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Ut labore premium bandwidth lorem?</summary>
+          <div class="faq-item__body">
+            Cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Aliquip exercitation api availability?</summary>
+          <div class="faq-item__body">
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur lorem ipsum.
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <!-- Section: final CTA band. Centered narrow column with primary CTA. -->
+    <section class="final-cta" aria-label="Final call to action">
+      <h2>Lorem ipsum get started for free.</h2>
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+      <a class="cta cta--primary" href="#" style="display:inline-flex; align-self:center;">Start lorem free</a>
+    </section>
+
+  </div>
+
+  <!-- Footer band: stands in for a webflow-tagged mega-footer whole. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

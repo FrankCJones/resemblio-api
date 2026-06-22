@@ -1,0 +1,113 @@
+<!--
+  Asset: shimmer-gradient-001
+  Class: loaders
+  Pattern: (none)
+  Inspired by: Resend (ai-shimmer-text recipe applied to a block placeholder)
+  Notes:
+    - A wide linear-gradient (dim -> highlight -> dim) is set on the placeholder with background-size 200%.
+    - Animation moves background-position from 100% to 0% on a 2s loop, so the highlight slug sweeps across.
+    - The gradient stops are inline (this asset's character); the speed is contract --ds-duration-slow.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>shimmer-gradient-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter as a public fallback for ABCFavorit which Resend ships. -->
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+
+  .label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Shimmer block: a tall rounded surface used as a media placeholder.
+   * The gradient stops are inline because the exact shimmer character
+   * (where the highlight peaks and how soft the falloff is) is specific
+   * to this asset; only the duration and color endpoints are variables. */
+  .shimmer {
+    width: 100%;
+    max-width: 520px;
+    border-radius: var(--ds-radius-lg);
+    background: linear-gradient(
+      90deg,
+      var(--ds-surface-2) 0%,
+      var(--ds-surface-2) 40%,
+      rgba(255, 255, 255, 0.10) 50%,
+      var(--ds-surface-2) 60%,
+      var(--ds-surface-2) 100%
+    );
+    background-size: 200% 100%;
+    background-position: 100% 0;
+  }
+
+  .shimmer--block { height: 180px; }
+  .shimmer--line  { height: 14px;  border-radius: var(--ds-radius-full); }
+  .shimmer--text  {
+    /* The text variant clips the gradient to the glyphs; the dim base
+     * shows the text in a low-contrast state and the highlight sweep
+     * reveals each letter as it crosses. */
+    background: linear-gradient(
+      90deg,
+      var(--ds-text-muted) 0%,
+      var(--ds-text-muted) 40%,
+      var(--ds-text-strong) 50%,
+      var(--ds-text-muted) 60%,
+      var(--ds-text-muted) 100%
+    );
+    background-size: 200% 100%;
+    background-position: 100% center;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .shimmer {
+      animation: ds-shimmer-sweep var(--ds-duration-slow) linear infinite;
+    }
+  }
+  @keyframes ds-shimmer-sweep {
+    0%   { background-position: 100% center; }
+    100% { background-position: 0%   center; }
+  }
+</style>
+</head>
+<body>
+  <div class="label">Lorem ipsum, dolor sit amet</div>
+
+  <div class="shimmer shimmer--block" role="status" aria-busy="true" aria-label="Loading media"></div>
+
+  <div class="shimmer shimmer--text" role="status" aria-busy="true" aria-label="Generating text">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  </div>
+
+  <div class="shimmer shimmer--line"></div>
+  <div class="shimmer shimmer--line" style="max-width: 380px;"></div>
+  <div class="shimmer shimmer--line" style="max-width: 260px;"></div>
+</body>
+</html>

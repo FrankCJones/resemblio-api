@@ -1,0 +1,137 @@
+<!--
+  Asset: editorial-essay-list-001
+  Class: lists
+  Pattern: (none exact in TAXONOMY; closest: numbered-feature-row inverted - this is a sectioned writings index. Proposed pattern 'writings-index' added to _INBOX/taxonomy_proposed.md.)
+  Inspired by: Robin Sloan (homepage writings index)
+  Notes:
+    - Categorical list of writings: section heading then bulleted rows, items optionally tagged with venue parenthetical and a featured star.
+    - Section headings and list-item type come from tokens; the bullet glyph and star color are inline ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-essay-list-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Sloan ships Filosofia (body) and Kyrios (display); the Georgia/Times stack is the visible fallback. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+  /* Section heading: Kyrios display at the 28px step, low-key against ink body. */
+  .essay-section h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* The list: native ul with disc bullets in the ink color. Sloan's choice is to keep the bullet visible as a typographic anchor; many editorial sites strip it. */
+  .essay-section ul {
+    list-style: disc;
+    padding-left: 1.4em;            /* Inline ornament: bullet inset chosen by eye on terracotta. */
+    margin: 0;
+    color: var(--ds-text);
+  }
+  .essay-section ul::marker { color: var(--ds-text); }
+  .essay-section li {
+    margin: 0 0 var(--ds-space-2);
+    line-height: var(--ds-leading-normal);
+  }
+  /* Item link: inline serif, ink color, underline as the default link affordance. */
+  .essay-section li a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .essay-section li a:hover { color: var(--ds-accent); }
+  .essay-section li a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  /* Venue parenthetical: warm muted brown, no italics; sits inline after the title. */
+  .venue {
+    color: var(--ds-text-muted);
+    font-style: normal;             /* Inline choice: italics would compete with the title; muted color does the work. */
+  }
+  /* Featured star: rendered as a glyph after the title; warmer than accent so it reads as ornament not link. */
+  .featured {
+    color: var(--ds-accent-2);
+    margin-left: 0.35em;            /* Inline ornament: spacing tuned by eye against the disc bullet. */
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+  <main class="stage">
+
+    <section class="essay-section">
+      <h2>Lorem novels</h2>
+      <ul>
+        <li><a href="#">Mr. Lorem's 24-Hour Bookstore</a></li>
+        <li><a href="#">Sourdough lorem</a></li>
+        <li><a href="#">Moonbound lorem</a><span class="featured" aria-label="featured">&#9733;</span></li>
+      </ul>
+    </section>
+
+    <section class="essay-section">
+      <h2>Notable essays</h2>
+      <ul>
+        <li><a href="#">An app can be a home-cooked lorem</a></li>
+        <li><a href="#">Reckoning with lorem ipsum dolor</a></li>
+        <li><a href="#">Notes on lorem-three</a></li>
+        <li><a href="#">Return to ipsum knoll</a> <span class="venue">(Aeon ipsum)</span><span class="featured" aria-label="featured">&#9733;</span></li>
+        <li><a href="#">I played ipsum and figured out the universe</a> <span class="venue">(The Lorem)</span></li>
+        <li><a href="#">Dancing the lorem-flop</a></li>
+        <li><a href="#">The wiggle of least resistance</a> <span class="venue">(The Lorem Times)</span></li>
+      </ul>
+    </section>
+
+    <section class="essay-section">
+      <h2>Short stories</h2>
+      <ul>
+        <li><a href="#">The writer and the lorem</a><span class="featured" aria-label="featured">&#9733;</span></li>
+        <li><a href="#">The wrong ipsum</a></li>
+        <li><a href="#">Last beautiful lorem</a></li>
+        <li><a href="#">The truth about the east lorem</a></li>
+        <li><a href="#">The lorem counselor</a> <span class="venue">(Terraform)</span></li>
+        <li><a href="#">Proposal for a book to be adapted into a lorem-ipsum</a></li>
+        <li><a href="#">Julie lorem</a> <span class="venue">(Lorem Notes)</span></li>
+        <li><a href="#">The sleep consultant</a></li>
+      </ul>
+    </section>
+
+    <section class="essay-section">
+      <h2>Special projects</h2>
+      <ul>
+        <li><a href="#">Lorem, an app</a></li>
+        <li><a href="#">The greatest remaining lorem hits, a concept album</a><span class="featured" aria-label="featured">&#9733;</span></li>
+        <li><a href="#">Shadow planet lorem, a non-concept album</a></li>
+        <li><a href="#">platforms.lorem, a rhetorical exhibit</a></li>
+        <li><a href="#">The amulet, a new kind of lorem</a></li>
+      </ul>
+    </section>
+
+  </main>
+</body>
+</html>

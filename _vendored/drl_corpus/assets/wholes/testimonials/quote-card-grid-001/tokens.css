@@ -1,0 +1,90 @@
+/*
+ * quote-card-grid-001 tokens
+ *
+ * Whole testimonial grid composing six atoms. Native values are calibrated
+ * to Pitch's warm-cream marketing surface: a slightly creamy off-white page,
+ * pure-white cards lifted by a hairline, near-black ink, and a single
+ * saturated coral accent that pitch.com uses sparingly for emphasis.
+ *
+ * Composition_atoms in meta.json: color-groups/paper-ink-zero-001,
+ * type-pairings/sans-system-modern-001, cards/hairline-flat-001,
+ * body-text/pull-quote-breakout-001, avatars/avatar-with-name-001,
+ * kickers/mono-eyebrow-001.
+ *
+ * Note: extraction was via webfetch_html_inspection (Pitch was unreachable
+ * via Chrome MCP). The structure (four-card grid with quote + named
+ * attribution + logo per card) is verified; the precise hex tokens here
+ * are the asset's calibrated reading of the warm-cream character.
+ */
+:root {
+  /* Colors */
+  --ds-bg:           #F5F1EA;   /* Warm cream page surface; reads as paper, slightly warmer than #FBFAF7. */
+  --ds-surface:      #FFFFFF;   /* Pure white card lifts cleanly off the cream page. */
+  --ds-surface-2:    #FAF6EF;   /* Nested or alternate-row surface; one cream-tick darker than the cards. */
+  --ds-text:         #181818;   /* Near-black ink; warm enough to live with the cream. */
+  --ds-text-muted:   #6E6A63;   /* Warm gray for attribution role and title text. */
+  --ds-text-strong:  #000000;   /* Used for the quote body, where presence matters. */
+  --ds-border:       #E4DED2;   /* Warm hairline visible against the cream. */
+  --ds-hairline:     #EEE8DA;   /* Subtler divider for card edges. */
+  --ds-accent:       #E25E3E;   /* Pitch's signature coral; appears as the open-quote glyph only. */
+  --ds-accent-2:     #2F2A24;   /* Deep ink-brown; backup for typographic accent. */
+  --ds-success:      #2A6F44;
+  --ds-warning:      #B07A1A;
+  --ds-error:        #B14438;
+  --ds-info:         #2F2A24;
+  --ds-focus-ring:   #E25E3E;   /* Coral focus ring matches the accent role. */
+
+  /* Type families. Pitch's marketing surface reads as a humanist sans
+   * with a customized character. We bind to the library's standard
+   * sans-system-modern-001 pairing (Inter Tight display, Inter body,
+   * JetBrains Mono for the eyebrow). */
+  --ds-font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Tight", sans-serif;
+
+  /* Type sizes. The quote sits at lg (reading-large) so the four-card
+   * grid stays scannable without any one quote shouting. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 20px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 44px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 96px;  --ds-text-7xl: 120px;
+
+  /* Leading. Quote text takes relaxed leading so the multi-line quote
+   * does not feel compressed inside the card. */
+  --ds-leading-tight: 1.08;   --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;   --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.18em;
+
+  /* Spacing. Card padding lives at space-6; gap between cards at space-5. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Cards take md (10px) for a soft-but-not-pillowy edge. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 10px;  --ds-radius-lg: 20px;  --ds-radius-full: 9999px;
+
+  /* Shadows. The card lift is hairline-only at rest; sm on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(24, 24, 24, 0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(24, 24, 24, 0.06);
+  --ds-shadow-md:  0 6px 18px rgba(24, 24, 24, 0.08);
+  --ds-shadow-lg:  0 16px 40px rgba(24, 24, 24, 0.10);
+  --ds-shadow-2xl: 0 32px 64px rgba(24, 24, 24, 0.12);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

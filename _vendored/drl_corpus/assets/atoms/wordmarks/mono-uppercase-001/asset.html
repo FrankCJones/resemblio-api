@@ -1,0 +1,107 @@
+<!--
+  Asset: mono-uppercase-001
+  Class: wordmarks
+  Pattern: mono-utility-pair
+  Inspired by: Vercel
+  Notes:
+    - Monospace uppercase wordmark with positive tracking; dev-tool register.
+    - The triangle glyph (Vercel's mark) is inline character; the typographic
+      treatment is the variable contract. Tracking widens with size.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mono-uppercase-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: var(--ds-leading-tight);
+  }
+  /* Native: matches the 14-16px UI register Vercel ships in its header navigation */
+  .wordmark--ui {
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .wordmark--ui .mark { width: 14px; height: 12px; }
+  /* Display: 4x the UI size, tracking eases off as size grows */
+  .wordmark--display {
+    font-size: var(--ds-text-4xl);
+    letter-spacing: 0.06em; /* inline: positive tracking eased back from 0.16em at small */
+  }
+  .wordmark--display .mark { width: 52px; height: 46px; }
+  /* Inverse variant: white on black, the Vercel pricing-page register */
+  .wordmark--inverse {
+    background: #000;
+    color: #FFF;
+    padding: var(--ds-space-4) var(--ds-space-6);
+    border-radius: var(--ds-radius-md);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">native size (14px)</span>
+    <a class="wordmark wordmark--ui" href="#">
+      <svg class="mark" viewBox="0 0 76 65" fill="currentColor" aria-hidden="true">
+        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/>
+      </svg>
+      Vercel
+    </a>
+  </div>
+  <div class="stage">
+    <span class="state-label">display (56px)</span>
+    <a class="wordmark wordmark--display" href="#">
+      <svg class="mark" viewBox="0 0 76 65" fill="currentColor" aria-hidden="true">
+        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/>
+      </svg>
+      Vercel
+    </a>
+  </div>
+  <div class="stage">
+    <span class="state-label">inverse</span>
+    <a class="wordmark wordmark--display wordmark--inverse" href="#">
+      <svg class="mark" viewBox="0 0 76 65" fill="currentColor" aria-hidden="true">
+        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/>
+      </svg>
+      Vercel
+    </a>
+  </div>
+</body>
+</html>

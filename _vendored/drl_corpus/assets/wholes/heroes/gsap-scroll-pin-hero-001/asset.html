@@ -1,0 +1,226 @@
+<!--
+  Asset: gsap-scroll-pin-hero-001
+  Class: heroes (whole)
+  Pattern: single-cta-hero, no-imagery, scroll-driven-reveal
+  Inspired by: GSAP ScrollTrigger Docs, GSAP Tween Docs, GSAP Showcase
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001         (palette context)
+    - type-pairings/sans-system-modern-001   (display + body + mono families)
+    - headings/display-tight-001             (display heading pattern)
+    - kickers/mono-eyebrow-001               (kicker pattern)
+    - buttons/primary-pill-001               (primary CTA pattern)
+    - motion-primitives/scroll-driven-reveal-002 (reveal-on-scroll mechanic)
+  Notes:
+    - The hero pins at viewport top and holds while the user scrolls 500px,
+      mapping that scroll distance to a scrubbed reveal timeline that lifts
+      the kicker, headline, subhead, and CTA in sequence. End values mirror
+      the canonical GSAP ScrollTrigger pin example verbatim (end '+=500',
+      scrub 1, start 'top top'). When prefers-reduced-motion is set, the
+      reveal collapses to its end state instantly and the pin lock is
+      released to a regular static layout.
+    - Variable vs inline: every easing curve and duration is contract-bound
+      to --ds-* tokens. The CSS scroll-timeline 'view()' range values are
+      inline because they are scroll-anchor positions specific to this
+      hero, not transferable design tokens.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>gsap-scroll-pin-hero-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:ital,wght@0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+  }
+
+  /* The pin container. ScrollTrigger pinning is recreated in pure CSS via
+   * position: sticky plus a tall outer wrapper. The outer wrapper's height
+   * defines the pin distance ('+=500' in the GSAP source equivalent). */
+  .hero-wrap {
+    /* 100vh viewport hold + 500px pin distance, mirrors GSAP end:'+=500'. */
+    height: calc(100vh + 500px);
+    position: relative;
+  }
+  .hero {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-8) var(--ds-space-6);
+    overflow: hidden;
+  }
+
+  /* A soft indigo glow that strengthens as the reveal progresses. The
+   * intensity is a scroll-driven CSS animation (modern browsers). */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -20% -20% auto -20%;
+    height: 80vh;
+    background:
+      radial-gradient(60% 60% at 50% 30%,
+        color-mix(in oklab, var(--ds-accent-2) 28%, transparent),
+        transparent 70%);
+    opacity: 0.4;
+    animation: hero-glow linear both;
+    animation-timeline: --hero-pin;
+    animation-range: contain 0% contain 100%;
+  }
+
+  .hero__col {
+    position: relative;
+    max-width: 720px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Each row is the same scroll-driven reveal: opacity 0 -> 1, translateY
+   * 16px -> 0. Tokens lock the curve to --ds-ease-standard (power1.out) and
+   * the duration is mapped from scroll position via animation-timeline,
+   * not real time. The 'scrub: 1' equivalent is that scrolling drives the
+   * playhead directly with no easing layered on top of scroll. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: reveal both;
+    animation-timing-function: var(--ds-ease-standard);
+    animation-timeline: --hero-pin;
+  }
+  .reveal--kicker  { animation-range: contain 0%   contain 25%; }
+  .reveal--h1      { animation-range: contain 10%  contain 55%; }
+  .reveal--sub     { animation-range: contain 35%  contain 75%; }
+  .reveal--cta     { animation-range: contain 55%  contain 90%; }
+
+  @keyframes reveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes hero-glow {
+    0%   { opacity: 0.15; transform: translateY(40px); }
+    100% { opacity: 0.55; transform: translateY(0); }
+  }
+
+  /* Bind the scroll-timeline to the pinned section so 100% of the pin
+   * distance maps to 0..1 of the reveal progress. */
+  .hero-wrap { view-timeline-name: --hero-pin; view-timeline-axis: block; }
+
+  /* Kicker: from atoms/kickers/mono-eyebrow-001. */
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Display headline: from atoms/headings/display-tight-001. */
+  .hero__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 8vw, var(--ds-text-6xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .hero__h1 em {
+    font-style: italic;
+    font-weight: 500;
+    color: color-mix(in oklab, var(--ds-accent) 55%, white 30%);
+    /* Inline ornament: the italic accent uses a custom mix lighter than
+     * --ds-accent so it pops against the indigo glow. Hero-specific tuning. */
+  }
+
+  .hero__sub {
+    margin: 0;
+    max-width: 56ch;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTA: from atoms/buttons/primary-pill-001. Same tokens, same transitions. */
+  .hero__cta {
+    appearance: none;
+    border: 0;
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-sm);
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast)    var(--ds-ease-standard),
+      transform  var(--ds-duration-fast)    var(--ds-ease-standard);
+  }
+  .hero__cta:hover {
+    background: color-mix(in oklab, var(--ds-text) 92%, var(--ds-bg) 8%);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .hero__cta:active { transform: translateY(1px); }
+  .hero__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Footer cue indicating the post-pin content; demonstrates that the
+   * pinned hero releases into the rest of the page after 500px. */
+  .post {
+    padding: var(--ds-space-12) var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    text-align: center;
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Accessibility: collapse the reveal sequence to the end state for users
+   * who prefer reduced motion. The pin still holds but everything is
+   * visible immediately. */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; animation: none; }
+    .hero::before { animation: none; opacity: 0.4; }
+    .hero__cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="hero-wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__col">
+        <span class="hero__kicker reveal reveal--kicker">v1.0 · lorem ipsum dolor</span>
+        <h1 id="hero-title" class="hero__h1 reveal reveal--h1">
+          Lorem ipsum <em>dolor sit</em> amet consectetur scrolling.
+        </h1>
+        <p class="hero__sub reveal reveal--sub">
+          Adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.
+        </p>
+        <button type="button" class="hero__cta reveal reveal--cta">Get started</button>
+      </div>
+    </section>
+  </div>
+  <section class="post">
+    Lorem ipsum continues here. The hero releases the pin at the end of the reveal.
+  </section>
+</body>
+</html>

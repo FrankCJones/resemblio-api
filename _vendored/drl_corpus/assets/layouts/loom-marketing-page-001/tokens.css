@@ -1,0 +1,112 @@
+/*
+ * loom-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the Loom homepage. Loom's marketing register
+ * is paper-white surface with near-black ink, a signature purple-blue accent
+ * reserved for primary CTA fills and product-overlay accents, and a humanist
+ * sans for everything (display through body). Subtle rounded corners on
+ * cards and CTAs - never pills, never sharp. Hairline card chrome with soft
+ * resting shadows on the product-screenshot frames and testimonial card.
+ *
+ * WebFetch on www.loom.com returned the full top-to-bottom section sequence,
+ * headline text ("One video is worth a thousand words"), subhead, CTA labels,
+ * customer logo set (HubSpot, Atlassian, Tesla, Goldman Sachs, Disney,
+ * Walmart), feature-block headlines (Edit your videos like a pro / Share or
+ * embed video anywhere / Engage and connect with video), use-case tile
+ * categories (Sales, Engineering, Customer Support, Design), enterprise band
+ * copy, testimonial structure, and footer pattern verbatim from the live
+ * HTML. Loom's Next.js build ships computed styles in CSS-module files that
+ * WebFetch did not load, so hex values inherit the Loom brand canon
+ * documented in systems/loom/system.json (purple-blue-signature-accent,
+ * recorder-overlay-screenshot-as-hero-pattern, sentence-case conversational
+ * copy, dense feature tile rhythm, subtle rounded corners not pills,
+ * hairline card chrome).
+ *
+ * Slots that actually carry this layout: --ds-bg (paper-white page),
+ * --ds-text + --ds-text-strong (near-black + black ink), --ds-accent (Loom
+ * purple used on primary CTA, inline links, and the recorder overlay accent),
+ * --ds-hairline (between-section dividers and card edges), --ds-radius-md
+ * (the consistent 8-12px card corner radius), --ds-space-10/12 (the section
+ * padding rhythm), and --ds-font-display / --ds-font-body (the single
+ * humanist sans family shared across every section).
+ */
+:root {
+  /* Colors. Paper-white page, near-black ink, signature Loom purple accent.
+   * Hairlines carry separation; soft shadows lift the product-screenshot
+   * frames and the testimonial card. */
+  --ds-bg:           #FFFFFF;   /* Paper-white page surface; the Loom marketing default. */
+  --ds-surface:      #F8F7FB;   /* Raised surface for feature tiles and use-case cards; faint warm-purple tint. */
+  --ds-surface-2:    #F2F0F8;   /* Second-level surface; testimonial fill, enterprise band tint. */
+  --ds-text:         #1B1A2E;   /* Near-black reading ink; body and section copy. */
+  --ds-text-muted:   #5F5C75;   /* Secondary text; supporting paragraphs, footer link rest state, metadata. */
+  --ds-text-strong:  #0E0D1F;   /* Near-pure black for the hero statement and section headings. */
+  --ds-border:       #E7E5EE;   /* Card and tile edges. */
+  --ds-hairline:     #EFEDF4;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #625DF5;   /* Loom signature purple-blue; primary CTA fill, inline link, focus ring, recorder dot. */
+  --ds-accent-2:     #4D47E8;   /* Pressed / hover Loom purple. */
+  --ds-success:      #2BB673;   /* Green for the operational pill and positive markers. */
+  --ds-warning:      #F5A623;
+  --ds-error:        #E04949;
+  --ds-info:         #625DF5;
+  --ds-focus-ring:   #625DF5;
+
+  /* Type. A single humanist sans carries every section - display through
+   * body - which is the Loom marketing register. Mono is reserved for
+   * recorder-timecode labels and any technical metadata kicker. */
+  --ds-font-display: "Inter", "Inter Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Roboto Mono", "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", "Inter Display", sans-serif;
+
+  /* Type scale. Loom's hero statement sits at 4xl on desktop (52-60px);
+   * section headings at 3xl (40-44px); subhead support at lg (18-20px);
+   * body at base (16px). The hero scales slightly smaller than Airtable
+   * because the headline is six words long and runs on one line. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 18px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.08;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.12em;
+
+  /* Spacing. Section rhythm: 96px between major sections on desktop
+   * (--ds-space-12), 64px tablet (--ds-space-10), 48px mobile
+   * (--ds-space-8). Hero takes one extra step (128px / --ds-space-16). */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Loom's chrome is subtle rounded corners - 10px on cards, 6-8px
+   * on the primary CTA, nothing uses pills. Documented in the system
+   * manifest as subtle-rounded-corners-not-pills. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;  --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Layout is mostly flat; hairlines do separation. The product
+   * screenshot frames and the testimonial card carry the resting lift. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(14,13,31,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(14,13,31,0.06);
+  --ds-shadow-md:  0 8px 24px rgba(14,13,31,0.08);
+  --ds-shadow-lg:  0 18px 40px rgba(14,13,31,0.10);
+  --ds-shadow-2xl: 0 32px 64px rgba(14,13,31,0.14);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

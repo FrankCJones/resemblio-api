@@ -1,0 +1,250 @@
+<!--
+  Asset: anthropic-feature-grid-001
+  Class: feature-grids (whole)
+  Pattern: story-card-grid, mono-eyebrow, serif-display-sans-body
+  Inspired by: Anthropic (www.anthropic.com/news featured 4-card strip)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001                  (warm-paper field)
+    - type-pairings/serif-mono-editorial-001       (serif display + sans body + mono kicker)
+    - cards/anthropic-news-hero-001                (lead/featured tile frame)
+    - cards/anthropic-news-listing-001             (secondary tile frame)
+    - headings/editorial-newspaper-001             (serif tile headline)
+    - kickers/mono-eyebrow-001                     (uppercase mono category label)
+    - labels/metadata-mono-001                     (mono date metadata)
+    - dividers/hairline-rule-001                   (hairline beneath the section head)
+    - badges/anthropic-category-mono-001           (category label treatment)
+    - badges/anthropic-date-mono-001               (date label treatment)
+  Notes:
+    - Layout is a 2x2 grid that flattens to a single column on narrow
+      viewports; the first tile is visually heavier (image bed + larger
+      headline + accent kicker) to read as the lead story.
+    - Hairlines on the image beds and around the section head are the
+      only chrome; no borders, no shadows. Restraint is the mechanic.
+    - Anthropic's clay-crimson is reserved for the featured tile's
+      kicker. Inline one-off: the placeholder image bed uses a faint
+      diagonal scrim so the empty slot reads as deliberate.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-feature-grid-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Anthropic Serif and anthropicSans are licensed faces; this asset
+     falls back to Source Serif 4 and Source Sans 3 so the file renders
+     standalone. JetBrains Mono stands in for Anthropic Mono. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600&family=Source+Sans+3:wght@400;500&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section frame. Anthropic's warm paper carries the whole field;
+   * generous outer padding, centered measure. */
+  .grid-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  /* Section head. Mono kicker + serif title, hairline rule beneath.
+   * The rule is the only structural cue. */
+  .grid-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-6);
+    padding-bottom: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .grid-section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .grid-section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Two-by-two grid. Flattens to one column on narrow viewports; two
+   * columns above 720px; the lead tile spans both columns at the wide
+   * breakpoint to read as featured. */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .tile--featured { grid-column: span 2; }
+  }
+
+  /* Tile. No card frame at rest; the image bed and the typographic
+   * stack are the only marks. Hover lifts the headline to the accent. */
+  .tile {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+  .tile:hover .tile__headline { color: var(--ds-accent-2); }
+
+  /* Image bed. 16:9 placeholder; the diagonal scrim signals "empty by
+   * design" not "missing asset." Hairline below separates image from
+   * the text stack. */
+  .tile__image {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: faint diagonal scrim on the placeholder bed. */
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 14px,
+        rgba(20,20,19,0.04) 14px,
+        rgba(20,20,19,0.04) 15px);
+  }
+  .tile--featured .tile__image {
+    aspect-ratio: 21 / 9;            /* Featured tile rides wider. */
+  }
+
+  /* Tile body. The breathing room around the text reads as as much of
+   * the design as the type itself. */
+  .tile__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5) 0 0;
+  }
+
+  /* Kicker (mono-eyebrow). Mono, uppercase, wide tracking; muted at
+   * rest. Featured tile gets the clay-crimson accent - the one
+   * chromatic moment in the whole grid. */
+  .tile__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .tile--featured .tile__kicker { color: var(--ds-accent); }
+
+  /* Headline. Serif, tight leading, negative tracking, balanced
+   * wrapping. Featured tile sizes up to the 2xl tier; secondary tiles
+   * sit at xl. */
+  .tile__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile--featured .tile__headline {
+    font-size: var(--ds-text-2xl);
+  }
+
+  /* Dek. Sans body, relaxed leading, muted ink. Two lines is the
+   * design target on secondary tiles. */
+  .tile__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Date metadata. Mono, small, muted; lives below the dek. */
+  .tile__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile, .tile__headline { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="grid-section" aria-labelledby="grid-title">
+    <header class="grid-section__head">
+      <span class="grid-section__kicker">Lorem ipsum</span>
+      <h2 class="grid-section__title" id="grid-title">Dolor sit amet, consectetur adipiscing elit.</h2>
+    </header>
+
+    <div class="grid">
+      <a class="tile tile--featured" href="#one">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__kicker">Lorem</span>
+          <h3 class="tile__headline">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h3>
+          <p class="tile__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p class="tile__date">Apr 16, 2026</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#two">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__kicker">Ipsum</span>
+          <h3 class="tile__headline">Duis aute irure dolor in reprehenderit voluptate velit esse cillum.</h3>
+          <p class="tile__dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim.</p>
+          <p class="tile__date">Apr 07, 2026</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#three">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__kicker">Dolor</span>
+          <h3 class="tile__headline">At vero eos et accusamus et iusto odio dignissimos ducimus.</h3>
+          <p class="tile__dek">Praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati.</p>
+          <p class="tile__date">Mar 18, 2026</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#four">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__kicker">Sit amet</span>
+          <h3 class="tile__headline">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.</h3>
+          <p class="tile__dek">Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed.</p>
+          <p class="tile__date">Mar 04, 2026</p>
+        </div>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

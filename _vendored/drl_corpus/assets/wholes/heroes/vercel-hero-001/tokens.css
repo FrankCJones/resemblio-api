@@ -1,0 +1,135 @@
+/*
+ * vercel-hero-001 tokens
+ *
+ * Native token values for the Vercel homepage marketing hero, captured via
+ * WebFetch on https://vercel.com 2026-05-20. Light-mode canvas (Geist
+ * background-1 light), near-black Geist Gray 12 text, Geist Blue 9 as the
+ * single chromatic accent on the primary "Start Deploying" CTA, hairline
+ * Geist Gray 4 ruling the framework strip below the headline column.
+ *
+ * Geist Sans carries the display headline at 64-80px display-tight; Geist
+ * Mono is reserved here for the kicker / event-eyebrow uppercase label.
+ * Values cross-checked against the Geist published color and type scale
+ * (vercel.com/geist/colors and vercel.com/geist/typography) and the
+ * Vercel-system dark sibling vercel-deploy-form-001 / vercel-sales-faq-001
+ * tokens.css; this hero is the light-mode counterpart.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Geist's light surface system. background-1 light is white; the
+   * framework strip uses background-2 light as a faint wash. Gray 12 is
+   * primary copy ink; Gray 9 is the muted dek. Blue 9 (#0070F3) is the
+   * canonical Vercel/Geist accent and the only chromatic moment in the
+   * first viewport. */
+  --ds-bg:           #FFFFFF;   /* Geist background-1 light; the canvas. */
+  --ds-surface:      #FAFAFA;   /* Geist background-2 light; framework strip wash. */
+  --ds-surface-2:    #F2F2F2;   /* Geist Gray 2 light; nested card chrome. */
+  --ds-text:         #171717;   /* Geist Gray 12 light; H1 and body ink. */
+  --ds-text-muted:   #666666;   /* Geist Gray 9 light; dek paragraph, helper copy. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for the deepest emphasis moment. */
+  --ds-border:       #EAEAEA;   /* Geist Gray 4 light; default component border. */
+  --ds-hairline:     #EAEAEA;   /* Same Gray 4; hairline rules under the topbar and around the strip. */
+  --ds-accent:       #0070F3;   /* Geist Blue 9; the primary CTA fill and link color. */
+  --ds-accent-2:     #3291FF;   /* Geist Blue 10; hover lift on the primary CTA. */
+  --ds-success:      #0070F3;   /* Geist convention: brand blue carries successful-deploy semantics. */
+  --ds-warning:      #F5A623;   /* Geist Amber 9. */
+  --ds-error:        #E5484D;   /* Geist Red 9. */
+  --ds-info:         #0070F3;   /* Matches accent in this palette. */
+  --ds-focus-ring:   #0070F3;   /* Blue 9; the focus ring is the brand color, not a halo. */
+
+  /* ---------- Type families ----------
+   * Geist Sans is the single variable type system across vercel.com.
+   * Geist Mono carries the event eyebrow and any technical kicker; it
+   * does not appear in the body. Fallback chain mirrors what Geist
+   * serves browsers that lack the woff2. */
+  --ds-font-display: "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Geist Mono", "Geist Mono Variable", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Vercel marketing H1 sets at roughly 72-80px on the widest viewport,
+   * scaling down to 48-56px on mobile. Geist marketing scale is tighter
+   * than the dashboard scale: 14 / 16 / 20 / 24 / 32 / 48 / 64 / 80.
+   * The dek paragraph reads at 18-20px. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono kicker uppercase label. */
+  --ds-text-sm:   14px;   /* CTA pill label, topbar nav. */
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek paragraph below the H1. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  48px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   /* Hero H1 baseline at desktop. */
+  --ds-text-6xl:  88px;   /* Wide-viewport ceiling for the H1. */
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* H1 set just above 1:1 to hold the display weight tight. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;    /* Dek paragraph and body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Geist Sans ships with screen-tuned metrics; the display headline
+   * pulls -0.04em to hold the marketing H1 shape at 72-80px. Mono
+   * kicker gets a wider tracking step to read as a label, not a word. */
+  --ds-tracking-tight:  -0.04em;   /* Display H1; observed on Geist headline samples. */
+  --ds-tracking-normal: -0.01em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;    /* Mono uppercase kicker. */
+
+  /* ---------- Spacing ----------
+   * Geist marketing rhythm: 24px between hero column elements, 96-128px
+   * vertical padding above the headline column, 48px between dek and
+   * the CTA row, 64-96px between the headline column and the framework
+   * strip below. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;    /* Inter-element gap inside the hero column. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;    /* Dek to CTA row. */
+  --ds-space-10: 64px;    /* Headline column to framework strip. */
+  --ds-space-12: 96px;    /* Top padding above the H1. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Geist signature: 6px on buttons and inputs, 8px on cards. No pills
+   * on Vercel; the primary CTA is a small-radius rectangle. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Mono kicker chip. */
+  --ds-radius-md:   6px;     /* Primary CTA rectangle. */
+  --ds-radius-lg:   8px;     /* Card chrome. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Geist on light surfaces uses a very-light box-shadow on the primary
+   * CTA for a sub-pixel lift. Most chrome uses hairlines, not shadows. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 4px rgba(0,112,243,0.20);   /* Focus glow on the primary CTA. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Geist transitions are fast and standard; 150ms ease for hover. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

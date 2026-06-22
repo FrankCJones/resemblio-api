@@ -1,0 +1,517 @@
+<!--
+  Asset: a24
+  Class: libraries
+  Pattern: (none)
+  Inspired by: A24
+  Notes:
+    - A24's full component vocabulary on one warm-cinema-black page: hamburger
+      nav toggle, film-spotlight card, news-card with mono date, credit row
+      (Director / Cast), poster tile, full-bleed quote, near-sharp button,
+      title-card serif headline with mono kicker, hairline divider,
+      sitemap-grid footer.
+    - All components share tokens.css; inline styles only where the value is
+      ornamental (e.g. the cinematic poster shadow, the full-bleed quote rule).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24 library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+  }
+
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-5); }
+
+  /* Hamburger editorial nav toggle */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-surface);
+  }
+  .nav-wordmark {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    background: transparent;
+    border: 0;
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: var(--ds-space-2) var(--ds-space-3);
+  }
+  .nav-toggle .bars { display: inline-flex; flex-direction: column; gap: 4px; }
+  .nav-toggle .bars span {
+    width: 22px;
+    height: 1.5px;     /* 1.5px hairline; thin enough to read as editorial chrome, not UI. */
+    background: var(--ds-text);
+  }
+
+  /* Near-sharp buttons */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-text); color: var(--ds-bg);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+    font-weight: 600; letter-spacing: 0.02em;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-xs);     /* 2px near-sharp; not zero, not pill. */
+    text-transform: uppercase;
+  }
+  .btn-ghost {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ds-text);
+    border: 1px solid var(--ds-text);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+    font-weight: 600; letter-spacing: 0.02em;
+    padding: 11px var(--ds-space-5);
+    border-radius: var(--ds-radius-xs);
+    text-transform: uppercase;
+  }
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: var(--ds-text); font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase; text-decoration: none;
+    border-bottom: 1px solid var(--ds-text); padding-bottom: 3px;
+  }
+
+  /* Title-card headline + mono kicker */
+  .title-card { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+  .kicker-mono {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .title-card-headline {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* Full-bleed quote */
+  .quote-bleed {
+    margin: 0;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    text-align: center;
+    background: var(--ds-surface);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .quote-bleed blockquote {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    max-width: 24ch;
+    margin: 0 auto var(--ds-space-5);
+    font-weight: 400;
+  }
+  .quote-bleed cite {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-style: normal;
+  }
+
+  /* Film-spotlight card */
+  .spotlight {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+    background: var(--ds-surface);
+    padding: var(--ds-space-6);
+    border-radius: var(--ds-radius-xs);
+  }
+  .spotlight-art {
+    aspect-ratio: 4 / 5;
+    background:
+      linear-gradient(160deg, #2A2522 0%, #14110F 60%, #0A0908 100%); /* Painterly poster stand-in; ornamental. */
+    border-radius: var(--ds-radius-xs);
+    /* Cinematic shadow: large, soft, asymmetric drop reads as poster on theater lobby wall. */
+    box-shadow:
+      0 24px 60px rgba(0,0,0,0.7),
+      0 4px 12px rgba(0,0,0,0.5);
+  }
+  .spotlight-body { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+  .spotlight-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-weight: 600;
+  }
+  .spotlight-dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 44ch;
+  }
+
+  /* Credit row */
+  .credits {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    row-gap: var(--ds-space-2);
+    column-gap: var(--ds-space-5);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .credit-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .credit-value {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+
+  /* News card */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+  }
+  .news-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    text-decoration: none;
+    color: var(--ds-text);
+  }
+  .news-thumb {
+    aspect-ratio: 3 / 2;
+    background:
+      linear-gradient(135deg, #3A3128 0%, #14110F 100%);
+    border-radius: var(--ds-radius-xs);
+  }
+  .news-date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .news-headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: -0.01em;
+    color: var(--ds-text);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Poster tile grid */
+  .poster-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-5);
+  }
+  .poster-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .poster-art {
+    aspect-ratio: 2 / 3;
+    background: linear-gradient(180deg, #2A2522 0%, #0A0908 100%);
+    border-radius: var(--ds-radius-xs);
+    box-shadow: var(--ds-shadow-lg);
+  }
+  .poster-meta { display: flex; flex-direction: column; gap: 4px; }
+  .poster-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .poster-status {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Hairline divider */
+  .hairline {
+    height: 1px;
+    background: var(--ds-hairline);
+    border: 0;
+    margin: 0;
+  }
+
+  /* Sitemap-grid footer */
+  .footer {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(4, 1fr);
+    gap: var(--ds-space-6);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-border);
+  }
+  .footer-brand {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+  }
+  .footer-group { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .footer-group-title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+  }
+  .footer-link {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+  .footer-link:hover { color: var(--ds-text-strong); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <h1>A24 library</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Warm cinema black, paper-white type, title-card serif italics. The full vocabulary on one surface.</p>
+  </header>
+
+  <!-- 1. Hamburger editorial nav toggle -->
+  <section class="section">
+    <div class="section-label">Navigation - hamburger editorial</div>
+    <nav class="nav-bar" aria-label="Primary">
+      <span class="nav-wordmark">a24</span>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="menu-panel">
+        <span>Menu</span>
+        <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </nav>
+  </section>
+
+  <!-- 2. Buttons - near-sharp -->
+  <section class="section">
+    <div class="section-label">Buttons - near-sharp 2px slab</div>
+    <div class="row">
+      <button class="btn-primary">Watch Now</button>
+      <button class="btn-ghost">Add to List</button>
+      <a class="btn-link" href="#">Read More -&gt;</a>
+    </div>
+  </section>
+
+  <!-- 3. Title-card headline + mono kicker -->
+  <section class="section">
+    <div class="section-label">Title-card serif headline with mono kicker</div>
+    <div class="title-card">
+      <div class="kicker-mono">In theaters lorem 14</div>
+      <h2 class="title-card-headline">Lorem ipsum dolor sit amet</h2>
+    </div>
+  </section>
+
+  <!-- 4. Film spotlight card with credits -->
+  <section class="section">
+    <div class="section-label">Film spotlight - cinematic shadow + credit row</div>
+    <article class="spotlight">
+      <div class="spotlight-art" aria-hidden="true"></div>
+      <div class="spotlight-body">
+        <span class="kicker-mono">Now playing</span>
+        <h3 class="spotlight-title">Lorem Ipsum Dolor</h3>
+        <p class="spotlight-dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <div class="credits">
+          <div class="credit-label">Director</div>
+          <div class="credit-value">Lorem Ipsum</div>
+          <div class="credit-label">Cast</div>
+          <div class="credit-value">Dolor Sit, Amet Consectetur, Adipiscing Elit</div>
+          <div class="credit-label">Release</div>
+          <div class="credit-value">Lorem 14, 2026</div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 5. Full-bleed quote -->
+  <section class="section">
+    <div class="section-label">Full-bleed quote</div>
+    <figure class="quote-bleed">
+      <blockquote>"Lorem ipsum dolor sit amet consectetur adipiscing elit."</blockquote>
+      <cite>Lorem Sit - The Ipsum Times</cite>
+    </figure>
+  </section>
+
+  <!-- 6. News cards -->
+  <section class="section">
+    <div class="section-label">News cards - mono date</div>
+    <div class="news-grid">
+      <a class="news-card" href="#">
+        <div class="news-thumb" aria-hidden="true"></div>
+        <span class="news-date">Lorem 14, 2026</span>
+        <h4 class="news-headline">Lorem ipsum dolor sit amet consectetur</h4>
+      </a>
+      <a class="news-card" href="#">
+        <div class="news-thumb" aria-hidden="true"></div>
+        <span class="news-date">Lorem 09, 2026</span>
+        <h4 class="news-headline">Adipiscing elit sed do eiusmod tempor</h4>
+      </a>
+      <a class="news-card" href="#">
+        <div class="news-thumb" aria-hidden="true"></div>
+        <span class="news-date">Lorem 02, 2026</span>
+        <h4 class="news-headline">Incididunt ut labore et dolore magna</h4>
+      </a>
+    </div>
+  </section>
+
+  <!-- 7. Poster tile grid -->
+  <section class="section">
+    <div class="section-label">Poster tiles - image-as-poster-art</div>
+    <div class="poster-grid">
+      <div class="poster-tile">
+        <div class="poster-art" aria-hidden="true"></div>
+        <div class="poster-meta">
+          <span class="poster-title">Lorem Ipsum</span>
+          <span class="poster-status">Coming soon</span>
+        </div>
+      </div>
+      <div class="poster-tile">
+        <div class="poster-art" aria-hidden="true"></div>
+        <div class="poster-meta">
+          <span class="poster-title">Dolor Sit Amet</span>
+          <span class="poster-status">2026</span>
+        </div>
+      </div>
+      <div class="poster-tile">
+        <div class="poster-art" aria-hidden="true"></div>
+        <div class="poster-meta">
+          <span class="poster-title">Consectetur</span>
+          <span class="poster-status">2025</span>
+        </div>
+      </div>
+      <div class="poster-tile">
+        <div class="poster-art" aria-hidden="true"></div>
+        <div class="poster-meta">
+          <span class="poster-title">Adipiscing Elit</span>
+          <span class="poster-status">2025</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Hairline divider -->
+  <section class="section">
+    <div class="section-label">Hairline divider</div>
+    <hr class="hairline" aria-hidden="true"/>
+  </section>
+
+  <!-- 9. Sitemap-grid footer -->
+  <footer class="footer">
+    <div class="footer-brand">a24</div>
+    <div class="footer-group">
+      <div class="footer-group-title">Films</div>
+      <a class="footer-link" href="#">Lorem catalog</a>
+      <a class="footer-link" href="#">Ipsum coming soon</a>
+      <a class="footer-link" href="#">Dolor archive</a>
+    </div>
+    <div class="footer-group">
+      <div class="footer-group-title">Shop</div>
+      <a class="footer-link" href="#">Apparel</a>
+      <a class="footer-link" href="#">Books</a>
+      <a class="footer-link" href="#">Posters</a>
+    </div>
+    <div class="footer-group">
+      <div class="footer-group-title">Notes</div>
+      <a class="footer-link" href="#">Membership</a>
+      <a class="footer-link" href="#">Newsletter</a>
+      <a class="footer-link" href="#">Podcast</a>
+    </div>
+    <div class="footer-group">
+      <div class="footer-group-title">Company</div>
+      <a class="footer-link" href="#">About</a>
+      <a class="footer-link" href="#">Contact</a>
+      <a class="footer-link" href="#">Press</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

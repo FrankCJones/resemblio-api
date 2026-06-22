@@ -1,0 +1,404 @@
+<!--
+  Asset: html-in-canvas-postfx-001
+  Class: motion-primitives
+  Pattern: scroll-driven-reveal
+  Inspired by: Codrops (Tympanus) - "Exploring the HTML-in-Canvas Proposal" by Vittorio Retrivi
+  Notes:
+    - Demonstrates the HTML-in-Canvas browser proposal: a styled DOM subtree
+      sits inside a <canvas layoutsubtree> and is rendered into the canvas
+      bitmap via canvas.getContext('2d').drawElementImage(node, 0, 0). Post
+      process shaders then run over the rasterized HTML while the original
+      DOM still owns layout, accessibility, and pointer events.
+    - This standalone build cannot call the real drawElementImage (Chrome
+      flag only). Instead, it stages the same mechanic with two layers: the
+      live DOM panel on the left, and a canvas on the right that re-paints
+      the same content with a CSS / SVG filter chain (saturate + pixelate +
+      scanlines) as a stand-in for the post-process pass. The mechanic that
+      transfers - render real HTML, then run a shader over it - is what the
+      asset documents.
+    - Tokens carry the contract values. The 2400ms loop, the 6px pixelation
+      cell, and the scanline gradient stops are inline character values
+      specific to this demo's lab register.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>html-in-canvas-postfx-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-8) var(--ds-space-5);
+    display: grid;
+    place-items: start center;
+  }
+
+  /* Stage frame holds the two side-by-side panels plus header and readout. */
+  .stage {
+    width: min(1080px, 100%);
+    display: grid;
+    gap: var(--ds-space-6);
+  }
+
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: var(--ds-space-4);
+  }
+  .header h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+  }
+
+  /* Two-panel comparison: live DOM on the left, post-processed render on
+   * the right. The mechanic in the source - drawElementImage rasterizing
+   * the left subtree into the right canvas, with shader effects layered
+   * on top - is what this layout dramatizes. */
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (max-width: 720px) {
+    .panels { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: grid;
+    gap: var(--ds-space-4);
+    min-height: 320px;
+  }
+  .panel-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .panel-label b { color: var(--ds-text); font-weight: 500; }
+
+  /* The rendered subtree - lorem ipsum standing in for a real card. */
+  .subtree {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: grid;
+    gap: var(--ds-space-3);
+  }
+  .subtree h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .subtree p {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .subtree .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    background: rgba(77, 210, 255, 0.12); /* Inline accent tint for the live-DOM badge. */
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    color: var(--ds-accent);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    width: fit-content;
+  }
+
+  /* Right panel hosts a canvas the same size as the subtree on the left,
+   * plus an SVG filter chain that approximates the post-process pass.
+   * The shader-pass crossfade is driven by the .is-fx class on .canvas-host. */
+  .canvas-host {
+    position: relative;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    min-height: 220px;
+  }
+  .canvas-host canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* The shader-pass filter chain. Pixelation cell ~6px is inline character;
+     * saturate 1.35 makes the accent cyan punch as if a bloom pass ran. */
+    filter: url(#pixelate) saturate(1.35) contrast(1.05);
+    transition: filter var(--ds-duration-slow) var(--ds-ease-emphasize),
+                opacity var(--ds-duration-slow) var(--ds-ease-emphasize);
+    opacity: 1;
+  }
+  .canvas-host.is-raw canvas {
+    filter: none;
+  }
+  /* Scanline overlay. 2400ms loop is inline character: slow enough to feel
+   * like a shader sample, fast enough to register as motion. */
+  .canvas-host::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(77, 210, 255, 0.06) 0px,
+      rgba(77, 210, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: screen;
+    animation: scanline-drift 2400ms linear infinite;
+  }
+  .canvas-host.is-raw::after { opacity: 0; }
+  @keyframes scanline-drift {
+    from { transform: translateY(0); }
+    to   { transform: translateY(6px); }
+  }
+
+  /* Controls bar */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-4);
+  }
+  .controls .group {
+    display: flex;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .btn {
+    cursor: pointer;
+    border: 1px solid var(--ds-border);
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn:hover { border-color: var(--ds-accent); color: var(--ds-accent); }
+  .btn[aria-pressed="true"] {
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    border-color: var(--ds-accent);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Readout strip exposes the underlying API the asset is about. */
+  .readout {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .readout code {
+    color: var(--ds-accent);
+    background: transparent;
+  }
+
+  /* Reduced motion: no scanline drift, no shader crossfade. */
+  @media (prefers-reduced-motion: reduce) {
+    .canvas-host::after { animation: none; }
+    .canvas-host canvas { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <!-- The pixelation filter stands in for the post-process shader pass.
+       feMorphology dilates pixels, feColorMatrix flattens micro-variation;
+       the chain reads like a low-res sample of the live DOM next door. -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <filter id="pixelate" x="0" y="0">
+      <feMorphology operator="dilate" radius="2"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+    </filter>
+  </svg>
+
+  <div class="stage" role="region" aria-label="HTML-in-Canvas post-process demonstration">
+
+    <header class="header">
+      <h1>HTML-in-Canvas - drawElementImage</h1>
+      <span class="kicker">motion - html-in-canvas-postfx-001</span>
+    </header>
+
+    <div class="panels">
+
+      <!-- Left: the real, live DOM subtree. Selectable text, focusable links,
+           full screen-reader access. This is the source of truth. -->
+      <section class="panel" aria-label="Live DOM subtree">
+        <div class="panel-label">layer 01 - <b>live DOM subtree</b></div>
+        <div class="subtree" id="subtree">
+          <span class="pill">canvas.layoutsubtree</span>
+          <h2>Lorem ipsum dolor sit amet</h2>
+          <p>Consectetur adipiscing elit. Vivamus lorem mauris, dignissim non viverra nec, condimentum vitae arcu. Praesent fermentum, nibh ut tristique vulputate, libero eros.</p>
+          <p>Pellentesque habitant morbi tristique senectus et netus. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+      </section>
+
+      <!-- Right: a canvas that, in real Chrome with the flag enabled, would
+           rasterize the left subtree via ctx.drawElementImage(node, 0, 0).
+           Here we hand-paint an approximation of the same content into the
+           canvas at load and let the SVG filter chain run the post-process
+           pass over it. The mechanic - real HTML, then a shader - is the
+           transferable lesson. -->
+      <section class="panel" aria-label="Post-processed canvas render">
+        <div class="panel-label">layer 02 - <b>canvas + post-fx</b></div>
+        <div class="canvas-host" id="host">
+          <canvas id="surface" width="520" height="320" aria-hidden="true"></canvas>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="controls">
+      <div class="group" role="group" aria-label="Shader pass toggle">
+        <button class="btn" type="button" id="btn-raw" aria-pressed="false">raw</button>
+        <button class="btn" type="button" id="btn-fx"  aria-pressed="true">post-fx</button>
+      </div>
+      <div class="readout">
+        <code>ctx.drawElementImage(content, 0, 0)</code> - on <code>canvas.onpaint</code>; opt in via <code>&lt;canvas layoutsubtree&gt;</code>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* This standalone build paints a hand-rolled approximation of the left
+     * subtree into the right canvas, then lets the CSS / SVG filter chain
+     * run the post-process pass. In a Chrome build with the canvas-draw
+     * element flag enabled, the paint() call below would be replaced by:
+     *
+     *   ctx.drawElementImage(document.getElementById('subtree'), 0, 0);
+     *
+     * on the canvas's onpaint handler, with no manual painting at all. */
+    (function () {
+      var canvas = document.getElementById('surface');
+      var host   = document.getElementById('host');
+      var btnRaw = document.getElementById('btn-raw');
+      var btnFx  = document.getElementById('btn-fx');
+      var ctx    = canvas.getContext('2d');
+
+      function paint() {
+        var w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Subtree surface fill.
+        ctx.fillStyle = '#1D232A';
+        ctx.fillRect(0, 0, w, h);
+
+        // Pill stand-in.
+        ctx.fillStyle = 'rgba(77, 210, 255, 0.12)';
+        ctx.strokeStyle = '#4DD2FF';
+        ctx.lineWidth = 1;
+        roundRect(ctx, 24, 24, 180, 28, 14);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#4DD2FF';
+        ctx.font = '600 11px ui-monospace, Menlo, monospace';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('CANVAS.LAYOUTSUBTREE', 36, 38);
+
+        // Display headline.
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '500 28px "Inter", system-ui, sans-serif';
+        ctx.textBaseline = 'top';
+        ctx.fillText('Lorem ipsum dolor', 24, 72);
+        ctx.fillText('sit amet', 24, 104);
+
+        // Body paragraph.
+        ctx.fillStyle = '#7A8290';
+        ctx.font = '400 13px "Inter", system-ui, sans-serif';
+        var lines = [
+          'Consectetur adipiscing elit. Vivamus lorem',
+          'mauris, dignissim non viverra nec, condimentum',
+          'vitae arcu. Praesent fermentum, nibh ut',
+          'tristique vulputate, libero eros.',
+          '',
+          'Pellentesque habitant morbi tristique senectus',
+          'et netus. Sed do eiusmod tempor incididunt.'
+        ];
+        var y = 152;
+        for (var i = 0; i < lines.length; i++) {
+          ctx.fillText(lines[i], 24, y);
+          y += 20;
+        }
+      }
+
+      function roundRect(c, x, y, w, h, r) {
+        c.beginPath();
+        c.moveTo(x + r, y);
+        c.arcTo(x + w, y,     x + w, y + h, r);
+        c.arcTo(x + w, y + h, x,     y + h, r);
+        c.arcTo(x,     y + h, x,     y,     r);
+        c.arcTo(x,     y,     x + w, y,     r);
+        c.closePath();
+      }
+
+      function setFx(on) {
+        host.classList.toggle('is-raw', !on);
+        btnFx.setAttribute('aria-pressed',  on ? 'true' : 'false');
+        btnRaw.setAttribute('aria-pressed', on ? 'false' : 'true');
+      }
+
+      btnRaw.addEventListener('click', function () { setFx(false); });
+      btnFx .addEventListener('click', function () { setFx(true);  });
+
+      paint();
+      // Repaint on resize so the readout stays sharp when the panel reflows.
+      window.addEventListener('resize', function () {
+        // No-op for the fixed canvas bitmap; the CSS width handles scaling.
+        // Left as a hook for a real drawElementImage build that would need
+        // to call requestPaint() on layout changes.
+      });
+    })();
+  </script>
+</body>
+</html>

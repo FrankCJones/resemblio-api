@@ -1,0 +1,275 @@
+<!--
+  Asset: personal-letter-band-001
+  Class: newsletter-bands
+  Pattern: paper-and-ink
+  Inspired by: Craig Mod (craigmod.com)
+  Notes:
+    - Personal-letter register, not marketing CTA. One shared email
+      field with TWO checkbox options below it (a monthly letter and
+      a weekly letter), modeled after Mod's homepage subscribe block.
+      Asterism dividers (* * *) cap the band above and below; no card,
+      no fill. Trust line ("Join some 40,000+ readers") sits as small
+      muted caption above the heading.
+    - Variable: every color, every font, every size step (all
+      `--ds-*`). Inline: the 1px-to-2px focus-ring step on the email
+      field and the 4px corner radius on input plus button (both
+      character moments specific to this band).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>personal-letter-band-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font import. The token contract names Tiempos Text as the
+  primary humanist serif; the fallback chain (Newsreader, Charter,
+  Georgia) carries the same register on systems without the licensed
+  face.
+-->
+<style>
+  /* Reset only what this band needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Reading column. 34em echoes the longform measure Mod's site uses;
+     the band inherits that width rather than spanning the viewport. */
+  .page {
+    max-width: 34em;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-10);
+  }
+
+  .reading p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Asterism divider. Three centered asterisks with tracked spacing;
+     the band's section-cap above and below. No rule, no box. */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-wider);
+    margin: var(--ds-space-12) 0;
+    user-select: none;
+  }
+
+  .band {
+    text-align: center;
+  }
+
+  /* Trust line above the heading. Small, muted, sets the social-proof
+     register without doing marketing voice. */
+  .trust {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* The heading. One step above body; serif carries it. */
+  .band h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;          /* Heading emphasis comes from size, not weight. */
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Dek: one descriptive line in body register, muted ink. */
+  .band p.dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 28em;
+  }
+
+  /* Form: email row, then checkbox row of two options, then submit.
+     Layout is centered narrow column; the form itself stays within a
+     comfortable measure. */
+  .band form {
+    max-width: 26em;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .field-label {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+  }
+
+  .band input[type="email"] {
+    width: 100%;
+    appearance: none;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);  /* 4px; soft corners, not pill */
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .band input[type="email"]::placeholder {
+    color: var(--ds-text-muted);
+    opacity: 0.7;
+  }
+  .band input[type="email"]:focus {
+    outline: 0;
+    border-color: var(--ds-focus-ring);
+    box-shadow: 0 0 0 2px rgba(47, 77, 92, 0.18);  /* one-off ink-blue glow ring; band-specific character */
+  }
+
+  /* Checkbox row. Two options stacked, one per line; checkbox left of
+     label. Native input restyled with an accent color and a small
+     descriptive cadence per option. */
+  .options {
+    margin: var(--ds-space-5) 0 var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .options label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--ds-space-3);
+    align-items: baseline;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    cursor: pointer;
+  }
+  .options input[type="checkbox"] {
+    width: 1em;
+    height: 1em;
+    margin: 0;
+    accent-color: var(--ds-accent);   /* quiet ink-blue native check */
+    align-self: center;
+  }
+  .options .opt-name {
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+  .options .opt-cadence {
+    color: var(--ds-text-muted);
+    font-style: italic;
+  }
+  .options .opt-desc {
+    grid-column: 2;
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Submit. Solid square button at small radius; reads as a postcard
+     stamp, not a marketing pill. Full-width of the form measure for
+     a clean stack. */
+  .band button[type="submit"] {
+    width: 100%;
+    appearance: none;
+    background: var(--ds-text-strong);
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-bg);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .band button[type="submit"]:hover,
+  .band button[type="submit"]:focus-visible {
+    background: var(--ds-accent-2);
+    outline: 0;
+  }
+
+  /* Helper line under the form. Quiet reassurance. */
+  .helper {
+    margin: var(--ds-space-4) 0 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <article class="reading">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in nisl ac mauris vehicula commodo. Sed faucibus, libero a posuere fringilla, sapien justo blandit eros, quis interdum nibh ipsum nec lectus.</p>
+      <p>Vivamus euismod, justo a egestas tincidunt, augue lectus sollicitudin lorem, eu fermentum velit ipsum at libero. Donec a ornare nibh.</p>
+    </article>
+
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <section class="band" aria-labelledby="band-title">
+      <p class="trust">Lorem 40,000+ readers</p>
+
+      <h2 id="band-title">Two letters, one envelope</h2>
+
+      <p class="dek">
+        Lorem ipsum, peregrinatio &amp; lectio. Una epistula brevis
+        per mensem; una epistula longior per hebdomadam.
+      </p>
+
+      <form action="#" method="post" novalidate>
+        <label class="field-label" for="band-email">Lorem ipsum address</label>
+        <input
+          id="band-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="exemplum@dominium.net"
+          required
+        />
+
+        <div class="options" role="group" aria-label="Lorem letter options">
+          <label>
+            <input type="checkbox" name="lorem_monthly" checked />
+            <span><span class="opt-name">Lorem</span> <span class="opt-cadence">(menstrua)</span></span>
+            <p class="opt-desc">Lorem ipsum, mensis epistula longior de itineribus et lectione.</p>
+          </label>
+          <label>
+            <input type="checkbox" name="lorem_weekly" />
+            <span><span class="opt-name">Ipsum</span> <span class="opt-cadence">(hebdomadaria)</span></span>
+            <p class="opt-desc">Lorem ipsum brevis hebdomadaria, una imago et paucae notae.</p>
+          </label>
+        </div>
+
+        <button type="submit">Lorem subscribe</button>
+
+        <p class="helper">Lorem unsubscribe quovis tempore. Nulla informatio collegitur.</p>
+      </form>
+    </section>
+
+    <div class="asterism" aria-hidden="true">* * *</div>
+  </main>
+</body>
+</html>

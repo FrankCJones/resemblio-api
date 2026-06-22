@@ -1,0 +1,577 @@
+<!--
+  Asset: a24-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, image-bleed, mega-footer
+  Inspired by: A24 (a24films.com/notes/<year>/<month>/<slug>)
+  Notes:
+    - A24 Notes single-article skeleton: hamburger nav (logo center, menu
+      trigger left, search/account right), article hero (mono date kicker +
+      title-card serif title + sans byline + mono share row), narrow body
+      column with full-bleed film stills and a pull-quote breakout, a
+      credits / film metadata aside in mono-uppercase, a related-articles
+      strip (three-up cards), and a sitemap-grid footer.
+    - Variable: section sequence, vertical rhythm, page max-width,
+      reading-column measure. Inline: article column 62ch, page container
+      1280px max, hero serif 60px tight, hamburger glyph bar geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos Headline / Times Now (display serif) and GT America /
+  Söhne (body sans) are A24's licensed faces and are not loaded in the
+  asset. Times New Roman and Inter / system sans carry the register in
+  the fallback chain so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. 1280px max for nav, related-strip, and footer; the
+   * article column inside is narrower. Inline value, not a contract slot.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article reading column. ~62ch (about 620px at 17px serif body) is the
+   * A24 Notes editorial measure. Inline: this is column character, not a
+   * contract slot.
+   */
+  .column {
+    max-width: 62ch;
+    margin: 0 auto;
+  }
+
+  /* ===== Nav: hamburger top, centered wordmark, account/search right ===== */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .nav__menu {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  /* Hamburger glyph: three 1px bars in an 18px square. Inline ornament. */
+  .nav__hamburger {
+    width: 18px;
+    height: 12px;
+    position: relative;
+    display: inline-block;
+  }
+  .nav__hamburger::before,
+  .nav__hamburger::after,
+  .nav__hamburger > span {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--ds-text);
+  }
+  .nav__hamburger::before { top: 0; }
+  .nav__hamburger > span  { top: 50%; transform: translateY(-50%); }
+  .nav__hamburger::after  { bottom: 0; }
+
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-align: center;
+  }
+  .nav__utility {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /* ===== Article hero: kicker date, title-card serif, byline, share ===== */
+  .article-hero {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-8);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .article-hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-10);
+    }
+  }
+  .article-hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 18ch;
+    margin-inline: auto;
+  }
+  .article-hero__byline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .article-hero__byline em {
+    font-style: italic;
+    color: var(--ds-text);
+  }
+  .share-row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-surface);
+  }
+  .share-row__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .share-row__glyph {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+
+  /* ===== Article body: narrow serif-ish sans with serif drop into prose ===== */
+  .article-body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body p { margin: 0; }
+  .article-body .salutation {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    font-weight: 400;
+  }
+  .article-body a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* Full-bleed film still: breaks out of the column to page width. The
+   * negative margin technique keeps the column centered while letting
+   * the image breathe wider. Inline ornament: the bleed measure follows
+   * the page container, not a contract slot. */
+  .article-body .bleed {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-10);
+    max-width: 1280px;
+    margin-inline: auto;
+  }
+  .article-body .bleed figcaption {
+    max-width: 62ch;
+    margin: var(--ds-space-3) auto 0;
+    padding-inline: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    color: var(--ds-text-muted);
+  }
+
+  /* Pull-quote breakout: serif at xl, italic, indented hairline left
+   * border, sits inside the column. */
+  .pull-quote {
+    border-left: 1px solid var(--ds-text);
+    padding-left: var(--ds-space-5);
+    margin: var(--ds-space-10) 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-style: italic;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+
+  /* ===== Credits / film metadata aside: mono row stack on cream surface ===== */
+  .credits {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-6);
+    margin-top: var(--ds-space-10);
+  }
+  .credits__title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .credits__row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-3) 0;
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-sm);
+  }
+  .credits__row:first-of-type { border-top: 0; padding-top: 0; }
+  .credits__row dt {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .credits__row dd {
+    margin: 0;
+    color: var(--ds-text);
+  }
+
+  /* ===== Related articles strip ===== */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+    text-align: center;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-6); } }
+  .related-card__image {
+    aspect-ratio: 4 / 5;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    margin-bottom: var(--ds-space-4);
+  }
+  .related-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .related-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* ===== Sitemap-grid footer ===== */
+  .footer {
+    margin-top: var(--ds-space-12);
+    background: var(--ds-accent);   /* Inverse slab: ink on cream becomes paper on ink. */
+    color: var(--ds-text);
+    padding-block: var(--ds-space-12);
+  }
+  .footer .footer__inner {
+    color: #F2EDE3;                 /* Paper-on-ink for the footer band. Inline override. */
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .footer__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .footer__grid { grid-template-columns: repeat(4, 1fr); } }
+  .footer__col-title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: rgba(242,237,227,0.55);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+  }
+  .footer__legal {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid rgba(242,237,227,0.12);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: rgba(242,237,227,0.55);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ===== Section: hamburger nav. Logo centered; menu left; account right. ===== -->
+    <nav class="nav" aria-label="Primary">
+      <button class="nav__menu" type="button">
+        <span class="nav__hamburger" aria-hidden="true"><span></span></span>
+        Menu
+      </button>
+      <a class="nav__wordmark" href="#" aria-label="Lorem">Lorem</a>
+      <div class="nav__utility">
+        <a href="#">Search</a>
+        <a href="#">Account</a>
+      </div>
+    </nav>
+
+    <!-- ===== Section: article hero. Kicker date + serif title + byline + share. ===== -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="article-hero__kicker">April 23, 2026</p>
+        <h1 class="article-title">Lorem Ipsum Dolor: A Note from Lorem Ipsum</h1>
+        <p class="article-hero__byline">By <em>Lorem Ipsum</em></p>
+        <div class="share-row" role="group" aria-label="Share">
+          <span class="share-row__label">Share</span>
+          <span class="share-row__glyph" aria-hidden="true"></span>
+          <span class="share-row__glyph" aria-hidden="true"></span>
+          <span class="share-row__glyph" aria-hidden="true"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== Section: article body. Narrow column with full-bleed film stills and a pull quote. ===== -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="salutation">Dear friends,</p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in <a href="#">reprehenderit in voluptate</a>
+          velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+          occaecat cupidatat non proident, sunt in culpa qui officia
+          deserunt mollit anim id est laborum.
+        </p>
+
+        <figure class="bleed">
+          <div style="aspect-ratio: 16 / 9; background: var(--ds-surface-2); border: 1px solid var(--ds-border);" aria-hidden="true"></div>
+          <figcaption>
+            Lorem ipsum production still caption. Photograph by Lorem Ipsum.
+          </figcaption>
+        </figure>
+
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+          quae ab illo inventore veritatis et quasi architecto beatae vitae
+          dicta sunt explicabo.
+        </p>
+
+        <blockquote class="pull-quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </blockquote>
+
+        <p>
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+          aut fugit, sed quia consequuntur magni dolores eos qui ratione
+          voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
+          ipsum quia dolor sit amet.
+        </p>
+
+        <figure class="bleed">
+          <div style="aspect-ratio: 3 / 2; background: var(--ds-surface-2); border: 1px solid var(--ds-border);" aria-hidden="true"></div>
+          <figcaption>
+            Lorem ipsum film still caption. Director of photography Lorem Ipsum.
+          </figcaption>
+        </figure>
+
+        <p>
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti quos
+          dolores et quas molestias excepturi sint occaecati cupiditate non
+          provident.
+        </p>
+
+        <!-- Credits / film metadata aside. Mono-uppercase label rows on cream surface. -->
+        <aside class="credits" aria-label="Film credits">
+          <p class="credits__title">In Theaters / Credits</p>
+          <dl>
+            <div class="credits__row"><dt>Director</dt><dd>Lorem Ipsum</dd></div>
+            <div class="credits__row"><dt>Written by</dt><dd>Lorem Ipsum, Dolor Sit Amet</dd></div>
+            <div class="credits__row"><dt>Cinematography</dt><dd>Lorem Ipsum</dd></div>
+            <div class="credits__row"><dt>Editing</dt><dd>Lorem Ipsum</dd></div>
+            <div class="credits__row"><dt>Music</dt><dd>Lorem Ipsum</dd></div>
+            <div class="credits__row"><dt>Starring</dt><dd>Lorem Ipsum, Dolor Sit, Consectetur Adipiscing</dd></div>
+            <div class="credits__row"><dt>Release</dt><dd>April 23, 2026</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== Section: related articles strip. Three-up cards. ===== -->
+    <section class="section" aria-label="Related notes">
+      <h2 class="related-heading">More Notes</h2>
+      <div class="related-grid">
+        <a class="related-card" href="#">
+          <div class="related-card__image" aria-hidden="true"></div>
+          <p class="related-card__kicker">February 14, 2026</p>
+          <h3 class="related-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </a>
+        <a class="related-card" href="#">
+          <div class="related-card__image" aria-hidden="true"></div>
+          <p class="related-card__kicker">December 4, 2025</p>
+          <h3 class="related-card__title">Lorem ipsum dolor sit amet adipiscing.</h3>
+        </a>
+        <a class="related-card" href="#">
+          <div class="related-card__image" aria-hidden="true"></div>
+          <p class="related-card__kicker">October 18, 2025</p>
+          <h3 class="related-card__title">Lorem ipsum dolor sit amet incididunt.</h3>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===== Footer: sitemap grid. Inverse slab; paper on ink. ===== -->
+  <footer class="footer" aria-label="Footer">
+    <div class="page footer__inner">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__col-title">Films</p>
+          <ul class="footer__list">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">Dolor sit amet</a></li>
+            <li><a href="#">Consectetur</a></li>
+            <li><a href="#">Adipiscing elit</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Television</p>
+          <ul class="footer__list">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">Dolor sit amet</a></li>
+            <li><a href="#">Consectetur</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Shop / Membership</p>
+          <ul class="footer__list">
+            <li><a href="#">Shop</a></li>
+            <li><a href="#">Membership</a></li>
+            <li><a href="#">App</a></li>
+            <li><a href="#">Jobs</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Notes</p>
+          <ul class="footer__list">
+            <li><a href="#">All notes</a></li>
+            <li><a href="#">Podcasts</a></li>
+            <li><a href="#">Zines</a></li>
+            <li><a href="#">Essays</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>(c) 2026 Lorem</span>
+        <span><a href="#">Terms</a> / <a href="#">Privacy</a> / <a href="#">Preferences</a></span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

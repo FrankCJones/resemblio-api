@@ -1,0 +1,142 @@
+<!--
+  Asset: inline-hover-001
+  Class: tooltips
+  Pattern: (none)
+  Inspired by: Linear
+  Notes:
+    - Single-line dark hover tooltip; near-black surface with a hairline outline and a small arrow pointing at the trigger.
+    - Surface, text, radius, and accent are token-driven; the 8px arrow geometry and the 4px offset from trigger are inline because they are the tooltip's specific spatial recipe.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>inline-hover-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Linear ships Inter Variable; system sans fallback chain in tokens.css. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+    align-items: center;
+  }
+  .label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  /* Trigger button: icon-only square pill, the canonical place Linear hangs an inline tooltip. */
+  .trigger {
+    background: var(--ds-surface);
+    border: 0.8px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-text-muted);
+    height: 32px;
+    width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    position: relative;
+  }
+  .trigger svg { width: 16px; height: 16px; }
+  /* Tooltip: dark pill with outline, single line. */
+  .tooltip {
+    position: absolute;
+    /* inline: 8px gap above the trigger; arrow consumes 4px of that gap. */
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 0.8px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-2xl);
+    padding: var(--ds-space-1) var(--ds-space-2);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  /* Arrow: drawn as a rotated square via ::after; sits behind the tooltip body. */
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: var(--ds-surface);
+    border-right: 0.8px solid var(--ds-border);
+    border-bottom: 0.8px solid var(--ds-border);
+  }
+  .row {
+    display: flex;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  .demo-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="label">Lorem tooltip ipsum</div>
+
+    <div class="demo-block">
+      <div class="trigger" aria-describedby="tip-1">
+        <!-- Generic icon glyph: a stand-in for any inline action button. -->
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M8 5v3l2 2"/>
+        </svg>
+        <span class="tooltip" id="tip-1" role="tooltip">Lorem ipsum dolor</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="trigger" aria-describedby="tip-2">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 8h10M8 3v10"/>
+        </svg>
+        <span class="tooltip" id="tip-2" role="tooltip">Consectetur adipiscing</span>
+      </div>
+      <div class="trigger" aria-describedby="tip-3">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 4l8 8M12 4l-8 8"/>
+        </svg>
+        <span class="tooltip" id="tip-3" role="tooltip">Sit amet</span>
+      </div>
+      <div class="trigger" aria-describedby="tip-4">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 4h12M2 8h12M2 12h12"/>
+        </svg>
+        <span class="tooltip" id="tip-4" role="tooltip">Tempor incididunt</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!--
+  Asset: ease-emphasize-slow-001
+  Class: motion-primitives
+  Pattern: (none - scales and motion primitives are visualizations, not patterns)
+  Inspired by: Apple-class marketing reveals, theatrical page transitions
+  Notes:
+    - Demonstrates ease-emphasize + duration-slow (480ms) on a vertical
+      reveal: a block slides up from below the stage and fades in.
+    - Respects prefers-reduced-motion.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ease-emphasize-slow-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg); color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-5);
+    min-height: 100vh;
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .label {
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .stage {
+    position: relative;
+    height: 140px;
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+    overflow: hidden;
+  }
+  .card {
+    position: absolute;
+    bottom: 16px; left: 50%;
+    width: 200px; height: 80px;
+    margin-left: -100px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-lg);
+    /* The reveal: translate from below the stage to the resting position,
+     * fading in. Loops with a brief pause at the top. */
+    animation: reveal 3200ms infinite var(--ds-ease-emphasize);
+  }
+  @keyframes reveal {
+    0% { transform: translateY(120px); opacity: 0; }
+    40%, 70% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(120px); opacity: 0; }
+  }
+  .meta-row {
+    display: flex; gap: var(--ds-space-5);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted); letter-spacing: 0.04em;
+  }
+  .meta-row b { color: var(--ds-text); font-weight: 500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none; transform: translateY(0); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+  <div class="label">motion · ease-emphasize-slow-001</div>
+  <div class="stage"><div class="card"></div></div>
+  <div class="meta-row">
+    <span>ease · <b>cubic-bezier(0.2, 0, 0, 1)</b></span>
+    <span>duration · <b>480ms (slow)</b></span>
+  </div>
+</body>
+</html>

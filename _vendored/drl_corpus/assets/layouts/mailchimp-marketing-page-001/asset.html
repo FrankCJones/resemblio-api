@@ -1,0 +1,654 @@
+<!--
+  Asset: mailchimp-marketing-page-001
+  Class: layouts
+  Pattern: split-hero, flush-top-nav, bento-grid, mega-footer, accent-on-neutral
+  Inspired by: Mailchimp (mailchimp.com)
+  Notes:
+    - Marketing homepage skeleton: flush-top nav with Intuit ecosystem
+      link cluster and dual auth CTAs, type-led hero split fifty-fifty
+      with a hand-illustration anchor and one Cavendish Yellow CTA,
+      three-up nine-card feature bento, dual-row customer logo carousel,
+      four-up stat band, onboarding callout row, dual-card pricing teaser
+      with contact-tier dropdown, eleven-up integration icon strip,
+      end-of-page CTA band, six-column mega-footer. Container caps at
+      1200px on paper white; Cavendish Yellow is reserved for the single
+      primary CTA per band.
+    - Variable: section sequence, container width, vertical rhythm,
+      typographic role per slot. Inline: container max-width (1200px),
+      hero illustration aspect, integration strip cell count (11-up
+      desktop), feature bento column count (3-up desktop).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Graphik is the Mailchimp marketing face. Faces are not loaded
+  in the asset; the fallback chain in tokens.css (Helvetica Neue, Inter)
+  carries the humanist sans register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1200px so the bento grid and footer
+   * columns breathe. Inline value. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-bottom: 1px solid var(--ds-hairline); }
+
+  /* Hero. Split fifty-fifty: type-led left, illustration right.
+   * Single Cavendish Yellow primary CTA. */
+  .hero {
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-10);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .hero {
+      grid-template-columns: 1fr 1fr;
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-12);
+    }
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-4);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-5xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 48ch;
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-5);
+  }
+  .cta--primary {
+    background: var(--ds-accent);
+    color: var(--ds-accent-2);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    border: 2px solid var(--ds-accent-2);
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    border: 2px solid var(--ds-text);
+  }
+  .hero__proof {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  /* Hero illustration slot. Stands in for a hand-illustration anchor
+   * (envelope + automation flow + integration glyphs). Inline 4:3
+   * aspect ratio to hold the placeholder shape. */
+  .hero__illo {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Section heading register. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 24ch;
+  }
+  .section-kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Feature bento. Three-up nine-card grid. Equal-weight tiles. */
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .bento { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .bento { grid-template-columns: repeat(3, 1fr); } }
+  .bento__cell {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .bento__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .bento__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .bento__arrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    border-bottom: 2px solid var(--ds-accent);
+    align-self: flex-start;
+    padding-bottom: 2px;
+  }
+
+  /* Logo carousel: dual-row 5-up grid placeholder. */
+  .logo-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    padding-block: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 640px) { .logo-strip { grid-template-columns: repeat(5, 1fr); } }
+  .logo-cell {
+    text-align: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    padding-block: var(--ds-space-3);
+  }
+
+  /* Stat band. Four-up. */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
+  .stat {
+    text-align: left;
+  }
+  .stat__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-tight);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .stat__label {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* Onboarding callout row. Two-up split: copy left, illustration right. */
+  .callout-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .callout-row { grid-template-columns: 1fr 1fr; padding: var(--ds-space-10); }
+  }
+  .callout-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .callout-row__body {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .callout-row__illo {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Pricing dual-card teaser. */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .price-card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+  }
+  .price-card--recommended {
+    background: var(--ds-surface-2);
+    border-color: var(--ds-text);
+  }
+  .price-card__tier {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-3);
+    color: var(--ds-text);
+  }
+  .price-card__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-5);
+    color: var(--ds-text);
+  }
+  .price-card__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .price-card__list li {
+    padding-block: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Integration strip: 11-up icon grid. */
+  .integration-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-3);
+  }
+  @media (min-width: 640px) { .integration-strip { grid-template-columns: repeat(6, 1fr); } }
+  @media (min-width: 1024px) { .integration-strip { grid-template-columns: repeat(11, 1fr); } }
+  .integration-cell {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  /* End-of-page CTA band. Full-width tinted surface. */
+  .cta-band {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-12) var(--ds-space-8);
+    text-align: center;
+  }
+  .cta-band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 28ch;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* Slot placeholders. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page container. Six-column. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Wordmark + Intuit ecosystem links + auth CTAs. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Industries / Integrations / Resources / Pricing
+      </div>
+      <div class="slot" style="min-width: 220px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Log In / Start Free Trial
+      </div>
+    </nav>
+
+    <!-- Section: hero. Split fifty-fifty, type-led left, illustration right. -->
+    <header class="hero" aria-label="Hero">
+      <div>
+        <span class="hero__kicker">Lorem ipsum dolor sit amet</span>
+        <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+        <p class="hero__sub">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <div class="hero__cta-row">
+          <a href="#" class="cta--primary">Lorem ipsum</a>
+        </div>
+        <p class="hero__proof">Lorem ipsum 24,900+ dolor sit amet consectetur.</p>
+      </div>
+      <div class="hero__illo" aria-hidden="true">hand-illustration slot</div>
+    </header>
+
+    <!-- Section: feature bento. Three-up nine-card grid. -->
+    <section class="section section--ruled" aria-label="Feature grid">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+      <div class="bento" role="list">
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Lorem ipsum</h3>
+          <p class="bento__body">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+          <span class="bento__arrow">Learn about lorem</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Dolor sit amet</h3>
+          <p class="bento__body">Ut labore et dolore magna aliqua, ut enim ad minim veniam.</p>
+          <span class="bento__arrow">Learn about ipsum</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Consectetur</h3>
+          <p class="bento__body">Quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+          <span class="bento__arrow">Learn about dolor</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Adipiscing elit</h3>
+          <p class="bento__body">Ex ea commodo consequat, duis aute irure dolor in reprehenderit.</p>
+          <span class="bento__arrow">Learn about sit</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Eiusmod tempor</h3>
+          <p class="bento__body">In voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+          <span class="bento__arrow">Learn about amet</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Incididunt</h3>
+          <p class="bento__body">Excepteur sint occaecat cupidatat non proident, sunt in culpa.</p>
+          <span class="bento__arrow">Learn about elit</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Ut labore</h3>
+          <p class="bento__body">Qui officia deserunt mollit anim id est laborum lorem ipsum.</p>
+          <span class="bento__arrow">Learn about tempor</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Magna aliqua</h3>
+          <p class="bento__body">Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
+          <span class="bento__arrow">Learn about labore</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Ut enim ad</h3>
+          <p class="bento__body">Accusantium doloremque laudantium totam rem aperiam eaque ipsa.</p>
+          <span class="bento__arrow">Learn about magna</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: customer logo strip. Two-row five-up. -->
+    <section class="section" aria-label="Customer logos">
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur.</h2>
+      <div class="logo-strip" role="list">
+        <div class="logo-cell" role="listitem">Lorem</div>
+        <div class="logo-cell" role="listitem">Ipsum</div>
+        <div class="logo-cell" role="listitem">Dolor</div>
+        <div class="logo-cell" role="listitem">Sit</div>
+        <div class="logo-cell" role="listitem">Amet</div>
+        <div class="logo-cell" role="listitem">Consectetur</div>
+        <div class="logo-cell" role="listitem">Adipiscing</div>
+        <div class="logo-cell" role="listitem">Elit</div>
+        <div class="logo-cell" role="listitem">Eiusmod</div>
+        <div class="logo-cell" role="listitem">Tempor</div>
+      </div>
+    </section>
+
+    <!-- Section: stat band. Four-up. -->
+    <section class="section section--ruled" aria-label="Result stats">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Marketing that delivers lorem.</h2>
+      <div class="stat-grid" role="list">
+        <div class="stat" role="listitem">
+          <span class="stat__value">97%</span>
+          <span class="stat__label">Lorem ipsum dolor sit amet consectetur.</span>
+        </div>
+        <div class="stat" role="listitem">
+          <span class="stat__value">30x</span>
+          <span class="stat__label">Adipiscing elit, sed do eiusmod tempor.</span>
+        </div>
+        <div class="stat" role="listitem">
+          <span class="stat__value">99%</span>
+          <span class="stat__label">Incididunt ut labore et dolore magna aliqua.</span>
+        </div>
+        <div class="stat" role="listitem">
+          <span class="stat__value">AI</span>
+          <span class="stat__label">Ut enim ad minim veniam quis nostrud.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: onboarding callout row. Two-up split. -->
+    <section class="section" aria-label="Onboarding callout">
+      <div class="callout-row">
+        <div>
+          <span class="section-kicker">Lorem ipsum</span>
+          <h2 class="callout-row__title">Get started easily with lorem ipsum dolor.</h2>
+          <p class="callout-row__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris.
+          </p>
+          <a href="#" class="bento__arrow">Learn about lorem</a>
+        </div>
+        <div class="callout-row__illo" aria-hidden="true">onboarding-illustration slot</div>
+      </div>
+    </section>
+
+    <!-- Section: pricing teaser. Dual-card. -->
+    <section class="section section--ruled" aria-label="Pricing teaser">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Try our Standard plan for lorem.</h2>
+      <div class="slot" style="margin-bottom: var(--ds-space-6);">
+        <span class="slot__label">contact-tier-dropdown</span>
+        0-500 / 501-1,500 / 1,501-2,500 / ... / 1,000,000+
+      </div>
+      <div class="pricing-grid">
+        <article class="price-card">
+          <h3 class="price-card__tier">Lorem</h3>
+          <p class="price-card__price">$lorem/mo</p>
+          <ul class="price-card__list">
+            <li>Lorem ipsum dolor sit</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Ut labore et dolore</li>
+          </ul>
+          <a href="#" class="cta--primary" style="display: inline-block;">Start Free Trial</a>
+        </article>
+        <article class="price-card price-card--recommended">
+          <h3 class="price-card__tier">Ipsum</h3>
+          <p class="price-card__price">$dolor/mo</p>
+          <ul class="price-card__list">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit sed</li>
+            <li>Do eiusmod tempor incididunt</li>
+            <li>Ut labore et dolore magna</li>
+            <li>Aliqua ut enim ad minim</li>
+          </ul>
+          <a href="#" class="cta--ghost" style="display: inline-block;">Contact sales</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: integration strip. 11-up icon grid. -->
+    <section class="section section--ruled" aria-label="Integrations">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Plus support for 300+ lorem.</h2>
+      <div class="integration-strip" role="list">
+        <div class="integration-cell" role="listitem">Lor</div>
+        <div class="integration-cell" role="listitem">Ips</div>
+        <div class="integration-cell" role="listitem">Dol</div>
+        <div class="integration-cell" role="listitem">Sit</div>
+        <div class="integration-cell" role="listitem">Amt</div>
+        <div class="integration-cell" role="listitem">Con</div>
+        <div class="integration-cell" role="listitem">Adi</div>
+        <div class="integration-cell" role="listitem">Eli</div>
+        <div class="integration-cell" role="listitem">Eiu</div>
+        <div class="integration-cell" role="listitem">Tem</div>
+        <div class="integration-cell" role="listitem">Inc</div>
+      </div>
+    </section>
+
+    <!-- Section: end-of-page CTA band. -->
+    <section class="section" aria-label="Final CTA">
+      <div class="cta-band">
+        <h2 class="cta-band__title">
+          Lorem ipsum dolor sit amet consectetur adipiscing.
+        </h2>
+        <a href="#" class="cta--primary">Start Free Trial</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for
+       a mailchimp-tagged footers/* whole (six-column mega-footer). -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (6 columns)</span>
+        Products / Resources / Community / Company / Help / Mailchimp Presents
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

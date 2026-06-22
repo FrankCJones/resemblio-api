@@ -1,0 +1,114 @@
+/*
+ * glossier-footer-001 tokens
+ *
+ * Native token values for the Glossier site footer. Glossier's footer
+ * holds the brand's signature register: paper-white surface, near-black
+ * ink, millennial-pink as the single brand color used sparingly (often
+ * as a hover lift, a Your Privacy Choices toggle, or a wordmark
+ * accent). The footer is sentence-case end-to-end; column kickers
+ * carry tiny tracking and the legal row sits in the same humanist sans
+ * as the columns at a smaller step. There is no monospace register on
+ * the site; the mono slot points back at the sans family at small size
+ * with positive tracking, which is Glossier's actual substitute.
+ *
+ * Provenance: footer structure (column headings, every link in order,
+ * social row, legal row, copyright line) extracted via
+ * webfetch_html_inspection on https://www.glossier.com 2026-05-20 and
+ * cross-checked on https://www.glossier.com/pages/about 2026-05-20.
+ * Shopify storefronts strip inline styles from WebFetch markdown per
+ * AGENT_BRIEFING; Chrome MCP is blocked from this domain by sandbox
+ * policy. Token values adopt the canonical Glossier brand palette
+ * (millennial pink + paper white + near-black ink) documented across
+ * Glossier brand surfaces and matching the system manifest's stated
+ * design_principles for the source.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  /* Paper-white surface; the footer is contiguous with the body, not
+   * inverted. The pink accent is the only second color in the band. */
+  --ds-bg:           #FFFFFF;   /* Pure paper white; Glossier's body and footer share this surface. */
+  --ds-surface:      #FFF1ED;   /* Lightest millennial-pink tint; used as the newsletter band background. */
+  --ds-surface-2:    #FFE4DC;   /* The signature millennial-pink at full softness; reserved for the Your Privacy Choices toggle and pink hover state. */
+  --ds-text:         #1A1A1A;   /* Near-black ink; sentence-case body links read here. */
+  --ds-text-muted:   #6B6B6B;   /* Mid-gray; legal row and secondary metadata sit at this step. */
+  --ds-text-strong:  #000000;   /* Pure black; column kickers and the wordmark take this slot. */
+  --ds-border:       #EAEAEA;   /* Hairline gray; the single thin rule above the legal row. */
+  --ds-hairline:     #EAEAEA;   /* Same gray; Glossier uses one rule weight site-wide. */
+  --ds-accent:       #F8CBC1;   /* Millennial pink at full saturation; the brand color; used sparingly. */
+  --ds-accent-2:     #E64A3D;   /* Glossier brand red; an occasional second accent (rare, used on stickers and seasonal pushes). */
+  --ds-success:      #4A8F6F;   /* Sage-green; the palette's secondary system color, kept quiet. */
+  --ds-warning:      #E6A23D;   /* Warm ochre; rare on the site, included for contract completeness. */
+  --ds-error:        #E64A3D;   /* Brand red doubles as error in this palette. */
+  --ds-info:         #1A1A1A;   /* Ink; Glossier refuses a separate info hue. */
+  --ds-focus-ring:   #1A1A1A;   /* Ink ring; Glossier keeps focus high-contrast against the paper surface rather than tinting it pink. */
+
+  /* ---------- Type families ---------- */
+  /* Glossier ships a refined humanist sans across the entire site;
+   * sentence-case is the rule even on headings. The mono slot points
+   * back at the sans family at small sizes with positive tracking,
+   * which is the site's actual mono register (it does not ship a
+   * monospace family). The accent slot is reserved for the wordmark. */
+  --ds-font-display: "GT Pressura", "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "GT Pressura", "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "GT Pressura", "Inter", system-ui, sans-serif;
+  --ds-font-accent:  "Dia", "GT Pressura", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  /* Glossier sets footer body at base, column kickers at sm with wider
+   * tracking, and the wordmark moment at 6xl statement display. */
+  --ds-text-2xs:  10px;   --ds-text-xs:   12px;   --ds-text-sm:   13px;
+  --ds-text-base: 15px;   --ds-text-lg:   18px;   --ds-text-xl:   22px;
+  --ds-text-2xl:  28px;   --ds-text-3xl:  36px;   --ds-text-4xl:  48px;
+  --ds-text-5xl:  64px;   --ds-text-6xl:  88px;   --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  /* Sentence-case body sits at near-zero; the kicker register lifts
+   * tracking to give the small caps an audible voice. */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  /* Glossier's chrome is square-to-soft; only the newsletter input and
+   * the privacy toggle clip to a pill. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   1px;
+  --ds-radius-sm:   2px;
+  --ds-radius-md:   4px;
+  --ds-radius-lg:   8px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  /* The footer sits flat on the paper surface; shadows reserved for the
+   * input focus moment. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px #EAEAEA;
+  --ds-shadow-sm:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.08);
+  --ds-shadow-2xl:  0 28px 60px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

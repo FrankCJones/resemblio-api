@@ -1,0 +1,180 @@
+<!--
+  Asset: editorial-pullquote-testimonial-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, paper-and-ink, editorial-label-italic, mono-utility-pair
+  Inspired by: Cabinet Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001            (cream paper bg, ink, terracotta accent)
+    - type-pairings/serif-mono-editorial-001 (classical serif + mono utility)
+    - body-text/pull-quote-breakout-001      (oversized serif breakout)
+    - avatars/byline-portrait-avatar-001     (raw rectangular portrait, no chrome)
+    - labels/label-serif-italic-001          (italic serif byline label)
+    - dividers/hairline-rule-001             (warm-tan hairline separator)
+  Notes:
+    - The testimonial reframes a scholarly pull-quote as social proof: an
+      oversized classical serif quotation occupies the column, attributed
+      below via a small italic byline, an untreated portrait, and a mono
+      metadata line (issue / institution / date).
+    - Variable: every color, every type size, the portrait dimensions, and
+      the column measure are tokens or contract-bound. Inline: the
+      hanging-quote glyph offset and the deliberate paragraph margin
+      around the quote are hero-specific tuning that does not earn a
+      named token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-pullquote-testimonial-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- EB Garamond is the closest-cousin web-available stand-in for the classical
+     Garamond / Adobe Garamond Pro register that scholarly publications like
+     Cabinet rely on. JetBrains Mono handles the metadata kickers and
+     attribution data line. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Paper page. Generous outer padding so the testimonial reads as a
+   * printed-page object, not a card stuck on a screen. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    /* Subtle paper-grain echo through a low-opacity radial wash. Inline
+     * because the wash is a one-off ornamental decision, not a named
+     * token. */
+    background-image:
+      radial-gradient(120% 80% at 20% 0%,
+        rgba(201, 82, 30, 0.04),
+        transparent 60%);
+  }
+
+  /* The testimonial column. Asymmetric grid: pull quote breaks a wide
+   * measure, attribution sits in a narrower right-anchored block. The
+   * narrowness is editorial discipline; long quotations need long
+   * measures, attribution does not. */
+  .testimonial {
+    width: 100%;
+    max-width: 780px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+
+  /* Kicker: mono uppercase, wide tracking, terracotta accent. From the
+   * mono-utility role in type-pairings/serif-mono-editorial-001. */
+  .testimonial__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  /* Pull-quote breakout: classical serif at display weight, generous line
+   * height for serif breathing, hanging left-quote glyph offset off the
+   * column edge. From body-text/pull-quote-breakout-001. */
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4.4vw, var(--ds-text-3xl));
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    margin: 0;
+    /* Hanging quote glyph: the opening curly quote sits in the left
+     * margin, off the measure. The negative text-indent and the matching
+     * padding-left are inline tuning, not a named token, because the
+     * exact pull is character-dependent (curly quote vs straight, optical
+     * size of the chosen serif). */
+    padding-left: var(--ds-space-6);
+    text-indent: calc(-1 * var(--ds-space-6));
+    text-wrap: balance;
+  }
+
+  /* Hairline rule: from dividers/hairline-rule-001. Warm-tan, near-zero
+   * weight; sits below the quote, above the attribution row. */
+  .testimonial__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    width: 64px;
+    margin: var(--ds-space-3) 0 0 0;
+  }
+
+  /* Attribution row: portrait left, byline and metadata right. The row
+   * sits at a narrower measure than the quote, anchored left. */
+  .testimonial__attrib {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: var(--ds-space-4);
+    align-items: center;
+  }
+
+  /* Portrait: from avatars/byline-portrait-avatar-001. Raw rectangle,
+   * zero chrome at the atom level. This whole softens the corners with
+   * a small radius to fit the testimonial's slightly more polished
+   * register; the atom's untreated character is preserved (no ring,
+   * no shadow, no border). */
+  .testimonial__portrait {
+    width: 64px;
+    aspect-ratio: 7 / 8;     /* The 840x960 ratio from Robin Sloan's portrait atom. */
+    background: linear-gradient(135deg, #B8A892 0%, #8C7A60 100%);
+    border-radius: var(--ds-radius-sm);
+    /* Inline ornament: the gradient is a stand-in for an actual photo
+     * portrait. In production, this would be an <img> element with a
+     * real headshot. */
+  }
+
+  /* Byline label: italic serif, terracotta accent. From
+   * labels/label-serif-italic-001. */
+  .testimonial__byline {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  /* Metadata: mono utility for the institution / role / dateline. The
+   * mono register signals data, not voice; keeps the testimonial honest
+   * about who is speaking and from where. */
+  .testimonial__meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-1) 0 0 0;
+  }
+</style>
+</head>
+<body>
+  <figure class="testimonial">
+    <p class="testimonial__kicker">Lorem ipsum . issue lxxii</p>
+    <blockquote class="testimonial__quote">
+      &ldquo;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
+      sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla
+      aenean fermentum, magna at suscipit lacinia, dolor purus venenatis
+      tellus.&rdquo;
+    </blockquote>
+    <hr class="testimonial__rule" aria-hidden="true"/>
+    <figcaption class="testimonial__attrib">
+      <div class="testimonial__portrait" role="img" aria-label="Lorem ipsum portrait"></div>
+      <div>
+        <p class="testimonial__byline">Lorem M. Ipsum</p>
+        <p class="testimonial__meta">CONTRIBUTOR . LOREM INSTITUTE . MMXXVI</p>
+      </div>
+    </figcaption>
+  </figure>
+</body>
+</html>

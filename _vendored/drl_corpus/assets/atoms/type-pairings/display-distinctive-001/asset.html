@@ -1,0 +1,72 @@
+<!--
+  Asset: display-distinctive-001
+  Class: type-pairings
+  Pattern: serif-display-sans-body
+  Inspired by: Fraunces showcases, contemporary editorial brand systems
+  Notes:
+    - Fraunces (variable-axis serif with SOFT/WONK character) carries display.
+    - Inter handles body; deliberately neutral so the display can sing.
+    - Inline ornament: the font-variation-settings on display use Fraunces's
+      SOFT axis at a custom value to give the headline a hand-drawn warmth.
+      This is asset-specific character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>display-distinctive-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..900,0..100,0..1&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg); color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-6);
+    min-height: 100vh;
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .kicker {
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    /* Inline ornament: variable-axis settings. SOFT=50 makes the serifs
+     * gentler, WONK=1 enables the alternate gestural shapes. The whole
+     * personality lives here; this is not a token. */
+    font-variation-settings: "opsz" 96, "SOFT" 50, "WONK" 1;
+  }
+  .display em { font-style: italic; color: var(--ds-accent); font-weight: 500; }
+  .body {
+    font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text); max-width: 56ch; margin: 0;
+  }
+  .meta-row {
+    display: flex; gap: var(--ds-space-5);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted); letter-spacing: 0.04em;
+  }
+  .meta-row b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <span class="kicker">type pairing · display-distinctive-001</span>
+  <h1 class="display">Lorem ipsum <em>dolor sit</em> amet.</h1>
+  <p class="body">Consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum.</p>
+  <div class="meta-row">
+    <span>display · <b>Fraunces 600 SOFT 50 WONK 1</b></span>
+    <span>body · <b>Inter 400</b></span>
+    <span>mono · <b>JetBrains Mono 400</b></span>
+  </div>
+</body>
+</html>

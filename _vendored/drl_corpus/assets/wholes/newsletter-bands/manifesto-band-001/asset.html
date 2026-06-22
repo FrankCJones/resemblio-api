@@ -1,0 +1,256 @@
+<!--
+  Asset: manifesto-band-001
+  Class: newsletter-bands
+  Pattern: minimal-footer, paper-and-ink, underline-input, label-above
+  Inspired by: Robin Sloan (robinsloan.com)
+  Notes:
+    - A signup band that pitches before it asks. An asterism opens the
+      band; a mono eyebrow names the moment; a single editorial-serif
+      paragraph carries the manifesto in the writer's own voice; a
+      label-above underline input plus an arrow link asks for an email;
+      a mono fine-print line below the input declares the privacy stance.
+      No card, no surface lift, no pill button.
+    - Variable: every color, every font, every size, every spacing step
+      (all `--ds-*`). Inline: the asterism `0.5em` letter-spacing, the
+      `.italic-accent` font-style swap on one manifesto word, and the
+      small `translateX(2px)` lift on the arrow link hover - each is a
+      one-off character moment, not a contract role.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>manifesto-band-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font import. The token contract names Filosofia and Trade
+  Gothic Next (per Robin Sloan's published colophon at /colophon) but
+  both are licensed. The fallback chain (Newsreader, Charter, Georgia)
+  carries the editorial-serif register on systems without the licensed
+  family; JetBrains Mono is the open mono stand-in for Söhne Mono.
+-->
+<style>
+  /* Reset only what this asset needs. The harness handles broader normalization. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Page wrapper sets the narrow editorial measure the band inhabits.
+     36em matches the canonical longform reading measure; the band sits
+     inside that column rather than breaking out across the viewport. */
+  .page {
+    max-width: 36em;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  /* The band itself is just a vertical stack. No background fill,
+     no border, no card. The asterism above and the hairline-thin
+     mono disclaimer below carry the structural framing. */
+  .band {
+    text-align: center;
+  }
+
+  /* Asterism opens the band. Three asterisks separated by 0.5em of inline
+     letter-spacing; the spacing is the asterism's character (denser would
+     read as bold punctuation, looser would read as decorative noise).
+     Kept inline because it is one-off character, not a contract role. */
+  .asterism {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    letter-spacing: 0.5em;          /* one-off character; not a contract role */
+    margin: 0 0 var(--ds-space-10);
+    user-select: none;              /* the glyph is decoration, not content */
+  }
+  .asterism::before { content: "* * *"; }
+
+  /* Mono eyebrow names the moment: this is the newsletter band.
+     Uppercase, wider tracking, muted color, sits above the manifesto. */
+  .eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Manifesto paragraph. Editorial serif, slightly larger than body,
+     comfortable line-height, narrow measure. The voice rides on the
+     typography choice; the copy is the pitch. */
+  .manifesto {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 28em;
+  }
+
+  /* One italic word inside the manifesto. The italic is the only
+     emphasis the paragraph carries; if everything is italic, nothing is.
+     Kept inline because the font-style swap is a single character moment,
+     not a tokenized role. */
+  .italic-accent {
+    font-style: italic;
+    color: var(--ds-text-strong);   /* a half-shade darker for the emphasis */
+  }
+
+  /* Signup row. Label above, underline input, arrow link as submit.
+     Composed from atoms inputs/text-underline-001 and buttons/editorial-arrow-002. */
+  .signup {
+    margin: 0 auto var(--ds-space-5);
+    max-width: 24em;
+    text-align: left;
+  }
+
+  .signup-label {
+    display: block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+
+  /* Underline input: borderless except for a 1px bottom rule that
+     thickens to 2px on focus. The chrome IS the line. */
+  .signup-input {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--ds-border);
+    background: transparent;
+    padding: var(--ds-space-2) 0 var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    outline: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .signup-input::placeholder {
+    color: var(--ds-text-muted);
+    font-style: italic;
+  }
+  .signup-input:focus-visible {
+    border-bottom-color: var(--ds-accent);
+    border-bottom-width: 2px;
+    padding-bottom: calc(var(--ds-space-3) - 1px);   /* keep baseline steady */
+  }
+
+  /* Submit affordance: an arrow link, not a button. Inherits the accent
+     color, lifts slightly on hover. The 2px translate is a one-off
+     character moment, not a contract motion. */
+  .signup-submit {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-4);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-accent);
+    text-decoration: none;
+    transition:
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .signup-submit .arrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .signup-submit:hover,
+  .signup-submit:focus-visible {
+    color: var(--ds-accent-2);
+  }
+  .signup-submit:hover .arrow,
+  .signup-submit:focus-visible .arrow {
+    transform: translateX(2px);     /* one-off character moment */
+  }
+  .signup-submit:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Privacy disclaimer below the input. Mono, small, muted; functions
+     as a colophon line for the band - the writer's posture toward the
+     reader, declared in print-typography register. */
+  .disclaimer {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-6) auto 0;
+    max-width: 28em;
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Reading body above the band; included so the band's relationship
+     to the column reads correctly when this asset is opened standalone. */
+  .reading {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .reading p { margin: 0 0 var(--ds-space-5); }
+</style>
+</head>
+<body>
+  <main class="page">
+    <article class="reading">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in nisl ac mauris vehicula commodo. Sed faucibus, libero a posuere fringilla, sapien justo blandit eros, quis interdum nibh ipsum nec lectus.</p>
+      <p>Vivamus euismod, justo a egestas tincidunt, augue lectus sollicitudin lorem, eu fermentum velit ipsum at libero. Donec a ornare nibh. Curabitur posuere, urna sit amet pretium tristique, magna lorem dictum metus.</p>
+    </article>
+
+    <section class="band" aria-label="Newsletter signup">
+      <div class="asterism" role="separator" aria-hidden="true"></div>
+
+      <p class="eyebrow">Epistula nuntia</p>
+
+      <p class="manifesto">
+        Lorem ipsum epistula mea singulis viginti novem semis diebus emittitur.
+        Vagatur late, per libros et media et vitam modernam, et semper conor ut
+        sentiatur sicut <span class="italic-accent">nota ab amico</span> missa.
+        Si tibi placet, scribe nomen tuum infra.
+      </p>
+
+      <form class="signup" action="#" method="post" novalidate>
+        <label class="signup-label" for="manifesto-band-email">Inscriptio electronica</label>
+        <input
+          class="signup-input"
+          id="manifesto-band-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="nomen@exemplum.com"
+          required
+        />
+        <button class="signup-submit" type="submit">
+          <span>Mitte</span>
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </form>
+
+      <p class="disclaimer">
+        Haec pagina nullas informationes de te aut de lectione tua colligit.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

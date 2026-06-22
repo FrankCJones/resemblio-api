@@ -1,0 +1,707 @@
+<!--
+  Asset: olipop-marketing-page-001
+  Class: layouts
+  Pattern: candy-bright-palette-no-restraint, product-photography-as-hero, soft-pill-cta, two-column-split-hero, color-block-section-bands
+  Inspired by: Olipop (drinkolipop.com)
+  Notes:
+    - Marketing homepage skeleton: announcement bar, white nav, two-column
+      split hero (product photography one side, headline + dual pill CTA
+      other side), product carousel "Shop our collections", benefits color
+      block ("Why OLIPOP?", mint band), social proof / press strip, "Shop
+      by fiber line" affiliate hero, two-up content band, "Made with real
+      ingredients" two-column on section-pink, "Available in stores"
+      retailer logo grid, newsletter, mega-footer. Bands stack edge to
+      edge; no hairlines, no shadows; the candy-bright color block is
+      the section break.
+    - Variable: section sequence, band fill, headline text. Inline: pill
+      radius (100px), section padding rhythm (96-128px inside band),
+      hero H2 size (80px / 80px line-height), button border 1.6px.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: WindsorEF (display) and Ano (body) are the Olipop marketing
+  faces. Faces are not loaded in the asset; the fallback chains in
+  tokens.css (Cooper Std / Georgia for display, Inter for body) carry
+  the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Olipop runs roughly 1440px on desktop; sections are
+   * full-bleed bands but content inside caps. Inline value. */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .container { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Announcement bar. Forest-green ribbon on cream, Ano body, no caps. */
+  .announce-bar {
+    background: var(--ds-text-strong);
+    color: var(--ds-surface);
+    text-align: center;
+    padding-block: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+  }
+  .announce-bar a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-left: var(--ds-space-3);
+  }
+
+  /* Nav. White bg, forest-green ink, Ano. No hairline below; the cream
+   * field below the nav is the contrast. */
+  .nav {
+    background: #FFFFFF;
+    padding-block: var(--ds-space-5);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    letter-spacing: -0.01em;
+  }
+  .nav__links {
+    display: none;
+    gap: var(--ds-space-6);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+  }
+  @media (min-width: 768px) { .nav__links { display: flex; } }
+
+  /* CTA pills. Olipop's signature: 100px radius, padding 11px 30px,
+   * 1.6px border. Two variants - filled forest-green, ghost forest-green
+   * outline. Both keep Ano body. */
+  .pill {
+    display: inline-block;
+    border-radius: var(--ds-radius-full);
+    padding: 11px 30px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: 1.2;
+    border: 1.6px solid var(--ds-accent);
+    text-align: center;
+  }
+  .pill--primary {
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+  }
+  .pill--ghost {
+    background: transparent;
+    color: var(--ds-accent);
+  }
+  .pill--cream-fill {
+    background: var(--ds-surface);
+    color: var(--ds-accent);
+    border-color: var(--ds-accent);
+  }
+
+  /* Full-bleed band. Each section gets its own candy field. */
+  .band {
+    padding-block: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .band { padding-block: var(--ds-space-16); }
+  }
+  .band--cream { background: var(--ds-surface); }
+  .band--mint  { background: var(--ds-info); }
+  .band--pink  { background: var(--ds-surface-2); }
+  .band--green { background: var(--ds-accent); color: var(--ds-surface); }
+  .band--yellow { background: var(--ds-accent-2); }
+
+  /* Display heading register. WindsorEF, tight line height. */
+  .display {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .display--hero   { font-size: var(--ds-text-6xl); max-width: 12ch; }
+  .display--xl     { font-size: var(--ds-text-4xl); max-width: 18ch; }
+  .display--lg     { font-size: var(--ds-text-3xl); max-width: 22ch; }
+  .display--green-on-mint { color: var(--ds-text-strong); }
+  .display--cream-on-green { color: var(--ds-surface); }
+
+  /* Hero. Two-column 50/50: product photography one side, headline +
+   * dual pill CTA other side. On mobile it stacks photo-first. */
+  .hero {
+    background: var(--ds-info);
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: var(--ds-space-12);
+      padding-block: var(--ds-space-16);
+    }
+  }
+  .hero__copy { color: var(--ds-text-strong); }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 42ch;
+  }
+  .hero__cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+  .hero__product-slot {
+    background: rgba(3,70,56,0.06);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 5 / 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Product carousel. Heading at top center, then 4-up flavor cards
+   * with can-photo placeholder + label + pill. */
+  .carousel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .carousel-grid { grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-6); }
+  }
+  .flavor-card {
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6) var(--ds-space-5);
+    text-align: center;
+  }
+  .flavor-card__photo {
+    aspect-ratio: 1 / 1;
+    background: rgba(3,70,56,0.06);
+    border-radius: var(--ds-radius-md);
+    margin-bottom: var(--ds-space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .flavor-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .flavor-card__sub {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Benefits block ("Why OLIPOP?"). Heading-top centered, 3-up icon
+   * benefits row, single primary pill at bottom. Mint field. */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    margin-top: var(--ds-space-8);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .benefits-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .benefit__icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto var(--ds-space-4);
+    background: rgba(3,70,56,0.08);
+    border-radius: var(--ds-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-strong);
+  }
+  .benefit__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .benefit__body {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0 auto;
+    max-width: 32ch;
+  }
+
+  /* Press / social proof strip. Inline logo row, "As seen in..." kicker. */
+  .press-strip {
+    text-align: center;
+  }
+  .press-strip__kicker {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .press-strip__logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-10);
+    opacity: 0.8;
+  }
+  .press-logo {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    letter-spacing: 0.02em;
+  }
+
+  /* Testimonial row. Three quote cards on cream, soft pink card on
+   * pink field. */
+  .testimonials {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .testimonials { grid-template-columns: repeat(3, 1fr); }
+  }
+  .quote-card {
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+  }
+  .quote-card__stars {
+    color: var(--ds-accent-2);
+    margin-bottom: var(--ds-space-3);
+    font-size: var(--ds-text-lg);
+    letter-spacing: 0.1em;
+  }
+  .quote-card__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    line-height: 1.2;
+  }
+  .quote-card__who {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+
+  /* "As seen on TikTok / at Walmart" two-up. Heading-left, photo-right
+   * or vice versa, full-bleed pink band. */
+  .split-2up {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .split-2up { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+  }
+  .split-2up__media {
+    background: rgba(3,70,56,0.08);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-strong);
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Retailer grid. "Available in stores" - 4-6 grocer logos. */
+  .retailers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .retailers-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+  .retailer {
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6) var(--ds-space-4);
+    text-align: center;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+  }
+
+  /* Newsletter band. Forest-green field, cream ink, single input + pill. */
+  .newsletter {
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    text-align: center;
+  }
+  .newsletter .display { color: var(--ds-surface); }
+  .newsletter__form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    max-width: 520px;
+    margin: var(--ds-space-6) auto 0;
+  }
+  .newsletter__input {
+    flex: 1 1 240px;
+    background: var(--ds-surface);
+    border: 1.6px solid var(--ds-surface);
+    border-radius: var(--ds-radius-full);
+    padding: 11px 24px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+  }
+
+  /* Mega-footer. Cream band, multi-column links, fat WindsorEF wordmark. */
+  .footer-band {
+    background: var(--ds-surface);
+    padding-block: var(--ds-space-12);
+    color: var(--ds-text-strong);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: 1.5fr repeat(4, 1fr); }
+  }
+  .footer-col__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin: 0 0 var(--ds-space-4);
+    color: var(--ds-text-strong);
+  }
+  .footer-col__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-base);
+  }
+  .footer-wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    color: var(--ds-text-strong);
+    line-height: 1;
+    margin-bottom: var(--ds-space-4);
+  }
+
+  /* Section kicker (for "Shop our collections" eyebrow). */
+  .section-kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-strong);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+    text-align: center;
+  }
+
+  .center { text-align: center; }
+  .stack-cta { display: inline-flex; gap: var(--ds-space-3); flex-wrap: wrap; justify-content: center; margin-top: var(--ds-space-6); }
+</style>
+</head>
+<body>
+
+  <!-- Announcement bar: forest-green ribbon on top with a sale headline. -->
+  <div class="announce-bar">
+    Lorem ipsum dolor sit amet, consectetur adipiscing. <a href="#">Shop now</a>
+  </div>
+
+  <!-- Nav: white field, wordmark + link cluster + auth pill. -->
+  <nav class="nav" aria-label="Primary">
+    <div class="container nav__inner">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="nav__links">
+        <a href="#">Shop</a>
+        <a href="#">Learn</a>
+        <a href="#">Subscribe</a>
+        <a href="#">Find a store</a>
+      </div>
+      <a href="#" class="pill pill--ghost">Log in</a>
+    </div>
+  </nav>
+
+  <!-- Hero: two-column split. Product photography slot on left,
+       headline + sub + dual pill CTA on right. Mint field. -->
+  <header class="hero" aria-label="Hero">
+    <div class="container">
+      <div class="hero__grid">
+        <div class="hero__product-slot" role="img" aria-label="Product photography placeholder">
+          lorem ipsum can photography
+        </div>
+        <div class="hero__copy">
+          <h1 class="display display--hero">Lorem ipsum dolor sit amet.</h1>
+          <p class="hero__sub">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna.
+          </p>
+          <div class="hero__cta-row">
+            <a href="#" class="pill pill--primary">Shop now</a>
+            <a href="#" class="pill pill--ghost">Find a store</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Section: product carousel "Shop our collections" on cream. -->
+  <section class="band band--cream" aria-label="Shop collections">
+    <div class="container center">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="display display--xl" style="margin-inline: auto;">Shop our collections.</h2>
+      <div class="carousel-grid">
+        <article class="flavor-card">
+          <div class="flavor-card__photo">can</div>
+          <h3 class="flavor-card__name">Lorem</h3>
+          <p class="flavor-card__sub">Dolor sit amet</p>
+          <a href="#" class="pill pill--ghost">Shop</a>
+        </article>
+        <article class="flavor-card">
+          <div class="flavor-card__photo">can</div>
+          <h3 class="flavor-card__name">Ipsum</h3>
+          <p class="flavor-card__sub">Consectetur adipiscing</p>
+          <a href="#" class="pill pill--ghost">Shop</a>
+        </article>
+        <article class="flavor-card">
+          <div class="flavor-card__photo">can</div>
+          <h3 class="flavor-card__name">Dolor</h3>
+          <p class="flavor-card__sub">Eiusmod tempor</p>
+          <a href="#" class="pill pill--ghost">Shop</a>
+        </article>
+        <article class="flavor-card">
+          <div class="flavor-card__photo">can</div>
+          <h3 class="flavor-card__name">Sit Amet</h3>
+          <p class="flavor-card__sub">Incididunt ut labore</p>
+          <a href="#" class="pill pill--ghost">Shop</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: benefits "Why OLIPOP?" on mint. 3-up icon benefits. -->
+  <section class="band band--mint" aria-label="Benefits">
+    <div class="container center">
+      <h2 class="display display--xl" style="margin-inline: auto;">Why Lorem?</h2>
+      <div class="benefits-grid">
+        <div>
+          <div class="benefit__icon">A</div>
+          <h3 class="benefit__title">Lorem ipsum</h3>
+          <p class="benefit__body">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+        </div>
+        <div>
+          <div class="benefit__icon">B</div>
+          <h3 class="benefit__title">Dolor sit amet</h3>
+          <p class="benefit__body">Ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+        </div>
+        <div>
+          <div class="benefit__icon">C</div>
+          <h3 class="benefit__title">Eiusmod tempor</h3>
+          <p class="benefit__body">Quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+        </div>
+      </div>
+      <div class="stack-cta">
+        <a href="#" class="pill pill--primary">Shop now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: press / social proof strip on cream. -->
+  <section class="band band--cream" aria-label="Press">
+    <div class="container press-strip">
+      <p class="press-strip__kicker">As seen in lorem ipsum.</p>
+      <div class="press-strip__logos">
+        <span class="press-logo">Lorem</span>
+        <span class="press-logo">Ipsum</span>
+        <span class="press-logo">Dolor Sit</span>
+        <span class="press-logo">Amet</span>
+        <span class="press-logo">Consectetur</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: testimonials on pink band. Three quote cards. -->
+  <section class="band band--pink" aria-label="Testimonials">
+    <div class="container center">
+      <h2 class="display display--xl" style="margin-inline: auto;">Loved by lorem people.</h2>
+      <div class="testimonials">
+        <article class="quote-card">
+          <div class="quote-card__stars">* * * * *</div>
+          <p class="quote-card__body">"Lorem ipsum dolor sit amet, consectetur adipiscing elit."</p>
+          <span class="quote-card__who">- Lorem I.</span>
+        </article>
+        <article class="quote-card">
+          <div class="quote-card__stars">* * * * *</div>
+          <p class="quote-card__body">"Sed do eiusmod tempor incididunt ut labore et dolore magna."</p>
+          <span class="quote-card__who">- Ipsum D.</span>
+        </article>
+        <article class="quote-card">
+          <div class="quote-card__stars">* * * * *</div>
+          <p class="quote-card__body">"Ut enim ad minim veniam, quis nostrud exercitation ullamco."</p>
+          <span class="quote-card__who">- Dolor S.</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: "As seen on TikTok / at Walmart" two-up on cream. -->
+  <section class="band band--cream" aria-label="As seen on">
+    <div class="container">
+      <div class="split-2up">
+        <div>
+          <span class="section-kicker" style="text-align:left;">Lorem ipsum</span>
+          <h2 class="display display--xl">As seen on lorem ipsum.</h2>
+          <p style="max-width: 42ch; margin-bottom: var(--ds-space-6);">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <a href="#" class="pill pill--primary">Watch lorem</a>
+        </div>
+        <div class="split-2up__media">lorem ipsum media slot</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: "Made with real ingredients" two-column on pink band. -->
+  <section class="band band--pink" aria-label="Ingredients">
+    <div class="container">
+      <div class="split-2up">
+        <div class="split-2up__media">ingredient photography</div>
+        <div>
+          <h2 class="display display--xl">Made with real lorem.</h2>
+          <p style="max-width: 42ch; margin-bottom: var(--ds-space-6);">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <a href="#" class="pill pill--primary">Learn more</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: retailer logo grid "Available in stores" on cream. -->
+  <section class="band band--cream" aria-label="Retailers">
+    <div class="container center">
+      <h2 class="display display--xl" style="margin-inline: auto;">Available in lorem stores.</h2>
+      <div class="retailers-grid">
+        <div class="retailer">Lorem</div>
+        <div class="retailer">Ipsum</div>
+        <div class="retailer">Dolor</div>
+        <div class="retailer">Sit</div>
+        <div class="retailer">Amet</div>
+        <div class="retailer">Adipiscing</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: newsletter on forest-green band. -->
+  <section class="band newsletter" aria-label="Newsletter">
+    <div class="container">
+      <h2 class="display display--xl display--cream-on-green" style="margin-inline: auto;">
+        Sign up for lorem ipsum.
+      </h2>
+      <p style="color: var(--ds-surface); max-width: 42ch; margin-inline: auto;">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+      <form class="newsletter__form" onsubmit="return false;">
+        <input class="newsletter__input" type="email" placeholder="lorem@ipsum.com" aria-label="Email"/>
+        <button class="pill pill--cream-fill" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Mega-footer on cream. Fat WindsorEF wordmark plus five link columns. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-wordmark">Lorem</div>
+          <p style="max-width: 28ch;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div>
+          <h3 class="footer-col__title">Shop</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Lorem</a></li>
+            <li><a href="#">Ipsum</a></li>
+            <li><a href="#">Dolor</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__title">Learn</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Sit amet</a></li>
+            <li><a href="#">Consectetur</a></li>
+            <li><a href="#">Adipiscing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__title">Company</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Eiusmod</a></li>
+            <li><a href="#">Tempor</a></li>
+            <li><a href="#">Incididunt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__title">Help</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Ut labore</a></li>
+            <li><a href="#">Et dolore</a></li>
+            <li><a href="#">Magna</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

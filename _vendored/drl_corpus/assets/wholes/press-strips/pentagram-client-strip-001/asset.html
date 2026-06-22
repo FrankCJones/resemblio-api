@@ -1,0 +1,172 @@
+<!--
+  Asset: pentagram-client-strip-001
+  Class: press-strips (whole)
+  Pattern: paper-and-ink, mono-eyebrow, kicker-with-rule
+  Inspired by: Pentagram (pentagram.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (paper-and-ink discipline)
+    - type-pairings/display-distinctive-001 (display sans + body sans)
+    - kickers/mono-eyebrow-001              (the kicker register)
+    - dividers/hairline-rule-001            (top and bottom hairline)
+    - labels/metadata-mono-001              (mono on the kicker)
+  Notes:
+    - Restrained typographic client roster. No logos, no images, no
+      color: client names set in editorial display sans, separated by
+      a muted middle dot, framed by a single ink hairline above and
+      below. A mono kicker labels the strip "Selected clients."
+    - Variable: every --ds-* token. Inline ornament: the middle-dot
+      glyph and the strict single-row flex-wrap layout; both are
+      composition choices, not contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-client-strip-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Display stands in for Pentagram's F37 Plain custom commission;
+     they share a geometric low-contrast register at display sizes.
+     JetBrains Mono carries the kicker. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Outer rail: a generous page measure so the strip can breathe. The
+   * strip is a section, not a banner; it earns its top and bottom
+   * hairlines through space, not through height. */
+  .strip {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Kicker: from atoms/kickers/mono-eyebrow-001. The label that names
+   * the strip's purpose. Restrained; the work is the names. */
+  .strip__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  /* Client list: a single horizontal row that wraps onto multiple lines
+   * at narrower widths. Each name is set in display sans; the middle
+   * dot between names is the only ornament. */
+  .strip__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    /* Inline ornament: a generous row and column gap creates the
+     * editorial rhythm. Smaller gap collapses the strip into a paragraph;
+     * larger gap turns it into a grid. The 24/32 pairing is the spot. */
+    column-gap: var(--ds-space-5);
+    row-gap: var(--ds-space-3);
+  }
+
+  .strip__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    /* Inline ornament: the middle dot lives in a ::after pseudo-element
+     * on every list item except the last. Set in muted gray so it reads
+     * as punctuation, not as content. */
+    position: relative;
+    padding-right: var(--ds-space-5);
+  }
+  .strip__name::after {
+    content: "\00B7";              /* Middle dot U+00B7. */
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+  }
+  .strip__list li:last-child .strip__name { padding-right: 0; }
+  .strip__list li:last-child .strip__name::after { content: none; }
+
+  /* Optional anchor variant: client names as links. Hover demotes the
+   * ink to muted gray rather than introducing an accent color, keeping
+   * the paper-and-ink discipline intact. */
+  a.strip__name {
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  a.strip__name:hover { color: var(--ds-accent-2); }
+  a.strip__name:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Optional metadata footer: count and date stamp set in mono on the
+   * right edge. Mirrors the section-count register from the about page
+   * roster pattern. */
+  .strip__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+  <section class="strip" aria-label="Selected clients">
+
+    <p class="strip__kicker">Lorem &middot; Selected clients</p>
+
+    <ul class="strip__list">
+      <li><a class="strip__name" href="#">Lorem Ipsum</a></li>
+      <li><a class="strip__name" href="#">Dolor Sit</a></li>
+      <li><a class="strip__name" href="#">Amet Consectetur</a></li>
+      <li><a class="strip__name" href="#">Adipiscing Elit</a></li>
+      <li><a class="strip__name" href="#">Sed Eiusmod</a></li>
+      <li><a class="strip__name" href="#">Tempor Incididunt</a></li>
+      <li><a class="strip__name" href="#">Ut Labore</a></li>
+      <li><a class="strip__name" href="#">Magna Aliqua</a></li>
+      <li><a class="strip__name" href="#">Quis Nostrud</a></li>
+      <li><a class="strip__name" href="#">Exerci Tation</a></li>
+      <li><a class="strip__name" href="#">Ullamco Laboris</a></li>
+      <li><a class="strip__name" href="#">Nisi Ut Aliquip</a></li>
+      <li><a class="strip__name" href="#">Ex Ea Commodo</a></li>
+      <li><a class="strip__name" href="#">Consequat Duis</a></li>
+      <li><a class="strip__name" href="#">Aute Irure</a></li>
+      <li><a class="strip__name" href="#">Voluptate Velit</a></li>
+    </ul>
+
+    <div class="strip__footer">
+      <span>16 of 240 lorem</span>
+      <span>Anno MMXXVI</span>
+    </div>
+
+  </section>
+</body>
+</html>

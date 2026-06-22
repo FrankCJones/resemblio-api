@@ -1,0 +1,379 @@
+<!--
+  Asset: loom-feature-grid-001
+  Class: feature-grids
+  Pattern: story-card-grid
+  Inspired by: Loom (www.loom.com homepage 'Video messaging for all use cases'; www.loom.com/use-cases category grid)
+  Notes:
+    - Tile composition: small screenshot or icon frame at top, sentence-case
+      H3 ('Loom for [Department]'), one-line dek, trailing 'Learn more'
+      arrow link in Loom purple. Pure-white canvas, white tiles ringed in a
+      warm-cool hairline, 10px radius, no resting shadow. Arrow link is the
+      only chromatic moment on each tile.
+    - Variable: every color, font, spacing, radius, shadow from the contract.
+      Inline: the placeholder screenshot SVG (a one-off card ornament; not
+      a chrome value), the purple gradient stops inside the recorder-overlay
+      blob (a one-off ornamental decision), and the icon glyphs themselves.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-feature-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Loom ships GT Walsheim (Grilli Type) across display and body. Walsheim
+  is a licensed face; we substitute Inter via Google Fonts so the asset
+  renders standalone. The fallback chain in tokens.css preserves the
+  geometric-humanist character even when neither is available.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  /* Reset only what the asset needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. */
+  .fg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  .fg__head {
+    margin-bottom: var(--ds-space-8);
+    max-width: 44ch;
+  }
+
+  .fg__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .fg__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Grid: 4 columns desktop, 2 mid, 1 narrow. The /use-cases category
+     grid runs 4-up; the homepage band runs 4-up on wide and collapses
+     the same way. */
+  .fg__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-4);
+  }
+
+  @media (max-width: 1024px) {
+    .fg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 600px) {
+    .fg__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. Hairline ring is the chrome at rest; soft lift on hover. */
+  .fg__tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+                transform var(--ds-duration-normal) var(--ds-ease-standard),
+                border-color var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--ds-hairline);
+  }
+
+  .fg__tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Screenshot or icon frame. The lead Loom tiles show a small product
+     screenshot with a recorder-overlay purple dot; secondary tiles show
+     a flat icon. Same frame either way; the contents vary. */
+  .fg__shot {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-hairline);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .fg__shot svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Recorder-overlay purple dot. One-off ornament: the recorder dot is
+     Loom's signature visual signal, used inline inside screenshots and
+     in product chrome. Inline because the gradient stops are bespoke
+     and not on the contract. */
+  .fg__rec {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--ds-radius-full);
+    /* Purple-to-pink gradient is a one-off Loom recorder mark; not a
+       contract role. */
+    background: radial-gradient(circle at 30% 30%, #8A7CFB 0%, #625DF5 55%, #4F49E0 100%);
+    box-shadow: 0 0 0 3px rgba(98, 93, 245, 0.18);
+  }
+
+  /* Icon variant: flat geometry inside the same frame. */
+  .fg__icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-accent);
+  }
+
+  .fg__icon svg {
+    width: 44%;
+    height: 44%;
+  }
+
+  .fg__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    flex: 1;
+  }
+
+  .fg__tile-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  .fg__tile-dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 30ch;
+  }
+
+  /* Trailing arrow link. The single chromatic moment on the tile.
+     Underline-on-hover with an arrow that nudges right. */
+  .fg__link {
+    margin-top: auto;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover .fg__link { color: var(--ds-accent-2); }
+
+  .fg__link::after {
+    content: "→";
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover .fg__link::after { transform: translateX(3px); }
+</style>
+</head>
+<body>
+  <section class="fg" aria-labelledby="fg-title">
+    <header class="fg__head">
+      <h2 id="fg-title" class="fg__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+      <p class="fg__dek">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </header>
+
+    <div class="fg__grid">
+      <!-- Tile 1: screenshot + recorder overlay variant (lead tile) -->
+      <a class="fg__tile" href="#lorem-1">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#FFFFFF"/>
+            <rect x="0" y="0" width="320" height="28" fill="#F6F6F8"/>
+            <circle cx="14" cy="14" r="3" fill="#E6E6EA"/>
+            <circle cx="26" cy="14" r="3" fill="#E6E6EA"/>
+            <circle cx="38" cy="14" r="3" fill="#E6E6EA"/>
+            <rect x="20" y="48" width="140" height="10" rx="3" fill="#0B0B0F"/>
+            <rect x="20" y="68" width="220" height="6" rx="2" fill="#E6E6EA"/>
+            <rect x="20" y="82" width="180" height="6" rx="2" fill="#E6E6EA"/>
+            <rect x="20" y="110" width="280" height="60" rx="6" fill="#F6F6F8"/>
+            <rect x="34" y="124" width="120" height="6" rx="2" fill="#C9C9D2"/>
+            <rect x="34" y="138" width="160" height="6" rx="2" fill="#C9C9D2"/>
+          </svg>
+          <span class="fg__rec" aria-hidden="true"></span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for sales</h3>
+          <p class="fg__tile-dek">Lorem ipsum dolor sit amet, async video for the sales motion.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 2: icon variant -->
+      <a class="fg__tile" href="#lorem-2">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="13" height="14" rx="2"/>
+              <path d="M16 9l5-3v12l-5-3"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for engineering</h3>
+          <p class="fg__tile-dek">Walk through PRs and bug repros without booking a meeting.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 3: icon variant -->
+      <a class="fg__tile" href="#lorem-3">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l9 4.5v9L12 21l-9-4.5v-9z"/>
+              <path d="M3 7.5l9 4.5 9-4.5"/>
+              <path d="M12 12v9"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for design</h3>
+          <p class="fg__tile-dek">Talk through your work where the work lives.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 4: icon variant -->
+      <a class="fg__tile" href="#lorem-4">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for support</h3>
+          <p class="fg__tile-dek">Solve tickets faster with a one-take walkthrough.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 5 -->
+      <a class="fg__tile" href="#lorem-5">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19V5"/>
+              <path d="M4 19h16"/>
+              <path d="M8 16v-6"/>
+              <path d="M12 16V8"/>
+              <path d="M16 16v-4"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for marketing</h3>
+          <p class="fg__tile-dek">Brief the team without another sync on the calendar.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 6 -->
+      <a class="fg__tile" href="#lorem-6">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="14" rx="2"/>
+              <path d="M3 9h18"/>
+              <path d="M9 13h6"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for product</h3>
+          <p class="fg__tile-dek">Share roadmap context with everyone, asynchronously.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 7 -->
+      <a class="fg__tile" href="#lorem-7">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for education</h3>
+          <p class="fg__tile-dek">Lectures and feedback that students can rewind.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+
+      <!-- Tile 8 -->
+      <a class="fg__tile" href="#lorem-8">
+        <div class="fg__shot" aria-hidden="true">
+          <span class="fg__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="8" r="4"/>
+              <circle cx="17" cy="10" r="3"/>
+              <path d="M2 21c0-3.5 3-6 7-6s7 2.5 7 6"/>
+              <path d="M14 21c0-2.5 2-4.5 5-4.5"/>
+            </svg>
+          </span>
+        </div>
+        <div class="fg__body">
+          <h3 class="fg__tile-title">Lorem for teams</h3>
+          <p class="fg__tile-dek">Keep the whole org aligned without a 30-minute call.</p>
+          <span class="fg__link">Learn more</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!--
+  Asset: display-tight-001
+  Class: wordmarks
+  Pattern: display-tight
+  Inspired by: Linear
+  Notes:
+    - Tight-tracked sans wordmark; the negative letter-spacing is the move.
+    - Tracking and weight are tokens; the small geometric mark and its
+      sizing relationship to the wordmark height are inline character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>display-tight-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Native: matches the 22px header height Linear ships */
+  .wordmark--ui {
+    font-size: var(--ds-text-xl);
+  }
+  .wordmark--ui .mark { width: 18px; height: 18px; }
+  /* Display: shows the negative tracking at scale */
+  .wordmark--display {
+    font-size: var(--ds-text-4xl);
+  }
+  .wordmark--display .mark { width: 48px; height: 48px; }
+  .mark {
+    display: inline-block;
+    /* Inline: the mark is character; the corner curve and slot stripe are not tokens */
+    color: var(--ds-text-strong);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">native size (22px)</span>
+    <a class="wordmark wordmark--ui" href="#">
+      <svg class="mark" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+        <path d="M1.22669 67.0784C0.737155 65.2342 2.66075 63.6256 4.34474 64.5061L92.1571 110.453C93.8411 111.334 93.7894 113.762 92.0726 114.578L52.2226 133.494C50.5057 134.31 48.5074 133.064 48.4557 131.156L1.22669 67.0784Z" transform="translate(50 50) rotate(-45) translate(-50 -50)"/>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="6"/>
+      </svg>
+      Linear
+    </a>
+  </div>
+  <div class="stage">
+    <span class="state-label">display (64px)</span>
+    <a class="wordmark wordmark--display" href="#">
+      <svg class="mark" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+        <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="6"/>
+        <rect x="44" y="14" width="12" height="72" fill="currentColor"/>
+      </svg>
+      Linear
+    </a>
+  </div>
+</body>
+</html>

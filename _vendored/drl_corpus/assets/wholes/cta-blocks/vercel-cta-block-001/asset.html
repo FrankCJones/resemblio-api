@@ -1,0 +1,217 @@
+<!--
+  Asset: vercel-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses monochrome-palette + display-tight + sans-system-modern + primary-square + ghost-bordered)
+  Inspired by: Vercel (vercel.com/home, vercel.com/products/observability)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001              (mono surface, blue accent held in reserve)
+    - type-pairings/sans-system-modern-001        (Geist sans single-family system)
+    - headings/display-tight-001                  (sans display at 48-56px, tight tracking)
+    - body-text/lead-paragraph-001                (one-sentence subhead in muted ink)
+    - buttons/primary-square-001                  (black-fill 6px radius primary)
+    - buttons/ghost-bordered-001                  (hairline-bordered ghost secondary)
+    - dividers/hairline-rule-001                  (Gray 4 hairline above the block)
+  Notes:
+    - The block sits flush on the white Geist canvas. A single Gray 4
+      hairline above it separates the CTA from the section that preceded.
+      No card, no fill, no shadow at rest. The CTA earns its weight
+      through type hierarchy and the black primary, not through a band.
+    - Centered, narrow column at the close (max 720px). Vercel's hero is
+      left-aligned, but the closing CTA centers; the page completes
+      itself rather than starting a second movement. Geist Blue 9 is
+      held in reserve as the focus halo only; the primary fill is black.
+    - Inline ornament: the 6px button radius (Geist signature), the
+      Blue 9 focus halo via shadow-lg on the primary, and the matched
+      40px height across primary and ghost. The blue halo on focus is
+      the only chromatic moment in the block.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist is the proprietary Vercel face. Inter stands in as the closest
+     open-license substitute (similar metrics; Geist is itself a fork of
+     the Inter lineage). The fallback chain in tokens.css will resolve to
+     Geist for any visitor who has it installed. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: the white Geist canvas. The CTA sits inline on the
+   * page surface, one hairline above it the only separator. This is the
+   * Vercel marketing-page closing register. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container that holds the hairline rule and
+   * the centered content column. The rule spans the reading width above
+   * the block. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-4);
+    /* Inline ornament: the Gray 4 hairline above the block is the only
+     * structural chrome; on the live site it sits where the next
+     * section would have begun. */
+  }
+
+  /* Content column: centered, narrow measure. Vercel's closing CTA
+   * centers the column, in contrast to the hero column at the top of
+   * the page which is left-aligned. The center signals the close. */
+  .cta__content {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: from atoms/headings/display-tight-001. Geist sans
+   * at 3xl-4xl (48-56px on desktop, fluid down for narrow), tight
+   * leading, -0.03em tracking. One step below the hero H1; the close
+   * speaks at conversational display volume, not announcement volume. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the headline from
+     * orphaning a single word; matches the Geist marketing convention. */
+  }
+
+  /* Subhead: from atoms/body-text/lead-paragraph-001. Geist sans at lg,
+   * normal leading, Gray 9 muted ink. One sentence; not a paragraph. */
+  .cta__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Button row: black-fill primary + hairline ghost secondary at
+   * identical dimensions. The row wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Primary: from atoms/buttons/primary-square-001. Pure-black fill,
+   * white label, 6px radius. Geist sans medium. 40px tall to match the
+   * ghost secondary exactly. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    height: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 6px radius is the Geist signature (sits between
+     * the SaaS pill and a brutalist hard corner). */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-text);
+    border-color: var(--ds-text);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+    /* Inline ornament: the Blue 9 focus halo is the only chromatic
+     * moment in the block; the primary fill itself stays black. */
+  }
+
+  /* Ghost secondary: from atoms/buttons/ghost-bordered-001. No fill,
+   * 1px Gray 4 border, 6px radius. Identical 40px height and label
+   * scale as the primary so the pair reads as a deliberate two-action
+   * set rather than primary plus fallback. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    height: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-surface);
+    border-color: var(--ds-text-muted);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet?</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+        <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!--
+  Asset: webflow
+  Class: alphabets
+  Pattern: display-tight, sans-display-serif-body, single-typeface-system
+  Inspired by: Webflow (webflow.com homepage, webflow.com/pricing)
+  Notes:
+    - The full Webflow typography vocabulary as one specimen. The site is
+      a single-family system: WF Visual Sans Variable (custom foundry
+      face, weight + opsz axes) carries display, body, eyebrow, and
+      button labels. A sibling Mono variant exists only for the homepage
+      "Machine Mode" demo block, not as a general data face.
+    - Editorial moves: fluid-clamp display scale (every head from H4 up
+      uses clamp() so 44px-to-80px H1 / 48px-to-112px H0 interpolate
+      across viewport), restrained tracking (only H1 carries -0.01em;
+      every other head sits at 0em), 1.6 line-height paragraph reading
+      (more generous than dev-tool peers), one chromatic accent (Webflow
+      Blue #146EF5) carrying every CTA, link hover, and focus state.
+    - Inline ornament: the H1 fluid clamp expression, the variable-font
+      font-variation-settings declarations on the button and caption
+      number highlight, and the dark-mode mirror that inverts surface
+      but holds the blue accent. Character moments, not tokens.
+    - Web-font substitutes: WF Visual Sans Variable is foundry-private
+      and not publicly licensed. Inter Variable approximates the metrics
+      (humanist sans, similar x-height); Arial is the documented
+      ultimate fallback inside Webflow's own CSS.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Inter Variable is loaded as the metric-approximate fallback for WF
+  Visual Sans Variable, which is foundry-private and not publicly
+  available. JetBrains Mono stands in for the WFVisualSans-Mono moment.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Marketing hero block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Webflow eyebrow: sentence-case sans, 500 weight, 0em tracking, 1.4 line-height.
+       NOT the uppercase wide-mono kicker dev-tool sites use. */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    line-height: 1.4;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    /* Inline ornament: the actual fluid clamp from Webflow's CSS.
+       2.75rem mobile floor, 5rem desktop ceiling, interpolating across
+       the viewport's --_layout---fluid--min and --_layout---fluid--max. */
+    font-size: clamp(2.75rem, 2rem + 3vw, 5rem);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);     /* 1.04 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.01em on H1 specifically. */
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-variation-settings: "wght" 600, "opsz" 36;
+  }
+
+  .lead {
+    font-family: var(--ds-font-body);
+    /* paragraph-lg: clamp 1.1rem floor to 1.25rem ceiling. */
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.25rem);
+    line-height: var(--ds-leading-relaxed);   /* 1.5 */
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row (Webflow Blue primary + outlined secondary) ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; flex-wrap: wrap; }
+  .cta {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    background: var(--ds-accent);             /* Webflow Blue primary. */
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-sm);       /* 4px; subtle round, not pill. */
+    padding: 1em 1.5em;                       /* Webflow's button padding tokens. */
+    line-height: 1.2em;
+    letter-spacing: var(--ds-tracking-tight); /* -0.01em on labels. */
+    cursor: pointer;
+    font-variation-settings: "wght" 500, "opsz" 20;
+  }
+  .cta-secondary {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 1em 1.5em;
+    line-height: 1.2em;
+    letter-spacing: var(--ds-tracking-tight);
+    cursor: pointer;
+  }
+
+  /* ---------- Pricing tier card (hairline border, sans price) ---------- */
+  .tier {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+  }
+  .tier-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);       /* 16px / 1rem; Webflow's pricing card. */
+    padding: var(--ds-space-8) var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier-card .tier-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);            /* 40px H3 ceiling. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .tier-card .tier-blurb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+  .tier-card .tier-price {
+    font-family: var(--ds-font-display);
+    font-size: 56px;                          /* Webflow pricing price; H2 step. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text);
+    /* Note: prices are sans, NOT mono. Distinct from Vercel's snake_case
+       SKU register; Webflow treats price as continuous body language. */
+  }
+  .tier-card .tier-price span {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+  }
+
+  /* Feature rows: sans label + checkmark; no mono. */
+  .features {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+  }
+  .features li {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    display: flex;
+    gap: var(--ds-space-3);
+    align-items: baseline;
+  }
+  .features li::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* ---------- Machine-mode strip (the one mono moment) ---------- */
+  .mm {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    background: var(--ds-text);
+    color: #FFFFFF;
+    padding: var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    margin-top: var(--ds-space-6);
+  }
+  .mm .mm-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: rgba(255,255,255,0.6);
+    margin: 0 0 var(--ds-space-3) 0;
+    font-feature-settings: "ss10" 1, "zero" 1, "ss02" 1;
+  }
+  .mm .mm-line {
+    font-family: var(--ds-font-mono);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: #FFFFFF;
+    margin: 0;
+    font-feature-settings: "ss10" 1, "zero" 1, "ss02" 1;
+  }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 144px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+    font-weight: 500;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: var(--ds-tracking-normal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.h1 { letter-spacing: -0.01em; }
+
+  /* ---------- Stack summary strip ---------- */
+  .summary {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .summary b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">Lorem ipsum eyebrow announcement</p>
+      <h1 class="title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit lorem ipsum dolor.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Get started for free</button>
+        <button class="cta-secondary" type="button">Talk to sales</button>
+      </div>
+    </header>
+
+    <section class="tier" aria-label="Pricing tier specimen">
+      <div class="tier-card">
+        <h2 class="tier-name">Lorem</h2>
+        <p class="tier-blurb">Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit ipsum dolor.</p>
+        <p class="tier-price">$23 <span>/ month, billed annually</span></p>
+        <ul class="features">
+          <li>Lorem ipsum dolor sit amet consectetur</li>
+          <li>Adipiscing elit sed do eiusmod tempor</li>
+          <li>Incididunt ut labore et dolore magna aliqua</li>
+          <li>Ut enim ad minim veniam quis nostrud</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="mm" aria-label="Machine Mode strip">
+      <p class="mm-label">// MACHINE MODE</p>
+      <p class="mm-line">lorem_ipsum_dolor_sit_amet → 01.001.0</p>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">H0 display</span>
+        <span class="step-size">48 → 112 / 1.04 / 600</span>
+        <span class="step-sample" style="font-size:112px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">H1 display</span>
+        <span class="step-size">44 → 80 / 1.04 / 600</span>
+        <span class="step-sample h1" style="font-size:80px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">H2 display</span>
+        <span class="step-size">32 → 56 / 1.04 / 600</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">H3 display</span>
+        <span class="step-size">28 → 40 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:40px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">H4 subhead</span>
+        <span class="step-size">22 → 32 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">paragraph-xl</span>
+        <span class="step-size">24 → 32 / 1.4 / 400</span>
+        <span class="step-sample body" style="font-size:32px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">paragraph-lg</span>
+        <span class="step-size">17.6 → 20 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">paragraph-body</span>
+        <span class="step-size">16 / 1.6 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">paragraph-sm</span>
+        <span class="step-size">14 / 1.6 / 400</span>
+        <span class="step-sample body" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">caption</span>
+        <span class="step-size">12.8 / 1.2 / 550</span>
+        <span class="step-sample body" style="font-size:12.8px; font-weight:550;">Lorem ipsum caption footnote</span>
+      </div>
+    </section>
+
+    <section class="summary" aria-label="Type family summary">
+      <span>display · <b>WF Visual Sans Variable, wght 600 / opsz 36</b></span>
+      <span>body · <b>WF Visual Sans Variable, wght 400 / 500</b></span>
+      <span>mono · <b>WFVisualSans-Mono (machine-mode only); Inconsolata (inline code)</b></span>
+      <span>base · <b>16px / 25.6px (1.60)</b></span>
+      <span>H1 · <b>fluid 44 → 80px / 1.04 / -0.01em / wght 600</b></span>
+      <span>button · <b>16px / wght 500 / -0.01em / radius 4px / padding 1em 1.5em</b></span>
+      <span>scale · <b>fluid clamps top to bottom; never fixed steps at display tier</b></span>
+      <span>chrome · <b>1px hairline border #D8D8D8 on cards; no drop shadow at rest</b></span>
+      <span>accent · <b>#146EF5 (Webflow Blue) carries every CTA, link hover, focus ring</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

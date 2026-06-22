@@ -1,0 +1,206 @@
+<!--
+  Asset: notion-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: cta-block; paper-and-ink + sans-system-modern + primary-pill + ghost-button
+  Inspired by: Notion (notion.com/, notion.com/product, notion.com/product/ai)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001          (warm paper bg, near-black ink)
+    - type-pairings/sans-system-modern-001 (humanist sans, sentence case)
+    - headings/display-tight-001           (sans display, tight tracking)
+    - body-text/lead-paragraph-001         (supporting subhead measure)
+    - buttons/primary-pill-001             (brand-blue rounded primary)
+    - buttons/ghost-bordered-001           (hairline ghost secondary)
+    - dividers/hairline-rule-001           (optional rule above the block)
+  Notes:
+    - The block sits flush on the warm-paper page surface, centered.
+      No card, no tinted band, no shadow. The brand blue on the
+      primary pill is the only saturated moment; everything else is
+      ink on paper.
+    - Headline is sentence case ("Try Notion for free."), not title
+      case. One short supporting line. Dual button row: primary
+      "Get Notion free" (rounded, brand blue) + secondary "Request
+      a demo" (ghost, hairline border on warm paper).
+    - Inline ornament: the 5px button radius (subtle round, not pill),
+      the centered alignment of the closing block (the rest of the
+      page above is often left-aligned in feature sections), and the
+      generous space-12 vertical padding that lets the block breathe
+      against the footer below.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the Notion marketing sans. Open-license
+     substitute; the Notion system itself ships a custom humanist
+     sans on production. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: warm paper. The closing CTA sits flush on the
+   * page surface; no separator above it on most Notion pages, just
+   * generous whitespace. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container holding a centered content
+   * column. Notion's closing CTAs are centered, unlike many of the
+   * feature sections above them which are left-aligned. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  /* Content column: centered, narrow measure for the headline and
+   * supporting line, then a centered button row. */
+  .cta__content {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: sentence case, tight tracking, sans display.
+   * Notion's closing headlines are short declarative phrases:
+   * "Try Notion for free.", "Meet the night shift.", etc. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4.5vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps short headlines from
+     * orphaning their final word on narrow widths. */
+  }
+
+  /* Supporting line: one short sentence under the headline. Muted
+   * ink, relaxed leading, single sentence (never a paragraph). */
+  .cta__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 52ch;
+    font-weight: 400;
+  }
+
+  /* Button row: primary brand-blue pill + ghost secondary. Centered
+   * under the supporting line; wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Primary: brand-blue fill, white label, 5px radius (subtle round,
+   * not a SaaS pill). The single saturated moment in the block. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 5px radius is the Notion-system signature.
+     * Sits between dev-tool hard corners and SaaS pill, reads as
+     * warm without reading as playful. */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: no fill, hairline border in warm gray, ink
+   * label. Same dimensions as primary so the pair reads as a
+   * deliberate two-action set, not primary plus link. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: rgba(15, 15, 15, 0.04);
+    border-color: var(--ds-text-muted);
+    /* Inline ornament: warm-paper hover tint at 4% opacity; reads as
+     * a paper-press, not a UI fill. */
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet.</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec libero non nisi convallis fringilla.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum free</a>
+        <a class="cta__btn--ghost" href="#">Request a demo</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

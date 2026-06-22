@@ -1,0 +1,314 @@
+<!--
+  Asset: studio-case-studies-grid-001
+  Class: feature-grids (whole)
+  Pattern: oversized-statement, scroll-driven-reveal, paper-and-ink
+  Inspired by: Locomotive
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/locomotive-mono-001       (cream-and-ink palette, no saturated accent)
+    - type-pairings/sans-system-modern-001   (display + body + mono families)
+    - headings/kinetic-headline-001          (oversized title lift-on-hover)
+    - dividers/hairline-rule-001             (1.6px black rule between rows)
+    - kickers/mono-eyebrow-001               (mono section overline)
+    - links/external-arrow-001               (read-more diagonal arrow affordance)
+  Notes:
+    - Studio case-studies "grid" is intentionally a vertical list, not a tiled
+      grid: each row is one project, separated by a 1.6px solid black hairline
+      on warm cream paper. The kinetic-title atom does the heavy lifting; the
+      grid frames it with rules and metadata.
+    - Tokens carry the cream palette, the family stack, and motion timing. The
+      black image-overlay (revealed on row hover) is inline ornament because
+      the inset position and the cursor-following anchor are row-specific
+      character, not a contract role.
+    - Lorem ipsum throughout; honors prefers-reduced-motion.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>studio-case-studies-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Tight stands in for the proprietary LocomotiveNew display face;
+     closest free grotesque with comparable proportions at oversized sizes. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+
+  /* Section shell. Wide column, generous top/bottom padding. The studio
+   * register favors breathing room around the case-study stack. */
+  .case-studies {
+    max-width: 1456px;
+    margin: 0 auto;
+  }
+
+  /* Section header row: mono overline left, view-all anchor right. The
+   * overline mirrors Locomotive's .c-section-overline kicker convention. */
+  .case-studies__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    padding-bottom: var(--ds-space-3);
+    /* The header trails a thin warm hairline above the rule-stack to differentiate
+     * the section overline from the inter-row rules below. */
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .case-studies__overline {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .case-studies__viewall {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    text-decoration: none;
+    /* Diagonal external arrow affordance lives inline as a sibling span. */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .case-studies__viewall::after {
+    content: "↗";
+    /* Inline ornament: the NE arrow glyph is a single literal character so the
+     * asset stays self-contained without an icon file. */
+    font-size: var(--ds-text-base);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .case-studies__viewall:hover::after { transform: translate(2px, -2px); }
+
+  /* The list. A vertical stack of project rows; the last row paints the
+   * closing rule. Top rule on each row gives the rhythm. */
+  .case-studies__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1.6px solid var(--ds-border);
+    /* The 1.6px stroke is the observed source value; rounded up from a 1px
+     * grid because the rule reads as a deliberate stroke at this scale. */
+  }
+
+  .case-studies__item {
+    border-top: 1.6px solid var(--ds-border);
+    padding: 20px 0;
+    /* The 20px row padding is observed inline rather than tokenized; it sits
+     * between --ds-space-5 (24) and a 4-step offset, and is part of the row's
+     * rhythm character rather than a reusable spacing role. */
+    position: relative;
+    overflow: hidden;
+    /* Establishes the clipping window for the hover overlay; the title is
+     * oversized and would otherwise bleed past the row boundary. */
+  }
+
+  .case-studies__link {
+    /* The whole row is a link; the inner title is the visible affordance. */
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-8);
+    text-decoration: none;
+    color: var(--ds-text);
+  }
+
+  /* The oversized kinetic title. Mirrors headings/kinetic-headline-001:
+   * weight 400, line-height 1.0, normal tracking. Lifts on row hover. */
+  .case-studies__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 8vw, var(--ds-text-6xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+    /* The clipping window for the lift; the inner span is what actually moves. */
+    display: block;
+    overflow: hidden;
+    padding: 0.02em 0;
+  }
+  .case-studies__title-inner {
+    display: inline-block;
+    will-change: transform;
+    transition: transform var(--ds-duration-slow) var(--ds-ease-emphasize);
+  }
+  .case-studies__item:hover .case-studies__title-inner,
+  .case-studies__link:focus-visible .case-studies__title-inner {
+    transform: translate3d(0, -0.08em, 0);
+  }
+
+  /* Per-row stagger: each row's lift trails the previous by 40ms so the
+   * stack reads as choreographed rather than identical. Inline because the
+   * stagger value is row-specific, not a reusable motion role. */
+  .case-studies__item:nth-child(2) .case-studies__title-inner { transition-delay: 40ms; }
+  .case-studies__item:nth-child(3) .case-studies__title-inner { transition-delay: 80ms; }
+  .case-studies__item:nth-child(4) .case-studies__title-inner { transition-delay: 120ms; }
+
+  /* Metadata column to the right of each title: discipline + year, mono. */
+  .case-studies__meta {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--ds-space-1);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .case-studies__meta-year { color: var(--ds-text); }
+
+  /* The hover-reveal overlay. On Locomotive the visual fills the row with a
+   * cursor-anchored image; we stand it in with a black inversion panel that
+   * slides up on hover. Inline ornament: the inset position and the slide
+   * direction are row character, not contract. */
+  .case-studies__overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    background: var(--ds-surface-2);
+    color: var(--ds-accent-2);
+    transform: translateY(101%);
+    transition: transform var(--ds-duration-slow) var(--ds-ease-emphasize);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    gap: var(--ds-space-8);
+  }
+  .case-studies__item:hover .case-studies__overlay,
+  .case-studies__link:focus-visible ~ .case-studies__overlay {
+    transform: translateY(0);
+  }
+  .case-studies__overlay-title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 8vw, var(--ds-text-6xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    margin: 0;
+  }
+  .case-studies__overlay-cue {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* Focus ring: electric blue is the one keyboard-state shift the palette
+   * permits. */
+  .case-studies__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: var(--ds-space-3);
+  }
+
+  /* Reduced motion: collapse the kinetic lift and the overlay slide. The
+   * overlay is hidden rather than instantly painted, since instant inversion
+   * on hover would feel jarring without the slow easing. */
+  @media (prefers-reduced-motion: reduce) {
+    .case-studies__title-inner,
+    .case-studies__overlay,
+    .case-studies__viewall::after {
+      transition: none;
+    }
+    .case-studies__item:hover .case-studies__title-inner,
+    .case-studies__link:focus-visible .case-studies__title-inner {
+      transform: none;
+    }
+    .case-studies__item:hover .case-studies__overlay,
+    .case-studies__link:focus-visible ~ .case-studies__overlay {
+      transform: translateY(101%);
+    }
+  }
+
+  @media (max-width: 720px) {
+    body { padding: var(--ds-space-8) var(--ds-space-5); }
+    .case-studies__link { gap: var(--ds-space-3); }
+    .case-studies__meta { font-size: var(--ds-text-2xs); }
+  }
+</style>
+</head>
+<body>
+  <section class="case-studies" aria-labelledby="cs-overline">
+    <header class="case-studies__head">
+      <p class="case-studies__overline" id="cs-overline">01 / Lorem ipsum dolor</p>
+      <a class="case-studies__viewall" href="#">View all sit amet</a>
+    </header>
+    <ul class="case-studies__list">
+      <li class="case-studies__item">
+        <a class="case-studies__link" href="#">
+          <h3 class="case-studies__title"><span class="case-studies__title-inner">Lorem ipsum</span></h3>
+          <span class="case-studies__meta">
+            <span class="case-studies__meta-discipline">Brand / Web</span>
+            <span class="case-studies__meta-year">2024</span>
+          </span>
+        </a>
+        <div class="case-studies__overlay" aria-hidden="true">
+          <p class="case-studies__overlay-title">Lorem ipsum</p>
+          <span class="case-studies__overlay-cue">Read more ↗</span>
+        </div>
+      </li>
+      <li class="case-studies__item">
+        <a class="case-studies__link" href="#">
+          <h3 class="case-studies__title"><span class="case-studies__title-inner">Dolor sit amet</span></h3>
+          <span class="case-studies__meta">
+            <span class="case-studies__meta-discipline">Strategy / Digital</span>
+            <span class="case-studies__meta-year">2024</span>
+          </span>
+        </a>
+        <div class="case-studies__overlay" aria-hidden="true">
+          <p class="case-studies__overlay-title">Dolor sit amet</p>
+          <span class="case-studies__overlay-cue">Read more ↗</span>
+        </div>
+      </li>
+      <li class="case-studies__item">
+        <a class="case-studies__link" href="#">
+          <h3 class="case-studies__title"><span class="case-studies__title-inner">Consectetur</span></h3>
+          <span class="case-studies__meta">
+            <span class="case-studies__meta-discipline">Identity / Motion</span>
+            <span class="case-studies__meta-year">2023</span>
+          </span>
+        </a>
+        <div class="case-studies__overlay" aria-hidden="true">
+          <p class="case-studies__overlay-title">Consectetur</p>
+          <span class="case-studies__overlay-cue">Read more ↗</span>
+        </div>
+      </li>
+      <li class="case-studies__item">
+        <a class="case-studies__link" href="#">
+          <h3 class="case-studies__title"><span class="case-studies__title-inner">Adipiscing elit</span></h3>
+          <span class="case-studies__meta">
+            <span class="case-studies__meta-discipline">Web / Editorial</span>
+            <span class="case-studies__meta-year">2023</span>
+          </span>
+        </a>
+        <div class="case-studies__overlay" aria-hidden="true">
+          <p class="case-studies__overlay-title">Adipiscing elit</p>
+          <span class="case-studies__overlay-cue">Read more ↗</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!--
+  Asset: locomotive-about-team-001
+  Class: about-team (whole)
+  Pattern: numbered-section, paper-and-ink, monochrome-palette
+  Inspired by: Locomotive (locomotive.ca/en/agency)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/locomotive-mono-001     (cream-paper-and-ink palette)
+    - dividers/hairline-rule-001           (1.6px solid black band + warm-ink row hairlines)
+    - headings/kinetic-headline-001        (oversized 70px department H2)
+    - kickers/mono-eyebrow-001             (the "01 / 02 / 03" numbered department prefix)
+    - labels/metadata-mono-001             (role + join-year metadata column)
+  Notes:
+    - Locomotive's about-team treatment is NOT a portrait grid. The roster
+      lives on /en/agency as three department-segmented lists (Design /
+      Development / Operations), each prefixed with an oversized "01 / 02
+      / 03" numeric counter and headed by a 70px H2. Rows are
+      name-on-the-left, role-and-join-year-on-the-right, separated by warm-
+      ink 15% hairlines. The 1.6px solid-black band above each department
+      heading is the load-bearing chrome moment; row hairlines are quiet.
+    - The transferable mechanic is the inversion: instead of headshots
+      humanising a studio, Locomotive lets discipline plus tenure carry the
+      narrative. The earliest join years (2008 founders) anchor each
+      department; the newest (2025, 2026) signal momentum. Reading top to
+      bottom is reading the studio's growth as a timeline.
+    - Variable parts: every --ds-* token. Inline ornament: the 1.6px solid
+      black department-band thickness, the 12-column-wide name column on
+      desktop, the focus-only electric-blue underline (the one moment color
+      surfaces in the whole asset). All marked at use site.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-about-team-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- LocomotiveNew is a custom face Locomotive ships through their own font
+     server; HelveticaNowDisplay is licensed. We rely on the local system
+     stack declared in tokens.css; fallbacks read faithfully on macOS, iOS,
+     and modern Windows. No external font load. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-16);
+  }
+
+  /* ---------- Page opener ----------
+   * A single statement headline sets the editorial register; no CTA, no dek.
+   * Locomotive's agency page opens with a "Digital-first Design" mark and
+   * the manifesto section above the team list. We carry the same restraint. */
+  .opener {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 880px;
+  }
+  .opener__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+    margin: 0;
+  }
+  .opener__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 720px;
+  }
+
+  /* ---------- Department block ----------
+   * One block per department. Opens with a 1.6px solid-black hairline band
+   * (Locomotive's section-rule statement); the heading row sits underneath
+   * with the numeric kicker on the left and the H2 on the right. */
+  .department {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+    /* Inline ornament: the 1.6px (not 1px) solid-black rule above each
+       department title. Locomotive draws section dividers heavier than
+       browser-default 1px so they read as deliberate marks. */
+    border-top: 1.6px solid var(--ds-border);
+    padding-top: var(--ds-space-6);
+  }
+
+  .department__head {
+    display: grid;
+    grid-template-columns: minmax(64px, 96px) 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 720px) {
+    .department__head { grid-template-columns: minmax(48px, 64px) 1fr; gap: var(--ds-space-4); }
+  }
+
+  .department__num {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+    margin: 0;
+    /* Inline ornament: the numeric prefix tracks normal, not opened; it is
+       read as a number in the same voice as the title, not as a uppercase
+       kicker. Locomotive does not letter-space their counters. */
+  }
+
+  .department__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+    margin: 0;
+  }
+  @media (max-width: 720px) {
+    .department__title { font-size: var(--ds-text-3xl); }
+    .department__num { font-size: var(--ds-text-lg); }
+  }
+
+  /* ---------- Roster list ---------- */
+  .roster {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .roster__row {
+    display: grid;
+    grid-template-columns: minmax(64px, 96px) 1fr 1fr auto;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-4) 0;
+    border-top: 1px solid var(--ds-hairline);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .roster__row:last-child {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .roster__row:hover .roster__name {
+    /* Hover treatment: row name lifts to the warm strong-ink voice, mirroring
+       Locomotive's hover behavior on featured-work tile titles (a tonal shift,
+       not a color hit). */
+    color: var(--ds-text-strong);
+  }
+
+  @media (max-width: 720px) {
+    .roster__row {
+      grid-template-columns: minmax(48px, 64px) 1fr;
+      grid-template-areas:
+        "idx name"
+        "idx role"
+        "idx year";
+      gap: var(--ds-space-1) var(--ds-space-4);
+      padding: var(--ds-space-3) 0;
+    }
+    .roster__idx  { grid-area: idx; }
+    .roster__name { grid-area: name; }
+    .roster__role { grid-area: role; }
+    .roster__year { grid-area: year; }
+  }
+
+  .roster__idx {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    /* Inline ornament: a quiet 01..09 counter inside each department; the
+       only mono moment in the whole asset, and the one place tracking opens. */
+  }
+  .roster__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+    margin: 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .roster__role {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .roster__year {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- Closing affordance ----------
+   * Locomotive's agency page ends with a careers link below the team list.
+   * One quiet underline-on-hover link, no filled pill. The electric blue
+   * surfaces only at :focus-visible. */
+  .careers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-10);
+    border-top: 1.6px solid var(--ds-border);
+    max-width: 720px;
+  }
+  .careers__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+    margin: 0;
+  }
+  .careers__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    text-decoration: none;
+    align-self: flex-start;
+    padding: var(--ds-space-3) 0;
+    border-bottom: 1px solid var(--ds-text);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .careers__link:hover { color: var(--ds-text-muted); }
+  .careers__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+  .careers__arrow {
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .careers__link:hover .careers__arrow { transform: translateX(3px); }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <section class="opener" aria-labelledby="opener-title">
+      <h1 id="opener-title" class="opener__title">Lorem ipsum dolor sit amet.</h1>
+      <p class="opener__dek">Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud.</p>
+    </section>
+
+    <!-- Department 01 -->
+    <section class="department" aria-labelledby="dept-1-title">
+      <header class="department__head">
+        <p class="department__num" aria-hidden="true">01</p>
+        <h2 id="dept-1-title" class="department__title">Lorem</h2>
+      </header>
+      <ol class="roster" role="list">
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">01</span>
+          <p class="roster__name">Aenean Tristique</p>
+          <p class="roster__role">Co-founder - President</p>
+          <p class="roster__year">2008</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">02</span>
+          <p class="roster__name">Vivamus Lacinia</p>
+          <p class="roster__role">Creative Director</p>
+          <p class="roster__year">2014</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">03</span>
+          <p class="roster__name">Curabitur Mollis</p>
+          <p class="roster__role">Senior Art Director</p>
+          <p class="roster__year">2017</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">04</span>
+          <p class="roster__name">Phasellus Iaculis</p>
+          <p class="roster__role">Lead UX</p>
+          <p class="roster__year">2020</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">05</span>
+          <p class="roster__name">Maecenas Sapien</p>
+          <p class="roster__role">Senior Art Director</p>
+          <p class="roster__year">2020</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">06</span>
+          <p class="roster__name">Suspendisse Auctor</p>
+          <p class="roster__role">Creative Director</p>
+          <p class="roster__year">2022</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">07</span>
+          <p class="roster__name">Praesent Volutpat</p>
+          <p class="roster__role">Designer</p>
+          <p class="roster__year">2023</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">08</span>
+          <p class="roster__name">Quisque Faucibus</p>
+          <p class="roster__role">UX Designer</p>
+          <p class="roster__year">2024</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">09</span>
+          <p class="roster__name">Donec Posuere</p>
+          <p class="roster__role">Design Lead</p>
+          <p class="roster__year">2025</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Department 02 -->
+    <section class="department" aria-labelledby="dept-2-title">
+      <header class="department__head">
+        <p class="department__num" aria-hidden="true">02</p>
+        <h2 id="dept-2-title" class="department__title">Ipsum</h2>
+      </header>
+      <ol class="roster" role="list">
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">01</span>
+          <p class="roster__name">Etiam Porta</p>
+          <p class="roster__role">Partner - Technical Director</p>
+          <p class="roster__year">2008</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">02</span>
+          <p class="roster__name">Fusce Dapibus</p>
+          <p class="roster__role">Co-Technical Director</p>
+          <p class="roster__year">2011</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">03</span>
+          <p class="roster__name">Integer Posuere</p>
+          <p class="roster__role">Back-end Developer</p>
+          <p class="roster__year">2013</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">04</span>
+          <p class="roster__name">Cras Mattis</p>
+          <p class="roster__role">Lead Front-end Developer</p>
+          <p class="roster__year">2018</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">05</span>
+          <p class="roster__name">Nulla Vitae</p>
+          <p class="roster__role">Back-end Developer</p>
+          <p class="roster__year">2020</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">06</span>
+          <p class="roster__name">Sed Cursus</p>
+          <p class="roster__role">Front-end Developer</p>
+          <p class="roster__year">2021</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">07</span>
+          <p class="roster__name">Morbi Leo</p>
+          <p class="roster__role">Front-end Developer</p>
+          <p class="roster__year">2025</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">08</span>
+          <p class="roster__name">Nam Quam</p>
+          <p class="roster__role">Front-end Developer</p>
+          <p class="roster__year">2026</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Department 03 -->
+    <section class="department" aria-labelledby="dept-3-title">
+      <header class="department__head">
+        <p class="department__num" aria-hidden="true">03</p>
+        <h2 id="dept-3-title" class="department__title">Dolor</h2>
+      </header>
+      <ol class="roster" role="list">
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">01</span>
+          <p class="roster__name">Pellentesque Habitant</p>
+          <p class="roster__role">Co-founder and Vice-President</p>
+          <p class="roster__year">2008</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">02</span>
+          <p class="roster__name">Vestibulum Ante</p>
+          <p class="roster__role">Business Development</p>
+          <p class="roster__year">2012</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">03</span>
+          <p class="roster__name">Curabitur Sodales</p>
+          <p class="roster__role">Accountant</p>
+          <p class="roster__year">2012</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">04</span>
+          <p class="roster__name">Aliquam Erat</p>
+          <p class="roster__role">Production Director</p>
+          <p class="roster__year">2020</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">05</span>
+          <p class="roster__name">Ut Pharetra</p>
+          <p class="roster__role">Account Director</p>
+          <p class="roster__year">2022</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">06</span>
+          <p class="roster__name">Aliquet Bibendum</p>
+          <p class="roster__role">Producer</p>
+          <p class="roster__year">2023</p>
+        </li>
+        <li class="roster__row" role="listitem">
+          <span class="roster__idx">07</span>
+          <p class="roster__name">Quisque Tristique</p>
+          <p class="roster__role">Producer</p>
+          <p class="roster__year">2025</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="careers" aria-labelledby="careers-title">
+      <h2 id="careers-title" class="careers__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      <a class="careers__link" href="#">
+        <span>View open positions</span>
+        <span class="careers__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </section>
+
+  </main>
+</body>
+</html>

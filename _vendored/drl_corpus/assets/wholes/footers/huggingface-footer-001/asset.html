@@ -1,0 +1,351 @@
+<!--
+  Asset: huggingface-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet
+  Inspired by: Hugging Face (huggingface.co homepage and /pricing, captured 2026-05-20)
+  Notes:
+    - Mega-footer at community-ML register: hug emoji logomark plus
+      "Hugging Face" wordmark at left, three sentence-case link columns
+      (Website, Company, Resources), a social/status cluster on the right,
+      hairline rule, then a quiet meta row carrying copyright, status dot,
+      and theme-toggle. No newsletter form on this surface; HF routes
+      community via Discord and Forum rather than mailing list.
+    - Variable: every color, type size, spacing step. Inline: the hug-face
+      emoji glyph (HF's recognized brand mark, used as text), social icon
+      SVG paths (recognized platform glyphs).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-footer-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Source Sans 3 (display + body) + Source Code Pro (mono): HF's open-source pair. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8) var(--ds-space-6);
+  }
+
+  /* Footer shell at ~1280px max measure. HF's footer breathes wide. */
+  .ftr {
+    max-width: 1280px;
+    margin: 0 auto;
+    color: var(--ds-text-muted);
+  }
+
+  /* Top band: brand block on the left, three link columns, then a
+   * social/status cluster on the right. Stacks at narrow widths. */
+  .ftr__top {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.4fr) repeat(3, minmax(0, 1fr)) minmax(180px, 1.1fr);
+    gap: var(--ds-space-8) var(--ds-space-6);
+    padding-bottom: var(--ds-space-8);
+  }
+  @media (max-width: 960px) {
+    .ftr__top { grid-template-columns: 1fr 1fr; }
+    .ftr__brand-block, .ftr__social-block { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
+    .ftr__top { grid-template-columns: 1fr; }
+  }
+
+  /* Brand block: hug emoji logomark + wordmark + short tagline. The hug
+   * emoji glyph (drawn here with the actual unicode codepoint as on HF)
+   * IS the brand mark; the words "Hugging Face" sit beside it as label. */
+  .ftr__brand-block { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .ftr__brand-row {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: var(--ds-text); text-decoration: none;
+  }
+  .ftr__brand-emoji {
+    /* The hug-face emoji is the literal logomark; we render at 28px to
+     * match the footer brand scale. Color is inherited; emoji is its own
+     * glyph color, so the variable here mainly tunes alignment. */
+    font-size: 28px;
+    line-height: 1;
+    /* Apple Color Emoji fallback chain so the glyph renders on all OSes. */
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+  .ftr__brand-wm {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .ftr__brand-tagline {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    max-width: 28ch;
+  }
+
+  /* Column header: sentence-case sans, 16px, weight 600. HF does NOT use
+   * mono-uppercase here; the register is academic, not dev-tool. */
+  .ftr__col-h {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Column link list: 14px sans in muted gray. No underline at rest;
+   * link lifts to ink-strong on hover with a subtle underline. */
+  .ftr__list {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: var(--ds-space-2);
+  }
+  .ftr__link {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: var(--ds-leading-normal);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__link:hover {
+    color: var(--ds-text-strong);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .ftr__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+
+  /* Social + status cluster: social icons row, then a status pill. */
+  .ftr__social-block { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+  .ftr__social-h {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .ftr__socials { display: inline-flex; align-items: center; gap: var(--ds-space-1); }
+  .ftr__social {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+    text-decoration: none;
+  }
+  .ftr__social:hover { color: var(--ds-text-strong); }
+  .ftr__social:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text-strong);
+  }
+  .ftr__social svg { width: 18px; height: 18px; display: block; }
+
+  /* Status pill: tiny green dot + "All systems operational." */
+  .ftr__status {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    padding: 6px 10px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    text-decoration: none;
+    align-self: flex-start;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__status:hover { border-color: var(--ds-text-muted); color: var(--ds-text); }
+  .ftr__status-dot {
+    width: 8px; height: 8px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-success);
+    /* Soft halo around the operational dot; one-off ornament. */
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+  }
+
+  /* Hairline rule between top band and meta row. */
+  .ftr__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-border);
+    margin: 0;
+  }
+
+  /* Meta row: legal cluster left; theme toggle right. */
+  .ftr__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-5) 0 0;
+    flex-wrap: wrap;
+  }
+  .ftr__legal {
+    display: inline-flex; flex-wrap: wrap; align-items: center;
+    gap: var(--ds-space-4);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+  }
+  .ftr__legal a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__legal a:hover { color: var(--ds-text-strong); text-decoration: underline; }
+
+  /* Theme toggle: small button with current-theme label. HF surfaces a
+   * "System theme" switcher in the footer for users who pinned dark/light. */
+  .ftr__theme {
+    appearance: none;
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 6px 10px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__theme:hover { background: var(--ds-surface-2); color: var(--ds-text); }
+  .ftr__theme svg { width: 14px; height: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ftr__link, .ftr__social, .ftr__status, .ftr__theme, .ftr__legal a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="ftr" aria-labelledby="ftr-heading">
+    <h2 id="ftr-heading" style="position:absolute;left:-9999px">Lorem ipsum platform footer</h2>
+
+    <div class="ftr__top">
+      <!-- Brand block: hug-face emoji logomark + wordmark + tagline.
+           The emoji IS the mark; the wordmark labels it. -->
+      <div class="ftr__brand-block">
+        <a href="#" class="ftr__brand-row" aria-label="Lorem home">
+          <!-- Inline ornament: the hug-face emoji as the recognized brand glyph. -->
+          <span class="ftr__brand-emoji" aria-hidden="true">&#x1F917;</span>
+          <span class="ftr__brand-wm">Lorem Ipsum</span>
+        </a>
+        <p class="ftr__brand-tagline">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore.
+        </p>
+      </div>
+
+      <!-- Column: Website -->
+      <div>
+        <h3 class="ftr__col-h">Lorem</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Ipsum dolor</a></li>
+          <li><a class="ftr__link" href="#">Sit amet</a></li>
+          <li><a class="ftr__link" href="#">Consectetur</a></li>
+          <li><a class="ftr__link" href="#">Adipiscing</a></li>
+          <li><a class="ftr__link" href="#">Elit sed do</a></li>
+          <li><a class="ftr__link" href="#">Eiusmod tempor</a></li>
+        </ul>
+      </div>
+
+      <!-- Column: Company -->
+      <div>
+        <h3 class="ftr__col-h">Dolor</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Incididunt ut</a></li>
+          <li><a class="ftr__link" href="#">Labore et dolore</a></li>
+          <li><a class="ftr__link" href="#">Magna aliqua</a></li>
+          <li><a class="ftr__link" href="#">Enim ad minim</a></li>
+          <li><a class="ftr__link" href="#">Veniam quis</a></li>
+          <li><a class="ftr__link" href="#">Nostrud exer</a></li>
+        </ul>
+      </div>
+
+      <!-- Column: Resources -->
+      <div>
+        <h3 class="ftr__col-h">Sit Amet</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Citation ullam</a></li>
+          <li><a class="ftr__link" href="#">Laboris nisi</a></li>
+          <li><a class="ftr__link" href="#">Aliquip ex</a></li>
+          <li><a class="ftr__link" href="#">Commodo cons</a></li>
+          <li><a class="ftr__link" href="#">Duis aute</a></li>
+          <li><a class="ftr__link" href="#">Irure dolor</a></li>
+        </ul>
+      </div>
+
+      <!-- Social + status cluster on the right. -->
+      <div class="ftr__social-block">
+        <h3 class="ftr__social-h">Consectetur</h3>
+        <div class="ftr__socials" aria-label="Social links">
+          <a class="ftr__social" href="#" aria-label="GitHub">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M8 .2a8 8 0 0 0-2.5 15.6c.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1 0-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.6 7.6 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.5.8 1.2.8 2.1 0 3-1.8 3.7-3.6 3.9.3.3.6.8.6 1.6v2.3c0 .2.1.5.5.4A8 8 0 0 0 8 .2z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="Twitter / X">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M11.7 1.5h2.4l-5.3 6.1 6.2 7.9h-4.8l-3.8-4.9-4.3 4.9H-.3l5.6-6.5L-.6 1.5h4.9l3.4 4.5 4-4.5zm-.8 12.6h1.3L4.3 2.8H2.9l8 11.3z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="LinkedIn">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M3 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zM3.2 6h2.6v8H3.2V6zm4.4 0H10v1.1c.4-.7 1.3-1.3 2.5-1.3 2 0 2.7 1.3 2.7 3.1V14H12.6V9.4c0-1-.4-1.7-1.4-1.7-.9 0-1.4.6-1.4 1.7V14H7.6V6z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="Discord">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M13.2 3.2A12.6 12.6 0 0 0 10.1 2.2c-.1.2-.3.5-.4.8a11.4 11.4 0 0 0-3.4 0c-.1-.3-.3-.6-.4-.8a12.7 12.7 0 0 0-3.1 1A13.1 13.1 0 0 0 .4 11a12.8 12.8 0 0 0 3.8 1.9c.3-.4.6-.9.8-1.4a8.2 8.2 0 0 1-1.3-.6c.1-.1.2-.2.3-.2 2.6 1.2 5.4 1.2 8 0 .1.1.2.2.3.2-.4.2-.8.4-1.3.6.2.5.5 1 .8 1.4A12.8 12.8 0 0 0 15.6 11a13 13 0 0 0-2.4-7.8zM5.6 9.4c-.7 0-1.4-.7-1.4-1.5 0-.9.6-1.5 1.4-1.5.7 0 1.4.7 1.4 1.5 0 .9-.6 1.5-1.4 1.5zm4.8 0c-.7 0-1.4-.7-1.4-1.5 0-.9.6-1.5 1.4-1.5.7 0 1.4.7 1.4 1.5 0 .9-.6 1.5-1.4 1.5z"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Status pill: live operational indicator. -->
+        <a class="ftr__status" href="#" aria-label="System status">
+          <span class="ftr__status-dot" aria-hidden="true"></span>
+          <span>All systems operational</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Hairline between top band and meta row. -->
+    <hr class="ftr__rule"/>
+
+    <!-- Meta row: copyright and small legal links left; theme toggle right. -->
+    <div class="ftr__meta">
+      <div class="ftr__legal">
+        <span>(c) 2026 Lorem Ipsum, Inc.</span>
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Brand</a>
+      </div>
+
+      <button type="button" class="ftr__theme" aria-label="Choose theme">
+        <!-- Half-sun-half-moon glyph: HF's "System theme" switcher cue. -->
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="8" cy="8" r="5"/>
+          <path d="M8 3v10M3 8h10" />
+        </svg>
+        <span>System theme</span>
+      </button>
+    </div>
+  </footer>
+</body>
+</html>

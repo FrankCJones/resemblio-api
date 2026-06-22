@@ -1,0 +1,315 @@
+<!--
+  Asset: anthropic
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Anthropic
+  Notes:
+    - Anthropic's full component vocabulary on one page: buttons (4 variants),
+      input, cards (2), badges (2), icons, wordmark, body callout, byline, tooltip.
+    - All components share tokens.css; no inline overrides except minimal hover-state demos.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+  }
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-5); }
+
+  /* Buttons */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-text-strong); color: var(--ds-bg);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 10px var(--ds-space-5); border-radius: var(--ds-radius-md);
+  }
+  .btn-ghost {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ds-text);
+    border: 1px solid var(--ds-text);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 9px var(--ds-space-5); border-radius: var(--ds-radius-md);
+  }
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: var(--ds-text); font-weight: 500; text-decoration: none;
+    border-bottom: 1px solid var(--ds-text); padding-bottom: 2px;
+  }
+  .btn-link svg { width: 14px; height: 14px; }
+  .btn-icon {
+    appearance: none; border: 0; cursor: pointer;
+    width: 32px; height: 32px; border-radius: var(--ds-radius-md);
+    background: transparent; color: #3D3D3A;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-icon svg { width: 16px; height: 16px; }
+
+  /* Input */
+  .search {
+    display: flex; align-items: center; gap: var(--ds-space-2);
+    background: var(--ds-surface); border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md); padding: 0 var(--ds-space-3);
+    height: 40px; max-width: 420px; width: 100%;
+  }
+  .search svg.icon { width: 16px; height: 16px; color: var(--ds-text-muted); }
+  .search input {
+    flex: 1; background: transparent; border: 0; outline: none;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text);
+    height: 100%;
+  }
+  .search input::placeholder { color: var(--ds-text-muted); }
+  .kbd { display: inline-flex; gap: 2px; color: var(--ds-text-muted); font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); }
+  .kbd kbd { background: var(--ds-surface-2); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-sm); padding: 1px 4px; min-width: 18px; text-align: center; font: inherit; }
+
+  /* Badges */
+  .badge-cat { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text); }
+  .badge-date { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); }
+  .badge-row { display: inline-flex; gap: var(--ds-space-3); align-items: baseline; }
+  .badge-sep { color: var(--ds-text-muted); }
+
+  /* Icons */
+  .icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--ds-space-4); max-width: 520px; }
+  .icon-cell { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); color: var(--ds-text); }
+  .icon-cell svg { width: 20px; height: 20px; }
+  .icon-cell .lbl { font-family: var(--ds-font-mono); font-size: var(--ds-text-2xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); }
+
+  /* Cards */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ds-space-6); }
+  .card-hero {
+    background: var(--ds-surface); border: 0.8px solid var(--ds-border);
+    border-radius: var(--ds-radius-md); overflow: hidden;
+  }
+  .card-hero__media { aspect-ratio: 16/9; background: linear-gradient(135deg, #E8DCC9, #D9C4A6); /* inline: warm placeholder gradient */ }
+  .card-hero__body { padding: var(--ds-space-5); }
+  .card-hero__title { font-family: var(--ds-font-display); font-size: var(--ds-text-2xl); line-height: var(--ds-leading-snug); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: var(--ds-space-3) 0; color: var(--ds-text-strong); }
+  .card-hero__dek { color: var(--ds-text); margin: 0 0 var(--ds-space-4); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+
+  .card-list { display: flex; flex-direction: column; }
+  .card-list__row {
+    padding: var(--ds-space-5) 0; border-top: 1px solid var(--ds-hairline);
+    display: grid; grid-template-columns: 140px 1fr; gap: var(--ds-space-4); align-items: baseline;
+  }
+  .card-list__row:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .card-list__meta { display: flex; flex-direction: column; gap: var(--ds-space-1); }
+  .card-list__title { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); line-height: var(--ds-leading-snug); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: 0 0 var(--ds-space-2); color: var(--ds-text-strong); }
+  .card-list__title a { color: inherit; text-decoration: none; }
+  .card-list__dek { color: var(--ds-text-muted); font-size: var(--ds-text-sm); margin: 0; }
+
+  /* Wordmark */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-3); color: var(--ds-text-strong); font-family: var(--ds-font-display); font-weight: 500; font-size: var(--ds-text-xl); letter-spacing: var(--ds-tracking-tight); }
+  .wordmark svg { width: 22px; height: 22px; fill: currentColor; }
+
+  /* Body type */
+  .type-block { display: flex; flex-direction: column; gap: var(--ds-space-3); max-width: 60ch; }
+  .display-h1 { font-family: var(--ds-font-display); font-size: var(--ds-text-4xl); line-height: var(--ds-leading-tight); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: 0; color: var(--ds-text-strong); }
+  .lead { font-family: var(--ds-font-display); font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); color: var(--ds-text); margin: 0; }
+  .inline-link { color: var(--ds-text); border-bottom: 1px solid currentColor; text-decoration: none; }
+  .inline-link:hover { color: var(--ds-accent); }
+  .callout {
+    background: var(--ds-surface-2); border-left: 3px solid var(--ds-accent);
+    padding: var(--ds-space-4) var(--ds-space-5); border-radius: 0 var(--ds-radius-sm) var(--ds-radius-sm) 0;
+  }
+  .callout__label { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-accent); margin: 0 0 var(--ds-space-1); }
+  .callout p { margin: 0; font-family: var(--ds-font-display); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+
+  /* Byline / avatar */
+  .byline { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .byline__avatar { width: 40px; height: 40px; border-radius: var(--ds-radius-full); background: linear-gradient(135deg, #C6A98A, #8B6F4E); /* inline: warm placeholder portrait */ }
+  .byline__name { font-family: var(--ds-font-body); font-weight: 500; font-size: var(--ds-text-sm); color: var(--ds-text); }
+  .byline__role { font-family: var(--ds-font-display); font-style: italic; font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+
+  /* Loader */
+  @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+  .loader { display: inline-flex; gap: var(--ds-space-1); align-items: center; height: 20px; }
+  .loader span { width: 8px; height: 8px; border-radius: var(--ds-radius-full); background: var(--ds-text); animation: pulse 1.4s var(--ds-ease-standard) infinite; }
+  .loader span:nth-child(2) { animation-delay: 200ms; }
+  .loader span:nth-child(3) { animation-delay: 400ms; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <span class="wordmark" aria-label="Lorem">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50 6 L56 48 L50 50 L44 48 Z"/>
+        <path d="M94 50 L52 56 L50 50 L52 44 Z"/>
+        <path d="M50 94 L44 52 L50 50 L56 52 Z"/>
+        <path d="M6 50 L48 44 L50 50 L48 56 Z"/>
+      </svg>
+      lorem
+    </span>
+    <h1>Lorem ipsum: the complete component vocabulary in one voice</h1>
+    <p>Dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Buttons</div>
+    <div class="row">
+      <button class="btn-primary">Lorem ipsum</button>
+      <button class="btn-ghost">Dolor sit</button>
+      <a class="btn-link" href="#">Consectetur
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <button class="btn-icon" aria-label="Search">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Inputs</div>
+    <div class="row">
+      <div class="search">
+        <svg class="icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="Lorem ipsum..." aria-label="Search"/>
+        <span class="kbd" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Badges</div>
+    <div class="row">
+      <span class="badge-cat">Lorem</span>
+      <span class="badge-cat">Ipsum dolor</span>
+      <span class="badge-date">Apr 16, 2026</span>
+      <span class="badge-date">Feb 4, 2026</span>
+      <div class="badge-row">
+        <span class="badge-cat">Lorem</span>
+        <span class="badge-sep" aria-hidden="true">/</span>
+        <time class="badge-date">Jan 30, 2026</time>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Icons</div>
+    <div class="icon-grid">
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">search</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">arrow</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">menu</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">close</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">plus</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M3 10h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">minus</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">chevron</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M4 7l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">download</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Cards</div>
+    <div class="cards">
+      <article class="card-hero">
+        <div class="card-hero__media" role="img" aria-label="Lorem"></div>
+        <div class="card-hero__body">
+          <div class="badge-row">
+            <span class="badge-cat">Lorem</span>
+            <span class="badge-sep" aria-hidden="true">/</span>
+            <time class="badge-date">Apr 16, 2026</time>
+          </div>
+          <h2 class="card-hero__title">Lorem ipsum dolor sit amet</h2>
+          <p class="card-hero__dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore.</p>
+          <a class="btn-link" href="#">Read the post
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <div class="card-list">
+        <article class="card-list__row">
+          <div class="card-list__meta"><span class="badge-cat">Lorem</span><time class="badge-date">Apr 16, 2026</time></div>
+          <div>
+            <h3 class="card-list__title"><a href="#">Lorem ipsum dolor sit</a></h3>
+            <p class="card-list__dek">Adipiscing elit sed do eiusmod.</p>
+          </div>
+        </article>
+        <article class="card-list__row">
+          <div class="card-list__meta"><span class="badge-cat">Ipsum</span><time class="badge-date">Feb 4, 2026</time></div>
+          <div>
+            <h3 class="card-list__title"><a href="#">Ut enim ad minim veniam</a></h3>
+            <p class="card-list__dek">Exercitation ullamco laboris nisi.</p>
+          </div>
+        </article>
+        <article class="card-list__row">
+          <div class="card-list__meta"><span class="badge-cat">Dolor</span><time class="badge-date">Jan 30, 2026</time></div>
+          <div>
+            <h3 class="card-list__title"><a href="#">Excepteur sint occaecat cupidatat</a></h3>
+            <p class="card-list__dek">Sunt in culpa qui officia.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Body type</div>
+    <div class="type-block">
+      <h2 class="display-h1">Lorem ipsum dolor sit amet</h2>
+      <p class="lead">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, <a class="inline-link" href="#">quis nostrud exercitation</a> ullamco laboris nisi ut aliquip ex ea commodo.</p>
+      <div class="callout">
+        <p class="callout__label">Note</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Byline and loader</div>
+    <div class="row">
+      <div class="byline">
+        <div class="byline__avatar" role="img" aria-label="Lorem"></div>
+        <div>
+          <div class="byline__name">Lorem Ipsum</div>
+          <div class="byline__role">Director of dolor sit amet</div>
+        </div>
+      </div>
+      <div class="loader" aria-label="Loading"><span></span><span></span><span></span></div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

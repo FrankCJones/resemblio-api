@@ -1,0 +1,358 @@
+<!--
+  Asset: linear-nav-001
+  Class: navigation (whole)
+  Pattern: floating-pill-nav, backdrop-blur-chrome
+  Inspired by: Linear
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001        (near-black surface, indigo accent)
+    - type-pairings/sans-system-modern-001  (Inter-register humanist sans)
+    - wordmarks/lowercase-geometric-001     (lowercase geometric wordmark register)
+    - buttons/primary-pill-001              (white pill CTA on dark)
+    - links/nav-link-underline-001          (muted-to-bright nav link)
+  Notes:
+    - Floating-pill shell: the bar is a contained rounded container that
+      sits inset from the viewport edge with heavy backdrop-blur over the
+      near-black page. Hairline border, no shadow at rest. Wordmark left,
+      restrained primary link cluster center with one dropdown, action
+      cluster right ending in a white pill CTA.
+    - Variable vs inline: every color, type size, spacing step, radius,
+      and motion curve comes from the contract. Inline ornaments: the
+      pill's specific inset from the viewport (top: 12px, side gutter
+      via max-width) and the backdrop-filter recipe (saturate 180% blur
+      20px), both layout choices specific to the floating-pill register.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Linear's marketing sans (Inter / Inter Display
+     register). JetBrains Mono stands in for the mono used in technical
+     metadata moments elsewhere on the marketing surface. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-sm);
+    /* Subtle radial wash to demonstrate how the blurred pill reads over
+     * a non-uniform dark surface. Inline ornament: this is a stage
+     * dressing for the asset preview, not a contract value. */
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(94, 106, 210, 0.18), transparent 50%),
+      radial-gradient(circle at 80% 10%, rgba(94, 106, 210, 0.10), transparent 55%);
+  }
+
+  /* Floating-pill shell. Inset from the viewport edges, rounded fully,
+   * heavy backdrop-blur, hairline outline, no shadow at rest. The pill
+   * stays sticky as the page scrolls. */
+  .nav-wrap {
+    position: sticky;
+    /* Inline ornament: pill inset from viewport top. Layout decision
+     * specific to the floating-pill register. */
+    top: 12px;
+    z-index: 50;
+    padding: 0 var(--ds-space-5);
+  }
+
+  .nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Floating-pill recipe: tinted dark surface, hairline outline, and a
+     * backdrop blur that picks up the page beneath. */
+    background: color-mix(in oklab, var(--ds-surface) 70%, transparent);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-full);
+    /* Inline ornament: backdrop-filter recipe specific to this register. */
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .nav__inner {
+    padding: 6px 10px 6px var(--ds-space-4);
+    height: 52px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Wordmark. Lowercase geometric register, off-white on near-black. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .nav__wordmark-glyph {
+    /* Inline ornament: a square mark stands in for the per-site glyph.
+     * Not a reusable atom; the wordmark atom itself carries this. */
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, var(--ds-text-strong) 0%, var(--ds-text-muted) 100%);
+  }
+
+  /* Link cluster. Centered between wordmark and action cluster. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; }
+
+  /* Top-level link. From atoms/links/nav-link-underline-001 (register). */
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-md);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown panel. Surfaces below the floating pill; carries a soft
+   * dark shadow and a hairline edge. CSS-only on hover/focus. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    min-width: 460px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column dropdown grid. Layout decision
+     * specific to this nav's Product menu. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); }
+  .nav__menu-icon {
+    /* Inline ornament: small indigo-tinted square that stands in for
+     * the per-item glyph. Not a reusable atom at this scale. */
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-sm);
+    background: color-mix(in oklab, var(--ds-accent) 22%, transparent);
+    border: 1px solid color-mix(in oklab, var(--ds-accent) 36%, transparent);
+    flex: 0 0 28px;
+  }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin-top: 2px;
+  }
+
+  /* Action cluster. Log in (text muted) plus white pill Sign up. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__signin {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text-strong); }
+
+  /* Primary pill. From atoms/buttons/primary-pill-001. White on dark.
+   * Linear's CTA is white, not the indigo accent; the indigo is reserved
+   * for hover, focus, and brand moments elsewhere. */
+  .nav__primary {
+    appearance: none;
+    border: 0;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 8px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: color-mix(in oklab, var(--ds-text-strong) 88%, var(--ds-accent) 12%);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the floating pill has a surface to sit over. */
+  .page-stub {
+    max-width: 1200px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 800px) {
+    .nav__links, .nav__signin { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; height: 48px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__link, .nav__menu, .nav__caret { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="nav-wrap">
+    <header class="nav">
+      <div class="nav__inner">
+        <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+          <span class="nav__wordmark-glyph" aria-hidden="true"></span>
+          <span>loremipsum</span>
+        </a>
+
+        <ul class="nav__links">
+          <li class="has-menu">
+            <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+              Product
+              <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+                <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav__menu" role="menu">
+              <a class="nav__menu-item" href="#" role="menuitem">
+                <span class="nav__menu-icon" aria-hidden="true"></span>
+                <span>
+                  <span class="nav__menu-item-title">Lorem Plan</span>
+                  <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur.</span>
+                </span>
+              </a>
+              <a class="nav__menu-item" href="#" role="menuitem">
+                <span class="nav__menu-icon" aria-hidden="true"></span>
+                <span>
+                  <span class="nav__menu-item-title">Build</span>
+                  <span class="nav__menu-item-sub">Adipiscing elit vivamus sapien.</span>
+                </span>
+              </a>
+              <a class="nav__menu-item" href="#" role="menuitem">
+                <span class="nav__menu-icon" aria-hidden="true"></span>
+                <span>
+                  <span class="nav__menu-item-title">Insights</span>
+                  <span class="nav__menu-item-sub">Curabitur nec libero non nisi.</span>
+                </span>
+              </a>
+              <a class="nav__menu-item" href="#" role="menuitem">
+                <span class="nav__menu-icon" aria-hidden="true"></span>
+                <span>
+                  <span class="nav__menu-item-title">Integrations</span>
+                  <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit.</span>
+                </span>
+              </a>
+            </div>
+          </li>
+          <li><a class="nav__link" href="#">Resources</a></li>
+          <li><a class="nav__link" href="#">Customers</a></li>
+          <li><a class="nav__link" href="#">Pricing</a></li>
+          <li><a class="nav__link" href="#">Now</a></li>
+          <li><a class="nav__link" href="#">Contact</a></li>
+        </ul>
+
+        <div class="nav__actions">
+          <a class="nav__signin" href="#">Log in</a>
+          <a class="nav__primary" href="#">Sign up</a>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

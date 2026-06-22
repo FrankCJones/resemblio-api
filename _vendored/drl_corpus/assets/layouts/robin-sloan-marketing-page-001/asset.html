@@ -1,0 +1,366 @@
+<!--
+  Asset: robin-sloan-marketing-page-001
+  Class: layouts
+  Pattern: centered-narrow-column, small-caps-lead-in, writings-index
+  Inspired by: Robin Sloan (robinsloan.com)
+  Notes:
+    - Personal-writer index-as-homepage skeleton. Single ~32em column
+      runs the entire page on a terracotta field; header with name
+      wordmark and four-link nav, intro paragraph opening with a
+      small-caps lead-in, asterism dividers between blocks, newsletter
+      callout as inline prose (not a form widget), writings-index
+      category list with venue-parenthetical and featured-star markers,
+      blog / notes callout, footer with last-update date and a privacy
+      line. No imagery, no chrome beyond the terracotta field.
+    - Variable: section sequence, type role per slot, palette, page
+      measure. Inline: column measure (32em), asterism glyph composition,
+      featured-star ornament, last-update line position.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Filosofia (Emigre, licensed), Kyrios (Stephen Nixon), Trade
+  Gothic Next, and Vollkorn are the documented Sloan stack per /colophon.
+  Licensed faces are not loaded here; the asset falls back to Georgia /
+  Times New Roman / system sans so it opens standalone with the right
+  register intact.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--ds-accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:hover { color: var(--ds-accent-2); }
+  p { margin: 0 0 var(--ds-space-5); }
+
+  /*
+   * The reading column. ~32em measure carries the entire page; header,
+   * intro, writings-index, newsletter, blog callout, and footer all sit
+   * inside this same column. Inline value because the measure is the
+   * character, not a contract slot.
+   */
+  .column {
+    max-width: 32em;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-5) var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .column { padding: var(--ds-space-16) var(--ds-space-6) var(--ds-space-16); }
+  }
+
+  /*
+   * Header. Name as wordmark in display face at 4xl with tight tracking;
+   * a sans / Trade Gothic eyebrow underneath functions as tagline; the
+   * inline nav is four small links in the accent face. No mark glyph.
+   */
+  .site-header { margin-bottom: var(--ds-space-10); }
+  .site-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .site-tagline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+  }
+  .site-nav a { color: var(--ds-text); text-decoration: none; }
+  .site-nav a:hover { color: var(--ds-accent); text-decoration: underline; }
+
+  /*
+   * Intro paragraph. The opening line uses a small-caps lead-in: the
+   * first two or three words in the accent face, upper-tracked, set in
+   * small-caps. The rest of the paragraph flows into body serif. This is
+   * the canonical Sloan opening move.
+   */
+  .intro {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-8);
+  }
+  .intro .lead-in {
+    font-family: var(--ds-font-accent);
+    font-variant-caps: all-small-caps;
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    /* Letter-spacing one notch wider than wider for the lead-in moment. */
+  }
+
+  /*
+   * Asterism divider. Three centered asterisks (or an actual asterism
+   * glyph, U+2042) separate blocks of the homepage. The glyph carries
+   * its own air; no horizontal rule. Block-level so it claims a row.
+   */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    letter-spacing: 0.5em;
+    /* Letter-spacing inline; this exact value is part of the asterism
+       ornament's character, not a typographic role. */
+    margin: var(--ds-space-10) 0;
+    user-select: none;
+  }
+
+  /*
+   * Block heading. Used for "Newsletter," "Notes," "Writings" section
+   * markers between asterisms. Smaller than the wordmark; same display
+   * face; sits flush left.
+   */
+  .block-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /*
+   * Newsletter callout. Inline prose, not a form widget. The live site
+   * presents subscription as a sentence with a link to the archive
+   * page; the actual input lives on /newsletters/. The block carries a
+   * subtle tint surface so the call sits above the body rhythm.
+   */
+  .newsletter {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-5);
+    margin-bottom: var(--ds-space-5);
+  }
+  .newsletter p { margin: 0 0 var(--ds-space-4); }
+  .newsletter p:last-child { margin-bottom: 0; }
+  .newsletter .cadence {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * Writings index. Categorical groups (Novels, Notable essays, Short
+   * stories, Special projects, The waybacklist) with bulleted titles
+   * underneath. Each entry: title as link; optional venue parenthetical
+   * in muted muted face on the same line; optional star marker for
+   * featured pieces. Bullets are minimal.
+   */
+  .writings-index { margin-bottom: var(--ds-space-5); }
+  .index-group { margin-bottom: var(--ds-space-8); }
+  .index-group__label {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .index-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .index-list li { margin: 0 0 var(--ds-space-2); }
+  .index-list a { color: var(--ds-text); text-decoration: none; border-bottom: 1px solid var(--ds-accent); padding-bottom: 1px; }
+  .index-list a:hover { color: var(--ds-accent); }
+  .venue {
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-left: var(--ds-space-2);
+  }
+  .featured-star {
+    color: var(--ds-accent-2);
+    margin-left: var(--ds-space-2);
+    /* The featured-star is an inline ornament. Used sparingly; one
+       glyph per long list, not as a row prefix. */
+  }
+
+  /*
+   * Notes / blog callout. A short pointer to the running blog, one
+   * paragraph of prose, no card chrome. Just sits in the column rhythm.
+   */
+  .notes-callout { margin-bottom: var(--ds-space-5); }
+
+  /*
+   * Footer. Single line with last-update date and the privacy / printed-
+   * page philosophy line. No nav, no social, no copyright bar.
+   */
+  .site-footer {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .site-footer p { margin: 0 0 var(--ds-space-2); }
+  .site-footer p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+  <main class="column">
+
+    <!-- Header: name wordmark, tagline eyebrow, inline four-link nav. -->
+    <header class="site-header" aria-label="Site header">
+      <h1 class="site-name">Lorem Ipsum</h1>
+      <p class="site-tagline">Writer, printer, sometime manufacturer</p>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Lorem Book</a>
+        <a href="#">Shop</a>
+      </nav>
+    </header>
+
+    <!-- Intro paragraph with small-caps lead-in. -->
+    <p class="intro">
+      <span class="lead-in">Hello, friends.</span>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. I am the
+      author of <a href="#">Lorem Ipsum</a>, <a href="#">Dolor Sit Amet</a>,
+      and <a href="#">Consectetur Adipiscing</a>. Sed do eiusmod tempor
+      incididunt ut labore et dolore magna aliqua, ut enim ad minim
+      veniam.
+    </p>
+
+    <!-- Asterism: divides intro from newsletter block. -->
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <!-- Newsletter block. Inline prose pointer; no form widget. -->
+    <section aria-label="Newsletter">
+      <h2 class="block-heading">The Newsletter</h2>
+      <div class="newsletter">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. The
+          newsletter goes out every twenty-nine and a half days. It is
+          quiet, occasional, and meant to be read like a postcard from
+          a friend who has been away. <a href="#">Read the archive</a>
+          or <a href="#">subscribe by email</a>.
+        </p>
+        <p class="cadence">Cadence: every 29 1/2 days</p>
+      </div>
+    </section>
+
+    <!-- Asterism: between newsletter and notes. -->
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <!-- Notes / running blog callout. -->
+    <section class="notes-callout" aria-label="Notes">
+      <h2 class="block-heading">Notes</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. A running
+        ledger of small thoughts, marginalia, and miscellany.
+        <a href="#">See all notes</a>.
+      </p>
+    </section>
+
+    <!-- Asterism: between notes and writings-index. -->
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <!-- Writings index. Categorical groups with bulleted titles, venue
+         parenthetical for off-site pieces, sparing featured-star marker. -->
+    <section class="writings-index" aria-label="Writings">
+      <h2 class="block-heading">Writings</h2>
+
+      <div class="index-group">
+        <p class="index-group__label">Novels</p>
+        <ul class="index-list">
+          <li><a href="#">Lorem Ipsum Dolor</a></li>
+          <li><a href="#">Sit Amet Consectetur</a></li>
+          <li><a href="#">Adipiscing Elit Sed</a></li>
+        </ul>
+      </div>
+
+      <div class="index-group">
+        <p class="index-group__label">Notable essays</p>
+        <ul class="index-list">
+          <li>
+            <a href="#">Lorem ipsum dolor sit amet</a>
+            <span class="venue">(Lorem Magazine)</span>
+            <span class="featured-star" aria-label="Featured">&#9733;</span>
+          </li>
+          <li>
+            <a href="#">Consectetur adipiscing elit</a>
+            <span class="venue">(Dolor Quarterly)</span>
+          </li>
+          <li>
+            <a href="#">Sed do eiusmod tempor incididunt</a>
+          </li>
+          <li>
+            <a href="#">Ut labore et dolore magna aliqua</a>
+            <span class="venue">(Aliqua Review)</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="index-group">
+        <p class="index-group__label">Short stories</p>
+        <ul class="index-list">
+          <li><a href="#">Lorem brevis</a></li>
+          <li><a href="#">Ipsum minor</a></li>
+          <li><a href="#">Dolorem fugiat</a></li>
+        </ul>
+      </div>
+
+      <div class="index-group">
+        <p class="index-group__label">Special projects</p>
+        <ul class="index-list">
+          <li><a href="#">Lorem manufactura</a></li>
+          <li><a href="#">Ipsum experimentum</a></li>
+        </ul>
+      </div>
+
+      <div class="index-group">
+        <p class="index-group__label">The waybacklist</p>
+        <ul class="index-list">
+          <li><a href="#">Lorem antiquus, two thousand and eight</a></li>
+          <li><a href="#">Ipsum vetus, two thousand and twelve</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Asterism: between index and footer. -->
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <!-- Footer: last-update date and privacy / printed-page philosophy line. -->
+    <footer class="site-footer" aria-label="Footer">
+      <p>Last updated lorem ipsum two thousand and twenty-six.</p>
+      <p>This site does not collect any information about you or your reading. It aspires to the speed and privacy of the printed page.</p>
+    </footer>
+
+  </main>
+</body>
+</html>

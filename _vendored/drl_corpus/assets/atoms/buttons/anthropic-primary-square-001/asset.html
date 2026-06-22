@@ -1,0 +1,64 @@
+<!--
+  Asset: anthropic-primary-square-001
+  Class: buttons
+  Pattern: primary-square
+  Inspired by: Anthropic
+  Notes:
+    - Ink-fill primary button on warm paper. Slate rgb(15,15,14) fill, cream label, 6px radius.
+    - Four states: rest, hover, focus, disabled. Token-driven; no inline ornament needed.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-primary-square-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Anthropic ships anthropicSans + Anthropic Mono; system fallbacks approximate. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-6);
+    flex-wrap: wrap;
+    padding: var(--ds-space-10);
+  }
+  .group { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); }
+  .state-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .btn {
+    appearance: none;
+    border: 0;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn:hover { background: #2A2A28; /* inline: one step warmer ink for hover lift */ }
+  .btn[disabled] { background: var(--ds-border); color: var(--ds-text-muted); cursor: not-allowed; }
+</style>
+</head>
+<body>
+  <div class="group"><span class="state-label">rest</span><button type="button" class="btn">Lorem ipsum</button></div>
+  <div class="group"><span class="state-label">hover</span><button type="button" class="btn" style="background:#2A2A28;">Lorem ipsum</button></div>
+  <div class="group"><span class="state-label">focus</span><button type="button" class="btn" style="outline:2px solid var(--ds-focus-ring); outline-offset:2px;">Lorem ipsum</button></div>
+  <div class="group"><span class="state-label">disabled</span><button type="button" class="btn" disabled>Lorem ipsum</button></div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+/*
+ * notion-nav-001 tokens
+ *
+ * Marketing nav inspired by Notion's top bar. The defining moves: a warm
+ * paper background (not stark white), dark near-black text, sentence-case
+ * link copy, the lowercase-geometric Notion wordmark on the left, a
+ * dropdown-bearing link cluster in the center (Product, Solutions,
+ * Resources, Pricing, Enterprise), and a right cluster pairing a quiet
+ * "Request a demo" + "Log in" with a single dark-pill "Get Notion free"
+ * CTA. Hairline foot on the bar; soft shadow on dropdowns only. Small
+ * radii throughout - no full pills except the primary CTA which sits at
+ * a medium radius, not a full circle.
+ *
+ * Color and type values reflect Notion's documented brand register:
+ * warm-paper #F7F6F3 page surface, near-black #191918 ink, sans-serif
+ * stack with system fallbacks (Notion ships Inter via /_next/font in
+ * production; system stack catches the rest).
+ */
+:root {
+  /* Colors. Warm-paper page surface, near-black ink. The accent is a
+   * muted blue Notion uses for in-product link emphasis; the marketing
+   * surface keeps it in reserve. The primary CTA is monochrome dark
+   * (#191918 on warm-paper), not the accent. */
+  --ds-bg:           #F7F6F3;   /* Warm-paper page surface; Notion's signature off-white, not pure #FFF. */
+  --ds-surface:      #FFFFFF;   /* True white for dropdown panels lifted above the warm-paper page. */
+  --ds-surface-2:    #F1EFEA;   /* Hover row tint inside dropdowns; one shade warmer than surface. */
+  --ds-text:         #37352F;   /* Body text: Notion's documented warm-near-black, not pure #000. */
+  --ds-text-muted:   #787774;   /* Secondary nav-link rest state and helper copy. */
+  --ds-text-strong:  #191918;   /* Wordmark and emphasized labels at full contrast. */
+  --ds-border:       #E3E2DE;   /* Dropdown card edge; matches Notion's standard block-border step. */
+  --ds-hairline:     #EBEAE4;   /* Bar's foot hairline; the only chrome the nav uses at rest. */
+  --ds-accent:       #2383E2;   /* Notion blue; reserved for focus rings and "new" markers, not bulk CTA. */
+  --ds-accent-2:     #0B6BCB;   /* Hover-shift on the accent for active link state. */
+  --ds-success:      #4DAB9A;   /* Notion's documented teal for operational status. */
+  --ds-warning:      #D9730D;   /* Warm orange used for warning blocks in-product. */
+  --ds-error:        #E03E3E;   /* Notion's documented warning red. */
+  --ds-info:         #2383E2;   /* Same as accent; info uses the brand blue. */
+  --ds-focus-ring:   #2383E2;   /* Blue focus outline at 2px offset for keyboard nav. */
+
+  /* Type. Notion ships Inter via Next.js font loading in production;
+   * the older "Notion Phantom Sans" lives in some moments. System
+   * stack catches macOS/Windows in the absence of Inter. */
+  --ds-font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "iA Writer Mono", "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* Sizes. The marketing bar runs small: 14 px links, 14 px wordmark,
+   * 11 px utility labels. Larger steps carry forward for downstream
+   * wholes that reuse this token file as a starting palette. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 18px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 28px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 96px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.05;    --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;    --ds-leading-relaxed: 1.65;   --ds-leading-loose: 1.8;
+
+  /* Tracking. Notion's marketing copy sits at near-zero tracking; only
+   * the smallest utility labels open up. */
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.12em;
+
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Notion sits at small-to-medium radii throughout. The full
+   * pill is reserved for tags, avatars, and the single primary CTA. */
+  --ds-radius-none: 0;   --ds-radius-xs: 3px;   --ds-radius-sm: 5px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 12px;  --ds-radius-full: 9999px;
+
+  /* Shadows. The bar is flat with a hairline foot. Dropdowns carry a
+   * soft warm shadow that sits below them - not Vercel's hard dark
+   * stack; this is paper, not glass. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(15,15,15,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(15,15,15,0.06);
+  --ds-shadow-md:  0 8px 24px rgba(15,15,15,0.08);
+  --ds-shadow-lg:  0 16px 40px rgba(15,15,15,0.10);
+  --ds-shadow-2xl: 0 32px 64px rgba(15,15,15,0.14);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

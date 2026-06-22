@@ -1,0 +1,330 @@
+<!--
+  Asset: github-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, accent-on-neutral, callout-aside, breadcrumb-trail
+  Inspired by: GitHub Blog (github.blog product-news and engineering posts)
+  Notes:
+    - Mechanic: technical-publication register on a Primer light canvas.
+      Two chromatic roles do all the work - Primer blue (#0969DA) on
+      inline links and breadcrumb trail, Primer green (#1F883D) on the
+      Octocat callout chip. Hairlines (border-default) frame every
+      structural break, including the byline strip and the code block.
+    - Variable: the white bg, Primer fg-default ink, Primer blue + green
+      accents, system-first font stack (Mona Sans / Inter analog),
+      18px body at 1.6 leading, 48px H1.
+    - Inline ornament: the breadcrumb glyph ('/'), the green left rail
+      on the callout box, the 760px header + 720px body measure.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for Mona Sans / system stack.
+     JetBrains Mono substitutes for Monaspace on code chrome. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container. Header at 760px, body at 720px - matches
+   * the GitHub Blog measure on a modern desktop.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-8) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Breadcrumb trail ----------------
+   * "Home / News & insights / Product" pattern. Slash glyph separator,
+   * muted color at rest, accent on hover. The breadcrumb is the GitHub
+   * Blog's category-label substitute for the editorial kicker.
+   */
+  .article__breadcrumb {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__breadcrumb a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .article__breadcrumb a:hover { color: var(--ds-accent); }
+  .article__breadcrumb .sep {
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-text-muted);
+    /* Inline ornament: '/' glyph between crumbs; the GitHub Blog signature
+     * separator across category trails. */
+  }
+
+  /* ---------------- Header ---------------- */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-8);
+    text-align: left;
+  }
+
+  /* Article headline - sans at 3xl (48px), tight leading, slight negative
+   * tracking. Mona Sans (system-stack fallback) at this step is what
+   * reads as GitHub editorial. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - sans at lg (22px), muted color, regular weight. One paragraph,
+   * tells the reader what the post argues. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Byline strip - author names + ISO date + reading-time chip, all on
+   * a hairline-bordered band. The reading-time chip is the GitHub
+   * editorial signature; it sits at the right of the byline. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .article__meta a {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .article__meta a:hover { color: var(--ds-accent); }
+  .article__meta time { font-variant-numeric: tabular-nums; }
+  .article__meta .meta-sep {
+    color: var(--ds-text-muted);
+    /* Inline ornament: middle dot separator between author group and date. */
+  }
+  .article__meta .reading-time {
+    margin-left: auto;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px. Reading register at 18px / 1.6 -
+   * GitHub's technical-publication move, one step above the SaaS default.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: var(--ds-space-8) auto 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - Primer blue, hairline underline at rest,
+   * lifted on hover. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside body - sans at xl, generous gap above. GitHub posts
+   * lean on h2 every few paragraphs to break technical density. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* Inline code - Monaspace on a Primer canvas-subtle chip. Reserved
+   * for short identifiers inside prose. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.92em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: 0.10em 0.36em;
+  }
+
+  /* ---------------- Code block ----------------
+   * Primer's signature code surface: canvas-subtle fill, border-default
+   * hairline, md radius, Monaspace at 14px / 1.6. No syntax highlight in
+   * this asset - the chrome is what carries.
+   */
+  .article__code {
+    margin: var(--ds-space-6) 0;
+    padding: var(--ds-space-4) var(--ds-space-5);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    overflow-x: auto;
+  }
+  .article__code code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* ---------------- Callout aside ----------------
+   * Octocat-green left rail with canvas-subtle fill. GitHub's editorial
+   * "note" pattern; analogous to the Primer alert component on github.com.
+   * The green left rail is the only place the success color appears on
+   * the article surface, so it earns the prominence.
+   */
+  .article__callout {
+    margin: var(--ds-space-6) 0;
+    padding: var(--ds-space-4) var(--ds-space-5);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 4px solid var(--ds-success);
+    /* Inline ornament: 4px green left rail; one-off chrome that names this
+     * box as a "note", not a contract slot. */
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__callout strong {
+    display: block;
+    margin-bottom: var(--ds-space-2);
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  .article__callout p:last-child { margin-bottom: 0; }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-6) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-2xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__meta .reading-time { margin-left: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__meta a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <nav class="article__breadcrumb" aria-label="Breadcrumb">
+      <a href="#">Lorem</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <a href="#">Ipsum dolor</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <a href="#">Sit amet</a>
+    </nav>
+
+    <header class="article__header">
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos hymenaeos.</p>
+      <div class="article__meta">
+        <a href="#">Lorem Ipsum</a>
+        <span class="meta-sep" aria-hidden="true">·</span>
+        <a href="#">Dolor Amet</a>
+        <span class="meta-sep" aria-hidden="true">·</span>
+        <time datetime="2026-05-18">May 18, 2026</time>
+        <span class="reading-time">5 min read</span>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. The flag <code>--enable-prefetch</code> opts a workspace into the new cache layer.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien.</p>
+
+      <pre class="article__code"><code>$ gh repo clone octo-org/lorem-ipsum
+$ cd lorem-ipsum
+$ gh workflow run build.yml --ref main
+# Run started: 12.4s
+# Status: completed</code></pre>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+
+      <aside class="article__callout">
+        <strong>Note</strong>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. See the <a href="#">migration guide</a> for details.</p>
+      </aside>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <h2>Pellentesque habitant morbi tristique</h2>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum dolorem.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

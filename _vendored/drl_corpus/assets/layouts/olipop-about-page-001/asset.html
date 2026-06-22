@@ -1,0 +1,503 @@
+<!--
+  Asset: olipop-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, editorial-hero, story-card-grid, mega-footer
+  Inspired by: Olipop (drinkolipop.com/pages/our-story)
+  Notes:
+    - About-page skeleton: peach-on-forest announcement bar, flush-top nav,
+      hero band with mission tagline plus founder portrait, cream-band
+      founders narrative ("Our Foundational Ingredients"), cream-band
+      scientific advisory portrait grid, mint-band mission triptych
+      (Feed Life / Adapt and Improve / Enjoy), newsletter band, footer.
+      The page reads as evidence-of-mission rather than evidence-of-product:
+      the load-bearing content is the founder story and the advisory board,
+      not flavor SKUs.
+    - Tinted bands carry the page rhythm in lieu of hairline rules. The
+      max-width container, padding-block rhythm on each band, and section
+      sequence are the variables this asset captures; flavor photography
+      placeholders stand in for downstream product wholes.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: WindsorEF is Olipop's licensed display face (Adobe Fonts /
+  Monotype). Cooper Std and Recoleta are the closest free substitutes.
+  Ano is Olipop's licensed body face; Inter substitutes cleanly.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px on Olipop; gutter 20px on mobile,
+   * 64px on desktop (tw-px-5 lg:tw-px-16). Inline values; not contract
+   * slots.
+   */
+  .page {
+    max-width: 1280px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 1024px) {
+    .page { padding-inline: var(--ds-space-10); }
+  }
+
+  /* Announcement bar. Forest-green band with cream text running across
+   * the very top, above the nav. 40px on desktop. */
+  .announcement {
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    text-align: center;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    padding: 10px var(--ds-space-5);                   /* inline ornament; 40px-band */
+  }
+  .announcement a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Top-bar nav. Peach background continues from the page; cream pill
+   * Find-a-store CTA pinned right. Wordmark left in the WindsorEF
+   * register. */
+  .nav-wrap {
+    background: var(--ds-bg);
+    border-bottom: 1px solid transparent;             /* inline; no hairline by default */
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 72px;                                     /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 900;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-transform: uppercase;
+  }
+  .nav__links {
+    display: none;
+    gap: var(--ds-space-6);
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  @media (min-width: 1024px) {
+    .nav__links { display: flex; align-items: center; }
+  }
+  .nav__cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--ds-text-strong);
+    color: var(--ds-surface);
+    padding: 12px 20px;                               /* pill button inline ornament */
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-weight: 700;
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Hero band. Peach continues; left-aligned WindsorEF mission tagline,
+   * right column hosts the founder portrait. Two-column on desktop;
+   * stacked on mobile. */
+  .section--hero {
+    padding-block: var(--ds-space-10) var(--ds-space-12);
+  }
+  @media (min-width: 1024px) {
+    .section--hero { padding-block: var(--ds-space-12) var(--ds-space-16); }
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .hero { grid-template-columns: 1.1fr 1fr; gap: var(--ds-space-12); }
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 900;
+    line-height: 0.95;                                /* WindsorEF runs tighter than --ds-leading-tight */
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-transform: none;
+  }
+  @media (min-width: 1024px) {
+    .hero__statement { font-size: var(--ds-text-6xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-5) 0 0;
+    max-width: 48ch;
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    align-items: center;
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    padding: 16px 28px;
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-weight: 700;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Tinted narrative band. Cream surface; padding-block top 80 / bottom
+   * 160 on desktop to give the story air below the closing copy. */
+  .band {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 1024px) {
+    .band { padding-block: var(--ds-space-10) var(--ds-space-16); }
+  }
+  .band--cream { background: var(--ds-surface); }
+  .band--mint  { background: var(--ds-surface-2); }
+
+  /* Recurring section title in cream/mint bands. Centered, WindsorEF,
+   * forest-strong color. */
+  .band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    text-align: center;
+  }
+  @media (min-width: 1024px) {
+    .band__title { font-size: var(--ds-text-4xl); }
+  }
+
+  /* Founders narrative. Two columns on desktop: copy left, founder
+   * spread right (two portraits stacked / paired). */
+  .founders {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .founders { grid-template-columns: 1fr 1fr; gap: var(--ds-space-10); }
+  }
+  .founders__copy { max-width: 56ch; color: var(--ds-text); font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); }
+  .founders__copy p { margin: 0 0 var(--ds-space-4); }
+  .founders__spread {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+  }
+
+  /* Scientific advisory portrait grid. Four-up on desktop, two-up on
+   * tablet, single column on mobile. Square portraits with name and
+   * credential beneath. */
+  .advisors {
+    margin-top: var(--ds-space-12);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px)  { .advisors { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .advisors { grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-6); } }
+  .advisor__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 900;
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-4) 0 var(--ds-space-1);
+  }
+  .advisor__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Mission triptych on the mint band. Three principles, large
+   * WindsorEF kicker word above a short paragraph. */
+  .mission {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    .mission { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-10); }
+  }
+  .mission__principle-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 900;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .mission__principle-body {
+    color: var(--ds-text);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Press strip (optional band; quotes from press circulating across
+   * the Olipop site's publication slider). Single-line italic quote
+   * with publication name in muted body. */
+  .press {
+    background: var(--ds-bg);
+    padding-block: var(--ds-space-10);
+    text-align: center;
+  }
+  .press__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 800;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 36ch;
+  }
+  .press__source {
+    margin-top: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Newsletter band on forest green. Cream title and a peach-cream
+   * pill input alongside a deep-forest submit. */
+  .newsletter {
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    padding-block: var(--ds-space-10);
+    text-align: center;
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 800;
+    color: var(--ds-surface);
+    margin: 0 0 var(--ds-space-5);
+    line-height: var(--ds-leading-snug);
+  }
+  @media (min-width: 1024px) {
+    .newsletter__title { font-size: var(--ds-text-4xl); }
+  }
+
+  /* Footer band: deep forest; cream type; two-to-five column link grid;
+   * wordmark sits large in the leftmost column. */
+  .footer-band {
+    background: var(--ds-text-strong);
+    color: var(--ds-surface);
+    padding-block: var(--ds-space-12);
+  }
+
+  /* Placeholder slot styling. Each slot names the whole or atom it
+   * stands in for. */
+  .slot {
+    background: rgba(3, 70, 56, 0.04);                /* inline; differs band-to-band */
+    border: 1px dashed var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot--portrait { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .slot--photo    { aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .slot--invert   { background: rgba(255, 246, 234, 0.10); border-color: var(--ds-surface); color: var(--ds-surface); }
+  .slot__label    { display: block; color: inherit; margin-bottom: var(--ds-space-2); opacity: 0.7; }
+</style>
+</head>
+<body>
+
+  <!-- Section: announcement bar. Forest-green strip above the nav. -->
+  <div class="announcement" role="region" aria-label="Announcement">
+    Lorem ipsum dolor sit amet consectetur. <a href="#">Lorem ipsum</a>
+  </div>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/olipop-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="nav__links">
+          <a href="#">Lorem</a>
+          <a href="#">Ipsum</a>
+          <a href="#">Dolor</a>
+          <a href="#">Amet</a>
+        </div>
+        <a href="#" class="nav__cta">Find a store</a>
+      </nav>
+    </div>
+  </div>
+
+  <div>
+
+    <!-- Section: hero. Left-aligned mission tagline + supporting copy + pill CTA, founder portrait right. -->
+    <section class="section--hero" aria-label="Mission hero">
+      <div class="page">
+        <div class="hero">
+          <div>
+            <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur.</h1>
+            <p class="hero__support">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation.
+            </p>
+            <a href="#" class="hero__cta">Shop Lorem</a>
+          </div>
+          <div class="slot slot--photo">
+            <span class="slot__label">founder-portrait-lifestyle</span>
+            Lorem ipsum
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: founders narrative on cream band ("Our Foundational Ingredients"). -->
+    <section class="band band--cream" aria-label="Founders narrative">
+      <div class="page">
+        <h2 class="band__title">Lorem ipsum dolor sit amet</h2>
+        <div class="founders">
+          <div class="founders__copy">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Founders Lorem and Ipsum have shared a vision of a healthier,
+              tastier future for the better part of a decade.
+            </p>
+            <p>
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+              irure dolor in reprehenderit in voluptate velit esse cillum
+              dolore eu fugiat nulla pariatur.
+            </p>
+            <p>
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa
+              qui officia deserunt mollit anim id est laborum.
+            </p>
+          </div>
+          <div class="founders__spread">
+            <div class="slot slot--photo"><span class="slot__label">founder-01</span>Lorem</div>
+            <div class="slot slot--photo"><span class="slot__label">founder-02</span>Ipsum</div>
+          </div>
+        </div>
+
+        <!-- Sub-block: scientific advisory portrait grid. -->
+        <h2 class="band__title" style="margin-top: var(--ds-space-16);">Lorem ipsum advisory board</h2>
+        <div class="advisors">
+          <div>
+            <div class="slot slot--portrait"><span class="slot__label">advisor</span>Lorem</div>
+            <h3 class="advisor__name">Dr. Lorem Ipsum</h3>
+            <p class="advisor__role">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+          <div>
+            <div class="slot slot--portrait"><span class="slot__label">advisor</span>Lorem</div>
+            <h3 class="advisor__name">Dr. Lorem Ipsum</h3>
+            <p class="advisor__role">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+          <div>
+            <div class="slot slot--portrait"><span class="slot__label">advisor</span>Lorem</div>
+            <h3 class="advisor__name">Dr. Lorem Ipsum</h3>
+            <p class="advisor__role">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+          <div>
+            <div class="slot slot--portrait"><span class="slot__label">advisor</span>Lorem</div>
+            <h3 class="advisor__name">Dr. Lorem Ipsum</h3>
+            <p class="advisor__role">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: mission triptych on mint band ("Feed Life / Adapt & Improve / Enjoy"). -->
+    <section class="band band--mint" aria-label="Mission principles">
+      <div class="page">
+        <h2 class="band__title">Lorem ipsum mission</h2>
+        <div class="mission">
+          <div>
+            <h3 class="mission__principle-name">Lorem One</h3>
+            <p class="mission__principle-body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+              do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+          </div>
+          <div>
+            <h3 class="mission__principle-name">Lorem Two</h3>
+            <p class="mission__principle-body">
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+          </div>
+          <div>
+            <h3 class="mission__principle-name">Lorem Three</h3>
+            <p class="mission__principle-body">
+              Duis aute irure dolor in reprehenderit in voluptate velit esse
+              cillum dolore eu fugiat nulla pariatur.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: press strip. Single-line publication quote on peach. -->
+    <section class="press" aria-label="Press strip">
+      <div class="page">
+        <p class="press__quote">"Lorem ipsum dolor sit amet, consectetur adipiscing elit."</p>
+        <p class="press__source">Lorem Publication</p>
+      </div>
+    </section>
+
+    <!-- Section: newsletter band. Forest-green band with cream type. -->
+    <section class="newsletter" aria-label="Newsletter signup">
+      <div class="page">
+        <h2 class="newsletter__title">Lorem ipsum dolor sit amet</h2>
+        <div class="slot slot--invert" style="max-width: 480px; margin: 0 auto;">
+          <span class="slot__label">email-input + subscribe-button</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width forest-green block. Stands in for wholes/footers/olipop-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot slot--invert" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (wordmark + Help + Company + social + legal)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

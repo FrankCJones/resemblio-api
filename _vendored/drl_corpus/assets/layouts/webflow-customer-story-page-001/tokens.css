@@ -1,0 +1,113 @@
+/*
+ * webflow-customer-story-page-001 tokens
+ *
+ * Native token values for the Webflow customer-story skeleton, inspired by
+ * webflow.com/customers/dermalogica (inspected via WebFetch). Webflow's
+ * marketing chrome rides a paper-white surface with Webflow Blue reserved
+ * for primary CTAs and inline links, near-black display type, soft hairline
+ * dividers, and bright product canvas photography. The system manifest
+ * (systems/webflow/system.json) declares this vocabulary; values here mirror
+ * that. WebFetch returned section order, content roles, byline structure,
+ * metric tags, and pull-quote treatment but stripped inline computed styles;
+ * numeric values follow the Webflow system convention from the manifest
+ * design_principles, not devtools reads.
+ *
+ * Layout-specific notes: the narrative reading column sits at ~64ch (inline
+ * in asset.html). The metric callouts, related-stories grid, CTA block, and
+ * mega-footer all widen to the 1280px page container. The customer-logo
+ * lockup and hero portrait are inline display moments, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body; Webflow customers default. */
+  --ds-surface:      #F8F8FB;   /* Outcome-metric tile lift; half-step above body. */
+  --ds-surface-2:    #EFF0F4;   /* Tinted surface; related-card placeholders, hero photo frame. */
+  --ds-text:         #1D1D1F;   /* Near-black body reading. */
+  --ds-text-muted:   #6E6E76;   /* Byline, meta tags, metric labels. */
+  --ds-text-strong:  #0F0F11;   /* Hero title display; one step heavier than body. */
+  --ds-border:       #E4E4EA;   /* Card edges, metric-tile chrome, aside chrome. */
+  --ds-hairline:     rgba(15,15,17,0.08); /* Section rule alpha. */
+  --ds-accent:       #146EF5;   /* Webflow Blue; primary CTAs, inline links, focus ring. */
+  --ds-accent-2:     #4353FF;   /* Secondary blue; pull-quote rule, accent backgrounds. */
+  --ds-success:      #1FB45B;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #146EF5;
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full saturation. */
+
+  /* ---------- Type families ----------
+   * Webflow marketing leans on a humanist sans display (Inter family is the
+   * canonical open fallback for the Webflow Sans register), with a mono
+   * utility face for meta tags and metric units.
+   */
+  --ds-font-display: "Inter", "Inter Tight", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Meta tags, metric units, social-share labels. */
+  --ds-text-sm:   14px;   /* Author byline, related-card meta, image caption. */
+  --ds-text-base: 17px;   /* Body reading; one step over typical 16px for warm scan. */
+  --ds-text-lg:   20px;   /* Lead paragraph, pull-quote attribution name. */
+  --ds-text-xl:   28px;   /* Pull-quote body. */
+  --ds-text-2xl:  36px;   /* Body H2 section heads. */
+  --ds-text-3xl:  44px;   /* CTA block heading, related-section heading. */
+  --ds-text-4xl:  60px;   /* Hero H1 display. */
+  --ds-text-5xl:  76px;   /* Outcome-metric value. */
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Hero title, metric value. */
+  --ds-leading-snug:    1.2;    /* Pull quote, body H2. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Webflow display squeeze. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Meta tags, metric units. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Webflow leans softer than Vercel: 12px on cards, 8px on inputs, full
+   * pill on primary CTAs. Subtle-rounded-corners principle.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;   /* Metric tile, related-card, CTA panel. */
+  --ds-radius-full: 9999px; /* Primary pill CTA. */
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadow suppressed at rest; tiles and
+   * cards lift via 1px border on tinted surface. Values declared for
+   * contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(15,15,17,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(15,15,17,0.06);
+  --ds-shadow-md:   0 6px 20px rgba(15,15,17,0.08);
+  --ds-shadow-lg:   0 16px 40px rgba(15,15,17,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(15,15,17,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

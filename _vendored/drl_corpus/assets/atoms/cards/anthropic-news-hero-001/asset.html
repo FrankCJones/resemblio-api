@@ -1,0 +1,100 @@
+<!--
+  Asset: anthropic-news-hero-001
+  Class: cards
+  Pattern: (none)
+  Inspired by: Anthropic
+  Notes:
+    - Featured news card: image-top, mono category + date, serif title, sans dek, arrow link.
+    - Image placeholder uses a flat warm tone; in production this carries the article hero.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-news-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--ds-space-10);
+  }
+  .card {
+    background: var(--ds-surface);
+    border: 0.8px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    max-width: 720px;
+    width: 100%;
+  }
+  .card__media {
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, #E8DCC9 0%, #D9C4A6 100%); /* inline: warm placeholder gradient stands in for a hero image */
+  }
+  .card__body { padding: var(--ds-space-6); }
+  .card__meta {
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .card__meta .cat { color: var(--ds-text); }
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .card__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-text);
+    padding-bottom: 2px;
+  }
+  .card__cta svg { width: 14px; height: 14px; }
+  .card__cta:hover { color: var(--ds-accent); border-bottom-color: var(--ds-accent); }
+</style>
+</head>
+<body>
+  <article class="card">
+    <div class="card__media" role="img" aria-label="Lorem ipsum"></div>
+    <div class="card__body">
+      <div class="card__meta">
+        <span class="cat">Lorem</span>
+        <span aria-hidden="true">/</span>
+        <time>Apr 16, 2026</time>
+      </div>
+      <h2 class="card__title">Lorem ipsum dolor sit amet consectetur adipiscing elit</h2>
+      <p class="card__dek">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation.</p>
+      <a class="card__cta" href="#">Read the post
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </article>
+</body>
+</html>

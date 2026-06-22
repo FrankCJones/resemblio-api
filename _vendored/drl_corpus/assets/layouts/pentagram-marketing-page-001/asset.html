@@ -1,0 +1,595 @@
+<!--
+  Asset: pentagram-marketing-page-001
+  Class: layouts
+  Pattern: oversized-statement, flush-top-nav, story-card-grid, editorial-footer
+  Inspired by: Pentagram (pentagram.com)
+  Notes:
+    - Studio-portfolio homepage skeleton: flush-top nav, oversized
+      "we design everything for everyone" statement, primary project
+      grid (large media tiles with hairline-ruled captions and
+      discipline tag pills), thematic editorial bands, dated news
+      strip, multi-region footer. Paper-and-ink palette, red used
+      only as punctuation, hairline rules carry every separation.
+    - Variable: section sequence, statement copy, tile count, caption
+      structure. Inline: container max-width (1440px paper edge),
+      tile aspect 4:3, statement size clamp.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: the studio commissions F37 Ginger for its corporate
+  identity. Faces are not loaded in the asset; the serif fallback
+  chain in tokens.css (GT Sectra Display, Tiempos, Georgia) carries
+  the editorial register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Generous paper edge; the studio gives every tile
+   * room to breathe. Inline 1440px max-width. */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, ink hairline below.
+   * The hairline here is the studio's load-bearing rule, not gray. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  /* Studio mark dot: the one red punctuation in the wordmark. */
+  .nav__wordmark::after {
+    content: ".";
+    color: var(--ds-accent);
+    margin-left: 1px;
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+  }
+  .nav__utility {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    display: flex;
+    gap: var(--ds-space-4);
+  }
+
+  /* Statement section. The whole point of the studio's homepage: one
+   * oversized declarative sentence, flush-left, ink on paper, with a
+   * single red full stop. Clamped so it scales from 60 to 140px. */
+  .statement {
+    padding-block: var(--ds-space-16) var(--ds-space-12);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .statement__text {
+    font-family: var(--ds-font-display);
+    /* Inline clamp: the statement is the page; let it span the viewport. */
+    font-size: clamp(60px, 9.5vw, 140px);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+  /* Statement period: red, the same punctuation token as the wordmark. */
+  .statement__period { color: var(--ds-accent); }
+
+  .statement__filters {
+    margin-top: var(--ds-space-10);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3) var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .statement__filter-label { color: var(--ds-text-strong); }
+
+  /* Recurring section spacing. */
+  .section {
+    padding-block: var(--ds-space-12);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .section--bare {
+    padding-block: var(--ds-space-12);
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+    display: block;
+    margin-bottom: var(--ds-space-5);
+  }
+  .section__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-10);
+    max-width: 22ch;
+  }
+
+  /* Project grid. The studio's primary surface: large media tiles
+   * arranged 2-up on desktop, each tile with a hairline-ruled
+   * caption directly beneath the image. No drop shadow, no rounded
+   * corner, no card frame. The tile IS the image; the caption IS
+   * the type. */
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-12) var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .project-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .project {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Tile media: 4:3 aspect, fills the column edge to edge. Background
+   * stands in for the project image. Inline aspect ratio. */
+  .project__media {
+    aspect-ratio: 4 / 3;
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .project__caption {
+    padding-top: var(--ds-space-4);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-2);
+  }
+  .project__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .project__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+  }
+  /* Discipline tags: small mono uppercase pills, the only studio
+   * concession to a list-of-tags pattern. Hairline border, transparent
+   * fill. */
+  .project__tags {
+    margin-top: var(--ds-space-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+  }
+  .tag {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Thematic editorial band. Centered headline plus three linked
+   * project tiles beneath. Used four times on the live homepage to
+   * group projects by theme ("Type Has Spirit", "Past as Prologue"). */
+  .theme {
+    text-align: center;
+  }
+  .theme__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 16ch;
+  }
+  .theme__lede {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 auto var(--ds-space-10);
+    max-width: 64ch;
+  }
+  .theme__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .theme__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* News strip. Four dated entries, each a row with date kicker, work
+   * category, headline, dek. Rows separated by hairlines; the strip
+   * sits below the project surface, before the footer. */
+  .news-strip {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .news-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-2) var(--ds-space-8);
+    padding-block: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .news-row:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  @media (min-width: 768px) {
+    .news-row {
+      grid-template-columns: 140px 100px 1fr;
+      align-items: baseline;
+    }
+  }
+  .news-row__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .news-row__kind {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+  }
+  .news-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Partner roster preview. Pull quotes from named partners,
+   * interspersed across the page on the live site; here collapsed
+   * into a single section for the skeleton. Large italic display
+   * body, attributed in mono uppercase below. */
+  .roster {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .roster { grid-template-columns: repeat(2, 1fr); }
+  }
+  .pull {
+    margin: 0;
+  }
+  .pull__quote {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .pull__attribution {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /* Footer band: full-bleed paper continuation, contact-by-region
+   * grid, copyright line, social cluster. */
+  .footer-band {
+    margin-top: 0;
+    border-top: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-12);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .footer-col__head {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .footer-col__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .footer-meta {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Flush-top, ink hairline below; wordmark with red
+         period as the studio's punctuation signature. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="nav__links">
+        <a href="#">Lorem</a>
+        <a href="#">Ipsum</a>
+        <a href="#">Dolor</a>
+        <a href="#">Sit</a>
+      </div>
+      <div class="nav__utility">
+        <a href="#">Search</a>
+        <a href="#">Archive</a>
+      </div>
+    </nav>
+
+    <!-- Section: oversized statement. One declarative sentence, red
+         full stop, filter row in mono below. -->
+    <header class="statement" aria-label="Studio statement">
+      <h1 class="statement__text">
+        Lorem ipsum dolor sit amet consectetur<span class="statement__period">.</span>
+      </h1>
+      <div class="statement__filters">
+        <span><span class="statement__filter-label">Lorem</span> &nbsp; Ipsum / Dolor / Sit / Amet / Adipiscing</span>
+        <span><span class="statement__filter-label">Consectetur</span> &nbsp; Elit / Tempor / Magna / Aliqua / Enim</span>
+      </div>
+    </header>
+
+    <!-- Section: primary project grid. Two-up large media tiles, each
+         with a hairline-ruled caption beneath. -->
+    <section class="section" aria-label="Featured work">
+      <span class="section__kicker">Lorem ipsum</span>
+      <div class="project-grid" role="list">
+
+        <article class="project" role="listitem">
+          <div class="project__media" aria-hidden="true"></div>
+          <div class="project__caption">
+            <h3 class="project__title">Lorem ipsum dolor sit</h3>
+            <p class="project__dek">
+              Consectetur adipiscing elit, sed do eiusmod tempor
+              incididunt ut labore et dolore magna aliqua.
+            </p>
+            <div class="project__tags">
+              <span class="tag">Lorem</span>
+              <span class="tag">Ipsum dolor</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="project" role="listitem">
+          <div class="project__media" aria-hidden="true"></div>
+          <div class="project__caption">
+            <h3 class="project__title">Amet consectetur adipiscing</h3>
+            <p class="project__dek">
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <div class="project__tags">
+              <span class="tag">Dolor sit</span>
+              <span class="tag">Amet</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="project" role="listitem">
+          <div class="project__media" aria-hidden="true"></div>
+          <div class="project__caption">
+            <h3 class="project__title">Eiusmod tempor incididunt</h3>
+            <p class="project__dek">
+              Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+            <div class="project__tags">
+              <span class="tag">Consectetur</span>
+              <span class="tag">Elit</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="project" role="listitem">
+          <div class="project__media" aria-hidden="true"></div>
+          <div class="project__caption">
+            <h3 class="project__title">Magna aliqua veniam</h3>
+            <p class="project__dek">
+              Excepteur sint occaecat cupidatat non proident, sunt in
+              culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <div class="project__tags">
+              <span class="tag">Tempor</span>
+              <span class="tag">Magna</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: thematic editorial band. Centered title + lede +
+         three linked project tiles. Repeats on the live homepage. -->
+    <section class="section" aria-label="Thematic feature">
+      <div class="theme">
+        <h2 class="theme__title">Lorem ipsum dolor sit amet.</h2>
+        <p class="theme__lede">
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+        </p>
+        <div class="theme__grid" role="list">
+          <article class="project" role="listitem">
+            <div class="project__media" aria-hidden="true"></div>
+            <div class="project__caption">
+              <h3 class="project__title">Lorem ipsum</h3>
+              <p class="project__dek">Sed do eiusmod tempor incididunt.</p>
+            </div>
+          </article>
+          <article class="project" role="listitem">
+            <div class="project__media" aria-hidden="true"></div>
+            <div class="project__caption">
+              <h3 class="project__title">Dolor sit amet</h3>
+              <p class="project__dek">Ut labore et dolore magna aliqua.</p>
+            </div>
+          </article>
+          <article class="project" role="listitem">
+            <div class="project__media" aria-hidden="true"></div>
+            <div class="project__caption">
+              <h3 class="project__title">Consectetur adipiscing</h3>
+              <p class="project__dek">Quis nostrud exercitation ullamco.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: news strip. Dated rows with mono kickers; hairlines
+         between every row. -->
+    <section class="section" aria-label="News and journal">
+      <span class="section__kicker">News</span>
+      <div class="news-strip" role="list">
+        <article class="news-row" role="listitem">
+          <span class="news-row__date">May 18, 2026</span>
+          <span class="news-row__kind">Work</span>
+          <h3 class="news-row__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+        <article class="news-row" role="listitem">
+          <span class="news-row__date">May 12, 2026</span>
+          <span class="news-row__kind">Event</span>
+          <h3 class="news-row__title">Adipiscing elit sed do eiusmod tempor.</h3>
+        </article>
+        <article class="news-row" role="listitem">
+          <span class="news-row__date">May 04, 2026</span>
+          <span class="news-row__kind">Work</span>
+          <h3 class="news-row__title">Incididunt ut labore et dolore magna aliqua.</h3>
+        </article>
+        <article class="news-row" role="listitem">
+          <span class="news-row__date">April 28, 2026</span>
+          <span class="news-row__kind">Work</span>
+          <h3 class="news-row__title">Ut enim ad minim veniam quis nostrud.</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: partner roster preview. Pull quotes attributed to
+         named partners; italic display body, mono uppercase
+         attribution. -->
+    <section class="section--bare" aria-label="Partner voices">
+      <span class="section__kicker">Lorem ipsum</span>
+      <div class="roster">
+        <figure class="pull">
+          <p class="pull__quote">
+            "Lorem ipsum dolor sit amet consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna."
+          </p>
+          <figcaption class="pull__attribution">Lorem Ipsum, Partner</figcaption>
+        </figure>
+        <figure class="pull">
+          <p class="pull__quote">
+            "Dolor sit amet consectetur. Words have meaning. Type has
+            spirit; ut enim ad minim veniam quis nostrud exercitation."
+          </p>
+          <figcaption class="pull__attribution">Dolor Sit, Partner</figcaption>
+        </figure>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-bleed paper, outside the .page container's left
+       and right paddings but keeps the same grid inside. Contact-by-
+       region grid, copyright meta below. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div>
+          <h4 class="footer-col__head">London</h4>
+          <p class="footer-col__body">Lorem ipsum dolor<br/>sit@amet.example</p>
+        </div>
+        <div>
+          <h4 class="footer-col__head">New York</h4>
+          <p class="footer-col__body">Consectetur adipiscing<br/>elit@amet.example</p>
+        </div>
+        <div>
+          <h4 class="footer-col__head">Austin</h4>
+          <p class="footer-col__body">Sed do eiusmod<br/>tempor@amet.example</p>
+        </div>
+        <div>
+          <h4 class="footer-col__head">Berlin</h4>
+          <p class="footer-col__body">Ut labore et dolore<br/>magna@amet.example</p>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <span>&copy; 1972 - 2026 Lorem Ipsum</span>
+        <span>Privacy / Careers / Newsletter</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

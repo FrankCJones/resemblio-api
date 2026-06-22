@@ -1,0 +1,150 @@
+/*
+ * locomotive-about-page-001 tokens
+ *
+ * Page-level layout skeleton for Locomotive's /en/agency studio statement
+ * page. Tokens are calibrated to the Locomotive system register documented
+ * in systems/locomotive/system.json and cross-checked against shipped
+ * sibling assets (locomotive-kinetic-footer-001, locomotive-mono-001,
+ * kinetic-headline-001) which were inspected via devtools on 2026-05-19.
+ *
+ * The agency page surface is cream paper (#FAF9F5) with pure-black ink and
+ * a single electric blue reserved for focus. The footer band inverts to
+ * black and carries the kinetic contact statement plus link columns. Hard
+ * corners across the whole page; no shadows; hairline divider at 1.6px
+ * (the load-bearing system tell, heavier than the 1px convention) carries
+ * section rhythm. WebFetch of locomotive.ca/en/agency returned the
+ * section sequence (hero statement, manifesto / Digital-First Design
+ * block, three-column team roster by department, single Montréal office,
+ * 281-award tally, newsletter CTA, kinetic footer) but stripped inline
+ * computed styles; numeric token values inherit the system character
+ * captured in the sibling assets rather than from devtools on this page.
+ *
+ * The slots that carry this layout are --ds-bg (cream paper), --ds-text
+ * (near-black ink), --ds-text-strong (pure black for the statement),
+ * --ds-hairline (1.6px-feel inter-section rule), --ds-info (electric
+ * focus blue), --ds-radius-none (commitment to hard corners),
+ * --ds-space-12 / --ds-space-16 (section padding-block rhythm), and the
+ * paired Helvetica Now Display / LocomotiveNew display face.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cream paper carries the body; pure black ink reads as print, not
+   * screen. The electric blue is in reserve for focus only; the system
+   * permits exactly one saturated color and refuses to spend it on
+   * decoration.
+   */
+  --ds-bg:           #FAF9F5;              /* Cream paper page surface; the whole vertical column except the footer band. */
+  --ds-surface:      #F2F0E8;              /* Slight lift above the cream for any optional grouping; not used aggressively on this page. */
+  --ds-surface-2:    #000000;              /* Black as the inverted second surface; reserved for the footer band that closes the page. */
+  --ds-text:         #0A0A0A;              /* Near-black body ink; reads as warm print against the cream, not pure UI black. */
+  --ds-text-muted:   #5A5A55;              /* Warm mid-grey for secondary copy on cream; tuned print mid-tone, not UI grey. */
+  --ds-text-strong:  #000000;              /* Pure black for the studio statement and section titles; the moment the ink commits hardest. */
+  --ds-border:       #0A0A0A;              /* Borders on cream are black, mirroring the inversion principle the footer commits to. */
+  --ds-hairline:     rgba(10, 10, 10, 0.18); /* Quiet inter-section divider on cream; visually around 1.6px on this page rather than the 1px convention. */
+  --ds-accent:       #0A0A0A;              /* No saturated accent on the cream side; black-on-cream IS the accent the system spends. */
+  --ds-accent-2:     #FAF9F5;              /* Cream as the inverse-accent inside the black footer band. */
+  --ds-success:      #1F8A4B;              /* Reserved utility green; not observed on the page but contract-required. Tuned warm to live in this palette. */
+  --ds-warning:      #C77A1F;              /* Reserved utility amber; warm to match the cream-and-ink temperature. */
+  --ds-error:        #B83A2E;              /* Reserved utility red; brick rather than vivid, to belong in this palette. */
+  --ds-info:         #312DFB;              /* Electric blue observed in sibling capture; the one saturated color the system permits, reserved for focus and selection. */
+  --ds-focus-ring:   #312DFB;              /* Matches info; the keyboard-state shift that signals an interactive system underneath the print register. */
+
+  /* ---------- Type families ----------
+   * Locomotive ships a custom display face (LocomotiveNew) for the
+   * statement moments and Helvetica Now Display everywhere else. Mono is
+   * almost never present on the agency page itself; reserved for the
+   * sibling award listing's tally and inherited here for contract.
+   */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Same scale as the sibling footer asset. The studio statement borrows
+   * 5xl on desktop (70px observed on sibling H1); section titles at 2xl;
+   * body at base (15px observed).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;   /* Observed body / link computed font-size 2026-05-19 on sibling capture. */
+  --ds-text-lg:   19px;
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  46px;
+  --ds-text-4xl:  58px;
+  --ds-text-5xl:  70px;   /* Observed H1 size on sibling pages; the studio statement target. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  140px;  /* Headroom for the kinetic featured-link size (117px observed) and beyond. */
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Display statement runs slightly tight per Helvetica Now Display
+   * convention; kickers open up to wider; body stays at zero.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base. Page rhythm runs 96-128px between sections on desktop,
+   * with the closing newsletter / footer band stepping up further.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Hard corners across every interactive element. The system commits to
+   * 0 everywhere. The full slot stays available only because the
+   * contract requires it; the page does not spend it.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Flat surfaces only. Hairline borders replace elevation. Scale kept
+   * for downstream adopters.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ----------
+   * Lenis smooth scroll runs page-wide; featured links and the kinetic
+   * footer mark use an all-property transition. Standard easing and a
+   * normal duration carry the lift on the statement hover.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

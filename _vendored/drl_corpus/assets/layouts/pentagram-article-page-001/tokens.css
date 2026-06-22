@@ -1,0 +1,136 @@
+/*
+ * pentagram-article-page-001 tokens
+ *
+ * Native token values for Pentagram's news/work article page, inspired by
+ * pentagram.com/work/giorgia-lupi-data-humanism-at-gallerie-d-italia. Pentagram
+ * rides paper-and-ink with red as punctuation. Body sits on warm paper, ink
+ * runs near-black, bracketed category labels and the discipline accent carry
+ * the studio red. F37 Plain is the licensed studio sans; body on case-study
+ * pages alternates between sans and a Caslon-register serif for longform.
+ *
+ * Source: WebFetch on the live article URL above returned section sequence,
+ * category-label vocabulary ("Exhibitions", "Data Driven Experiences",
+ * "Arts & Culture"), date format ("May 18, 2026"), and the
+ * Client/Sector/Discipline/Office metadata grid. WebFetch stripped computed
+ * styles; numeric values follow the documented Pentagram identity and mirror
+ * the system-tagged atoms shipped earlier in the wave (color-groups/
+ * swiss-red-rule-001, wordmarks/custom-display-001, kickers/swiss-rule-
+ * kicker-001, footers/studio-credit-footer-001). Provenance is B.
+ *
+ * Layout-specific notes: reading column sits at ~62ch with the body register
+ * available either as sans (F37 Plain) or serif (Caslon-feel); page max-width
+ * 1320px with generous gutters. Both are inline page-grid character, not
+ * contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FAFAF7;   /* Cream-paper page; one tick warm of pure white. */
+  --ds-surface:      #FFFFFF;   /* Inline figure surface; one step brighter than the page. */
+  --ds-surface-2:    #F2F2EE;   /* Sunken sibling-row surface; tag list bg, related strip lift. */
+  --ds-text:         #111111;   /* Near-black ink; Pentagram body density. */
+  --ds-text-muted:   #6B6B6B;   /* Mid-gray for date stamps, credit lines, captions. */
+  --ds-text-strong:  #000000;   /* Pure black for category brackets, the rule itself, oversized display. */
+  --ds-border:       #111111;   /* Full-ink border; the rule carries structural weight. */
+  --ds-hairline:     #1A1A1A;   /* Near-ink hairline between sibling sections. */
+  --ds-accent:       #E2231A;   /* Pentagram red; category brackets, pull-quote rule, hover affordance. */
+  --ds-accent-2:     #B91C16;   /* Deeper red for pressed / hover. */
+  --ds-success:      #1F7A4D;
+  --ds-warning:      #C68A14;
+  --ds-error:        #C0211A;
+  --ds-info:         #1F4FA8;
+  --ds-focus-ring:   #E2231A;   /* Accent red as keyboard focus on cream. */
+
+  /* ---------- Type families ----------
+   * F37 Plain is the licensed Pentagram studio face. Helvetica Neue is the
+   * historical antecedent and Pentagram's pre-rebrand workhorse. The serif
+   * slot is the body-longform alternate seen on essay-flavored case-studies;
+   * Pentagram has used Caslon and similar transitional serifs across editorial
+   * projects for decades. Open fallbacks so the asset renders standalone.
+   */
+  --ds-font-display: "F37 Plain", "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Caslon", "Adobe Caslon Pro", "Big Caslon", "Times New Roman", Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "F37 Plain", "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Swiss-poster modular scale. Oversized statement display bounds at 7xl
+   * for the article H1; body holds at 18px for the serif register so the
+   * column reads as longform, not as utility text.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   11px;   /* Mono kicker, bracket label inline. */
+  --ds-text-sm:   13px;   /* Tag chips, related-card meta, figure captions. */
+  --ds-text-base: 18px;   /* Serif body reading default. */
+  --ds-text-lg:   22px;   /* Lead paragraph and pull-quote text. */
+  --ds-text-xl:   28px;   /* Body H3 subhead in sans. */
+  --ds-text-2xl:  36px;   /* Body H2 section heads in sans. */
+  --ds-text-3xl:  48px;   /* Related-strip section heading. */
+  --ds-text-4xl:  64px;   /* Byline display fallback. */
+  --ds-text-5xl:  80px;
+  --ds-text-6xl:  104px;
+  --ds-text-7xl:  136px;  /* Article H1 statement display. */
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.0;    /* Statement display title. */
+  --ds-leading-snug:    1.15;   /* H2 / H3 section heads. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Serif body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Tight on the oversized display so the F37 squeeze reads as identity.
+   * Wide on the bracketed kicker because Pentagram uses positive tracking
+   * on category labels to echo the Swiss-poster discipline.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Zero-radius. Swiss design refuses rounded corners; any pill in this
+   * voice would betray the register. Full slot stays available for any
+   * downstream avatar that genuinely needs a circle.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Suppressed. Print sensibility carries separation via rules and borders,
+   * not elevation. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 8px 20px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

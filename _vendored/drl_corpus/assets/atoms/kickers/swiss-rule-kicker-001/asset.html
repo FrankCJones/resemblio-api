@@ -1,0 +1,156 @@
+<!--
+  Asset: swiss-rule-kicker-001
+  Class: kickers
+  Pattern: kicker-with-rule, mono-eyebrow
+  Inspired by: Pentagram
+  Notes:
+    - Swiss-tradition kicker: uppercase Neue Haas Grotesk label sitting on
+      a full-width 2px ink rule, with a red category marker on the left.
+    - Token-driven: type, color, spacing all from --ds-*. The bracket
+      glyph and the 2px rule weight are inline ornament documented below.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>swiss-rule-kicker-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Neue Haas Grotesk is a licensed Linotype face; no free CDN ships it.
+  We declare it in tokens.css and fall back to Helvetica Neue / Helvetica
+  / Arial, which preserve the Swiss grotesque voice closely enough for
+  the asset to read correctly out of the box.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Container holds the kicker plus a sample headline so the kicker reads
+   * in context. Max-width matches the Swiss-grid measure for a single column. */
+  .stack {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* The kicker sits on its own rule. Two parts:
+   *   1. .kicker__row - the row with label, category marker, and date.
+   *   2. .kicker__rule - the 2px ink line beneath. */
+  .kicker {
+    display: block;
+  }
+
+  .kicker__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    padding-bottom: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+  }
+
+  /* The bracketed category label. Pentagram tags case studies with bracket
+   * delimiters; we keep them inline as an ornamental signature. The red on
+   * the bracket characters specifically (not on the label text) is the
+   * Pentagram-canonical move: accent rationed to the marker, not the word. */
+  .kicker__category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+  }
+  .kicker__category::before,
+  .kicker__category::after {
+    /* Brackets in accent color; specifically Pentagram-red. Inline because
+     * the bracket-pair is asset character, not a system token slot. */
+    color: var(--ds-accent);
+    font-weight: 500;
+  }
+  .kicker__category::before { content: "["; margin-right: 2px; }
+  .kicker__category::after  { content: "]"; margin-left: 2px; }
+
+  /* Date stamp on the right; muted, so the category leads. */
+  .kicker__date {
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    font-weight: 400;
+  }
+
+  /* The rule itself. 2px is the Swiss-tradition thickness for section
+   * markers — heavier than a hairline divider, lighter than a heading
+   * underline. Inline because the 2px value is asset character; the
+   * --ds-hairline slot stays reserved for the subtle 1px separator. */
+  .kicker__rule {
+    height: 2px;
+    background: var(--ds-text-strong);
+    width: 100%;
+  }
+
+  /* Sample headline beneath the kicker so the structural beat reads in
+   * context. Uses display tracking for the Swiss-grotesque voice. */
+  .headline {
+    margin: var(--ds-space-4) 0 0 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  /* Secondary kicker variant: no bracket, no date — just label plus rule.
+   * Shown lower in the demo to document the reduced form. */
+  .kicker--minimal .kicker__row {
+    justify-content: flex-start;
+    color: var(--ds-text-muted);
+  }
+  .kicker--minimal .kicker__category::before,
+  .kicker--minimal .kicker__category::after { content: none; }
+  .kicker--minimal .kicker__rule {
+    height: 1px;
+    background: var(--ds-text);
+  }
+
+  .spacer { height: var(--ds-space-12); }
+</style>
+</head>
+<body>
+  <div class="stack">
+
+    <!-- Primary: bracketed category, date stamp, 2px ink rule. -->
+    <div class="kicker">
+      <div class="kicker__row">
+        <span class="kicker__category">Brand Identity</span>
+        <span class="kicker__date">19 May 2026</span>
+      </div>
+      <div class="kicker__rule" aria-hidden="true"></div>
+    </div>
+    <h2 class="headline">Lorem ipsum dolor sit amet consectetur</h2>
+
+    <div class="spacer"></div>
+
+    <!-- Minimal variant: label and lighter rule. -->
+    <div class="kicker kicker--minimal">
+      <div class="kicker__row">
+        <span class="kicker__category">Publications</span>
+      </div>
+      <div class="kicker__rule" aria-hidden="true"></div>
+    </div>
+    <h2 class="headline">Adipiscing elit, sed do eiusmod tempor</h2>
+
+  </div>
+</body>
+</html>

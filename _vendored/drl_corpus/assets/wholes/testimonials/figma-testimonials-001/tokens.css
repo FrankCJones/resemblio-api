@@ -1,0 +1,148 @@
+/*
+ * figma-testimonials-001 tokens
+ *
+ * Bright-light surface testimonial chrome inspired by Figma's homepage and
+ * /customers index. Pure white page, hairline-edged white quote cards, the
+ * Figma plum reserved for the trailing "Read the story" link only. Quote
+ * body in Whyte / Inter at lead-paragraph scale; sentence-case attribution
+ * with circular headshot and company name lockup.
+ *
+ * Source extraction:
+ *   - figma.com (2026-05-20, webfetch): two verbatim testimonials on the
+ *     homepage. "Figma helps us paint the north star for the whole
+ *     company. It keeps everyone aligned and excited." (Henry Modisett,
+ *     Head of Design, Perplexity); "Nearly everything that designers and
+ *     developers need is available in Figma." (Diana Mounter, Head of
+ *     Design, GitHub).
+ *   - figma.com/customers (2026-05-20, webfetch): customer index also
+ *     carries a quote callout. "It's the great equalizer: design,
+ *     engineering, marketing -- everyone's equipped to contribute with
+ *     Figma Make." (Cassie Peretore, Product Manager, Amplitude).
+ *   - figma.com/design (2026-05-20, webfetch): third page confirms the
+ *     attribution shape. "Figma brings together designers, project
+ *     managers, product managers, and engineers. The quality of feedback
+ *     is 10x better." (Shawn Lam, Head of Design, Zoom).
+ *
+ * Token values cross-referenced against the canonical Figma layout
+ * tokens (assets/layouts/figma-marketing-page-001/tokens.css) and the
+ * feature-grid tokens (assets/wholes/feature-grids/figma-feature-grid-001),
+ * both captured 2026-05-20. WebFetch on Figma strips computed CSS, so
+ * specific hex values come from the published Figma brand palette and
+ * the prior atom captures. Score B.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-white page surface, near-white card field, single plum accent
+   * reserved for the link. Figma's principle: monochrome chrome lets
+   * the product canvas screenshots and the plum CTA carry the color.
+   */
+  --ds-bg:           #FFFFFF;          /* Figma pure-white page surface. */
+  --ds-surface:      #FFFFFF;          /* Card body sits flush with the page; the hairline holds the edge. */
+  --ds-surface-2:    #FAFAFA;          /* Headshot ring background and the section band when used inside a banded layout. */
+  --ds-text:         #1E1E1E;          /* Figma near-black; the quote body color. */
+  --ds-text-muted:   #6B6B6B;          /* Role line, sentence-style attribution metadata. */
+  --ds-text-strong:  #000000;          /* Attribution name; the load-bearing line under the quote. */
+  --ds-border:       #E5E5E5;          /* Card hairline edge; the only chrome the card carries at rest. */
+  --ds-hairline:     #EFEFEF;          /* Internal divider above attribution. */
+  --ds-accent:       #A259FF;          /* Figma plum; trailing "Read the story" link and focus ring. */
+  --ds-accent-2:     #7B3FF2;          /* Pressed plum; hover lift on the link. */
+  --ds-success:      #1ABCFE;          /* Figma cyan; reserved. */
+  --ds-warning:      #FFCD29;          /* Figma yellow; reserved. */
+  --ds-error:        #F24E1E;          /* Figma red-orange; reserved. */
+  --ds-info:         #A259FF;
+  --ds-focus-ring:   #A259FF;          /* Plum focus ring; the only non-monochrome chrome on the card. */
+
+  /* ---------- Type families ----------
+   * Figma ships Whyte across display and body on the marketing surface.
+   * Inter is the documented system fallback. Mono is reserved; this card
+   * does not use it.
+   */
+  --ds-font-display: "Whyte", "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Whyte", "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Whyte Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Whyte", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Quote body sits at xl (24px); slightly above the Notion register
+   * because Figma's display lean is bolder. Attribution lines at sm.
+   * Section eyebrow at xs in mono register.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;                /* Quote body sits here; lead-display scale. */
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.4;           /* Quote body; sentence-case reading rhythm at xl scale. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Whyte ships tight; the negative tracking on display moments is
+   * structural to the typeface.
+   */
+  --ds-tracking-tight:  -0.02em;       /* Quote body picks up a touch of negative tracking. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;        /* Mono eyebrow (when used). */
+
+  /* ---------- Spacing ----------
+   * 4px grid. Card internal padding lands at space-6 (32px); inter-card
+   * gap is space-5 (24px); section margin around the testimonials block
+   * is space-12 (96px) on desktop.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;                 /* Card padding. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Figma's chrome leans soft-rounded (10-16px) but never pill on cards.
+   * Card corner sits at lg (16px); headshot full circle.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   10px;
+  --ds-radius-lg:   16px;              /* Quote card corner. */
+  --ds-radius-full: 9999px;            /* Headshot circle. */
+
+  /* ---------- Shadows ----------
+   * Chrome at rest is flat; the hairline carries the card. Hover lifts
+   * one step via a soft shadow.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   none;              /* Card at rest. */
+  --ds-shadow-md:   0 8px 24px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 16px 48px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

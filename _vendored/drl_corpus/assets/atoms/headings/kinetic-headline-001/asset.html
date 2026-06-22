@@ -1,0 +1,154 @@
+<!--
+  Asset: kinetic-headline-001
+  Class: headings
+  Pattern: oversized-statement
+  Inspired by: Locomotive
+  Notes:
+    - Locomotive-style kinetic display heading: oversized sans set at line-height 1.0, neutral letter-spacing, weight 400. The motion IS the design: words translate up and reveal on hover, mirroring the featured-link reveal on locomotive.ca.
+    - Type sizes, line-heights, and color come from token variables. The clip-path reveal geometry and the per-line stagger are asset-specific motion ornament and live inline with comments. Animation honors prefers-reduced-motion.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>kinetic-headline-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Tight stands in for Locomotive's proprietary LocomotiveNew display face;
+     closest free grotesque with similar proportions at large sizes. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-8);
+    /* Cursor signals interactivity across the whole asset; Locomotive uses a
+     * custom cursor affordance throughout. */
+    cursor: default;
+  }
+
+  .stage {
+    /* Constrain to a content column so the kinetic words have somewhere to
+     * translate from without bleeding off-canvas. */
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  /* Heading wrapper: one h1 made of two stacked lines that animate
+   * independently. Each line is its own clip mask. */
+  .kinetic {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: clamp(var(--ds-text-4xl), 12vw, var(--ds-text-7xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+    text-transform: none;
+  }
+
+  .kinetic__line {
+    /* Each line is a clipping window. The inner span slides in from below
+     * on hover, mirroring Locomotive's featured-link title reveal. */
+    display: block;
+    overflow: hidden;
+    /* A hair of vertical padding so descenders are not clipped at rest. */
+    padding: 0.02em 0;
+  }
+
+  .kinetic__inner {
+    display: inline-block;
+    /* will-change keeps the per-letter compositor layer warm; the
+     * transition is the kinetic moment Locomotive is known for. The 600ms
+     * slow curve mirrors the lingering Lenis-driven feel of the source. */
+    will-change: transform;
+    transition: transform var(--ds-duration-slow) var(--ds-ease-emphasize);
+  }
+
+  /* Hover state: the line content lifts as if a second line is sliding up
+   * to take its place. On Locomotive's site this is paired with a duplicate
+   * line beneath; here we use the lift alone to keep the atom single-purpose. */
+  .kinetic:hover .kinetic__inner,
+  .kinetic:focus-visible .kinetic__inner {
+    transform: translate3d(0, -0.08em, 0);
+  }
+
+  /* Per-line stagger: line 2 trails line 1 by 80ms so the reveal feels
+   * sequenced rather than flat. Inline rather than tokenized: the stagger
+   * value is a one-off motion choice specific to this asset. */
+  .kinetic__line:nth-child(2) .kinetic__inner {
+    transition-delay: 80ms;
+  }
+
+  /* Accent rule beneath the heading: a single hairline drawing left to right
+   * on hover. Echoes the rule that appears on Locomotive's case-study cards. */
+  .kinetic__rule {
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: var(--ds-text);
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform var(--ds-duration-slow) var(--ds-ease-emphasize);
+    margin-top: var(--ds-space-5);
+  }
+  .kinetic:hover .kinetic__rule,
+  .kinetic:focus-visible .kinetic__rule {
+    transform: scaleX(1);
+  }
+
+  /* Kicker label above the heading; mono register sets the technical tone
+   * Locomotive uses for case-study metadata. */
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  /* Accessibility: collapse all motion when the user has reduced-motion on.
+   * Locomotive's source ships smooth-scroll without an obvious opt-out;
+   * this asset shows the correct way to gate kinetic behaviour. */
+  @media (prefers-reduced-motion: reduce) {
+    .kinetic__inner,
+    .kinetic__rule {
+      transition: none;
+    }
+    .kinetic:hover .kinetic__inner,
+    .kinetic:focus-visible .kinetic__inner {
+      transform: none;
+    }
+    .kinetic:hover .kinetic__rule,
+    .kinetic:focus-visible .kinetic__rule {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Focus ring for keyboard users. The accent doubles as focus on dark. */
+  .kinetic:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: var(--ds-space-3);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <p class="kicker">Lorem ipsum / dolor sit</p>
+    <h1 class="kinetic" tabindex="0">
+      <span class="kinetic__line"><span class="kinetic__inner">Lorem ipsum</span></span>
+      <span class="kinetic__line"><span class="kinetic__inner">dolor sit amet</span></span>
+      <span class="kinetic__rule" aria-hidden="true"></span>
+    </h1>
+  </div>
+</body>
+</html>

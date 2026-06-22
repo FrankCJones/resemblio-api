@@ -1,0 +1,131 @@
+<!--
+  Asset: inline-status-001
+  Class: status-indicators
+  Pattern: (none)
+  Inspired by: Linear (inline metadata rows in marketing mockups on linear.app)
+  Notes:
+    - Three rows: dot, label, dim separator dot, relative timestamp.
+    - Label tier and timestamp tier differ by one luminance step.
+    - Row dimensions and gaps are variables; the middle separator dot is inline ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>inline-status-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Variable; Linear's body and display face. -->
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-feature-settings: "ss01", "cv11";
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    justify-content: center;
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 520px;
+  }
+
+  /* Flush single-line row. The state dot is at the head; the timestamp is at
+   * the tail. The middle interpunct is dim and acts as visual breath. */
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-xs);
+    line-height: 1;
+    color: var(--ds-text-muted);
+  }
+
+  .row__dot {
+    /* 8px dot; smaller than the standalone pulsing-dot indicator because the
+     * row reads as a single line and a 10px dot would read taller than the
+     * label x-height. */
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .row--ok    .row__dot { background: var(--ds-success); }
+  .row--warn  .row__dot { background: var(--ds-warning); }
+  .row--err   .row__dot { background: var(--ds-error); }
+  .row--idle  .row__dot { background: var(--ds-text-muted); }
+
+  .row__label {
+    color: var(--ds-text);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* The interpunct: dim, non-semantic, just visual rhythm between
+   * the label and the timestamp. Inline because the character itself is
+   * decorative ornament for this row only. */
+  .row__sep {
+    color: #62666D;   /* Linear dim row tier; one step muted past --ds-text-muted. */
+    font-size: var(--ds-text-xs);
+    user-select: none;
+  }
+
+  .row__time {
+    color: #62666D;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .heading {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-3);
+  }
+</style>
+</head>
+<body>
+  <div class="rows">
+    <div class="heading">Lorem ipsum recent activity</div>
+
+    <div class="row row--ok">
+      <span class="row__dot" aria-hidden="true"></span>
+      <span class="row__label">Lorem ipsum dolor</span>
+      <span class="row__sep" aria-hidden="true">.</span>
+      <span class="row__time">just now</span>
+    </div>
+
+    <div class="row row--warn">
+      <span class="row__dot" aria-hidden="true"></span>
+      <span class="row__label">Sit amet consectetur</span>
+      <span class="row__sep" aria-hidden="true">.</span>
+      <span class="row__time">4 min ago</span>
+    </div>
+
+    <div class="row row--err">
+      <span class="row__dot" aria-hidden="true"></span>
+      <span class="row__label">Ipsum facilisis</span>
+      <span class="row__sep" aria-hidden="true">.</span>
+      <span class="row__time">12 min ago</span>
+    </div>
+
+    <div class="row row--idle">
+      <span class="row__dot" aria-hidden="true"></span>
+      <span class="row__label">Tempor incididunt</span>
+      <span class="row__sep" aria-hidden="true">.</span>
+      <span class="row__time">2 hr ago</span>
+    </div>
+  </div>
+</body>
+</html>

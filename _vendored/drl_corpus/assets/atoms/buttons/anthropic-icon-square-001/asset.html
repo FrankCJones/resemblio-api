@@ -1,0 +1,79 @@
+<!--
+  Asset: anthropic-icon-square-001
+  Class: buttons
+  Pattern: icon-button
+  Inspired by: Anthropic
+  Notes:
+    - 32x32 icon-only button, 6px radius, transparent bg, icon paints currentColor.
+    - Three states; hover lifts to surface-2 to reveal the hit area on warm paper.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-icon-square-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-6);
+    flex-wrap: wrap;
+    padding: var(--ds-space-10);
+  }
+  .group { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); }
+  .state-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .iconbtn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-md);
+    color: #3D3D3A; /* inline: muted ink per Anthropic docs search-trigger color rgb(61,61,58) */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .iconbtn svg { width: 16px; height: 16px; }
+  .iconbtn:hover { background: var(--ds-surface-2); color: var(--ds-text); }
+</style>
+</head>
+<body>
+  <div class="group">
+    <span class="state-label">rest</span>
+    <button type="button" class="iconbtn" aria-label="Search">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="group">
+    <span class="state-label">hover</span>
+    <button type="button" class="iconbtn" aria-label="Search" style="background:var(--ds-surface-2); color:var(--ds-text);">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="group">
+    <span class="state-label">focus</span>
+    <button type="button" class="iconbtn" aria-label="Search" style="outline:2px solid var(--ds-focus-ring); outline-offset:2px;">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</body>
+</html>

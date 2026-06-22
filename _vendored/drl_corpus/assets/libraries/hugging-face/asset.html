@@ -1,0 +1,579 @@
+<!--
+  Asset: hugging-face
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Hugging Face (huggingface.co, /pricing, /enterprise)
+  Notes:
+    - HF's full marketing-surface vocabulary in one voice: navigation
+      (yellow hugging-face emoji mark glued to wordmark, sans links,
+      sign-up / log-in pair), buttons (primary near-black, secondary
+      hairline, link-arrow), pricing-tier card with the featured-tier
+      yellow PRO pill, model card with the org/name mono ID + license
+      chip + downloads + likes row (the signature HF card composition),
+      dataset card variant, feature tile with icon-and-dek, testimonial
+      card with avatar block, kicker uppercase sans, mono model-ID label,
+      hairline divider, footer links. The warm yellow does brand
+      punctuation; the white surface lets the cards breathe.
+    - All components share tokens.css. Inline ornament is limited to the
+      emoji-mark SVG and the licence-chip background tint. The
+      card-with-hairline-chrome and the mono-model-ID-row are the
+      load-bearing patterns: every HF card carries a 1px ring at rest,
+      and every model surface carries its org/name slug as the
+      mono primary read.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>hugging-face library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Hugging-face emoji mark: a round warm-yellow disc with two pink
+     cheeks. The SVG keeps the geometry simple so it reads cleanly at
+     16-24px in the wordmark slot. The hands-up gesture from the real
+     mark is implied via the offset cheeks; the wordmark carries the
+     name. */
+  .hf-mark {
+    width: 22px; height: 22px; flex-shrink: 0;
+    display: inline-block;
+  }
+
+  /* Wordmark: emoji mark + wordmark text inline, the canonical HF
+     header pattern. */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-2); font-family: var(--ds-font-display); font-size: var(--ds-text-lg); font-weight: 700; color: var(--ds-text); text-decoration: none; }
+
+  /* Navigation - wordmark left, sans links, sign-up / log-in pair. */
+  .nav { display: flex; flex-wrap: wrap; gap: var(--ds-space-5); align-items: center; padding: var(--ds-space-3) 0; border-bottom: 1px solid var(--ds-hairline); }
+  .nav-links { display: flex; gap: var(--ds-space-4); margin-left: var(--ds-space-6); flex: 1; }
+  .nav-links a { font-size: var(--ds-text-sm); color: var(--ds-text); text-decoration: none; transition: color var(--ds-duration-fast) var(--ds-ease-standard); font-weight: 500; }
+  .nav-links a:hover { color: var(--ds-accent-2); }
+
+  /* Buttons - primary near-black, secondary hairline, link arrow. */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-text-strong); color: var(--ds-surface);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600;
+    padding: 0 var(--ds-space-5); height: 40px;
+    border-radius: var(--ds-radius-md);
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-primary:hover { background: #000; }
+  .btn-primary:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  .btn-secondary {
+    appearance: none; cursor: pointer;
+    background: var(--ds-surface); color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 0 var(--ds-space-5); height: 40px;
+    border-radius: var(--ds-radius-md);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-secondary:hover { background: var(--ds-surface-2); }
+
+  .btn-yellow {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: var(--ds-text-strong);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 700;
+    padding: 0 var(--ds-space-5); height: 40px;
+    border-radius: var(--ds-radius-md);
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-yellow:hover { background: var(--ds-accent-2); }
+
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-1);
+    color: var(--ds-text); font-size: var(--ds-text-sm); font-weight: 500; text-decoration: none;
+  }
+  .btn-link .arrow { transition: transform var(--ds-duration-fast) var(--ds-ease-standard); }
+  .btn-link:hover .arrow { transform: translateX(2px); }
+
+  .btn-sm { height: 32px; font-size: var(--ds-text-xs); padding: 0 var(--ds-space-3); }
+
+  /* Hero block - large display, supporting lead, dual CTA. */
+  .hero { display: flex; flex-direction: column; gap: var(--ds-space-5); max-width: 64ch; }
+  .hero h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .hero p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Kicker - uppercase sans eyebrow, slight letter-spacing. */
+  .kicker {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs); font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-accent-2);
+  }
+
+  /* Mono model-ID label - org/name slug, the signature HF read. */
+  .model-id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    word-break: break-all;
+  }
+  .model-id .org { color: var(--ds-text-muted); }
+  .model-id .slash { color: var(--ds-text-muted); margin: 0 1px; }
+
+  /* PRO pill - the signature yellow brand pill on the pricing surface. */
+  .pill-pro {
+    display: inline-flex; align-items: center;
+    background: var(--ds-accent); color: var(--ds-text-strong);
+    font-family: var(--ds-font-display); font-size: var(--ds-text-2xs); font-weight: 700;
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    padding: 3px 8px; border-radius: var(--ds-radius-full);
+  }
+
+  /* License chip - small mono tag, hairline border, neutral fill. */
+  .pill-license {
+    display: inline-flex; align-items: center;
+    background: var(--ds-surface-2); color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); font-weight: 500;
+    padding: 2px 8px; border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Card frame - hairline-chrome flat card; the dominant HF pattern. */
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard), border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card:hover { box-shadow: var(--ds-shadow-md); border-color: #D1D5DB; }
+
+  /* Model / dataset card - the signature composition: mono org/name ID,
+     optional kicker (task type), license chip, metric row (downloads +
+     likes + updated). */
+  .card-model { display: grid; grid-template-columns: 1fr; gap: var(--ds-space-3); }
+  .card-model__head { display: flex; align-items: center; gap: var(--ds-space-2); flex-wrap: wrap; }
+  .card-model__id { font-family: var(--ds-font-mono); font-size: var(--ds-text-base); font-weight: 500; color: var(--ds-text); }
+  .card-model__id .org { color: var(--ds-text-muted); }
+  .card-model__id .slash { color: var(--ds-text-muted); }
+  .card-model__row { display: flex; align-items: center; gap: var(--ds-space-4); flex-wrap: wrap; font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+  .card-model__row span { display: inline-flex; align-items: center; gap: 4px; }
+  .card-model__row svg { width: 12px; height: 12px; }
+
+  /* Pricing tier card. */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-4); }
+  .card-pricing {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .card-pricing.is-featured { border-color: var(--ds-accent); box-shadow: 0 0 0 1px var(--ds-accent); }
+  .card-pricing__head { display: flex; align-items: center; gap: var(--ds-space-2); }
+  .card-pricing__tier { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); font-weight: 700; color: var(--ds-text-strong); margin: 0; }
+  .card-pricing__price { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); line-height: 1; letter-spacing: var(--ds-tracking-tight); font-weight: 700; color: var(--ds-text-strong); margin: 0; }
+  .card-pricing__price small { font-size: var(--ds-text-sm); font-weight: 400; color: var(--ds-text-muted); letter-spacing: 0; }
+  .card-pricing__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .card-pricing__list li { display: flex; align-items: flex-start; gap: var(--ds-space-2); font-size: var(--ds-text-sm); color: var(--ds-text); line-height: var(--ds-leading-snug); }
+  .card-pricing__list svg { width: 14px; height: 14px; color: var(--ds-accent-2); flex-shrink: 0; margin-top: 3px; }
+
+  /* Feature tile - icon + title + dek; the /enterprise grid pattern. */
+  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  .feature-tile { display: flex; flex-direction: column; gap: var(--ds-space-2); padding: var(--ds-space-4); }
+  .feature-tile__icon {
+    width: 40px; height: 40px;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: var(--ds-space-2);
+  }
+  .feature-tile__icon svg { width: 20px; height: 20px; color: var(--ds-text); }
+  .feature-tile__title { font-family: var(--ds-font-display); font-size: var(--ds-text-base); font-weight: 600; color: var(--ds-text-strong); margin: 0; }
+  .feature-tile__dek { font-size: var(--ds-text-sm); color: var(--ds-text-muted); line-height: var(--ds-leading-relaxed); margin: 0; }
+
+  /* Testimonial card - avatar block + quote + attribution. */
+  .testimonial {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+    max-width: 480px;
+  }
+  .testimonial__quote { font-family: var(--ds-font-display); font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); color: var(--ds-text); margin: 0; }
+  .testimonial__attr { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .testimonial__avatar { width: 36px; height: 36px; border-radius: var(--ds-radius-full); background: var(--ds-accent); display: inline-flex; align-items: center; justify-content: center; font-family: var(--ds-font-display); font-weight: 700; font-size: var(--ds-text-sm); color: var(--ds-text-strong); }
+  .testimonial__attr .name { font-weight: 600; color: var(--ds-text-strong); font-size: var(--ds-text-sm); }
+  .testimonial__attr .role { font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+
+  /* Hairline divider - 1px subtle horizontal rule. */
+  .hairline {
+    border: 0;
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-6) 0;
+  }
+
+  /* Footer link block - muted color, underline on hover. */
+  .footer { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-6); padding-top: var(--ds-space-6); border-top: 1px solid var(--ds-hairline); }
+  .footer h4 { font-family: var(--ds-font-display); font-size: var(--ds-text-sm); font-weight: 700; color: var(--ds-text-strong); margin: 0 0 var(--ds-space-3) 0; }
+  .footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .footer a { color: var(--ds-text-muted); text-decoration: none; font-size: var(--ds-text-sm); transition: color var(--ds-duration-fast) var(--ds-ease-standard); }
+  .footer a:hover { color: var(--ds-text); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Type block */
+  .type-block { display: flex; flex-direction: column; gap: var(--ds-space-3); max-width: 60ch; }
+  .inline-link { color: var(--ds-text); text-decoration: underline; text-decoration-color: var(--ds-accent); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <a class="wordmark" href="#">
+      <svg class="hf-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <!-- Yellow disc body of the hugging-face emoji mark. -->
+        <circle cx="20" cy="20" r="18" fill="#FFD21E"/>
+        <!-- Pink cheeks (the signature emoji detail). -->
+        <circle cx="12" cy="24" r="3" fill="#F472B6" opacity="0.75"/>
+        <circle cx="28" cy="24" r="3" fill="#F472B6" opacity="0.75"/>
+        <!-- Eyes. -->
+        <circle cx="14" cy="17" r="1.6" fill="#1F2937"/>
+        <circle cx="26" cy="17" r="1.6" fill="#1F2937"/>
+        <!-- Smile arc. -->
+        <path d="M13 22 Q20 28 27 22" stroke="#1F2937" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span>Hugging Face</span>
+    </a>
+    <h1>Lorem ipsum: Hugging Face's component vocabulary in one voice</h1>
+    <p>Dolor sit amet consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Navigation + wordmark</div>
+    <nav class="nav">
+      <a class="wordmark" href="#">
+        <svg class="hf-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" fill="#FFD21E"/>
+          <circle cx="12" cy="24" r="3" fill="#F472B6" opacity="0.75"/>
+          <circle cx="28" cy="24" r="3" fill="#F472B6" opacity="0.75"/>
+          <circle cx="14" cy="17" r="1.6" fill="#1F2937"/>
+          <circle cx="26" cy="17" r="1.6" fill="#1F2937"/>
+          <path d="M13 22 Q20 28 27 22" stroke="#1F2937" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span>Hugging Face</span>
+      </a>
+      <div class="nav-links">
+        <a href="#">Models</a>
+        <a href="#">Datasets</a>
+        <a href="#">Spaces</a>
+        <a href="#">Docs</a>
+        <a href="#">Enterprise</a>
+        <a href="#">Pricing</a>
+      </div>
+      <button class="btn-secondary btn-sm">Log In</button>
+      <button class="btn-primary btn-sm">Sign Up</button>
+    </nav>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Hero with dual CTA</div>
+    <div class="hero">
+      <span class="kicker">The AI community</span>
+      <h1>Lorem ipsum dolor sit amet consectetur</h1>
+      <p>Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+      <div class="row">
+        <button class="btn-primary">Sign Up</button>
+        <button class="btn-secondary">Explore Spaces</button>
+        <a class="btn-link" href="#">Read the docs <span class="arrow">-&gt;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Buttons</div>
+    <div class="row">
+      <button class="btn-primary">Get Started</button>
+      <button class="btn-secondary">See pricing</button>
+      <button class="btn-yellow">Subscribe to Pro</button>
+      <a class="btn-link" href="#">Learn more <span class="arrow">-&gt;</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Model cards (the signature card composition)</div>
+    <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--ds-space-4); align-items: stretch;">
+
+      <article class="card card-model">
+        <div class="card-model__head">
+          <span class="pill-pro">Featured</span>
+          <span class="pill-license">apache-2.0</span>
+        </div>
+        <h3 class="card-model__id"><span class="org">lorem-org</span><span class="slash">/</span>Ipsum-Dolor-7B-Instruct</h3>
+        <p style="margin:0; color: var(--ds-text-muted); font-size: var(--ds-text-sm); line-height: var(--ds-leading-snug);">Text generation, instruction-tuned. Adipiscing elit sed do eiusmod tempor.</p>
+        <div class="card-model__row">
+          <span>
+            <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v8m0 0l-3-3m3 3l3-3M2 11h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            128k downloads
+          </span>
+          <span>
+            <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 10.5L1.5 6.2A2.7 2.7 0 0 1 6 2.7a2.7 2.7 0 0 1 4.5 3.5L6 10.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            2.4k
+          </span>
+          <span>updated 3 days ago</span>
+        </div>
+      </article>
+
+      <article class="card card-model">
+        <div class="card-model__head">
+          <span class="kicker">Dataset</span>
+          <span class="pill-license">mit</span>
+        </div>
+        <h3 class="card-model__id"><span class="org">consectetur</span><span class="slash">/</span>amet-corpus-v2</h3>
+        <p style="margin:0; color: var(--ds-text-muted); font-size: var(--ds-text-sm); line-height: var(--ds-leading-snug);">2.1B rows, 14 languages. Magna aliqua ut enim ad minim veniam.</p>
+        <div class="card-model__row">
+          <span>52k downloads</span>
+          <span>831 likes</span>
+          <span>2.1B rows</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Pricing tier cards</div>
+    <div class="pricing-grid">
+      <article class="card-pricing">
+        <div class="card-pricing__head">
+          <h3 class="card-pricing__tier">Free</h3>
+        </div>
+        <p class="card-pricing__price">$0<small> / month</small></p>
+        <ul class="card-pricing__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Lorem ipsum public access</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited public repos</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Community support</li>
+        </ul>
+        <button class="btn-secondary">Sign up</button>
+      </article>
+
+      <article class="card-pricing is-featured">
+        <div class="card-pricing__head">
+          <h3 class="card-pricing__tier">Pro</h3>
+          <span class="pill-pro">Pro</span>
+        </div>
+        <p class="card-pricing__price">$9<small> / month</small></p>
+        <ul class="card-pricing__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>ZeroGPU quota boost</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Higher inference limits</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Private dataset viewer</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Early access to features</li>
+        </ul>
+        <button class="btn-yellow">Get Pro</button>
+      </article>
+
+      <article class="card-pricing">
+        <div class="card-pricing__head">
+          <h3 class="card-pricing__tier">Enterprise</h3>
+        </div>
+        <p class="card-pricing__price">$20<small> / user / month</small></p>
+        <ul class="card-pricing__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Single Sign-On</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Audit logs and analytics</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Resource groups + regions</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li>
+        </ul>
+        <button class="btn-primary">Talk to sales</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Feature tiles (the /enterprise grid)</div>
+    <div class="feature-grid">
+      <div class="feature-tile">
+        <span class="feature-tile__icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2L3 5v5c0 4 3 7 7 8 4-1 7-4 7-8V5l-7-3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </span>
+        <h4 class="feature-tile__title">Single Sign-On</h4>
+        <p class="feature-tile__dek">Lorem ipsum dolor sit amet consectetur, integration with your identity provider.</p>
+      </div>
+      <div class="feature-tile">
+        <span class="feature-tile__icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 3v14M3 10h14" stroke="currentColor" stroke-width="1.5"/></svg>
+        </span>
+        <h4 class="feature-tile__title">Regions</h4>
+        <p class="feature-tile__dek">Choose where your assets live; EU, US, and additional jurisdictions.</p>
+      </div>
+      <div class="feature-tile">
+        <span class="feature-tile__icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 4h12v12H4z M4 8h12 M8 8v8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </span>
+        <h4 class="feature-tile__title">Audit Logs</h4>
+        <p class="feature-tile__dek">Track every action across your workspace, exportable to your SIEM.</p>
+      </div>
+      <div class="feature-tile">
+        <span class="feature-tile__icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M9 9l3 3" stroke="currentColor" stroke-width="1.5"/></svg>
+        </span>
+        <h4 class="feature-tile__title">Resource Groups</h4>
+        <p class="feature-tile__dek">Carve up access at the team level; assign roles and limits per project.</p>
+      </div>
+      <div class="feature-tile">
+        <span class="feature-tile__icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/></svg>
+        </span>
+        <h4 class="feature-tile__title">Analytics</h4>
+        <p class="feature-tile__dek">Usage telemetry across models, datasets, and spaces in one dashboard.</p>
+      </div>
+      <div class="feature-tile">
+        <span class="feature-tile__icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="6" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 6V4a3 3 0 1 1 6 0v2" stroke="currentColor" stroke-width="1.5"/></svg>
+        </span>
+        <h4 class="feature-tile__title">Advanced Security</h4>
+        <p class="feature-tile__dek">Secrets management, signed commits, malware scanning on every push.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Testimonial card</div>
+    <blockquote class="testimonial">
+      <p class="testimonial__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+      <div class="testimonial__attr">
+        <span class="testimonial__avatar">LI</span>
+        <div>
+          <div class="name">Lorem Ipsum</div>
+          <div class="role">ML Lead, Dolor Co.</div>
+        </div>
+      </div>
+    </blockquote>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Kickers, mono model-ID labels, license chips</div>
+    <div class="row">
+      <span class="kicker">Research</span>
+      <span class="kicker">Community</span>
+      <span class="model-id"><span class="org">meta-llama</span><span class="slash">/</span>Llama-Lorem-8B</span>
+      <span class="pill-license">apache-2.0</span>
+      <span class="pill-license">mit</span>
+      <span class="pill-license">cc-by-4.0</span>
+      <span class="pill-pro">Pro</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Hairline divider + body type</div>
+    <div class="type-block">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad <a class="inline-link" href="#">minim veniam quis nostrud</a> exercitation ullamco laboris.</p>
+    </div>
+    <hr class="hairline" />
+    <div class="type-block">
+      <p style="color: var(--ds-text-muted);">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Footer link block</div>
+    <footer class="footer">
+      <div>
+        <h4>Website</h4>
+        <ul>
+          <li><a href="#">Models</a></li>
+          <li><a href="#">Datasets</a></li>
+          <li><a href="#">Spaces</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Jobs</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Docs</a></li>
+          <li><a href="#">Learn</a></li>
+          <li><a href="#">Forum</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <ul>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Discord</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </footer>
+  </section>
+
+</div>
+</body>
+</html>

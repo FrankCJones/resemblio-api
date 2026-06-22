@@ -1,0 +1,279 @@
+<!--
+  Asset: a24-film-spotlight-hero-001
+  Class: heroes (whole)
+  Pattern: editorial-hero, single-cta-hero, no-imagery
+  Inspired by: A24 Films
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/a24-cinematic-palette-001  (cinema black + paper white)
+    - type-pairings/a24-cinematic-pair-001    (humanist sans + mono small-caps)
+    - buttons/a24-cinematic-001               (inverse white-on-black slab CTA)
+  Notes:
+    - Native context: a24films.com homepage spotlight carousel. One film,
+      one still, one title-card. The 16x9 film-still tile is rendered here
+      as a stylized aspect frame (no real imagery; library demonstrates
+      structure, not copy). A solid swatch carries the still's slot so the
+      composition reads on disk without a network fetch.
+    - Variable: every color, type, spacing, radius, motion value.
+    - Inline ornament: the carousel index ("1 / 4") sits in mono at the
+      top-right; the geometry (fractional separator, fixed corner anchor)
+      is hero-specific and stays inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-film-spotlight-hero-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter / Inter Tight stand in for A24's GT America / Söhne register;
+     JetBrains Mono carries the small-caps year/status label. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Cinema-black field; the film still carries all the color. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top bar: A24 mark on the left, a quiet utility row on the right. The
+   * mark is set as a small sans uppercase string to match the literal
+   * a24films.com header rather than the editorial-serif wordmark register. */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-5) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+  }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a { color: inherit; text-decoration: none; }
+  .topbar__nav a:hover { color: var(--ds-text); }
+
+  /* The hero shell. Single film slot, vertical stack on mobile, horizontal
+   * on wide; the title-card sits beside the still on desktop and stacks
+   * above it on narrow. */
+  .hero {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+    align-items: center;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+  }
+  @media (min-width: 960px) {
+    .hero {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--ds-space-12);
+    }
+  }
+
+  /* Title-card column. Mono year/status label above the film title; mixed-
+   * case display sans for the title itself; quiet dek beneath. */
+  .titlecard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 36ch;
+  }
+  .titlecard__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* The hairline-after-kicker is editorial titlecard furniture. The width
+   * (40px) is hero-specific and stays inline. */
+  .titlecard__kicker::after {
+    content: "";
+    flex: 0 0 40px;
+    height: 1px;
+    background: var(--ds-text-muted);
+    opacity: 0.5;
+  }
+  .titlecard__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 7vw, var(--ds-text-6xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .titlecard__dek {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 44ch;
+  }
+
+  /* CTA row: inverse white-on-black slab (from atoms/buttons/a24-cinematic-001)
+   * is the single primary; a quiet ghost link sits beside as the carousel-
+   * level affordance ("All upcoming"), not a hedge on the primary action. */
+  .titlecard__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+    margin-top: var(--ds-space-3);
+  }
+  .btn {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    border: 1px solid var(--ds-accent);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    line-height: 1;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-xs);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn:hover {
+    background: transparent;
+    color: var(--ds-accent);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+  .quiet-link {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .quiet-link:hover { color: var(--ds-text); }
+
+  /* Film tile. 16x9 frame; the still slot is a solid warm gradient stand-in
+   * so the layout reads on disk without a network image. In production the
+   * .still element receives the actual film image. */
+  .tile {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ds-radius-xs);
+    border: 1px solid var(--ds-border);
+    overflow: hidden;
+  }
+  .still {
+    position: absolute;
+    inset: 0;
+    /* Inline ornament: a tonal placeholder gradient stands in for the film
+     * still. Real production renders an <img>. The gradient is hero-specific
+     * and stays inline (no token slot for placeholder imagery). */
+    background:
+      radial-gradient(120% 80% at 30% 30%, #3A2A22 0%, transparent 60%),
+      radial-gradient(100% 100% at 80% 80%, #1A1A28 0%, transparent 60%),
+      linear-gradient(135deg, #221814 0%, #0F0D0B 100%);
+  }
+  /* Bottom-left credit caption sits over the still in mono small-caps. */
+  .tile__caption {
+    position: absolute;
+    left: var(--ds-space-5);
+    bottom: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    background: rgba(0,0,0,0.4);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* Carousel index. Top-right corner anchor; mono numerals with a sans
+   * slash. The fractional separator and corner placement are inline-only
+   * hero ornament; not promoted to tokens. */
+  .index {
+    position: absolute;
+    top: var(--ds-space-8);
+    right: var(--ds-space-8);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .index strong { color: var(--ds-text); font-weight: 500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">L24</a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Lorem</a>
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Amet</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-label="Featured release">
+    <div class="index" aria-hidden="true"><strong>01</strong> / 04</div>
+
+    <div class="titlecard">
+      <span class="titlecard__kicker">Upcoming 2026</span>
+      <h1 class="titlecard__title">Lorem Ipsum Dolor Sit</h1>
+      <p class="titlecard__dek">
+        Consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur
+        nec libero non nisi convallis fringilla. Aenean fermentum magna at
+        suscipit lacinia.
+      </p>
+      <div class="titlecard__actions">
+        <button type="button" class="btn">Watch Trailer</button>
+        <a href="#" class="quiet-link">All Upcoming</a>
+      </div>
+    </div>
+
+    <figure class="tile" aria-label="Lorem film still placeholder">
+      <div class="still" role="img" aria-label="Lorem ipsum film still placeholder"></div>
+      <figcaption class="tile__caption">Lorem Ipsum &middot; A Film by Dolor Sit</figcaption>
+    </figure>
+  </section>
+</body>
+</html>

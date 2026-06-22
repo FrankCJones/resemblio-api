@@ -1,0 +1,294 @@
+<!--
+  Asset: locomotive-kinetic-footer-001
+  Class: footers
+  Pattern: editorial-footer
+  Inspired by: Locomotive (locomotive.ca)
+  Notes:
+    - Studio-portfolio footer built on the cream-to-black surface inversion: the
+      body above is cream paper, the footer commits entirely to black ink, with
+      cream type carrying menu/social/external columns plus an oversized
+      kinetic contact statement.
+    - Variable: every color, every type size, every spacing step, the hairline
+      divider. Inline: the kinetic-link hover translate distance and the
+      column-grid template, both one-off composition decisions specific to
+      this footer's character rather than reusable contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-kinetic-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  System fallback chain only. Locomotive uses a licensed display face
+  (LocomotiveNew) which we cannot redistribute; the rendered fallback is
+  Helvetica Now Display / Helvetica Neue, which preserves the geometry.
+-->
+<style>
+  /* Reset only what the asset needs; the harness handles global normalization. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #FAF9F5;
+    font-family: var(--ds-font-body);
+    color: #000;
+  }
+
+  /* Cream-paper preamble so the inversion at the footer reads as a moment.
+     Not part of the footer asset; included only to demonstrate the boundary. */
+  .preamble {
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-12);
+    max-width: 1280px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: #30302E;
+  }
+  .preamble p { max-width: 56ch; margin: 0 0 var(--ds-space-5); }
+
+  /* ----- Footer ----- */
+  .footer {
+    background: var(--ds-bg);                    /* the black-inverted surface */
+    color: var(--ds-text);                       /* cream paper as ink */
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-8);
+    /* Top edge of the footer gets no rule; the color inversion IS the divider. */
+  }
+  .footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* Kinetic contact statement: borrows the featured-link treatment from the
+     homepage. Display face, line-height 1.0, hover lifts the line and shifts
+     a trailing arrow glyph. Translate distance is inline because the size
+     pairs to this asset's vertical rhythm; not a reusable slot. */
+  .footer__contact {
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: var(--ds-space-12);
+    margin-bottom: var(--ds-space-12);
+  }
+  .footer__contact-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .footer__contact-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: clamp(48px, 9vw, 117px);          /* tracks observed featured-link 117.333px on viewport */
+    line-height: 1;                              /* matches observed line-height equal to font-size */
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);                /* pure white out-punches the cream so the statement carries */
+    text-decoration: none;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+    /* Inline: a 4px upward lift on hover. The amount is one-off styling,
+       not a reusable motion token. */
+    will-change: transform;
+  }
+  .footer__contact-link:hover,
+  .footer__contact-link:focus-visible {
+    transform: translateY(-4px);
+  }
+  .footer__contact-link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: var(--ds-space-2);
+  }
+  .footer__contact-arrow {
+    /* Inline: trailing diagonal glyph; sized to optical-balance the statement,
+       not a reusable icon token. */
+    font-size: 0.7em;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .footer__contact-link:hover .footer__contact-arrow {
+    transform: translate(6px, -6px);
+  }
+
+  /* Three-column section: Menu / Social / External, observed in source. */
+  .footer__columns {
+    display: grid;
+    /* Inline: 1fr 1fr 1fr 2fr on desktop puts the contact info block in the
+       widest cell. One-off layout choice, not a contract slot. */
+    grid-template-columns: 1fr 1fr 1fr 2fr;
+    gap: var(--ds-space-10);
+    padding-bottom: var(--ds-space-12);
+    border-bottom: 1px solid var(--ds-hairline);
+    margin-bottom: var(--ds-space-8);
+  }
+  @media (max-width: 900px) {
+    .footer__columns { grid-template-columns: 1fr 1fr; gap: var(--ds-space-8); }
+  }
+  @media (max-width: 560px) {
+    .footer__columns { grid-template-columns: 1fr; }
+  }
+
+  .footer__col-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .footer__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .footer__list a {
+    color: var(--ds-text);                       /* cream at rest, no underline */
+    font-size: var(--ds-text-base);
+    text-decoration: none;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__list a:hover { opacity: 0.6; }        /* quiet lift, in keeping with source */
+  .footer__list a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Contact info block (address / phone / email). Body face, base size. */
+  .footer__contactinfo address {
+    font-style: normal;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .footer__contactinfo a {
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__contactinfo a:hover { border-bottom-color: var(--ds-text); }
+
+  /* Wordmark + meta row at the very bottom. Custom-display wordmark on the
+     left, copyright and locale on the right. */
+  .footer__meta {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    flex-wrap: wrap;
+  }
+  .footer__wordmark {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 84px);
+    line-height: 0.9;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    user-select: none;
+  }
+  .footer__legal {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    text-align: right;
+    line-height: var(--ds-leading-snug);
+  }
+  .footer__legal p { margin: 0 0 var(--ds-space-1); }
+
+  /* Reduced motion respects the kinetic lift. */
+  @media (prefers-reduced-motion: reduce) {
+    .footer__contact-link,
+    .footer__contact-arrow,
+    .footer__list a,
+    .footer__contactinfo a {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- Cream-paper preamble: not part of the asset, included so the cream-to-black
+       inversion at the footer is legible as a moment. -->
+  <section class="preamble">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+    dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+
+      <!-- Kinetic contact statement: the studio's signal at close-of-page. -->
+      <div class="footer__contact">
+        <p class="footer__contact-kicker">Lorem ipsum</p>
+        <a class="footer__contact-link" href="#">
+          <span>Lorem ipsum dolorem</span>
+          <span class="footer__contact-arrow" aria-hidden="true">&#x2197;</span>
+        </a>
+      </div>
+
+      <!-- Three label columns plus a wider contact-info column. -->
+      <div class="footer__columns">
+        <div>
+          <p class="footer__col-kicker">Lorem</p>
+          <ul class="footer__list">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">Dolor sit</a></li>
+            <li><a href="#">Amet consectetur</a></li>
+            <li><a href="#">Adipiscing elit</a></li>
+            <li><a href="#">Sed do eiusmod</a></li>
+            <li><a href="#">Tempor incididunt</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-kicker">Ipsum</p>
+          <ul class="footer__list">
+            <li><a href="#">Lorem</a></li>
+            <li><a href="#">Ipsum</a></li>
+            <li><a href="#">Dolor</a></li>
+            <li><a href="#">Sit</a></li>
+            <li><a href="#">Amet</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-kicker">Dolor</p>
+          <ul class="footer__list">
+            <li><a href="#">Consectetur</a></li>
+            <li><a href="#">Adipiscing</a></li>
+            <li><a href="#">Elit sed</a></li>
+            <li><a href="#">Eiusmod tempor</a></li>
+          </ul>
+        </div>
+        <div class="footer__contactinfo">
+          <p class="footer__col-kicker">Amet</p>
+          <address>
+            Lorem ipsum dolor 1234, Sit Amet<br/>
+            Consectetur (XX), Adipiscing X1X 1X1<br/>
+            <br/>
+            <a href="tel:+10000000000">+1 000 000 0000</a><br/>
+            <a href="mailto:lorem@example.com">lorem@example.com</a>
+          </address>
+        </div>
+      </div>
+
+      <!-- Wordmark and copyright. -->
+      <div class="footer__meta">
+        <div class="footer__wordmark" aria-label="Lorem ipsum studio wordmark">Lorem.</div>
+        <div class="footer__legal">
+          <p>&copy;2026 Lorem Ipsum</p>
+          <p>Dolor sit amet</p>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!--
+  Asset: cursor-hero-001
+  Class: heroes (whole)
+  Pattern: product-shot-hero, dual-cta-hero, display-tight, accent-on-neutral
+  Inspired by: Cursor (cursor.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001          (warm off-white surface + near-black ink + one blue accent)
+    - type-pairings/sans-system-modern-001     (Inter Tight display + Inter body + JetBrains Mono)
+    - headings/display-tight-001               (56-64px display-tight H1)
+    - buttons/primary-square-001               (Cursor-blue solid rectangle, 8px radius)
+    - buttons/ghost-bordered-001               (hairline ghost secondaries)
+    - cards/hairline-flat-001                  (the editor screenshot frame)
+  Notes:
+    - Native context: cursor.com homepage opening viewport, captured via
+      WebFetch 2026-05-20. Warm off-white canvas, a single long-form H1
+      ("Built to make you extraordinarily productive, Cursor is the best
+      way to code with AI"), three actions on one row ("Download for
+      macOS" primary in Cursor blue, plus "Try mobile agent" and
+      "Request a demo" ghost secondaries with right-arrow glyphs), then
+      a code-editor product screenshot rendered inside a hairline-bordered
+      frame as the dominant visual anchor below the headline column. No
+      eyebrow / kicker, no sub-headline; the H1 carries the entire
+      voice. Tokens are calibrated to the cursor-system baseline already
+      captured at score B across cursor-products-grid-001 and
+      cursor-cta-block-001 (warm off-white #FBFBFA, ink #111113,
+      Cursor-blue #2667FF, 8px CTA radius, 16px frame radius).
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the editor screenshot interior (file tree column,
+      tab strip, monospace code lines with a Cursor-blue AI agent
+      indicator) is a one-off stand-in arrangement, since the hero
+      visual on cursor.com is a rendered image and its interior is not
+      a contract-slotted composition; the lorem code is mock.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter / Inter Tight stand in for Cursor's marketing typography;
+     JetBrains Mono carries the screenshot interior. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm-leaning off-white canvas. One chromatic moment in
+   * the first viewport: the Cursor-blue primary CTA. Everything else is
+   * neutral, ruled by hairlines instead of shadows. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: small wordmark left, quiet nav center, sign-in plus a primary
+   * download action right. A single hairline separates chrome from canvas. */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: stand-in monogram glyph for the Cursor cursor-mark; no
+   * contract slot for arbitrary path data. */
+  .topbar__mark svg { width: 22px; height: 22px; display: block; }
+
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, generous vertical padding so the headline
+   * lands well below the chrome and the product screenshot has room to
+   * breathe below the CTA row. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-10);
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* H1: the display-tight signature. 56px baseline, scaling toward 72px
+   * on wide viewports via clamp. text-wrap: balance holds the multi-line
+   * shape long Cursor headlines pace toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  /* CTA row: Cursor-blue primary plus two hairline ghost secondaries on a
+   * single horizontal line. Cursor's homepage groups all three on one row
+   * rather than primary-plus-single-secondary; this is the cursor.com
+   * specific shape. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    padding: 12px 18px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: Cursor-blue focus glow; the rgba stop is hero-specific. */
+    box-shadow: 0 0 0 4px rgba(38, 103, 255, 0.22);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--ghost:hover { background: var(--ds-surface); }
+  .btn__glyph {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    transform: translateY(0.5px);
+  }
+
+  /* Editor screenshot frame. The dominant visual anchor of the hero.
+   * Hairline-bordered, 16px radius, sub-pixel shadow lift, white surface
+   * one level above the page. Interior is a stand-in editor mock with a
+   * file tree column on the left, a code surface center, and an
+   * AI-agent panel on the right; the only chromatic moment inside is a
+   * single Cursor-blue inline tag marking the AI cursor position. */
+  .screenshot {
+    width: 100%;
+    max-width: 1100px;
+    margin: var(--ds-space-8) auto var(--ds-space-12);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    overflow: hidden;
+  }
+  .editor {
+    display: grid;
+    grid-template-columns: 200px 1fr 260px;
+    min-height: 420px;
+    font-family: var(--ds-font-mono);
+    font-size: 13px;
+    color: var(--ds-text);
+  }
+  .editor__bar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: 10px var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+  .editor__bar__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-border);
+  }
+  .editor__bar__title {
+    margin-left: var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .editor__tree {
+    background: var(--ds-surface-2);
+    border-right: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-4);
+    line-height: 1.9;
+    color: var(--ds-text-muted);
+  }
+  .editor__tree__node--active {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .editor__code {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    line-height: 1.75;
+    background: var(--ds-surface);
+  }
+  .editor__code .ln {
+    display: block;
+    color: var(--ds-text-muted);
+  }
+  .editor__code .ln strong { color: var(--ds-text); font-weight: 500; }
+  .editor__code .cursor-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    margin-left: var(--ds-space-2);
+  }
+  .editor__agent {
+    background: var(--ds-surface);
+    border-left: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: 1.6;
+  }
+  .editor__agent__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .editor__agent__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .editor__agent__chip__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 860px) {
+    .topbar__nav { display: none; }
+    .editor { grid-template-columns: 1fr; }
+    .editor__tree, .editor__agent { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: stand-in cursor-arrow monogram. -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M5 3 L19 12 L12 14 L9 21 Z"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">
+        Sed Do
+        <svg class="btn__glyph" viewBox="0 0 12 12" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 1 V10 M2 7 L6 11 L10 7"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <h1 class="hero__title">
+      Lorem ipsum dolor sit amet consectetur adipiscing, the best way to elit do eiusmod.
+    </h1>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">
+        Lorem Ipsum
+        <svg class="btn__glyph" viewBox="0 0 12 12" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 1 V10 M2 7 L6 11 L10 7"/>
+        </svg>
+      </a>
+      <a href="#" class="btn btn--ghost">
+        Dolor Sit
+        <svg class="btn__glyph" viewBox="0 0 12 12" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6 H10 M7 3 L10 6 L7 9"/>
+        </svg>
+      </a>
+      <a href="#" class="btn btn--ghost">
+        Amet Consectetur
+        <svg class="btn__glyph" viewBox="0 0 12 12" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6 H10 M7 3 L10 6 L7 9"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <figure class="screenshot" aria-label="Lorem ipsum editor screenshot">
+    <div class="editor">
+      <div class="editor__bar">
+        <span class="editor__bar__dot"></span>
+        <span class="editor__bar__dot"></span>
+        <span class="editor__bar__dot"></span>
+        <span class="editor__bar__title">lorem / ipsum / dolor.ts</span>
+      </div>
+      <aside class="editor__tree" aria-hidden="true">
+        <div>lorem/</div>
+        <div>&nbsp;&nbsp;ipsum/</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;dolor.ts</div>
+        <div class="editor__tree__node--active">&nbsp;&nbsp;&nbsp;&nbsp;sit.ts</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;amet.ts</div>
+        <div>&nbsp;&nbsp;consectetur/</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;adipiscing.ts</div>
+        <div>&nbsp;&nbsp;elit.config.ts</div>
+        <div>readme.md</div>
+      </aside>
+      <pre class="editor__code" aria-hidden="true"><span class="ln"><strong>export function</strong> lorem(ipsum: string) {</span><span class="ln">&nbsp;&nbsp;<strong>const</strong> dolor = sit.amet(ipsum);</span><span class="ln">&nbsp;&nbsp;<strong>return</strong> dolor.map((d) =&gt; ({</span><span class="ln">&nbsp;&nbsp;&nbsp;&nbsp;consectetur: d.adipiscing,</span><span class="ln">&nbsp;&nbsp;&nbsp;&nbsp;elit: d.sed.do(eiusmod),<span class="cursor-tag">Lorem AI</span></span><span class="ln">&nbsp;&nbsp;}));</span><span class="ln">}</span></pre>
+      <aside class="editor__agent">
+        <p class="editor__agent__title">Lorem agent</p>
+        <p>
+          Tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris.
+        </p>
+        <span class="editor__agent__chip">
+          <span class="editor__agent__chip__dot" aria-hidden="true"></span>
+          Lorem Ready
+        </span>
+      </aside>
+    </div>
+  </figure>
+</body>
+</html>

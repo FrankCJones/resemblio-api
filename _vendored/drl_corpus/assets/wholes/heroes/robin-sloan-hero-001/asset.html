@@ -1,0 +1,213 @@
+<!--
+  Asset: robin-sloan-hero-001
+  Class: heroes (whole)
+  Pattern: editorial-hero, no-imagery, small-caps-lead-in, warm-earth-palette
+  Inspired by: Robin Sloan (homepage, 2026 terracotta era)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (paper-era counterpart; this hero
+                                              overrides with the terracotta field)
+    - body-text/lead-paragraph-001           (small-caps lead-in body register)
+    - kickers/mono-eyebrow-001               (small-caps tagline register)
+    - dividers/asterism-001                  (the * * * rhythm closing the block)
+    - headings/display-editorial-serif-001   (Kyrios name wordmark step)
+  Notes:
+    - Native context: robinsloan.com homepage opening block. A personal
+      writer's hero. No CTA, no screenshot, no platform chrome. The
+      structure is name, tagline, intro paragraph that names the principal
+      works, then an asterism divider closing the block. Filosofia carries
+      the body at 21px; Kyrios carries the name display step.
+    - Variable: every color, type, spacing, radius, motion via tokens.css.
+    - Inline ornament: the small-caps tagline tracking is set inline (the
+      kicker atom supplies the register; the exact 0.16em on this line is
+      hero-specific). The asterism glyph is set inline with letter-spacing
+      because no token slot exists for a triple-glyph divider character.
+      The terracotta field is delivered by --ds-bg; there is no background
+      image or noise texture (the Sloan terracotta era is flat color).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 stands in for Filosofia (display + body) and Vollkorn
+     for fiction-body; Inter stands in for Trade Gothic Next (accent). The
+     contract declares the real faces first and falls back through these
+     open-source loads so the asset opens standalone. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Vollkorn:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* The terracotta field is the entire background. No texture, no
+   * gradient; Sloan's 2026 era reads as flat colored stock. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* The hero shell. Narrow reading column on a personal-writer site:
+   * the homepage reads like the opening of a letter, not a marketing
+   * surface. Centered, capped near 32em, generous vertical padding so
+   * the block has air. */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+    align-items: flex-start;
+    padding: var(--ds-space-16) var(--ds-space-6) var(--ds-space-12);
+    max-width: 32em;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Tagline: small-caps Trade Gothic register sitting above the name.
+   * Reads like an editorial dek; the small-caps + tracking treatment is
+   * the kickers/mono-eyebrow-001 atom dressed in the system's accent
+   * face rather than mono. */
+  .hero__tagline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* The name. Kyrios display step at 84px on the wide viewport, scaled
+   * down via clamp on narrow. Tight leading and negative tracking;
+   * text-wrap: balance holds the shape if the name ever wraps. */
+  .hero__name {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 7vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* The intro paragraph. Filosofia body at 21px / 28px (line-height
+   * 1.33). The opening clause is set in small caps as a lead-in - the
+   * Sloan signature where the first words read as a stage direction
+   * before the prose proper. */
+  .hero__intro {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 32em;
+  }
+  .hero__lead-in {
+    /* Inline: small-caps lead-in. The 0.16em tracking here is the
+     * hero-specific value; the tracking-wider token (0.16em) happens
+     * to match, but the lead-in calls it out explicitly so future
+     * readers see the editorial intent. */
+    font-variant: small-caps;
+    letter-spacing: 0.16em;
+    color: var(--ds-text-strong);
+  }
+
+  /* Inline links inside the intro. The accent is the only chromatic
+   * step away from ink; underline at rest, lifts to accent-2 on hover.
+   * This is the Sloan rule: links earn the one warm accent the page
+   * allows. */
+  .hero__intro a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__intro a:hover { color: var(--ds-accent-2); }
+  .hero__intro a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Featured-essay anchor. A single arrow link at the foot of the hero
+   * (the Sloan homepage signature: "the latest letter is X"). The arrow
+   * glyph composes editorial-arrow-002 atom geometry inline so the
+   * file opens standalone. */
+  .hero__featured {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-style: italic;
+    color: var(--ds-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-accent);
+    padding-bottom: 2px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__featured:hover {
+    color: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .hero__featured-arrow {
+    font-style: normal;
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__featured:hover .hero__featured-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Asterism divider closing the hero block. Three asterisks, widely
+   * tracked, centered. The dividers/asterism-001 atom carries this
+   * pattern; the inline letter-spacing here is the hero-specific
+   * setting (no token slot for triple-glyph divider tracking). */
+  .hero__asterism {
+    align-self: center;
+    margin-top: var(--ds-space-8);
+    color: var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    /* Inline: 0.8em tracking on the three-glyph asterism. */
+    letter-spacing: 0.8em;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__intro a,
+    .hero__featured,
+    .hero__featured-arrow { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="hero" aria-label="Lorem ipsum homepage hero">
+    <p class="hero__tagline">Lorem Ipsum, Dolor, &amp; Sit Amet</p>
+    <h1 class="hero__name">Lorem Ipsum Dolor</h1>
+    <p class="hero__intro">
+      <span class="hero__lead-in">Lorem ipsum dolor sit amet,</span>
+      consectetur adipiscing elit. I am the author of
+      <a href="#">Moonbeam</a>, <a href="#">Sourwood</a>, and
+      <a href="#">Mr. Penumbra's Twenty-Four-Hour Lorem</a>. Sed do
+      eiusmod tempor incididunt ut labore et dolore magna aliqua, with
+      <a href="#">Fat Gold</a> and the <a href="#">Penumbra Print Shop</a>
+      occupying the remaining hours of the day.
+    </p>
+    <a href="#" class="hero__featured">
+      The latest letter: Lorem ipsum dolor sit amet
+      <span class="hero__featured-arrow" aria-hidden="true">&rarr;</span>
+    </a>
+    <div class="hero__asterism" aria-hidden="true">***</div>
+  </section>
+</body>
+</html>

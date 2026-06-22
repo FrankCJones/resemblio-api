@@ -1,0 +1,387 @@
+<!--
+  Asset: vercel-about-team-001
+  Class: about-team (whole)
+  Pattern: monochrome-palette, mono-utility-pair, hairline-as-chrome
+  Inspired by: Vercel (vercel.com/about)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (Geist light-mode palette discipline)
+    - type-pairings/sans-system-modern-001    (Geist Sans display + body, Geist Mono utility)
+    - headings/display-tight-001              (hero display headline)
+    - kickers/mono-eyebrow-001                (mono section kickers)
+    - cards/hairline-flat-001                 (investor card frame: hairline, no fill, no shadow)
+    - dividers/hairline-rule-001              (section breaks between VC strip and individuals)
+    - labels/metadata-mono-001                (Gray 9 role/company metadata under name)
+    - links/footer-link-mono-001              (closing "View Open Positions" quiet link)
+  Notes:
+    - Vercel's about page solves the team-display problem by not having
+      one. The page renders investors as the team: a VC firm logo strip
+      establishes institutional backing, then a 4-column grid of square
+      portrait cards surfaces individual investors (founders, ex-CEOs,
+      framework authors) with name + one-line role line in Gray 9.
+      Closing affordance is a single quiet "View Open Positions" link
+      tucked under a "Join us" headline. No leadership grid, no roster.
+    - Variable parts: every --ds-* token, including Geist Blue accent
+      that holds back to link hover and focus ring only. Inline ornament:
+      the placeholder portrait mesh-gradient (real cards would carry an
+      <img> from /_next/image), the 4-up VC logo strip layout, and the
+      single 1px hairline above the closing link affordance. All marked
+      with comments at use site.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-about-team-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist Variable and Geist Mono are Vercel's canonical faces. We load
+     the variable Geist from Google Fonts; if unavailable the system stack
+     in tokens.css (system-ui, -apple-system, sans-serif) renders a faithful
+     substitute. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-16);
+  }
+
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+  }
+
+  /* ---------- Hero ----------
+   * Single oversized statement, no CTA, no eyebrow. The about page opens
+   * quiet on Vercel: just the headline and one supporting paragraph. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 760px;
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: 0;
+  }
+  .hero__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 640px;
+  }
+
+  /* ---------- Section header ----------
+   * Mono uppercase kicker above an H2. Vercel uses the kicker sparingly
+   * on /about; it appears here to label the "Individual investors" tier. */
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-8);
+  }
+  .section-head__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .section-head__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: 0;
+  }
+  .section-head__dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 580px;
+  }
+
+  /* ---------- VC firm strip ----------
+   * Inline ornament: 4-up logo strip on a subtle Gray 2 wash, hairline
+   * border, no shadow. Stands in for the "Backed by incredible investors"
+   * block. Each tile is a square slot; in production these carry SVG
+   * wordmarks for Accel, Bedrock, GV, et al. */
+  .firms {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+  }
+  @media (max-width: 720px) { .firms { grid-template-columns: repeat(2, 1fr); } }
+  .firm {
+    aspect-ratio: 3 / 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Inline ornament: 1px hairline between tiles, drawn with shadow so
+       it only appears between cells and not on the outer edge. */
+    box-shadow:
+      1px 0 0 0 var(--ds-border),
+      0 1px 0 0 var(--ds-border);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    text-transform: lowercase;
+  }
+
+  /* ---------- Investor grid ----------
+   * 4-column responsive grid of investor cards. Each card: square portrait
+   * with sm radius (4px, near-square per Geist), name in Geist Sans 16px,
+   * role/company line in Gray 9 14px. The card itself has a hairline
+   * border, no fill, no shadow. Hover lifts the border to Blue 9. */
+  .investors {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-5);
+  }
+  @media (max-width: 920px) { .investors { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 680px) { .investors { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .investors { grid-template-columns: 1fr; } }
+
+  .investor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .investor:hover {
+    border-color: var(--ds-text);
+    background: var(--ds-surface);
+  }
+  .investor__portrait {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border-radius: var(--ds-radius-sm);
+    /* Inline ornament: placeholder mesh stands in for the real headshot
+       <img> the production site loads through /_next/image with q_auto. */
+    background:
+      radial-gradient(circle at 30% 35%, #E5E5E5 0%, #D4D4D4 40%, #C4C4C4 100%);
+  }
+  .investor__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: var(--ds-space-1) 0 0;
+  }
+  .investor__role {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .investor__role a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .investor__role a:hover {
+    color: var(--ds-accent);
+    border-bottom-color: var(--ds-accent);
+  }
+  .investor__role a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* ---------- Closing affordance ----------
+   * Single hairline rule, "Join us" headline, one quiet link. Vercel's
+   * about page does not promote a filled pill here; the editorial register
+   * stays restrained. */
+  .joinus {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    max-width: 640px;
+  }
+  .joinus__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: 0;
+  }
+  .joinus__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    text-decoration: none;
+    font-weight: 500;
+    align-self: flex-start;
+    padding: var(--ds-space-3) 0;
+    border-bottom: 1px solid var(--ds-border);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .joinus__link:hover {
+    color: var(--ds-accent);
+    border-bottom-color: var(--ds-accent);
+  }
+  .joinus__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+  .joinus__arrow {
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .joinus__link:hover .joinus__arrow { transform: translateX(2px); }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor.</p>
+    </section>
+
+    <section aria-labelledby="firms-title">
+      <header class="section-head">
+        <p class="section-head__kicker">Backed by</p>
+        <h2 id="firms-title" class="section-head__title">Lorem ipsum dolor sit amet</h2>
+      </header>
+
+      <div class="firms" role="list" aria-label="Institutional investors">
+        <div class="firm" role="listitem">accel</div>
+        <div class="firm" role="listitem">bedrock</div>
+        <div class="firm" role="listitem">cra</div>
+        <div class="firm" role="listitem">gv</div>
+        <div class="firm" role="listitem">tiger</div>
+        <div class="firm" role="listitem">geodesic</div>
+        <div class="firm" role="listitem">salesforce</div>
+        <div class="firm" role="listitem">altimeter</div>
+      </div>
+    </section>
+
+    <section aria-labelledby="individuals-title">
+      <header class="section-head">
+        <p class="section-head__kicker">Individuals</p>
+        <h2 id="individuals-title" class="section-head__title">Lorem ipsum dolor sit amet consectetur.</h2>
+        <p class="section-head__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi.</p>
+      </header>
+
+      <div class="investors" role="list">
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Aenean Tristique</h3>
+          <p class="investor__role">Creator of <a href="#">Lorem Ipsum</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Vivamus Lacinia</h3>
+          <p class="investor__role">Former CEO of <a href="#">Dolor Sit</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Curabitur Mollis</h3>
+          <p class="investor__role">Co-founder of <a href="#">Amet Consectetur</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Phasellus Iaculis</h3>
+          <p class="investor__role">Founder &amp; CEO of <a href="#">Adipiscing</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Maecenas Sapien</h3>
+          <p class="investor__role">Early engineer at <a href="#">Elit Sed</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Suspendisse Auctor</h3>
+          <p class="investor__role">Author of <a href="#">Eiusmod Tempor</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Praesent Volutpat</h3>
+          <p class="investor__role">Former CTO of <a href="#">Incididunt Ut</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Quisque Faucibus</h3>
+          <p class="investor__role">Founder of <a href="#">Labore Et</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Donec Posuere</h3>
+          <p class="investor__role">Created <a href="#">Magna Aliqua</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Etiam Porta</h3>
+          <p class="investor__role">Former Chair of <a href="#">Ut Enim</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Fusce Dapibus</h3>
+          <p class="investor__role">Co-founder of <a href="#">Minim Veniam</a></p>
+        </article>
+        <article class="investor" role="listitem">
+          <div class="investor__portrait" aria-hidden="true"></div>
+          <h3 class="investor__name">Integer Posuere</h3>
+          <p class="investor__role">Lead engineer at <a href="#">Quis Nostrud</a></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="joinus" aria-labelledby="joinus-title">
+      <h2 id="joinus-title" class="joinus__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      <a class="joinus__link" href="#">
+        <span>View open positions</span>
+        <span class="joinus__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </section>
+
+  </main>
+</body>
+</html>

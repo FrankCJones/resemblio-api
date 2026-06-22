@@ -1,0 +1,119 @@
+/*
+ * huggingface-pricing-page-001 tokens
+ *
+ * Page-level skeleton for the Hugging Face pricing page (huggingface.co/pricing).
+ * Tokens sit in the near-white paper canvas register with the signature
+ * warm-yellow accent that carries the hugging-face emoji wordmark, the
+ * "Most popular" tier badge, and the model/dataset/space card chrome.
+ *
+ * WebFetch captured the section sequence, all tier shapes, both compute
+ * pricing tables (Spaces hardware + Inference Endpoints), and the
+ * storage tier ladder, but stripped computed styles. Values are mapped
+ * to the closest contract slot from the observed character. The slots
+ * carrying this layout are --ds-bg (paper canvas), --ds-text (ink),
+ * --ds-hairline (between sections + table row rules), --ds-border (card
+ * chrome at 1px, no shadow at rest), --ds-accent (warm yellow on the
+ * "Most popular" badge, PRO badge, and recommended tier ring),
+ * --ds-font-mono (model ids, GPU SKUs, hourly prices, vCPU/memory cells).
+ */
+:root {
+  /* ---------- Colors ----------
+   * Near-white paper canvas, near-black ink, hairline chrome for cards
+   * and table rows, warm yellow as the single accent.
+   */
+  --ds-bg:           #FFFFFF;   /* Page canvas; reads as paper white, not pure paper-cream. */
+  --ds-surface:      #FFFFFF;   /* Tier card surface; lifts off the canvas only via 1px border. */
+  --ds-surface-2:    #F5F5F5;   /* Tinted strip for the recommended-tier band, table zebra, code blocks. */
+  --ds-text:         #1B1B1D;   /* Body ink, near-black neutral. */
+  --ds-text-muted:   #6B7280;   /* Tier tagline, table cell metadata, footer link. */
+  --ds-text-strong:  #0F1011;   /* Tier name, price figure, section heads. */
+  --ds-border:       #E5E7EB;   /* Tier card edges and table outline. */
+  --ds-hairline:     #EFEFEF;   /* Between-section rule and table row dividers. */
+  --ds-accent:       #FFD21E;   /* Signature HF warm yellow; recommended badge, PRO chip, accent dots. */
+  --ds-accent-2:     #FF9D00;   /* Deeper amber; hover state on the yellow CTA. */
+  --ds-success:      #16A34A;
+  --ds-warning:      #EAB308;
+  --ds-error:        #DC2626;
+  --ds-info:         #2563EB;
+  --ds-focus-ring:   #FFD21E;
+
+  /* ---------- Type families ----------
+   * IBM Plex Sans handles UI + display; HF historically ships a Plex
+   * stack with system fallbacks. Mono carries the GPU SKU table, the
+   * hourly prices, and the model-id register.
+   */
+  --ds-font-display: "IBM Plex Sans", "Source Sans Pro", system-ui, sans-serif;
+  --ds-font-body:    "IBM Plex Sans", "Source Sans Pro", system-ui, sans-serif;
+  --ds-font-mono:    "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "IBM Plex Sans", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Base 16px UI register. Pricing hero statement at 4xl. Tier price
+   * figure at 3xl. Table cells at sm/xs.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Kicker, table column header, GPU SKU mono. */
+  --ds-text-sm:   14px;   /* Table cell, footnote, tier feature bullet. */
+  --ds-text-base: 16px;   /* Body reading, tier tagline. */
+  --ds-text-lg:   18px;   /* Tier subtitle, faq question. */
+  --ds-text-xl:   22px;   /* Tier name. */
+  --ds-text-2xl:  28px;   /* Section heads (Storage, Hub, Spaces Hardware). */
+  --ds-text-3xl:  36px;   /* Tier price figure. */
+  --ds-text-4xl:  48px;   /* Pricing hero statement. */
+  --ds-text-5xl:  60px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Kicker, table column header, GPU SKU. */
+
+  /* ---------- Spacing ----------
+   * 80px between sections on desktop; tier cards use 24-32px internal
+   * padding; compute pricing tables use 12px row padding.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Tier cards land at md (12px). The recommended-tier badge sits at
+   * full (pill). Tables and small buttons at sm (4-6px).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hugging Face uses hairline chrome at rest, soft shadow on hover.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(15,16,17,0.04);
+  --ds-shadow-sm:   0 2px 4px rgba(15,16,17,0.06);
+  --ds-shadow-md:   0 6px 14px rgba(15,16,17,0.08);
+  --ds-shadow-lg:   0 14px 30px rgba(15,16,17,0.12);
+  --ds-shadow-2xl:  0 24px 56px rgba(15,16,17,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,85 @@
+<!--
+  Asset: editorial-arrow-002
+  Class: buttons
+  Pattern: link-button
+  Inspired by: Robin Sloan
+  Notes:
+    - Serif inline link with a typographic arrow glyph (rightwards arrow) trailing the words; sits inside flowing prose rather than as standalone UI chrome.
+    - Variable: link color, text color, accent on hover, font family. Inline ornament: the underline offset, the 0.15em arrow gap, the underline thickness ratio.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-arrow-002 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- EB Garamond chosen as the closest open-source stand-in for the editorial
+     serif register Robin Sloan's site occupies; warmth and humanist proportions. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* The asset lives inside a paragraph; that context is what the pattern is about. */
+  .prose {
+    max-width: 36rem;
+    /* Inline ornament: a comfortable measure for a serif at 19px; calibrated by
+     * character count rather than pixel grid, so it is not a variable. */
+  }
+  .prose p { margin: 0 0 var(--ds-space-5) 0; }
+  .editorial-link {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    /* Inline ornament: thin underline lifted away from the descenders; the
+     * specific 0.18em offset is a typographic decision, not a contract slot. */
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    transition: color var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .editorial-link:hover { color: var(--ds-accent-2); }
+  /* The arrow is a real Unicode glyph (rightwards arrow) styled inline.
+   * It inherits color from the link, sits with a small fixed gap, and
+   * slides forward on hover. The slide distance is intentionally small;
+   * editorial register favors restraint over UI flourish. */
+  .editorial-link__arrow {
+    display: inline-block;
+    margin-left: 0.15em; /* Tied to font size; inline ornament. */
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .editorial-link:hover .editorial-link__arrow {
+    transform: translateX(0.18em); /* Subtle nudge; inline ornament. */
+  }
+  .editorial-link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .editorial-link, .editorial-link__arrow { transition: none; }
+    .editorial-link:hover .editorial-link__arrow { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="prose">
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. If you would like quiet dispatches from this corner of the internet, you can <a class="editorial-link" href="#">subscribe to the newsletter<span class="editorial-link__arrow" aria-hidden="true">&rarr;</span></a> and one will arrive every twenty-nine and a half days. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+    </p>
+    <p>
+      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. The last piece in this thread is the longest; <a class="editorial-link" href="#">read the next post<span class="editorial-link__arrow" aria-hidden="true">&rarr;</span></a> for the conclusion. Excepteur sint occaecat cupidatat non proident.
+    </p>
+  </div>
+</body>
+</html>

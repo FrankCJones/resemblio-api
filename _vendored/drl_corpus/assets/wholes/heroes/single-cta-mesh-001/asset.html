@@ -1,0 +1,152 @@
+<!--
+  Asset: single-cta-mesh-001
+  Class: heroes (whole)
+  Pattern: single-cta-hero, mesh-gradient-bg, no-imagery
+  Inspired by: Linear, Vercel
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001         (palette context)
+    - type-pairings/sans-system-modern-001   (display + body + mono families)
+    - backgrounds/mesh-gradient-soft-001     (mesh recipe)
+    - buttons/primary-pill-001               (primary CTA pattern)
+    - headings/display-tight-001             (display heading pattern)
+    - kickers/mono-eyebrow-001               (kicker pattern)
+  Notes:
+    - The hero's markup composes the patterns from each constituent atom.
+      It does not import the atoms' files at runtime; instead, each
+      pattern's structure and tokens are re-implemented here so the hero
+      is a self-contained renderable.
+    - When future-Claude curates this hero into a per-site library, the
+      composition_atoms list is the manifest: Claude pulls each atom and
+      its tokens, then assembles a per-site version.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>single-cta-mesh-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:ital,wght@0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* The hero shell. Backdrop comes from backgrounds/mesh-gradient-soft-001:
+   * two soft indigo blobs over the near-black base. Same color-mix(oklab)
+   * technique to keep the blobs painterly. */
+  body {
+    background:
+      radial-gradient(60% 50% at 25% 20%,
+        color-mix(in oklab, var(--ds-accent) 35%, transparent),
+        transparent 70%),
+      radial-gradient(70% 60% at 75% 80%,
+        color-mix(in oklab, var(--ds-accent-2) 28%, transparent),
+        transparent 75%),
+      var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-8) var(--ds-space-6);
+  }
+
+  /* The hero column. Centered, narrow measure, gap stack for vertical
+   * rhythm. The narrowness is intentional; one CTA, no chrome, type
+   * carries the page. */
+  .hero {
+    max-width: 720px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Kicker: from atoms/kickers/mono-eyebrow-001. Uppercase mono with
+   * extended tracking. The trailing hairline rule from the original atom
+   * is omitted here because the hero is centered, not left-aligned. */
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Display headline: from atoms/headings/display-tight-001. Tight tracking,
+   * italic accent in lifted indigo. The accent here is var(--ds-accent-2)
+   * to read as lifted indigo against the dark backdrop with mesh blobs. */
+  .hero__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 8vw, var(--ds-text-6xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .hero__h1 em {
+    font-style: italic;
+    font-weight: 500;
+    color: color-mix(in oklab, var(--ds-accent) 50%, white 25%);
+    /* Inline ornament: the italic accent uses a custom mix lighter than
+     * --ds-accent itself so it pops against the mesh-shadowed area. The
+     * mix proportion is hero-specific tuning. */
+  }
+
+  /* Subhead: body family, muted color, narrow measure. */
+  .hero__sub {
+    margin: 0;
+    max-width: 56ch;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTA: from atoms/buttons/primary-pill-001. Same pattern, same tokens. */
+  .hero__cta {
+    appearance: none;
+    border: 0;
+    background: var(--ds-text);    /* white pill */
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-sm);
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__cta:hover {
+    background: color-mix(in oklab, var(--ds-text) 92%, var(--ds-bg) 8%);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .hero__cta:active { transform: translateY(1px); }
+  .hero__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="hero">
+    <span class="hero__kicker">v1.0 · lorem ipsum dolor</span>
+    <h1 class="hero__h1">Lorem ipsum <em>dolor sit</em> amet consectetur.</h1>
+    <p class="hero__sub">Adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+    <button type="button" class="hero__cta">Get started</button>
+  </section>
+</body>
+</html>

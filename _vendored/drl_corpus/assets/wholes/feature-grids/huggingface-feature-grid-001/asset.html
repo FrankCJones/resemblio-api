@@ -1,0 +1,388 @@
+<!--
+  Asset: huggingface-feature-grid-001
+  Class: feature-grids (whole)
+  Pattern: story-card-grid, mono-utility-pair, property-value-row
+  Inspired by: Hugging Face (huggingface.co home + /enterprise)
+  Notes:
+    - The HF signature is the model-card / dataset-card / space-card tile:
+      avatar circle + namespace heading set in mono + sans dek + mono
+      metadata row (Updated * ago, downloads, likes) joined by bullets.
+      Two columns of variants share one section frame; status chips on
+      space tiles ("Running on Zero", "MCP", "FEATURED") sit at the top
+      in #FFD21E yellow or muted grey.
+    - Variable: every color, font, size, spacing, radius is a contract
+      token. Inline ornament: the avatar gradient placeholder (one-off
+      identicon-style stand-in for missing remote avatars) and the bullet
+      separator glyph between metadata items.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-feature-grid-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Source Sans 3 (display + body) and Source Code Pro (mono ids and
+     metadata) match Hugging Face's actual face pair. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section frame. White paper canvas; generous outer padding; max
+   * measure matches HF's home-page content column. */
+  .grid-section {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+  .grid-section + .grid-section {
+    padding-top: 0;
+  }
+
+  /* Section head. Sans title with a "Browse N+" link affordance at the
+   * right edge; this is the HF "Trending this week ... Browse 2M+ models"
+   * pattern. */
+  .grid-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    margin-bottom: var(--ds-space-6);
+  }
+  .grid-section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .grid-section__cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-info);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .grid-section__cta:hover { text-decoration: underline; }
+
+  /* Grid. Three columns at full width, two on tablet, one on mobile.
+   * Dense rhythm (12px gap) so users scan dozens of rows quickly. */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-3);
+  }
+  @media (min-width: 640px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px)  { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Tile (model-card / dataset-card). Flat white with a hairline border;
+   * hover deepens the border and applies a soft lift. Hairline-as-chrome:
+   * no shadow at rest. */
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow   var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile:hover {
+    border-color: var(--ds-text-muted);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Status chip row. Empty on model/dataset tiles; populated on space
+   * tiles with "Running on Zero" + category ("Agents", "MCP") +
+   * "FEATURED" markers. */
+  .tile__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    padding: 2px var(--ds-space-2);
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    border-radius: var(--ds-radius-sm);
+  }
+  .chip--running {
+    background: #FFF7D6;             /* Inline ornament: pale yellow tint of --ds-accent for "Running on Zero" badge. */
+    color: #7A5A00;                  /* Inline ornament: deep amber readable on the yellow tint. */
+  }
+  .chip--featured {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Tile head. Avatar + namespace heading. The avatar sits as a small
+   * circle to the left; the heading uses mono for the org-slash-name
+   * compound (the HF id format that distinguishes this from sans tile
+   * headings on Linear / Vercel / Notion). */
+  .tile__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    min-width: 0;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: var(--ds-radius-full);
+    /* Inline ornament: identicon-style gradient placeholder for the
+     * missing-remote-avatar case. Real HF avatars are square user/org
+     * profile images. */
+    background: linear-gradient(135deg, #FFD21E 0%, #FF9D00 60%, #2563EB 100%);
+  }
+  .avatar--two   { background: linear-gradient(135deg, #2563EB 0%, #10B981 100%); }
+  .avatar--three { background: linear-gradient(135deg, #EF4444 0%, #FFD21E 100%); }
+  .avatar--four  { background: linear-gradient(135deg, #6B7280 0%, #111827 100%); }
+  .avatar--five  { background: linear-gradient(135deg, #10B981 0%, #2563EB 100%); }
+  .avatar--six   { background: linear-gradient(135deg, #FF9D00 0%, #EF4444 100%); }
+
+  .tile__title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Dek. Sans, smaller, muted. Two lines on average; not every HF tile
+   * carries a dek (model cards skip it; space cards always have one). */
+  .tile__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Metadata row. The HF signature: mono labels joined by a bullet glyph,
+   * each row reading like "Updated 3 days ago * 1.16M * 1.2k * apache-2.0".
+   * Mono utility pair carries the data face. */
+  .tile__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin-top: auto;
+  }
+  .tile__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+  }
+  /* Inline ornament: a centered-dot bullet separator between metadata
+   * items, matching HF's actual rendering. */
+  .tile__meta span + span::before {
+    content: "\00B7";
+    margin-right: var(--ds-space-2);
+    color: var(--ds-border);
+  }
+
+  /* Icon glyphs in the metadata row (download arrow, heart, license tag)
+   * use the metric-prefix character to keep the markup unicode-only. */
+  .icon {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section 1: model-card variant (home: "Trending this week"). -->
+  <section class="grid-section" aria-labelledby="models-title">
+    <header class="grid-section__head">
+      <h2 class="grid-section__title" id="models-title">Lorem ipsum dolor sit</h2>
+      <a class="grid-section__cta" href="#all-models">Browse 2M+ items &rarr;</a>
+    </header>
+
+    <div class="grid">
+      <a class="tile" href="#one">
+        <div class="tile__head">
+          <span class="avatar" aria-hidden="true"></span>
+          <p class="tile__title">lorem-ipsum/dolor-sit-amet</p>
+        </div>
+        <div class="tile__meta">
+          <span>Updated 11 hours ago</span>
+          <span><span class="icon">&darr;</span> 438</span>
+          <span><span class="icon">&hearts;</span> 462</span>
+          <span>apache-2.0</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#two">
+        <div class="tile__head">
+          <span class="avatar avatar--two" aria-hidden="true"></span>
+          <p class="tile__title">consectetur/adipiscing-elit-base</p>
+        </div>
+        <div class="tile__meta">
+          <span>Updated 3 days ago</span>
+          <span><span class="icon">&darr;</span> 1.16M</span>
+          <span><span class="icon">&hearts;</span> 1.2k</span>
+          <span>mit</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#three">
+        <div class="tile__head">
+          <span class="avatar avatar--three" aria-hidden="true"></span>
+          <p class="tile__title">sed-do/eiusmod-tempor-4.6</p>
+        </div>
+        <div class="tile__meta">
+          <span>Updated 1 day ago</span>
+          <span><span class="icon">&darr;</span> 166k</span>
+          <span><span class="icon">&hearts;</span> 826</span>
+          <span>apache-2.0</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#four">
+        <div class="tile__head">
+          <span class="avatar avatar--four" aria-hidden="true"></span>
+          <p class="tile__title">ut-labore/dolore-magna</p>
+        </div>
+        <div class="tile__meta">
+          <span>Updated 6 days ago</span>
+          <span><span class="icon">&darr;</span> 8.67k</span>
+          <span><span class="icon">&hearts;</span> 93</span>
+          <span>cc-by-4.0</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#five">
+        <div class="tile__head">
+          <span class="avatar avatar--five" aria-hidden="true"></span>
+          <p class="tile__title">enim-ad/minim-veniam</p>
+        </div>
+        <div class="tile__meta">
+          <span>Updated 2 days ago</span>
+          <span><span class="icon">&darr;</span> 41.5k</span>
+          <span><span class="icon">&hearts;</span> 152</span>
+          <span>apache-2.0</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#six">
+        <div class="tile__head">
+          <span class="avatar avatar--six" aria-hidden="true"></span>
+          <p class="tile__title">quis-nostrud/exercitation</p>
+        </div>
+        <div class="tile__meta">
+          <span>Updated 14 hours ago</span>
+          <span><span class="icon">&darr;</span> 88.2k</span>
+          <span><span class="icon">&hearts;</span> 314</span>
+          <span>mit</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Section 2: space-card variant (status chips + dek), matching the
+       Spaces strip on the home page. Also stands in for the /enterprise
+       capability-tile grid where chips name a feature category. -->
+  <section class="grid-section" aria-labelledby="spaces-title">
+    <header class="grid-section__head">
+      <h2 class="grid-section__title" id="spaces-title">Ullamco laboris nisi</h2>
+      <a class="grid-section__cta" href="#all-spaces">Browse 1M+ items &rarr;</a>
+    </header>
+
+    <div class="grid">
+      <a class="tile" href="#sa">
+        <div class="tile__chips">
+          <span class="chip chip--running">Running on Zero</span>
+          <span class="chip">Agents</span>
+          <span class="chip chip--featured">Featured</span>
+        </div>
+        <div class="tile__head">
+          <span class="avatar" aria-hidden="true"></span>
+          <p class="tile__title">duis-aute/irure-dolor</p>
+        </div>
+        <p class="tile__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <div class="tile__meta">
+          <span><span class="icon">&hearts;</span> 197</span>
+          <span>updated 4 hours ago</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#sb">
+        <div class="tile__chips">
+          <span class="chip chip--running">Running on T4</span>
+          <span class="chip">MCP</span>
+        </div>
+        <div class="tile__head">
+          <span class="avatar avatar--two" aria-hidden="true"></span>
+          <p class="tile__title">reprehenderit/voluptate-velit</p>
+        </div>
+        <p class="tile__dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <div class="tile__meta">
+          <span><span class="icon">&hearts;</span> 1.27k</span>
+          <span>updated 1 day ago</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#sc">
+        <div class="tile__chips">
+          <span class="chip chip--running">Running on CPU Upgrade</span>
+          <span class="chip">Tools</span>
+        </div>
+        <div class="tile__head">
+          <span class="avatar avatar--five" aria-hidden="true"></span>
+          <p class="tile__title">cillum-esse/cupidatat-12b</p>
+        </div>
+        <p class="tile__dek">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti.</p>
+        <div class="tile__meta">
+          <span><span class="icon">&hearts;</span> 612</span>
+          <span>updated 6 days ago</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</body>
+</html>

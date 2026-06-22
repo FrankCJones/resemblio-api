@@ -1,0 +1,104 @@
+/*
+ * huggingface-about-page-001 tokens
+ *
+ * Page-level layout for the canonical Hugging Face org/company page
+ * (huggingface.co/huggingface), which serves as their about-style
+ * surface: mission line with the waving-hand emoji, follower count and
+ * social meta, a 185-member avatar grid, content sections (papers,
+ * articles, models, datasets, spaces), and a "join us" careers CTA
+ * pointing at the Workable applicant tracker.
+ *
+ * Tokens are drawn from the live HF surface: near-white paper canvas
+ * (#FFFFFF body with a faint #F5F5F4 raised surface for cards), warm
+ * yellow accent (#FFD21E, the canonical HF brand yellow used in the
+ * mark and on inline join-us links), dark ink (#1F2937 register) and
+ * a softer secondary ink for metadata. Type is Source Sans Pro for
+ * body / display (HF's longstanding marketing face) and IBM Plex Mono
+ * for model-id, metric, and code-meta moments. The page is hairline
+ * chrome on a paper canvas, no shadows at rest. Cards use a 6-8px
+ * radius and a 1px #E5E7EB border; the warm-yellow accent appears
+ * only on inline links and the join-us CTA pill.
+ *
+ * The slots this asset most expresses: --ds-bg (paper canvas),
+ * --ds-surface (card fill), --ds-accent (HF yellow), --ds-hairline
+ * (between-section rule), --ds-font-body (Source Sans Pro), --ds-font-mono
+ * (IBM Plex Mono for model-id labels). Other slots fill the contract.
+ */
+:root {
+  /* Colors. Paper canvas with hairline card chrome; warm yellow as the
+   * single distinctive accent. No shadows at rest; elevation comes from
+   * surface shifts and borders, not lift. */
+  --ds-bg:           #FFFFFF;   /* HF org page body; pure paper canvas. */
+  --ds-surface:      #F5F5F4;   /* Faint warm-gray card fill; activity items and metric pills. */
+  --ds-surface-2:    #FAFAF9;   /* Slightly raised surface; sticky header and inline asset chips. */
+  --ds-text:         #1F2937;   /* Default ink; high-contrast on paper. */
+  --ds-text-muted:   #6B7280;   /* Metadata, timestamps, follower counts, dataset row counts. */
+  --ds-text-strong:  #111827;   /* Section titles, the 185 wordmark, mission line. */
+  --ds-border:       #E5E7EB;   /* Card edges; avatar grid frame; section rule. */
+  --ds-hairline:     #E5E7EB;   /* Between-section rule; same value, named role. */
+  --ds-accent:       #FFD21E;   /* Canonical Hugging Face warm yellow; brand mark, join-us pill. */
+  --ds-accent-2:     #2563EB;   /* Standard web blue used on inline content links (papers, articles). */
+  --ds-success:      #16A34A;   /* Green "Running" status for live Spaces. */
+  --ds-warning:      #D97706;   /* Amber for caution states. */
+  --ds-error:        #DC2626;   /* Red for failure states (build failed, space down). */
+  --ds-info:         #2563EB;   /* Neutral info; shares the link blue. */
+  --ds-focus-ring:   #2563EB;   /* Keyboard focus; web-blue at higher contrast. */
+
+  /* Type. Source Sans Pro for body and display (HF's marketing face);
+   * IBM Plex Mono for model-id, metric, and any code-as-meta moment. */
+  --ds-font-display: "Source Sans Pro", "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Source Sans Pro", "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --ds-font-accent:  "Source Sans Pro", "Source Sans 3", sans-serif;
+
+  /* Type scale. The mission line sits around 36-44px (an emoji-led
+   * conversational headline, not theatrical display). Section titles
+   * at lg-xl; metadata at xs. The page is reading-led, not display-led. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 20px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 36px;  --ds-text-4xl: 44px;
+  --ds-text-5xl: 56px;   --ds-text-6xl: 72px;  --ds-text-7xl: 96px;
+
+  --ds-leading-tight: 1.1;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.12em;
+
+  /* Spacing. Page rhythm: 48-64px between top-level sections, 16-24px
+   * inside cards. Mission block gets 64-96px of breathing room above
+   * the activity feed. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. HF cards use 6-8px corners; pills (status badges, join-us
+   * CTA) go full. Mostly the small radius for the model/dataset/space
+   * card vocabulary. */
+  --ds-radius-none: 0;   --ds-radius-xs: 3px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 12px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Almost none. HF cards rely on hairline borders, not lift.
+   * One soft shadow for the inline-yellow join-us pill on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(17, 24, 39, 0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(17, 24, 39, 0.05);
+  --ds-shadow-md:  0 3px 6px rgba(17, 24, 39, 0.08);
+  --ds-shadow-lg:  0 8px 24px rgba(17, 24, 39, 0.12);
+  --ds-shadow-2xl: 0 16px 48px rgba(17, 24, 39, 0.18);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

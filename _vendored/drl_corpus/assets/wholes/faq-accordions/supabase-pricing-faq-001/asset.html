@@ -1,0 +1,372 @@
+<!--
+  Asset: supabase-pricing-faq-001
+  Class: faq-accordions (whole)
+  Pattern: monochrome-palette, electric-accent, mono-eyebrow
+  Inspired by: Supabase (pricing-page FAQ section)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001    (dark palette structure; accent overridden to Supabase green)
+    - type-pairings/grotesk-mono-001    (grotesque sans plus mono utility pairing)
+    - kickers/mono-eyebrow-001          (uppercase mono kicker above section title)
+    - headings/display-tight-001        (section header treatment)
+    - dividers/hairline-rule-001        (1px row separator)
+    - icons/stroke-line-uniform-001     (plus glyph; rotates 45deg when expanded)
+  Notes:
+    - The row separator is the only chrome between items. No card frames, no
+      surface lift on collapsed rows. The pattern's discipline is in the
+      restraint of the trigger row plus the unmistakable green focus ring.
+    - Variable: every color, every type size, every spacing step. Inline ornament:
+      the 45deg rotation of the plus icon (one-off motion specific to this
+      trigger) and the panel max-height transition target.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>supabase-pricing-faq-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Inter + Inter Tight + Source Code Pro stand in for Supabase Custom Font and
+  Source Code Pro. Inter Tight handles the display step; Source Code Pro
+  handles the mono kicker.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .section {
+    /* Pricing-FAQ section. Centered narrow column on a wide dark surface. */
+    max-width: 760px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .section-header {
+    margin-bottom: var(--ds-space-8);
+  }
+
+  .kicker {
+    /* mono-eyebrow atom */
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-4);
+  }
+
+  .section-title {
+    /* display-tight-001 atom */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .accordion {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* Top hairline so the first row reads as part of the rule system. */
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  .item {
+    /* Each row carries a bottom hairline via the shadow-xs token. */
+    box-shadow: var(--ds-shadow-xs);
+    transition: background-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .item[data-open="true"] {
+    /* Expanded row lifts one whisper above the page surface. */
+    background: var(--ds-surface);
+  }
+
+  .trigger {
+    /* Full-width unstyled button; the question is the trigger. */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-5) 0;
+    background: transparent;
+    border: 0;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    text-align: left;
+    cursor: pointer;
+    /* Indent the question slightly so the icon column stays clean. */
+    padding-left: var(--ds-space-2);
+    padding-right: var(--ds-space-2);
+  }
+
+  .trigger:hover {
+    background: var(--ds-surface-2);
+  }
+
+  .trigger:focus-visible {
+    /* Supabase green focus ring; the brand-specific affordance. */
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: -2px;
+  }
+
+  .icon {
+    /* Plus glyph; stroke-line-uniform atom. Rotates 45deg when item is open. */
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--ds-text-muted);
+    transition:
+      transform var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .item[data-open="true"] .icon {
+    /* Inline one-off: the 45deg rotation that converts plus to close glyph. */
+    transform: rotate(45deg);
+    color: var(--ds-accent);
+  }
+
+  .panel {
+    /* Collapsed state; height transitioned via max-height for graceful expand. */
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition:
+      max-height var(--ds-duration-normal) var(--ds-ease-standard),
+      opacity var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+
+  .item[data-open="true"] .panel {
+    /* Inline one-off: max-height upper bound chosen to comfortably contain
+       a multi-paragraph answer; tuned per asset, not promoted to a slot. */
+    max-height: 560px;
+    opacity: 1;
+  }
+
+  .panel-inner {
+    padding: 0 var(--ds-space-2) var(--ds-space-6);
+    color: var(--ds-text);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 64ch;
+  }
+
+  .panel-inner p {
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .panel-inner p:last-child {
+    margin-bottom: 0;
+  }
+
+  .panel-inner a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Visually hide content but keep it for screen readers. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="faq-title">
+    <header class="section-header">
+      <span class="kicker">FAQ</span>
+      <h2 id="faq-title" class="section-title">Lorem ipsum dolor sit amet</h2>
+    </header>
+
+    <ul class="accordion" role="list">
+      <li class="item" data-open="true">
+        <h3>
+          <button
+            class="trigger"
+            type="button"
+            aria-expanded="true"
+            aria-controls="faq-panel-1"
+            id="faq-trigger-1"
+          >
+            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit?</span>
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="10" y1="4" x2="10" y2="16"/>
+              <line x1="4" y1="10" x2="16" y2="10"/>
+            </svg>
+          </button>
+        </h3>
+        <div
+          class="panel"
+          id="faq-panel-1"
+          role="region"
+          aria-labelledby="faq-trigger-1"
+        >
+          <div class="panel-inner">
+            <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat <a href="#">cupidatat non proident</a>, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item" data-open="false">
+        <h3>
+          <button
+            class="trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="faq-panel-2"
+            id="faq-trigger-2"
+          >
+            <span>Curabitur pretium tincidunt lacus, nulla gravida orci a odio?</span>
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="10" y1="4" x2="10" y2="16"/>
+              <line x1="4" y1="10" x2="16" y2="10"/>
+            </svg>
+          </button>
+        </h3>
+        <div class="panel" id="faq-panel-2" role="region" aria-labelledby="faq-trigger-2">
+          <div class="panel-inner">
+            <p>Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item" data-open="false">
+        <h3>
+          <button
+            class="trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="faq-panel-3"
+            id="faq-trigger-3"
+          >
+            <span>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices?</span>
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="10" y1="4" x2="10" y2="16"/>
+              <line x1="4" y1="10" x2="16" y2="10"/>
+            </svg>
+          </button>
+        </h3>
+        <div class="panel" id="faq-panel-3" role="region" aria-labelledby="faq-trigger-3">
+          <div class="panel-inner">
+            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec ullamcorper nulla non metus auctor fringilla.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item" data-open="false">
+        <h3>
+          <button
+            class="trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="faq-panel-4"
+            id="faq-trigger-4"
+          >
+            <span>Quisque velit nisi, pretium ut lacinia in, elementum id enim?</span>
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="10" y1="4" x2="10" y2="16"/>
+              <line x1="4" y1="10" x2="16" y2="10"/>
+            </svg>
+          </button>
+        </h3>
+        <div class="panel" id="faq-panel-4" role="region" aria-labelledby="faq-trigger-4">
+          <div class="panel-inner">
+            <p>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vivamus suscipit tortor eget felis porttitor volutpat.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item" data-open="false">
+        <h3>
+          <button
+            class="trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="faq-panel-5"
+            id="faq-trigger-5"
+          >
+            <span>Donec sollicitudin molestie malesuada, cras ultricies ligula sed magna?</span>
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="10" y1="4" x2="10" y2="16"/>
+              <line x1="4" y1="10" x2="16" y2="10"/>
+            </svg>
+          </button>
+        </h3>
+        <div class="panel" id="faq-panel-5" role="region" aria-labelledby="faq-trigger-5">
+          <div class="panel-inner">
+            <p>Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item" data-open="false">
+        <h3>
+          <button
+            class="trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls="faq-panel-6"
+            id="faq-trigger-6"
+          >
+            <span>Sed porttitor lectus nibh, lorem ipsum dolor sit amet consectetur?</span>
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="10" y1="4" x2="10" y2="16"/>
+              <line x1="4" y1="10" x2="16" y2="10"/>
+            </svg>
+          </button>
+        </h3>
+        <div class="panel" id="faq-panel-6" role="region" aria-labelledby="faq-trigger-6">
+          <div class="panel-inner">
+            <p>Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Cras ultricies ligula sed magna dictum porta.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <script>
+    // Minimal accordion behavior. The asset is a design reference; the JS only
+    // toggles data-open and aria-expanded so the visual states are inspectable.
+    document.querySelectorAll('.trigger').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('.item');
+        var open = item.getAttribute('data-open') === 'true';
+        item.setAttribute('data-open', open ? 'false' : 'true');
+        btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      });
+    });
+  </script>
+</body>
+</html>

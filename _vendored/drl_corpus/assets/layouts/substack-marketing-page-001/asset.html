@@ -1,0 +1,527 @@
+<!--
+  Asset: substack-marketing-page-001
+  Class: layouts
+  Pattern: split-hero, flush-top-nav, bento-grid, mega-footer, accent-on-neutral
+  Inspired by: Substack (substack.com, substack.com/about)
+  Notes:
+    - Marketing homepage skeleton: flush-top nav with the orange Substack
+      wordmark and dual auth CTAs, type-led hero with serif display title
+      ("Make money doing the work you believe in"), a single Substack
+      Orange primary CTA, and a brief support body; five-tile feature
+      bento (Editor and writing tools, Multimedia, Built-in growth,
+      Community, Revenue tools); trending-newsletters strip (six-up
+      writer cards with avatar, name, subtitle, subscriber count);
+      writer testimonials block (three-up serif pull-quotes credited
+      to Hunter Harris, Ted Gioia, Melinda Wenner Moyer); free-to-start
+      pricing CTA band ("Free to start. 90% goes to you."); minimal
+      end-of-page footer. Container caps at 1200px on paper white;
+      Substack Orange is reserved for the single primary CTA per band.
+    - Variable: section sequence, container width, vertical rhythm, type
+      role per slot. Inline: container max-width (1200px), trending-strip
+      cell count (six-up desktop), feature bento column count (three-up
+      desktop / two-up tablet), testimonial column count (three-up).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Substack ships an editorial serif (close to Spectral / Source
+  Serif) for display and a humanist sans (Inter-adjacent) for UI. Faces
+  are not loaded in the asset; the fallback chain in tokens.css carries
+  the transitional-serif and humanist-sans registers so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1200px so the feature bento and trending
+   * strip breathe. Inline value. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits inside the page container, hairline rule below.
+   * Wordmark on the left in Substack Orange; auth CTA pair on the right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section { padding-block: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-bottom: 1px solid var(--ds-hairline); }
+
+  /* Hero. Type-led, single-column on the marketing homepage. The serif
+   * display does the work; no product screenshot anchor. */
+  .hero {
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 1024px) {
+    .hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-12);
+    }
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-4);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 14ch;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-5xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 52ch;
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+  /* Primary CTA: Substack Orange pill, white text. The signature brand
+   * moment; reserved to one per band. */
+  .cta--primary {
+    background: var(--ds-accent);
+    color: var(--ds-accent-2);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Section heading register. Serif display, left-aligned for content
+   * sections; centered only on the hero and final CTA band. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 26ch;
+  }
+  .section-kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Feature bento. Five-tile grid: three-up desktop with one tall row,
+   * collapsing to two-up tablet, single-column mobile. */
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .bento { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .bento { grid-template-columns: repeat(3, 1fr); } }
+  .bento__cell {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .bento__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .bento__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Trending-newsletters strip. Six-up writer cards with avatar circle,
+   * name, subtitle, subscriber count. Collapses to two-up tablet. */
+  .trending-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) { .trending-strip { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .trending-strip { grid-template-columns: repeat(6, 1fr); } }
+  .writer-card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .writer-card__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    margin-bottom: var(--ds-space-2);
+  }
+  .writer-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    color: var(--ds-text);
+  }
+  .writer-card__sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+  .writer-card__count {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Writer testimonials. Three-up serif pull-quotes on a warm-cream
+   * surface. The pull-quote IS the design moment. */
+  .testimonial-band {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .testimonial-band { padding: var(--ds-space-12) var(--ds-space-10); }
+  }
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    .testimonial-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .testimonial {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .testimonial__cite {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: normal;
+  }
+  .testimonial__cite strong {
+    color: var(--ds-text);
+    font-weight: 600;
+    display: block;
+  }
+
+  /* End-of-page CTA band. Centered serif title, single orange pill CTA.
+   * Carries the "Free to start. 90% goes to you." moment. */
+  .cta-band {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-12) var(--ds-space-8);
+    text-align: center;
+  }
+  .cta-band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    margin: 0 auto var(--ds-space-4);
+    max-width: 22ch;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .cta-band__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 48ch;
+  }
+
+  /* Slot placeholders for nav clusters and the footer mega-block. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page container. Minimal Substack
+   * footer (writer/reader/app columns + sub-footer with social and
+   * legal). */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Substack Orange wordmark + nav link cluster + auth CTA pair. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 460px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Home / Subscriptions / Chat / Activity / Explore
+      </div>
+      <div class="slot" style="min-width: 240px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Sign in / Start your Substack
+      </div>
+    </nav>
+
+    <!-- Section: hero. Type-led, serif display, single orange pill CTA. -->
+    <header class="hero" aria-label="Hero">
+      <span class="hero__kicker">Lorem ipsum dolor sit amet</span>
+      <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam, quis nostrud exercitation.
+      </p>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Lorem ipsum</a>
+        <a href="#" class="cta--ghost">Learn more</a>
+      </div>
+    </header>
+
+    <!-- Section: feature tiles. Five-tile bento. -->
+    <section class="section section--ruled" aria-label="Feature grid">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur.</h2>
+      <div class="bento" role="list">
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Lorem ipsum</h3>
+          <p class="bento__body">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Dolor sit amet</h3>
+          <p class="bento__body">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Consectetur</h3>
+          <p class="bento__body">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla.</p>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Adipiscing elit</h3>
+          <p class="bento__body">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.</p>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Eiusmod tempor</h3>
+          <p class="bento__body">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: trending newsletters strip. Six-up writer cards. -->
+    <section class="section" aria-label="Trending newsletters">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet adipiscing.</h2>
+      <div class="trending-strip" role="list">
+        <article class="writer-card" role="listitem">
+          <span class="writer-card__avatar" aria-hidden="true"></span>
+          <span class="writer-card__name">Lorem Ipsum</span>
+          <span class="writer-card__sub">Dolor sit amet consectetur</span>
+          <span class="writer-card__count">42K subscribers</span>
+        </article>
+        <article class="writer-card" role="listitem">
+          <span class="writer-card__avatar" aria-hidden="true"></span>
+          <span class="writer-card__name">Consectetur</span>
+          <span class="writer-card__sub">Adipiscing elit sed do</span>
+          <span class="writer-card__count">18K subscribers</span>
+        </article>
+        <article class="writer-card" role="listitem">
+          <span class="writer-card__avatar" aria-hidden="true"></span>
+          <span class="writer-card__name">Eiusmod Tempor</span>
+          <span class="writer-card__sub">Incididunt ut labore</span>
+          <span class="writer-card__count">76K subscribers</span>
+        </article>
+        <article class="writer-card" role="listitem">
+          <span class="writer-card__avatar" aria-hidden="true"></span>
+          <span class="writer-card__name">Magna Aliqua</span>
+          <span class="writer-card__sub">Ut enim ad minim veniam</span>
+          <span class="writer-card__count">9K subscribers</span>
+        </article>
+        <article class="writer-card" role="listitem">
+          <span class="writer-card__avatar" aria-hidden="true"></span>
+          <span class="writer-card__name">Quis Nostrud</span>
+          <span class="writer-card__sub">Exercitation ullamco laboris</span>
+          <span class="writer-card__count">120K subscribers</span>
+        </article>
+        <article class="writer-card" role="listitem">
+          <span class="writer-card__avatar" aria-hidden="true"></span>
+          <span class="writer-card__name">Aliquip Ex Ea</span>
+          <span class="writer-card__sub">Commodo consequat duis aute</span>
+          <span class="writer-card__count">31K subscribers</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: writer testimonials. Three-up serif pull-quotes on warm-cream. -->
+    <section class="section" aria-label="Writer testimonials">
+      <div class="testimonial-band">
+        <span class="section-kicker">Lorem ipsum</span>
+        <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+        <div class="testimonial-grid" role="list">
+          <figure class="testimonial" role="listitem">
+            <p class="testimonial__quote">
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            </p>
+            <figcaption class="testimonial__cite">
+              <strong>Lorem Ipsum</strong>
+              Dolor sit amet, consectetur adipiscing
+            </figcaption>
+          </figure>
+          <figure class="testimonial" role="listitem">
+            <p class="testimonial__quote">
+              "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+              labore et dolore magna aliqua, ut enim ad minim veniam."
+            </p>
+            <figcaption class="testimonial__cite">
+              <strong>Dolor Amet</strong>
+              Eiusmod tempor, incididunt ut labore
+            </figcaption>
+          </figure>
+          <figure class="testimonial" role="listitem">
+            <p class="testimonial__quote">
+              "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat duis aute irure."
+            </p>
+            <figcaption class="testimonial__cite">
+              <strong>Magna Aliqua</strong>
+              Quis nostrud exercitation, ullamco laboris
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: pricing / free-trial CTA. -->
+    <section class="section section--ruled" aria-label="Pricing CTA">
+      <div class="cta-band">
+        <span class="section-kicker">Lorem ipsum dolor</span>
+        <h2 class="cta-band__title">Lorem ipsum dolor sit amet consectetur.</h2>
+        <p class="cta-band__sub">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. 90%
+          consectetur adipiscing elit.
+        </p>
+        <a href="#" class="cta--primary">Lorem ipsum</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for
+       a substack-tagged footers/* whole (minimal multi-column footer with
+       writer/reader/app columns + sub-footer with social and legal). -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">multi-column footer</span>
+        Writer / Reader / Company / App / Help / Legal
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

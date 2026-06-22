@@ -1,0 +1,133 @@
+/*
+ * locomotive-customer-story-page-001 tokens
+ *
+ * Native token values for the Locomotive case-study (project) page skeleton,
+ * inspired by locomotive.ca/en/work/scout-motors (WebFetch 2026-05-20). The
+ * page rides the studio's cream-paper-with-black-ink palette: cream body
+ * surface, pure-black sections for the cover hero and footer inversion, no
+ * saturated brand accent (electric blue reserved for hover / focus only),
+ * 0-radii hard corners throughout, 1.6px black hairlines, and Helvetica Now
+ * Display as the working face with LocomotiveNew on statement headlines.
+ * Values mirror systems/locomotive/system.json and the system-tagged atoms
+ * (locomotive-mono-001, kinetic-headline-001, locomotive-case-walkthrough-001,
+ * locomotive-kinetic-footer-001).
+ *
+ * Layout-specific notes: the cover hero is full-bleed and runs on the black
+ * surface; the project-metadata band, narrative body, process steps, credits,
+ * and next-project link all sit on cream. Alternating media blocks (full-bleed
+ * video stills against cream margins) drive the body rhythm rather than a
+ * single fixed reading column. Mono labels (Categories, Industry, Location,
+ * Website, Awards, Credits roles, step numbers) carry the only utility
+ * register the page allows.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FAF9F5;   /* Locomotive cream paper; body surface for metadata, narrative, credits, next-project. */
+  --ds-surface:      #FFFFFF;   /* Pure white; raised media-still tiles and credits cards against cream. */
+  --ds-surface-2:    #000000;   /* Black; cover-hero, footer inversion, alternating dark narrative section. */
+  --ds-text:         #000000;   /* Pure black body reading on cream. */
+  --ds-text-muted:   #30302E;   /* Warm dark grey; metadata values, credit names, caption text. */
+  --ds-text-strong:  #141413;   /* Near-black warm ink; section heads on cream, larger than body. */
+  --ds-border:       #000000;   /* Solid black rules; project-metadata band dividers and credits separators draw at 1.6px. */
+  --ds-hairline:     rgba(31, 30, 29, 0.15);  /* Warm-ink at 15%; subdued divider when 1.6px black is too loud. */
+  --ds-accent:       #000000;   /* No saturated brand accent; black IS the accent on cream. */
+  --ds-accent-2:     #FAF9F5;   /* Cream as the inverse accent on black sections (cover title, footer, dark narrative). */
+  --ds-success:      #1F8A4B;   /* Reserved; not observed on the case page, kept warm. */
+  --ds-warning:      #C77A1F;
+  --ds-error:        #B83A2E;
+  --ds-info:         #312DFB;   /* Electric blue; observed as the rare hover / link state, used here for next-project arrow and credit-link hover. */
+  --ds-focus-ring:   #312DFB;   /* Keyboard focus ring picks up the electric blue. */
+
+  /* ---------- Type families ----------
+   * Locomotive ships LocomotiveNew for statement display and HelveticaNowDisplay
+   * for everything else. Stack mirrors the source; system fallbacks let the
+   * asset open standalone without licensed faces.
+   */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Cover title runs at the statement-display step (140px on desktop). Body
+   * is 15px (Locomotive's observed base). Metadata mono labels at 12px.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono metadata label (Categories, Industry, Location, Website, Awards). */
+  --ds-text-sm:   13px;   /* Mono step number, caption, credits role label. */
+  --ds-text-base: 15px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph, next-project label. */
+  --ds-text-xl:   26px;   /* Section H2 on cream narrative blocks. */
+  --ds-text-2xl:  34px;   /* Pull quote body. */
+  --ds-text-3xl:  46px;   /* Process-step heading. */
+  --ds-text-4xl:  58px;   /* Next-project name. */
+  --ds-text-5xl:  70px;   /* Hero tagline secondary line. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  140px;  /* Cover hero project title (statement display). */
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.0;    /* Cover hero title and next-project name; tightened for the statement display. */
+  --ds-leading-snug:    1.2;    /* Section H2, process-step heading. */
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.6;    /* Narrative body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;  /* Statement display tightening; LocomotiveNew handles most of this internally. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;    /* Mono metadata labels, step numbers, credits role labels. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Project pages favor very large vertical breathing: each
+   * narrative or media block separates with 96-128px on desktop.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * 0px everywhere. Hard-edge studio commitment; pill only kept for the rare
+   * back-to-top dot if needed downstream.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Locomotive does not lift with shadow; cream-vs-black inversion does the
+   * elevation work. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.10);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.14);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ----------
+   * Locomotive's signature is smooth-scroll + kinetic on-hover type. Standard
+   * curves carry routine UI; emphasize curve carries the kinetic display
+   * moments (cover title rise, next-project arrow slide).
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

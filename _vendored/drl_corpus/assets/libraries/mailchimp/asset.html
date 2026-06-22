@@ -1,0 +1,420 @@
+<!--
+  Asset: mailchimp
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Mailchimp
+  Notes:
+    - Mailchimp's marketing-surface component vocabulary on one page: nav with
+      mega-menu, Cavendish-yellow primary button + secondary + link arrow,
+      hand-illustrated tile, feature card with mailbox/postcard motif,
+      customer-quote card with avatar, pricing tier card, hairline divider,
+      Freddie-style monogram, wordmark.
+    - Hand-illustrated SVG motifs (mailbox, postcard, envelope, monkey hand)
+      are inline; they stand for Mailchimp's documented illustration library.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+  }
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-5); }
+
+  /* Wordmark + monogram */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-3); color: var(--ds-text-strong); font-family: var(--ds-font-display); font-weight: 700; font-size: var(--ds-text-xl); letter-spacing: var(--ds-tracking-tight); }
+  .monogram {
+    /* Cavendish-yellow disc with a hand-drawn monkey-hand glyph; stand-in for Freddie. */
+    width: 36px; height: 36px; border-radius: var(--ds-radius-full);
+    background: var(--ds-accent); display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-text-strong);
+  }
+  .monogram svg { width: 22px; height: 22px; }
+
+  /* Navigation */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border: 1px solid var(--ds-hairline); border-radius: var(--ds-radius-md);
+    background: var(--ds-bg);
+  }
+  .nav__links { display: flex; gap: var(--ds-space-6); align-items: center; list-style: none; padding: 0; margin: 0; }
+  .nav__link {
+    /* Sentence case, no underline at rest; Peppercorn ink. */
+    color: var(--ds-text); text-decoration: none; font-size: var(--ds-text-sm); font-weight: 500;
+    position: relative; padding: var(--ds-space-2) 0;
+  }
+  .nav__link[aria-haspopup="true"]::after {
+    content: ""; display: inline-block; width: 6px; height: 6px;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg); margin-left: 6px; vertical-align: 2px;
+  }
+  .nav__cta { display: flex; gap: var(--ds-space-3); align-items: center; }
+
+  /* Mega-menu (open by default for demo) */
+  .megamenu {
+    background: var(--ds-surface); border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-lg); padding: var(--ds-space-6);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-6);
+  }
+  .megamenu h4 {
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-text-muted); margin: 0 0 var(--ds-space-3);
+  }
+  .megamenu ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .megamenu a { color: var(--ds-text); text-decoration: none; font-size: var(--ds-text-sm); }
+  .megamenu a:hover { color: var(--ds-accent-2); }
+
+  /* Buttons */
+  .btn-primary {
+    /* Cavendish Yellow fill, Peppercorn ink, small-radius rounded rectangle. */
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: var(--ds-text-strong);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600;
+    padding: 12px var(--ds-space-5); border-radius: var(--ds-radius-md);
+  }
+  .btn-secondary {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ds-text-strong);
+    border: 1.5px solid var(--ds-text-strong);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600;
+    padding: 10.5px var(--ds-space-5); border-radius: var(--ds-radius-md);
+  }
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: var(--ds-text-strong); font-weight: 600; text-decoration: none;
+    font-size: var(--ds-text-sm);
+  }
+  .btn-link::after {
+    content: ""; width: 10px; height: 10px;
+    border-right: 1.5px solid currentColor; border-top: 1.5px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  /* Dividers */
+  .hairline {
+    /* Single warm hairline between sections; the only chrome between blocks. */
+    height: 1px; background: var(--ds-hairline); border: 0; width: 100%;
+  }
+
+  /* Hand-illustrated tile (postcard motif) */
+  .illo-tile {
+    /* Off-white tile, generous padding, hand-drawn illustration centered. */
+    background: var(--ds-surface); border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8); display: flex; flex-direction: column;
+    align-items: center; gap: var(--ds-space-5); text-align: center;
+    border: 1px solid var(--ds-border);
+  }
+  .illo-tile svg { width: 160px; height: 120px; }
+  .illo-tile h3 {
+    font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
+    font-weight: 700; margin: 0; color: var(--ds-text-strong);
+  }
+  .illo-tile p { margin: 0; max-width: 32ch; color: var(--ds-text); font-size: var(--ds-text-base); }
+
+  /* Feature cards (mailbox motif) */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  .feature-card {
+    background: var(--ds-bg); border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg); padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .feature-card__icon {
+    /* Hand-drawn mailbox glyph in a 56px square; no background fill behind it. */
+    width: 56px; height: 56px;
+  }
+  .feature-card h3 {
+    font-family: var(--ds-font-display); font-size: var(--ds-text-lg);
+    font-weight: 700; margin: 0; color: var(--ds-text-strong);
+  }
+  .feature-card p { margin: 0; color: var(--ds-text); font-size: var(--ds-text-sm); line-height: var(--ds-leading-relaxed); }
+
+  /* Customer-quote card */
+  .quote-card {
+    background: var(--ds-surface-2); border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6); display: flex; flex-direction: column; gap: var(--ds-space-5);
+    max-width: 560px;
+  }
+  .quote-card__quote {
+    font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug); margin: 0; color: var(--ds-text-strong); font-weight: 500;
+  }
+  .quote-card__byline { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .avatar {
+    width: 44px; height: 44px; border-radius: var(--ds-radius-full);
+    background: linear-gradient(135deg, #F4D9A6, #C29368); /* inline: warm placeholder portrait */
+    flex-shrink: 0;
+  }
+  .quote-card__name { font-weight: 600; color: var(--ds-text-strong); font-size: var(--ds-text-sm); }
+  .quote-card__role { color: var(--ds-text-muted); font-size: var(--ds-text-xs); }
+
+  /* Pricing tier card */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  .tier {
+    background: var(--ds-bg); border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg); padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .tier--featured {
+    /* Recommended tier inverts to Peppercorn fill, paper text, yellow CTA. */
+    background: var(--ds-text-strong); color: var(--ds-bg); border-color: var(--ds-text-strong);
+  }
+  .tier--featured .tier__name, .tier--featured .tier__price, .tier--featured .tier__features li { color: var(--ds-bg); }
+  .tier__name { font-family: var(--ds-font-display); font-weight: 700; font-size: var(--ds-text-lg); margin: 0; color: var(--ds-text-strong); }
+  .tier__price { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); font-weight: 700; margin: 0; color: var(--ds-text-strong); letter-spacing: var(--ds-tracking-tight); }
+  .tier__price span { font-size: var(--ds-text-base); font-weight: 500; color: var(--ds-text-muted); }
+  .tier--featured .tier__price span { color: rgba(255,255,255,0.7); } /* inline: paper text muted */
+  .tier__features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); font-size: var(--ds-text-sm); color: var(--ds-text); }
+  .tier__features li { display: flex; gap: var(--ds-space-2); align-items: baseline; }
+  .tier__features li::before { content: "+"; color: var(--ds-accent); font-weight: 700; }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <span class="wordmark" aria-label="Lorem">
+      <span class="monogram" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 13c0-3 2-6 5-6s5 3 5 6"/>
+          <path d="M5 13c-1 1-1 3 1 3"/>
+          <path d="M19 13c1 0 2 1 2 3"/>
+          <circle cx="9" cy="11" r="0.8" fill="currentColor"/>
+          <circle cx="13" cy="11" r="0.8" fill="currentColor"/>
+          <path d="M9 15c1 1 3 1 4 0"/>
+        </svg>
+      </span>
+      lorem ipsum
+    </span>
+    <h1>Lorem ipsum: the complete marketing-surface vocabulary on one paper</h1>
+    <p>Dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Navigation</div>
+    <nav class="nav" aria-label="Lorem">
+      <span class="wordmark" style="font-size: var(--ds-text-base);">
+        <span class="monogram" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13c0-3 2-6 5-6s5 3 5 6"/>
+            <circle cx="9" cy="11" r="0.8" fill="currentColor"/>
+            <circle cx="13" cy="11" r="0.8" fill="currentColor"/>
+          </svg>
+        </span>
+        lorem
+      </span>
+      <ul class="nav__links">
+        <li><a class="nav__link" href="#" aria-haspopup="true">Industries and solutions</a></li>
+        <li><a class="nav__link" href="#" aria-haspopup="true">Integrations</a></li>
+        <li><a class="nav__link" href="#" aria-haspopup="true">Resources</a></li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+      </ul>
+      <div class="nav__cta">
+        <a class="btn-link" href="#">Log in</a>
+        <button class="btn-primary">Start free trial</button>
+      </div>
+    </nav>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Mega-menu</div>
+    <div class="megamenu" role="region" aria-label="Lorem menu">
+      <div>
+        <h4>By industry</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+          <li><a href="#">Adipiscing elit</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>By size</h4>
+        <ul>
+          <li><a href="#">Sed do eiusmod</a></li>
+          <li><a href="#">Tempor incididunt</a></li>
+          <li><a href="#">Ut labore</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="#">Et dolore magna</a></li>
+          <li><a href="#">Aliqua ut enim</a></li>
+          <li><a href="#">Ad minim veniam</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Quis nostrud</a></li>
+          <li><a href="#">Exercitation ullamco</a></li>
+          <li><a href="#">Laboris nisi</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Buttons</div>
+    <div class="row">
+      <button class="btn-primary">Start free trial</button>
+      <button class="btn-secondary">Get a demo</button>
+      <a class="btn-link" href="#">Learn more</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Dividers</div>
+    <hr class="hairline"/>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Hand-illustrated tile</div>
+    <div class="illo-tile">
+      <svg viewBox="0 0 160 120" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <!-- Hand-drawn postcard with stamp and arc -->
+        <rect x="20" y="30" width="120" height="70" rx="3" fill="#FFE01B"/>
+        <rect x="20" y="30" width="120" height="70" rx="3" fill="none" stroke="currentColor"/>
+        <rect x="105" y="40" width="22" height="18" fill="#FFFFFF" stroke="currentColor"/>
+        <path d="M105 40l22 18M127 40l-22 18" stroke="currentColor" stroke-width="0.8"/>
+        <path d="M32 70h40M32 80h60M32 90h30" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M28 22c8-8 24-8 36 0c10 8 30 8 40 0c8-6 20-6 28 0" stroke="currentColor" stroke-width="1.4" fill="none"/>
+      </svg>
+      <h3>Lorem ipsum dolor sit amet</h3>
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Feature cards</div>
+    <div class="cards">
+      <article class="feature-card">
+        <svg class="feature-card__icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- Hand-drawn mailbox -->
+          <rect x="8" y="20" width="32" height="22" rx="11" fill="#FFE01B" stroke="currentColor"/>
+          <path d="M14 20v22M24 32h12M40 26v8M28 42v8M22 50h12"/>
+          <path d="M44 24l6-4 4 6" fill="none"/>
+        </svg>
+        <h3>Lorem ipsum</h3>
+        <p>Dolor sit amet consectetur adipiscing elit sed do eiusmod.</p>
+      </article>
+      <article class="feature-card">
+        <svg class="feature-card__icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- Hand-drawn envelope -->
+          <rect x="8" y="14" width="40" height="28" rx="2" fill="#FFFFFF" stroke="currentColor"/>
+          <path d="M8 14l20 16 20-16" stroke="currentColor"/>
+          <path d="M28 30v8M22 38h12" stroke="currentColor"/>
+        </svg>
+        <h3>Tempor incididunt</h3>
+        <p>Ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+      </article>
+      <article class="feature-card">
+        <svg class="feature-card__icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- Hand-drawn postcard with hearts -->
+          <rect x="8" y="14" width="40" height="28" rx="2" fill="#FFE01B" stroke="currentColor"/>
+          <path d="M28 18c2-2 6-2 6 2c0 3-6 8-6 8s-6-5-6-8c0-4 4-4 6-2z"/>
+          <path d="M14 36h28" stroke="currentColor"/>
+        </svg>
+        <h3>Quis nostrud</h3>
+        <p>Exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Customer-quote card</div>
+    <blockquote class="quote-card">
+      <p class="quote-card__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.</p>
+      <div class="quote-card__byline">
+        <span class="avatar" role="img" aria-label="Lorem"></span>
+        <div>
+          <div class="quote-card__name">Lorem Ipsum</div>
+          <div class="quote-card__role">Director of marketing, Dolor &amp; Sit</div>
+        </div>
+      </div>
+    </blockquote>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Pricing tier cards</div>
+    <div class="tiers">
+      <article class="tier">
+        <h3 class="tier__name">Free</h3>
+        <p class="tier__price">$0<span> / mo</span></p>
+        <ul class="tier__features">
+          <li>Lorem ipsum dolor</li>
+          <li>Sit amet consectetur</li>
+          <li>Adipiscing elit</li>
+        </ul>
+        <button class="btn-secondary">Sign up free</button>
+      </article>
+      <article class="tier tier--featured">
+        <h3 class="tier__name">Standard</h3>
+        <p class="tier__price">$20<span> / mo</span></p>
+        <ul class="tier__features">
+          <li>Sed do eiusmod tempor</li>
+          <li>Incididunt ut labore</li>
+          <li>Et dolore magna aliqua</li>
+        </ul>
+        <button class="btn-primary">Start free trial</button>
+      </article>
+      <article class="tier">
+        <h3 class="tier__name">Premium</h3>
+        <p class="tier__price">$350<span> / mo</span></p>
+        <ul class="tier__features">
+          <li>Ut enim ad minim veniam</li>
+          <li>Quis nostrud exercitation</li>
+          <li>Ullamco laboris nisi</li>
+        </ul>
+        <button class="btn-secondary">Contact sales</button>
+      </article>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

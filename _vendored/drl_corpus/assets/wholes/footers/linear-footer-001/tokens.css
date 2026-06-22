@@ -1,0 +1,124 @@
+/*
+ * linear-footer-001 tokens
+ *
+ * Tokens for Linear's marketing footer. Near-black surface, off-white type,
+ * muted gray link rest state, indigo accent reserved for the wordmark and
+ * the trailing accent moments. Mono utility register (Geist Mono / JetBrains
+ * Mono fallback) carries the column kickers and small metadata labels.
+ *
+ * Sibling Linear assets captured 2026-05-19 via devtools_computed_style:
+ *   - atoms/color-groups/mono-electric-001 (bg, text, accent)
+ *   - assets/wholes/press-strips/linear-customer-logo-wall-001 (full token set)
+ *   - atoms/wordmarks/display-tight-001 (Linear wordmark register)
+ * These carry the verified hex values that drive this asset's palette. The
+ * footer structure (six link columns + legal row + wordmark) was captured
+ * 2026-05-19 via WebFetch HTML inspection of https://linear.app. Score B.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Linear's footer sits on the same near-black field as the homepage body
+   * (rgb(8,9,10)). Column kickers and rest-state links sit at the muted-gray
+   * step; hover lifts to the off-white. Indigo accent appears only on the
+   * wordmark glyph and the focus ring; nowhere on the chrome itself. */
+  --ds-bg:           #08090A;   /* Linear body bg observed via sibling devtools capture 2026-05-19. */
+  --ds-surface:      #141517;   /* One step up; reserved per contract. */
+  --ds-surface-2:    #1F2024;   /* Two steps up; reserved per contract. */
+  --ds-text:         #F7F8F8;   /* Off-white; link hover, wordmark text, legal copy on hover. */
+  --ds-text-muted:   #8A8F98;   /* Linear muted gray; column kicker labels and link rest. */
+  --ds-text-strong:  #FFFFFF;   /* Reserved emphasis. */
+  --ds-border:       #2E2E2E;   /* Reserved; the footer carries one hairline rule. */
+  --ds-hairline:     #1A1A1A;   /* Subtle separator above the legal row. */
+  --ds-accent:       #5E6AD2;   /* Linear signature indigo; the wordmark and focus ring. */
+  --ds-accent-2:     #B5BDFB;   /* Lifted indigo; focus and hover affordance. */
+  --ds-success:      #4CB782;   /* Reserved. */
+  --ds-warning:      #F2A640;   /* Reserved. */
+  --ds-error:        #E5484D;   /* Reserved. */
+  --ds-info:         #5E6AD2;   /* Matches accent. */
+  --ds-focus-ring:   #B5BDFB;   /* Lifted indigo; visible against near-black. */
+
+  /* ---------- Type families ----------
+   * Linear ships Inter Variable across display and body, and a mono (Berkeley
+   * Mono / Geist Mono register) for column kickers, status pills, and any
+   * technical metadata. Open-license fallback chain leads with Inter and
+   * JetBrains Mono. */
+  --ds-font-display: "Inter Variable", "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Geist Mono", "Berkeley Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter Variable", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Column links sit at sm (14px). Column kickers sit at xs (12px) mono.
+   * The wordmark line sits at lg (19px). Legal line sits at xs (12px). */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Mono kicker labels lean wider (0.16em); the wordmark uses the display
+   * tight register; body links use the body default. */
+  --ds-tracking-tight:  -0.025em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid. The footer column gap uses space-8; the inner vertical
+   * rhythm uses space-10; the outer pad is space-12 vertical. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Footer chrome refuses pill geometry; only the focus ring carries soft
+   * corners via outline. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Linear refuses elevation on flat sections; slots present for contract. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.5);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.6);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.7);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

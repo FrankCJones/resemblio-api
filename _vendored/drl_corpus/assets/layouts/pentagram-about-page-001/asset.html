@@ -1,0 +1,441 @@
+<!--
+  Asset: pentagram-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, oversized-statement, story-card-grid, kicker-with-rule, mega-footer
+  Inspired by: Pentagram (pentagram.com/about)
+  Notes:
+    - About-page skeleton: ink-on-paper top nav with red wordmark, oversized
+      studio statement hero (single sentence at 6xl, tight leading, narrow
+      measure), 5-up partners portrait roster (portrait, name with red rule,
+      city office), associates text list, partners emeriti text list,
+      four-office contact band, four-item press strip, social/newsletter/legal
+      footer. The page treats the partners themselves as the product; the
+      only chromatic note is the red rule under each name and on the
+      wordmark.
+    - Section blocks are placeholders for downstream wholes; the container
+      width, hairline rule rhythm, portrait grid, and statement-display
+      register are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: F37 Plain is the licensed Pentagram display face; Neue Haas
+  Grotesk Display is the practical fallback. Neither is linked here.
+  Helvetica Neue carries the demo as the system-fallback baseline.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Pentagram runs a wider gutter than the dev-tool
+   * canon: 1440px max-width with 32px / 64px inline padding. Inline
+   * value 1440 / 32 / 64; not a contract slot.
+   */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+  @media (min-width: 1200px) {
+    .page { padding-inline: var(--ds-space-10); }
+  }
+
+  /* Recurring section block. Hairline rule between, generous padding-block. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero gets viewport-spanning breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-bg);
+    border: 1px dashed var(--ds-hairline);
+    border-radius: 0;
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Sits flush at the top with an ink-weight bottom rule.
+   * The Pentagram canonical: red wordmark left, plain-ink primary links
+   * right (Work, About, News, Contact), search and archive trailing.
+   * 72px desktop height, 56px mobile; inline ornament.
+   */
+  .nav-wrap {
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    height: 56px;
+  }
+  @media (min-width: 768px) { .nav { height: 72px; } }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);                /* Red wordmark; the canonical Pentagram chromatic note. */
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-6);
+    color: var(--ds-text-strong);
+    font-size: var(--ds-text-sm);
+  }
+
+  /*
+   * Studio statement hero. Single sentence at 6xl desktop / 4xl mobile;
+   * tight leading; narrow measure (max 18ch on a single statement).
+   * Left-aligned. No supporting copy beneath; the statement is the
+   * payload.
+   */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  @media (min-width: 1200px) {
+    .hero__statement { font-size: var(--ds-text-6xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-8) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Section heading shared style. Mono kicker on a hairline rule, ink title beneath. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    display: block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding-top: var(--ds-space-3);
+    border-top: 1px solid var(--ds-text);   /* Ink-weight rule above the kicker; not a hairline slot. */
+    margin-bottom: var(--ds-space-5);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Partners roster grid. 5-up on desktop, 3-up on tablet, 2-up on mobile.
+   * Each cell: square portrait, name with red underline rule, office in
+   * muted body sans. No card chrome around cells. */
+  .roster {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-8) var(--ds-space-5);
+  }
+  @media (min-width: 640px)  { .roster { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .roster { grid-template-columns: repeat(5, 1fr); } }
+  .partner__portrait {
+    background: var(--ds-hairline);
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    margin-bottom: var(--ds-space-3);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .partner__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-1);
+    padding-bottom: var(--ds-space-1);
+    border-bottom: 2px solid var(--ds-accent);   /* Red rule under each partner name; the load-bearing chromatic note. */
+    display: inline-block;
+  }
+  .partner__office {
+    display: block;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    margin-top: var(--ds-space-1);
+  }
+
+  /* Associates / Emeriti text list. Dense ink-on-paper list, no chrome.
+   * Three columns on desktop, two on tablet, one on mobile. */
+  .text-list {
+    column-count: 1;
+    column-gap: var(--ds-space-8);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  @media (min-width: 640px)  { .text-list { column-count: 2; } }
+  @media (min-width: 1024px) { .text-list { column-count: 3; } }
+  .text-list span { display: block; break-inside: avoid; padding-block: var(--ds-space-1); }
+
+  /* Studio offices band. Four columns desktop, two tablet, one mobile.
+   * Each office: city name in display sans, email link in red. */
+  .offices {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px)  { .offices { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .offices { grid-template-columns: repeat(4, 1fr); } }
+  .office__city {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .office__email {
+    display: inline-block;
+    color: var(--ds-accent);
+    border-bottom: 1px solid var(--ds-accent);
+    padding-bottom: 1px;
+  }
+
+  /* Press strip. Four items in a single row on desktop, two on tablet,
+   * one on mobile. Each: mono date label, headline, hairline rule below. */
+  .press {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0;
+  }
+  @media (min-width: 640px)  { .press { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .press { grid-template-columns: repeat(4, 1fr); } }
+  .press__item {
+    padding: var(--ds-space-5);
+    border-top: 1px solid var(--ds-text);
+    border-right: 1px solid var(--ds-hairline);
+  }
+  .press__item:last-child { border-right: 0; }
+  .press__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+  .press__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Closing contact CTA: oversized "Get in touch" line, single-button row. */
+  .section--cta {
+    text-align: left;
+  }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 28ch;
+  }
+  @media (min-width: 768px) {
+    .cta__headline { font-size: var(--ds-text-4xl); }
+  }
+
+  /* Footer band: full-width, ink-weight top rule, social + newsletter +
+   * legal in a three-column composition. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-border);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: 2fr 2fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/pentagram-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="nav__links" aria-label="Primary links">
+          <span>Lorem</span><span>Ipsum</span><span>Dolor</span><span>Sit</span><span>Amet</span>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: studio statement hero. Oversized single-sentence display, narrow measure. -->
+    <section class="section section--hero" aria-label="Studio statement">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+        aliquip ex ea commodo consequat.
+      </p>
+    </section>
+
+    <!-- Section: partners roster grid. 5-up on desktop, square portrait, name with red rule, city office. -->
+    <section class="section" aria-label="Partners">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 / Partners</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="roster">
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Lorem Ipsum</h3><span class="partner__office">London</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Dolor Sit</h3><span class="partner__office">New York</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Amet Conse</h3><span class="partner__office">Austin</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Adipi Elit</h3><span class="partner__office">Berlin</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Sed Eiusmod</h3><span class="partner__office">London</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Tempor Inci</h3><span class="partner__office">New York</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Ut Labore</h3><span class="partner__office">London</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Et Dolore</h3><span class="partner__office">Austin</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Magna Aliqua</h3><span class="partner__office">New York</span></div>
+        <div class="partner"><div class="partner__portrait">portrait</div><h3 class="partner__name">Ut Enim Ad</h3><span class="partner__office">Berlin</span></div>
+      </div>
+    </section>
+
+    <!-- Section: associates text list. Dense three-column ink list. -->
+    <section class="section" aria-label="Associates">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 / Associates</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="text-list" role="list">
+        <span>Lorem Ipsum</span><span>Dolor Sit</span><span>Amet Conse</span>
+        <span>Adipi Elit</span><span>Sed Eiusmod</span><span>Tempor Inci</span>
+        <span>Ut Labore</span><span>Et Dolore</span><span>Magna Aliqua</span>
+        <span>Ut Enim Ad</span><span>Minim Veniam</span><span>Quis Nostrud</span>
+      </div>
+    </section>
+
+    <!-- Section: studio offices band. Four-column city + email composition. -->
+    <section class="section" aria-label="Offices">
+      <div class="section-heading">
+        <span class="section-heading__kicker">03 / Offices</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="offices">
+        <div class="office"><h3 class="office__city">London</h3><a class="office__email" href="#">lorem@ipsum.com</a></div>
+        <div class="office"><h3 class="office__city">New York</h3><a class="office__email" href="#">lorem@ipsum.com</a></div>
+        <div class="office"><h3 class="office__city">Austin</h3><a class="office__email" href="#">lorem@ipsum.com</a></div>
+        <div class="office"><h3 class="office__city">Berlin</h3><a class="office__email" href="#">lorem@ipsum.de</a></div>
+      </div>
+    </section>
+
+    <!-- Section: press strip. Four recent news items in a hairline-divided strip. -->
+    <section class="section" aria-label="Press">
+      <div class="section-heading">
+        <span class="section-heading__kicker">04 / Press</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="press">
+        <article class="press__item"><span class="press__date">May 2026</span><h3 class="press__headline">Lorem ipsum dolor sit amet adipiscing.</h3></article>
+        <article class="press__item"><span class="press__date">May 2026</span><h3 class="press__headline">Consectetur adipiscing elit sed do.</h3></article>
+        <article class="press__item"><span class="press__date">Jun 2026</span><h3 class="press__headline">Eiusmod tempor incididunt ut labore.</h3></article>
+        <article class="press__item"><span class="press__date">Jun 2026</span><h3 class="press__headline">Et dolore magna aliqua ut enim.</h3></article>
+      </div>
+    </section>
+
+    <!-- Section: contact cta. Oversized closing line, single-button row. -->
+    <section class="section section--cta" aria-label="Contact">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur.</h2>
+      <div class="slot" style="display: inline-block; min-width: 200px;">
+        <span class="slot__label">primary-cta</span>
+        Get in touch
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/studio-credit-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div class="slot"><span class="slot__label">social-links</span>Instagram · LinkedIn · X · Facebook</div>
+        <div class="slot"><span class="slot__label">newsletter-signup</span>Lorem ipsum dolor sit amet</div>
+        <div class="slot"><span class="slot__label">legal-and-copyright</span>(c) 1972 – 2026 Lorem</div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

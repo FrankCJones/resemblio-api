@@ -1,0 +1,185 @@
+<!--
+  Asset: robin-sloan-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav
+  Inspired by: Robin Sloan
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/terracotta-cream-001       (terracotta-era warm-earth palette)
+    - type-pairings/serif-mono-editorial-001  (editorial serif wordmark + sans companion)
+    - wordmarks/editorial-serif-wordmark-002  (serif italic wordmark register)
+    - links/nav-link-underline-001            (muted-to-ink nav link, hover-only chrome)
+  Notes:
+    - A four-link personal-writer nav. Site title sits as an editorial
+      serif wordmark on the left; four inline links (Home, About,
+      Moonbound, Shop) run beside it with hairline slash separators.
+      No CTA pill, no search, no social row, no platform chrome. The
+      page itself is the manifesto; the nav just orients.
+    - Variable vs inline: every color, type size, spacing step comes
+      from the contract. Inline ornaments: the slash separator between
+      links (an editorial typographic device, not a reusable atom) and
+      the underline-on-hover affordance that lifts to terracotta.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Newsreader stands in for Filosofia (Zuzana Licko, Emigre 1996), the
+     editorial serif named in Robin Sloan's colophon. Inter stands in for
+     Trade Gothic Next, the humanist sans companion. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Flush-top header. The nav sits against the page surface with no fill,
+   * no shadow, no border. The single hairline below is optional and
+   * appears only when content scrolls beneath. */
+  .nav {
+    background: transparent;
+    padding: var(--ds-space-8) var(--ds-space-6) var(--ds-space-6);
+  }
+
+  .nav__inner {
+    max-width: 36rem;            /* Narrow measure; matches the site's reading column. */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-3);
+  }
+
+  /* Wordmark. Editorial serif, italic accent on the surname for the
+   * personal-author register Robin Sloan's site uses. */
+  .nav__wordmark {
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .nav__wordmark em {
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* Link cluster. Inline run with hairline slash separators between
+   * links. No bar, no pill, no surface. */
+  .nav__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Inline separator. A muted slash between links. This is an editorial
+   * typographic ornament specific to this nav; not a reusable contract
+   * value. */
+  .nav__links > li + li::before {
+    content: " / ";
+    color: var(--ds-text-muted);
+    margin: 0 var(--ds-space-2);
+    font-style: normal;
+  }
+
+  /* Top-level link. From atoms/links/nav-link-underline-001: muted-to-ink,
+   * underline suppressed at rest, terracotta on hover. */
+  .nav__link {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link:focus-visible {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Current-page state. Active link is the terracotta accent, italic,
+   * no underline. */
+  .nav__link[aria-current="page"] {
+    color: var(--ds-accent);
+    font-style: italic;
+  }
+
+  /* Page stub so the nav has something to sit on visually. */
+  .page-stub {
+    max-width: 36rem;
+    margin: var(--ds-space-8) auto var(--ds-space-12);
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .page-stub p {
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  @media (max-width: 480px) {
+    .nav {
+      padding: var(--ds-space-6) var(--ds-space-5) var(--ds-space-5);
+    }
+    .nav__inner {
+      gap: var(--ds-space-2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__link { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Ipsum home">
+        Lorem <em>Ipsum</em>
+      </a>
+
+      <nav aria-label="Primary">
+        <ul class="nav__links">
+          <li><a class="nav__link" href="#" aria-current="page">Home</a></li>
+          <li><a class="nav__link" href="#">About</a></li>
+          <li><a class="nav__link" href="#">Lorem</a></li>
+          <li><a class="nav__link" href="#">Shop</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

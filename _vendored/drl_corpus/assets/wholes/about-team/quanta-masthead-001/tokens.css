@@ -1,0 +1,141 @@
+/*
+ * quanta-masthead-001 tokens
+ *
+ * Quanta Magazine /about masthead. The about page renders the publication
+ * as a roster of named people across three tiers (Staff, Featured
+ * Contributors, Advisory Board). Each tier is a grid of square portraits,
+ * each card carrying a Tiempos serif name and a humanist-sans role line.
+ * The deep violet (#4A2D7E) holds back almost entirely; it surfaces on
+ * the section kicker (lowercase "staff", "contributors", "advisors") and
+ * on link hover for any role that links out to the contributor's author
+ * page.
+ *
+ * Source inspected via WebFetch on https://www.quantamagazine.org/about/
+ * captured 2026-05-20. The masthead is structurally divided into Staff
+ * (~18 people), Featured Contributors (~50 contributing writers,
+ * columnists, correspondents), and Advisory Board (~9 outside members).
+ * Each card carries a square portrait, a serif name, and a one-line role
+ * (e.g. "Editor in Chief", "Contributing Writer", "Math Editor"). Tokens
+ * for Quanta's palette and type stack are inherited from the canonical
+ * Quanta system file (systems/quanta/system.json) and cross-referenced
+ * against quanta-hero-001/tokens.css, quanta-science-pair-001, and
+ * kickers/quanta-section-001.
+ *
+ * Free-font analogs in asset.html: Source Serif 4 substitutes for
+ * Tiempos Headline and Tiempos Text; Inter substitutes for GT America.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink editorial canvas with one accent. Violet lives on the
+   * lowercase section kicker and on role-link hover only; at rest the
+   * page reads as pure paper.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper. Quanta /about sits on white. */
+  --ds-surface:      #FAFAFA;   /* Half-step surface for card hover lift. */
+  --ds-surface-2:    #F2F2F2;   /* Section divider band; subtle. */
+  --ds-text:         #1A1A1A;   /* Near-black ink; name set in Tiempos. */
+  --ds-text-muted:   #6B6B6B;   /* Role / title line; humanist sans. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved. */
+  --ds-border:       #E5E5E5;   /* Hairline card and portrait edges. */
+  --ds-hairline:     #EDEDED;   /* Thinnest divider; between tiers. */
+  --ds-accent:       #4A2D7E;   /* Quanta signature deep violet; kicker, link hover. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet; sustained hover, focus halo. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #C77700;
+  --ds-error:        #B3261E;
+  --ds-info:         #4A2D7E;
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet visible against paper. */
+
+  /* ---------- Type families ----------
+   * Three jobs: serif display owns the person's name, serif body owns
+   * the hero dek, humanist sans owns the lowercase section kicker and
+   * the role line under each name.
+   */
+  --ds-font-display: "Tiempos Headline", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * About hero sets at 3xl-4xl (42-56px); section heading at 2xl (32px);
+   * person name at lg (19px) in serif; role line at sm (14px) in sans.
+   * Kicker at xs (13px) lowercase, slightly tracked.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;   /* Lowercase violet section kicker. */
+  --ds-text-sm:   14px;   /* Role / title under name. */
+  --ds-text-base: 17px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Person name in serif. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;   /* Section headline ("Staff", "Featured Contributors"). */
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;   /* About-page H1. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;    /* Person name; tight serif. */
+  --ds-leading-normal:  1.5;    /* Role line. */
+  --ds-leading-relaxed: 1.65;   /* Hero dek; reading register. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Serif display takes -0.02em. Lowercase sans kicker takes positive
+   * 0.04em to hold rhythm without uppercase.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;   /* Lowercase kicker. */
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Editorial cadence: 12-16px from portrait to name, 4-8px name to
+   * role, 32-48px inter-card gap, 96-128px between tiers.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;     /* Name to role line. */
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;    /* Portrait to name. */
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;    /* Inter-card grid gap. */
+  --ds-space-8:  48px;    /* Section head to grid. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;    /* Between tiers. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Quanta uses square corners across editorial chrome. Portraits are
+   * square; no rounding.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Quanta on paper uses hairlines, not elevation. The only depth move
+   * here is a soft focus halo on a focused role link.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 0 0 4px rgba(123,79,183,0.18);  /* Focus halo, violet. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

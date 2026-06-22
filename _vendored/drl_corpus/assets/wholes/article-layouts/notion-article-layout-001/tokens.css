@@ -1,0 +1,152 @@
+/*
+ * notion-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Notion's /blog surface (notion.com/blog).
+ * The shell wraps long-form posts on a warm-paper canvas with a single sans
+ * family across display and body, a topic kicker linked back to the category
+ * index, a 96px circular author photo, and image-led sections punctuating
+ * the prose. Token values follow the Notion warm-paper register already
+ * captured in atoms/cards/warm-paper-rule-001 (Notion N sticker era,
+ * notion.com homepage), cross-verified against the live blog posts via
+ * WebFetch on 2026-05-20 (two posts sampled, see provenance).
+ *
+ * Sources inspected via WebFetch on 2026-05-20:
+ *   https://www.notion.com/blog/introducing-developer-platform
+ *   https://www.notion.com/blog/enabling-multi-region-data-systems-at-notion
+ * The Notion blog surface ships compiled Next.js styles; WebFetch returns
+ * markdown without computed style values. Token character (warm cream
+ * canvas, near-black ink, GT Walsheim display, restrained green accent)
+ * follows the canonical Notion brand register captured devtools-verified
+ * on the warm-paper-rule-001 atom and is unchanged on the article chrome.
+ *
+ * Free-font analogs in `asset.html`:
+ *   - Inter Tight (Google Fonts) substitutes for GT Walsheim; both are
+ *     humanist sans with similar x-height and counter shapes.
+ *   - Newsreader (Google Fonts) is held as a serif accent fallback though
+ *     the Notion blog runs a single-sans system in practice.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Notion warm-paper light surface. Page is cream; body sits on the
+   * page surface; cards and callouts lift one step brighter. Ink is near
+   * -black, never pure. The chromatic accent is a muted printer's green
+   * that does links, focus rings, and the topic kicker line. No second
+   * saturated chromatic role on the article surface.
+   */
+  --ds-bg:           #EFEAE0;   /* Notion warm cream; the page canvas. */
+  --ds-surface:      #FBF7EF;   /* Callout / TL;DR box surface, one step brighter. */
+  --ds-surface-2:    #FFFFFF;   /* Image frame background; pure white inside the cream. */
+  --ds-text:         #191919;   /* Notion near-black; body ink. */
+  --ds-text-muted:   #6B6B6B;   /* Byline, date, role, caption. */
+  --ds-text-strong:  #000000;   /* H1 ink at the deepest emphasis. */
+  --ds-border:       rgba(0, 0, 0, 0.10);   /* Hairline border on image frames and callouts. */
+  --ds-hairline:     rgba(0, 0, 0, 0.06);   /* Subtle rule above byline and between sections. */
+  --ds-accent:       #2E6F50;   /* Muted Notion green; reads as printer's second color. */
+  --ds-accent-2:     #4E8B6B;   /* Hover lift for inline links. */
+  --ds-success:      #2E6F50;
+  --ds-warning:      #B88E3A;
+  --ds-error:        #A14438;
+  --ds-info:         #2E6F50;
+  --ds-focus-ring:   #2E6F50;
+
+  /* ---------- Type families ----------
+   * Notion runs GT Walsheim across the blog surface as a single-sans
+   * system; serif is held in reserve and rarely lands on the live page.
+   * Mono is reserved for inline code spans (CLI references like `ntn`).
+   */
+  --ds-font-display: "GT Walsheim", "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "GT Walsheim", "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, Consolas, monospace;
+  --ds-font-accent:  "Newsreader", Georgia, "Times New Roman", serif;
+
+  /* ---------- Type sizes ----------
+   * Notion blog H1 sits at the 3xl-4xl step (~48-56px on desktop). Body
+   * reads at 19px to give the warm-paper canvas the editorial breathing
+   * room; one step above the SaaS 16px default. Dek paragraph at 22px.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Topic kicker, date, role label. */
+  --ds-text-sm:   14px;   /* Caption, small metadata. */
+  --ds-text-base: 19px;   /* Body reading register. */
+  --ds-text-lg:   22px;   /* Dek paragraph / lead. */
+  --ds-text-xl:   28px;   /* Subhead (h2) inside body. */
+  --ds-text-2xl:  36px;   /* Larger section heading (h3 above h2). */
+  --ds-text-3xl:  44px;   /* Article H1 base step. */
+  --ds-text-4xl:  56px;   /* Article H1 desktop ceiling. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Body at 1.7 sits in the editorial-shaded reading register. H1 holds
+   * at 1.1; dek at 1.4 to keep the lead paragraph breathing without
+   * drifting to a magazine measure.
+   */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * GT Walsheim is friendly; display headings take a gentle -0.015em that
+   * keeps the counters open. Mono kicker (when used) takes +0.14em. The
+   * topic kicker reads as a label, +0.06em wide tracking.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Header column ends with space-8 (48px) before the body.
+   * Body paragraphs separated by space-5 (24px). Image figures get
+   * space-10 (64px) above and below to read as section anchors.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;   /* Paragraph rhythm; Notion card padding. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Notion's signature 12px radius lands on image frames and the TL;DR
+   * callout. The article shell itself carries no radius.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;    /* Image frame and callout corner. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;  /* Author avatar. */
+
+  /* ---------- Shadows ----------
+   * Warm-paper register: hairlines do structural chrome. Image frames
+   * lift slightly to separate from the cream canvas without flying off.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   0 1px 2px rgba(60, 50, 30, 0.04);
+  --ds-shadow-md:   0 4px 16px rgba(60, 50, 30, 0.08);   /* Image figure rest state. */
+  --ds-shadow-lg:   0 12px 32px rgba(60, 50, 30, 0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(60, 50, 30, 0.16);
+
+  /* ---------- Motion ----------
+   * Standard fast register; Notion's surface is not a motion-led brand.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

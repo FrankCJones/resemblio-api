@@ -1,0 +1,711 @@
+<!--
+  Asset: webflow-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, single-cta-hero, numbered-feature-row, story-card-grid, mega-footer
+  Inspired by: Webflow (webflow.com/about)
+  Notes:
+    - About-page skeleton in the Webflow register: pure white surface,
+      Webflow Blue accent, single humanist-sans face across display and
+      body, 8px card radius, hairline-driven card chrome with no resting
+      shadows. Section sequence: top-bar nav, mission hero with trust-
+      logo strip, numbered core-values list, By-the-Numbers stat band,
+      press grid, leadership portrait grid, founders highlight band,
+      social-proof ratings, careers CTA, mega-footer.
+    - The numbered values list (01-04 down the left rail) is the
+      load-bearing pattern on this page; everything else is composition
+      around it. Max-width container 1216px, 24/48px gutter, 96px
+      section padding desktop / 64px mobile.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web font: Arial standing in for WF Visual Sans Variable, the foundry-
+  proprietary humanist sans Webflow ships. The variable-axis face is not
+  publicly licensable; system Arial preserves the metric weight without
+  pretending to be the real face.
+-->
+<style>
+  /* Reset just what the layout needs. Harness handles cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1216px max-width matches Webflow's marketing canvas;
+   * 24/48px gutter. Inline values; not contract slots. */
+  .page {
+    max-width: 1216px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 64px mobile / 96px desktop padding-block,
+   * hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero band gets extra breathing room (128px desktop). */
+  .section--hero {
+    padding-block: var(--ds-space-12);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Slot placeholder. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .slot__label {
+    display: block;
+    color: var(--ds-text);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-2);
+  }
+
+  /* Top-bar nav. Flush full-width with a hairline rule beneath; wordmark
+   * left, link cluster center, CTA cluster right. 72px bar height (taller
+   * than Vercel's 56px, matches Webflow's marketing nav). Inline value. */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.94);            /* glass over white; inline ornament */
+    backdrop-filter: saturate(180%) blur(16px);       /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 72px;                                    /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero statement. Sans display at 4xl on desktop (the about page sits a
+   * step under the homepage H0 statement); tight leading; left-aligned;
+   * narrow measure for the headline, wider for the dek. */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); max-width: 16ch; }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__visual {
+    margin-top: var(--ds-space-10);
+    aspect-ratio: 16 / 7;                            /* hero canvas proportions, inline */
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Trust-logo strip beneath hero visual: six-column hairline grid. */
+  .trust-strip {
+    margin-top: var(--ds-space-10);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 640px) { .trust-strip { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .trust-strip { grid-template-columns: repeat(6, 1fr); } }
+  .trust-strip .slot {
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    border-radius: 0;
+    aspect-ratio: 5 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Section heading shared style: normal-case sans eyebrow (not mono
+   * uppercase; that is the Webflow signature distinction) above sans
+   * title. */
+  .section-heading { margin-bottom: var(--ds-space-10); max-width: 48ch; }
+  .section-heading__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 28ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Numbered core-values list. 01-04 prefix down the left rail, value
+   * label and short copy beside it. Single column on mobile, two on
+   * tablet, four-up at desktop ceilings is too dense; the live page
+   * keeps four rows stacked so we match that. */
+  .values-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    counter-reset: value;
+  }
+  .value-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--ds-space-6);
+    align-items: start;
+    padding-block: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .value-row:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .value-row__number {
+    counter-increment: value;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    min-width: 3ch;
+  }
+  .value-row__number::before { content: "0" counter(value); }
+  .value-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .value-row__copy {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    max-width: 64ch;
+  }
+
+  /* By-the-Numbers stat band. Four large numeric tiles in a row. */
+  .stat-band {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 900px) { .stat-band { grid-template-columns: repeat(4, 1fr); } }
+  .stat__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .stat__value { font-size: var(--ds-text-5xl); }
+  }
+  .stat__label {
+    margin: var(--ds-space-2) 0 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Investor logo row sits below the stat band, full-width hairline grid. */
+  .investor-strip {
+    margin-top: var(--ds-space-10);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 640px) { .investor-strip { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 1024px) { .investor-strip { grid-template-columns: repeat(6, 1fr); } }
+  .investor-strip .slot {
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    border-radius: 0;
+    aspect-ratio: 5 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Press grid. Three columns of article cards on desktop. */
+  .press-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .press-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .press-grid { grid-template-columns: repeat(3, 1fr); } }
+  .press-card {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    background: var(--ds-surface);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .press-card__source {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+  .press-card__title {
+    margin: 0;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Leadership portrait grid. Three-column desktop (Webflow shows nine
+   * executives in a 3x3); two on tablet; one on mobile. Square portrait
+   * + name + title caption per card. No resting shadow; just hairline. */
+  .leadership-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .leadership-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .leadership-grid { grid-template-columns: repeat(3, 1fr); } }
+  .leader {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .leader__portrait {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .leader__name {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .leader__title {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Founders highlight band. Three larger cards in a row, rounded
+   * portraits, larger names. */
+  .founders-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) { .founders-grid { grid-template-columns: repeat(3, 1fr); } }
+  .founder {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .founder__portrait {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .founder__name {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .founder__role {
+    margin: 0;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+
+  /* Social-proof rating row. Two side-by-side rating tiles. */
+  .ratings-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .ratings-row { grid-template-columns: repeat(2, 1fr); } }
+  .rating-card {
+    padding: var(--ds-space-8);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+  .rating-card__score {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: 1;
+  }
+  .rating-card__meta {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Careers CTA section. Left-aligned closing block matching Webflow's
+   * standard end-of-page conversion band; primary blue CTA + secondary
+   * outlined CTA. */
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .cta__headline { font-size: var(--ds-text-4xl); }
+  }
+  .cta__support {
+    margin: var(--ds-space-5) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-8);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+
+  /* Footer band: full-width, sits outside .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/webflow-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 480px;">
+          <span class="slot__label">nav-link-cluster</span>
+          Solutions / Resources / Enterprise / Pricing
+        </div>
+        <div class="slot" style="min-width: 220px;">
+          <span class="slot__label">auth-controls</span>
+          Login / Contact sales / Get started
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: mission hero. Sans display statement, supporting paragraph, hero visual canvas, trust logo strip. -->
+    <section class="section section--hero" aria-label="Mission hero">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+      <div class="hero__visual">
+        <div class="slot" style="border: 0; background: transparent;">
+          <span class="slot__label">hero-canvas (full-bleed product / brand visual)</span>
+          Lorem ipsum
+        </div>
+      </div>
+      <div class="trust-strip" aria-label="Customer logos">
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: core values. Numbered 01-04 list with title + short copy. -->
+    <section class="section" aria-label="Core values">
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">Core values behaviors</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      </div>
+      <div class="values-list">
+        <article class="value-row">
+          <span class="value-row__number" aria-hidden="true"></span>
+          <div>
+            <h3 class="value-row__title">Lorem ipsum dolor sit amet</h3>
+            <p class="value-row__copy">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+          </div>
+        </article>
+        <article class="value-row">
+          <span class="value-row__number" aria-hidden="true"></span>
+          <div>
+            <h3 class="value-row__title">Lorem ipsum dolor sit amet</h3>
+            <p class="value-row__copy">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim
+              ad minim veniam, quis nostrud exercitation ullamco laboris.
+            </p>
+          </div>
+        </article>
+        <article class="value-row">
+          <span class="value-row__number" aria-hidden="true"></span>
+          <div>
+            <h3 class="value-row__title">Lorem ipsum dolor sit amet</h3>
+            <p class="value-row__copy">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute
+              irure dolor in reprehenderit in voluptate velit esse cillum.
+            </p>
+          </div>
+        </article>
+        <article class="value-row">
+          <span class="value-row__number" aria-hidden="true"></span>
+          <div>
+            <h3 class="value-row__title">Lorem ipsum dolor sit amet</h3>
+            <p class="value-row__copy">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur
+              sint occaecat cupidatat non proident, sunt in culpa qui officia.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: By the Numbers. Four-tile stat band + investor logo strip. -->
+    <section class="section" aria-label="By the numbers">
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">By the numbers</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="stat-band">
+        <div>
+          <p class="stat__value">900+</p>
+          <p class="stat__label">Lorem ipsum dolor sit amet, consectetur.</p>
+        </div>
+        <div>
+          <p class="stat__value">3.5M</p>
+          <p class="stat__label">Lorem ipsum dolor sit amet, consectetur.</p>
+        </div>
+        <div>
+          <p class="stat__value">$335M</p>
+          <p class="stat__label">Lorem ipsum dolor sit amet, consectetur.</p>
+        </div>
+        <div>
+          <p class="stat__value">2013</p>
+          <p class="stat__label">Lorem ipsum dolor sit amet, consectetur.</p>
+        </div>
+      </div>
+      <div class="investor-strip" aria-label="Investor logos">
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: press. Three-column grid of media-mention cards. -->
+    <section class="section" aria-label="Press">
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">In the press</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="press-grid">
+        <a class="press-card" href="#">
+          <span class="press-card__source">Lorem Outlet</span>
+          <h3 class="press-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        </a>
+        <a class="press-card" href="#">
+          <span class="press-card__source">Lorem Outlet</span>
+          <h3 class="press-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        </a>
+        <a class="press-card" href="#">
+          <span class="press-card__source">Lorem Outlet</span>
+          <h3 class="press-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        </a>
+        <a class="press-card" href="#">
+          <span class="press-card__source">Lorem Outlet</span>
+          <h3 class="press-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        </a>
+        <a class="press-card" href="#">
+          <span class="press-card__source">Lorem Outlet</span>
+          <h3 class="press-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        </a>
+        <a class="press-card" href="#">
+          <span class="press-card__source">Lorem Outlet</span>
+          <h3 class="press-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        </a>
+      </div>
+    </section>
+
+    <!-- Section: leadership. Three-column portrait grid for executive team. -->
+    <section class="section" aria-label="Leadership">
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">Leadership</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="leadership-grid">
+        <div class="leader"><div class="leader__portrait"></div><p class="leader__name">Lorem Ipsum</p><p class="leader__title">Chief Executive Officer</p></div>
+        <div class="leader"><div class="leader__portrait"></div><p class="leader__name">Lorem Ipsum</p><p class="leader__title">Chief Technology Officer</p></div>
+        <div class="leader"><div class="leader__portrait"></div><p class="leader__name">Lorem Ipsum</p><p class="leader__title">Chief Financial Officer</p></div>
+        <div class="leader"><div class="leader__portrait"></div><p class="leader__name">Lorem Ipsum</p><p class="leader__title">Chief Marketing Officer</p></div>
+        <div class="leader"><div class="leader__portrait"></div><p class="leader__name">Lorem Ipsum</p><p class="leader__title">Chief Product Officer</p></div>
+        <div class="leader"><div class="leader__portrait"></div><p class="leader__name">Lorem Ipsum</p><p class="leader__title">Chief Operating Officer</p></div>
+      </div>
+    </section>
+
+    <!-- Section: founders. Three-card highlight band with role in accent blue. -->
+    <section class="section" aria-label="Founders">
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">Our founders</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="founders-grid">
+        <div class="founder"><div class="founder__portrait"></div><p class="founder__name">Lorem Ipsum</p><p class="founder__role">Co-founder, CEO</p></div>
+        <div class="founder"><div class="founder__portrait"></div><p class="founder__name">Lorem Ipsum</p><p class="founder__role">Co-founder</p></div>
+        <div class="founder"><div class="founder__portrait"></div><p class="founder__name">Lorem Ipsum</p><p class="founder__role">Co-founder, CTO</p></div>
+      </div>
+    </section>
+
+    <!-- Section: ratings. G2 + Glassdoor style rating tiles. -->
+    <section class="section" aria-label="Reviews">
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">Reviews</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="ratings-row">
+        <div class="rating-card">
+          <span class="rating-card__score">4.4</span>
+          <span class="rating-card__meta">Lorem Rating Source<br/>Lorem ipsum dolor sit amet, January 2025.</span>
+        </div>
+        <div class="rating-card">
+          <span class="rating-card__score">3.9</span>
+          <span class="rating-card__meta">Lorem Rating Source<br/>Lorem ipsum dolor sit amet, January 2025.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: careers CTA. Closing conversion band linking to /careers. -->
+    <section class="section" aria-label="Careers CTA">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      <p class="cta__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">primary-cta</span>
+          See open roles
+        </div>
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">secondary-cta</span>
+          Read our blog
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/webflow-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (Platform / Solutions / Resources / Company columns + legal row + social icons)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

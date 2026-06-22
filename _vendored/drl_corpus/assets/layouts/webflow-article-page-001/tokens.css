@@ -1,0 +1,114 @@
+/*
+ * webflow-article-page-001 tokens
+ *
+ * Native token values for the Webflow blog single-article skeleton, inspired by
+ * https://webflow.com/blog/introducing-webflow-aeo. Webflow's blog rides the
+ * marketing chrome documented in systems/webflow/system.json: paper-white body,
+ * near-black text, the single Webflow Blue (#146EF5) accent reserved for links,
+ * primary CTAs, and category kicker. Type register is Inter for marketing
+ * (Webflow ships Inter as its product face and uses it through blog), with a
+ * mono fallback for utility metadata (publish date, breadcrumbs). WebFetch on
+ * this session confirmed section sequence (nav, hero with kicker + title +
+ * byline + date + feature image, narrow body with inline images and two
+ * customer pull quotes, two-up related-posts grid, newsletter band, footer)
+ * but stripped inline computed styles; numeric values follow the Webflow
+ * marketing system convention documented in systems/webflow/system.json
+ * design_principles rather than devtools reads.
+ *
+ * Layout-specific notes: the article reading column sits at ~68ch (inline rule
+ * in asset.html); page container max-width and gutters are inline because they
+ * are page-grid character, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body; Webflow blog default. */
+  --ds-surface:      #F7F8F9;   /* Newsletter band and pull-quote tinted lift. */
+  --ds-surface-2:    #EFF1F4;   /* Related-card placeholder fill, feature-image surround. */
+  --ds-text:         #1D2026;   /* Near-black body reading; Webflow blog body color. */
+  --ds-text-muted:   #5F6470;   /* Byline, date, captions, related-card meta. */
+  --ds-text-strong:  #080A0F;   /* Article title display; one step heavier. */
+  --ds-border:       #E6E8EC;   /* Card edges, newsletter band chrome. */
+  --ds-hairline:     rgba(8,10,15,0.08);  /* Section rules, nav underline. */
+  --ds-accent:       #146EF5;   /* Webflow Blue; links, kicker, primary CTA. */
+  --ds-accent-2:     #080A0F;   /* Inversion accent; dark pill CTA on light surfaces. */
+  --ds-success:      #17A34A;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #146EF5;
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Inter is Webflow's marketing face; mono is reserved for utility metadata
+   * (publish date, breadcrumb, share kicker). Open fallbacks so the asset
+   * renders standalone without licensed faces.
+   */
+  --ds-font-display: "Inter Display", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono publish date, social-share label. */
+  --ds-text-sm:   14px;   /* Author byline, image caption, related-card meta. */
+  --ds-text-base: 17px;   /* Body reading; Webflow runs a 17px body. */
+  --ds-text-lg:   20px;   /* Lead paragraph, pull-quote attribution. */
+  --ds-text-xl:   26px;   /* Body H3; pull-quote body. */
+  --ds-text-2xl:  34px;   /* Body H2 section heads. */
+  --ds-text-3xl:  44px;   /* Related-posts and newsletter section heading. */
+  --ds-text-4xl:  56px;   /* Article H1 display. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Article title. */
+  --ds-leading-snug:    1.2;    /* Body H2 / H3 / pull quote. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.75;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Inter Display squeeze on the title. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono date / category kicker. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Webflow's subtle-radii principle: 8px on cards, 12px on the feature
+   * image and newsletter band, pill only for status dots and avatars.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;    /* Related-post cards, pull-quote container. */
+  --ds-radius-lg:   16px;   /* Feature image, newsletter band. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadow suppressed; cards lift via 1px
+   * border on tinted surface. Declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(8,10,15,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(8,10,15,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(8,10,15,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(8,10,15,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(8,10,15,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

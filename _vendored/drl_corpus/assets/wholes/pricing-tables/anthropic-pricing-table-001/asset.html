@@ -1,0 +1,430 @@
+<!--
+  Asset: anthropic-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid, paper-and-ink, mono-eyebrow, primary-square, ghost-button, segmented-switch, property-value-row
+  Inspired by: Anthropic (anthropic.com/pricing, 301 to claude.com/pricing)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001               (palette context: cream paper + clay-crimson accent)
+    - type-pairings/serif-mono-editorial-001    (serif display + mono metadata Anthropic register)
+    - cards/hairline-flat-001                   (tier card frame on warm paper)
+    - buttons/anthropic-primary-square-001      (recommended-tier primary CTA, squared not pill)
+    - buttons/anthropic-secondary-ghost-001     (non-recommended tier CTAs)
+    - headings/display-tight-001                (price digit serif display)
+    - kickers/mono-eyebrow-001                  (section eyebrow above headline)
+    - badges/anthropic-category-mono-001        ("Most popular" mono eyebrow badge)
+    - labels/section-label-numbered-001         (per-tier number label 01 / 02 / 03 / 04 / 05)
+  Notes:
+    - The Anthropic pricing surface composes the same warm-paper system
+      that the rest of the site carries: cream bg, brown-undertone ink,
+      clay-crimson accent doing all chromatic work. Editorial register
+      applied to a product surface is the load-bearing move.
+    - Variable: tier count, price values, feature lists, billing toggle
+      target. Inline ornament: the recommended-tier 1.5px clay-crimson
+      inset stroke (not a shared shadow recipe); the per-tier numbered
+      label running down the card heads; the SVG check glyph geometry
+      on feature rows.
+    - Five tiers shown (Free / Pro / Max / Team / Enterprise) per the
+      pricing-page composition. The middle tier carries the recommended
+      stroke; the rightmost (Enterprise) prices as "Custom" and ends
+      with a Contact-sales ghost CTA.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Tiempos / Söhne are licensed; substitute open-source families that
+     carry similar editorial register: Source Serif 4 for the serif role,
+     Inter for the humanist sans role, JetBrains Mono for metadata. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm paper bg, editorial vertical breathing room. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  .pricing {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Section head. Mono eyebrow, serif display H2, sans lede.
+   * Anthropic's editorial register: eyebrow tracks at +0.16em; the
+   * display H2 uses the same serif as news-article H1. */
+  .pricing__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-4);
+    max-width: 720px;
+  }
+  .pricing__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .pricing__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 56ch;
+  }
+
+  /* Billing toggle. Segmented switch on the warm-paper register: hairline
+   * border container, clay-crimson active fill on selected segment.
+   * Sits below the head, centered on its own row. */
+  .pricing__toggle {
+    align-self: flex-start;
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+  }
+  .pricing__toggle-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    padding: 8px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .pricing__toggle-btn[aria-pressed="true"] {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+  }
+
+  /* Tier grid. Five cards collapse cleanly via auto-fit + minmax.
+   * Wide screens: five across; tablet: two; mobile: one. */
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--ds-space-4);
+    align-items: stretch;
+  }
+
+  /* Tier card. Flat surface on warm paper, hairline border, generous
+   * interior padding. Editorial restraint applied to a pricing surface. */
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+
+  /* Inline ornament: recommended-tier clay-crimson 1.5px inset stroke.
+   * Replaces the hairline border on a single card; not a shadow recipe.
+   * The lift is structural, not elevation-based. */
+  .tier--recommended {
+    border-color: var(--ds-accent);
+    box-shadow: inset 0 0 0 1px var(--ds-accent);
+  }
+
+  /* Per-tier numbered label running across the head of each card.
+   * The "01 / 05" form is the editorial-label-numbered move: tells the
+   * reader where they are in the tier sequence, the way a chapter
+   * number anchors an article. */
+  .tier__number {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* "Most popular" badge on the recommended tier. A mono eyebrow on a
+   * clay-crimson chip, sitting top-right absolute. The mono register
+   * keeps the badge from competing with the serif tier name below. */
+  .tier__badge {
+    position: absolute;
+    top: var(--ds-space-5);
+    right: var(--ds-space-5);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: 4px var(--ds-space-2);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Price block. Serif display digit at 52px, muted cadence label
+   * baseline-aligned to its right. Tagline sits one row below in body
+   * register; lets the price digit own its own line. */
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .tier__price-digit {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-cadence {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__tagline {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    min-height: 2.8em;
+  }
+
+  /* Hairline between price block and feature list. */
+  .tier__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: 0;
+    border: 0;
+  }
+
+  /* Feature list. Each row: small check glyph + body text. The check is
+   * the editorial green; the only chromatic moment besides accent CTA. */
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    flex: 1;
+  }
+  .tier__features li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .tier__features li::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    /* Inline ornament: SVG check glyph, hand-tuned stroke geometry on
+     * the editorial green --ds-success. Not a shared icon atom; this
+     * row's compact 16px scale lives only on pricing-feature rows. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235F8A4E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 3px;
+  }
+
+  /* CTA row. Squared not pill: anthropicPrimary register sits at
+   * sm-radius (4px), keeping the editorial register and refusing the
+   * SaaS pill convention. Recommended tier: primary clay-crimson fill.
+   * Other tiers: ghost-bordered with warm-paper hairline border. */
+  .tier__cta {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      border-color var(--ds-duration-instant) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+  }
+  .tier__cta--primary:hover {
+    background: var(--ds-accent-2);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover {
+    border-color: var(--ds-text);
+  }
+  .tier__cta:active { transform: translateY(1px); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tier__cta, .pricing__toggle-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="pricing" aria-label="Lorem ipsum pricing tiers">
+    <header class="pricing__head">
+      <span class="pricing__kicker">Lorem &middot; pricing</span>
+      <h2 class="pricing__h2">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
+      <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean lacinia ipsum eu tortor consequat dictum.</p>
+      <div class="pricing__toggle" role="group" aria-label="Billing period">
+        <button type="button" class="pricing__toggle-btn" aria-pressed="true">Annual</button>
+        <button type="button" class="pricing__toggle-btn" aria-pressed="false">Monthly</button>
+      </div>
+    </header>
+
+    <div class="pricing__grid" role="list">
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">01 / 05</span>
+        <h3 class="tier__name">Lorem</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$0</span>
+          <span class="tier__price-cadence">/ ipsum</span>
+        </div>
+        <p class="tier__tagline">Adipiscing elit dolor sit amet for everyone.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Lorem ipsum dolor sit amet consectetur.</li>
+          <li>Adipiscing elit vivamus sapien velit.</li>
+          <li>Curabitur nec libero non nisi convallis.</li>
+          <li>Aenean lacinia ipsum eu tortor.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Try Lorem</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">02 / 05</span>
+        <h3 class="tier__name">Ipsum</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$17</span>
+          <span class="tier__price-cadence">/ month</span>
+        </div>
+        <p class="tier__tagline">For dolor sit amet productivity.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Lorem, plus extended usage.</li>
+          <li>Vivamus sit amet sapien velit.</li>
+          <li>Curabitur nec libero non nisi.</li>
+          <li>Aenean lacinia ipsum eu tortor.</li>
+          <li>Praesent vestibulum molestie lacus.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Try Ipsum</button>
+      </article>
+
+      <article class="tier tier--recommended" role="listitem">
+        <span class="tier__badge">Most popular</span>
+        <span class="tier__number">03 / 05</span>
+        <h3 class="tier__name">Dolor</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$100</span>
+          <span class="tier__price-cadence">/ month</span>
+        </div>
+        <p class="tier__tagline">Sit amet consectetur, for getting the most.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Ipsum, with 5x or 20x usage.</li>
+          <li>Higher output limits on every task.</li>
+          <li>Early access to advanced features.</li>
+          <li>Priority access during high-traffic windows.</li>
+          <li>Lacinia ipsum eu tortor consequat.</li>
+          <li>Vestibulum molestie lacus a ultrices sagittis.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--primary">Try Dolor</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">04 / 05</span>
+        <h3 class="tier__name">Amet</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$20</span>
+          <span class="tier__price-cadence">/ seat / month</span>
+        </div>
+        <p class="tier__tagline">For consectetur teams of five to one fifty.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Dolor, with team usage.</li>
+          <li>Central billing and SSO controls.</li>
+          <li>Admin connector and deployment controls.</li>
+          <li>No default model training on team content.</li>
+          <li>Mixed seat flexibility.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Get Amet</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">05 / 05</span>
+        <h3 class="tier__name">Consectetur</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">Custom</span>
+          <span class="tier__price-cadence">contact sales</span>
+        </div>
+        <p class="tier__tagline">For large dolor operating at scale.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Amet, plus org spend limits.</li>
+          <li>Fine-grained role-based access and SCIM.</li>
+          <li>Audit logs and compliance API.</li>
+          <li>Custom retention and IP allowlisting.</li>
+          <li>HIPAA-ready posture.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+      </article>
+
+    </div>
+  </section>
+</body>
+</html>

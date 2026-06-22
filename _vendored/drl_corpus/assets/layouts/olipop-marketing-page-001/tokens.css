@@ -1,0 +1,108 @@
+/*
+ * olipop-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for Olipop's homepage (drinkolipop.com,
+ * devtools computed 2026-05-20). Candy-bright DTC consumer register:
+ * peach-cream page surface, deep forest-green reading ink, WindsorEF
+ * for every display moment, Ano for body and nav, mint and section-pink
+ * as second-tier band fills, yellow as accent / button-fill.
+ *
+ * The slots that actually carry this layout are --ds-bg (cream page
+ * surface beneath sections), --ds-text / --ds-text-strong (forest-green
+ * ink, two shades), --ds-accent (forest-green pill fill and link),
+ * --ds-accent-2 (yellow cookie-accept / promo button), --ds-surface
+ * (cream band fill), --ds-surface-2 (mint and section-pink band fills),
+ * --ds-radius-full (100px pill on every CTA - no small radii), and
+ * --ds-font-display (WindsorEF) + --ds-font-body (Ano).
+ *
+ * Olipop's marketing rhythm: each section is a full-bleed candy-bright
+ * color block. No hairlines, no shadows, no neutrals. Bands stack edge
+ * to edge with no gutter. Color carries the section break work that a
+ * dev-tool system would give to hairlines.
+ */
+:root {
+  /* Colors. Each band sits in its own candy field; the page itself is
+   * cream. Forest green carries all ink and primary CTAs. */
+  --ds-bg:           #FFF6EA;   /* Olipop cream rgb(255,246,234); the page base beneath sections. */
+  --ds-surface:      #FFF6EA;   /* Cream band fill; product carousel + affiliate hero + ambient retailers. */
+  --ds-surface-2:    #FFB8B3;   /* Olipop section-pink rgb(255,184,179); the "real ingredients" two-column band. */
+  --ds-text:         #14433D;   /* Olipop body ink rgb(20,67,61); reads as near-black on cream. */
+  --ds-text-muted:   #0A3128;   /* Olipop sub-label rgb(10,49,40); supporting metadata. */
+  --ds-text-strong:  #034638;   /* Olipop deepest forest green rgb(3,70,56); display headings and CTAs. */
+  --ds-border:       #034638;   /* Forest-green hairline; the secondary-button ring uses this at 1.6px. */
+  --ds-hairline:     #14433D;   /* Subtle inline divider when one is needed; this layout barely uses any. */
+  --ds-accent:       #034638;   /* Forest green CTA fill; the primary pill on cream. */
+  --ds-accent-2:     #FCC100;   /* Olipop yellow rgb(252,193,0); accent button fill (the cookie "Accept All" pill). */
+  --ds-success:      #98E1C3;   /* Olipop mint reads as success in this palette. */
+  --ds-warning:      #FCC100;   /* Yellow doubles as warning. */
+  --ds-error:        #C53A38;   /* Tuned deep red consistent with the warm field; not extracted, native. */
+  --ds-info:         #9CD4D1;   /* Olipop mint rgb(156,212,209); the "Why OLIPOP?" band fill, doubles as info. */
+  --ds-focus-ring:   #FCC100;   /* Yellow against forest-green pill carries focus contrast. */
+
+  /* Type. WindsorEF (Windsor revival) for every display moment, Ano
+   * (Schick Toikka humanist sans) for nav, body, button text. No mono
+   * register on this surface; the Olipop system refuses mono eyebrows
+   * except on a few claim labels (covered by the alphabet, not here). */
+  --ds-font-display: "WindsorEF", "Cooper Std", "Georgia", serif;
+  --ds-font-body:    "Ano", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "WindsorEF", "Cooper Std", "Georgia", serif;
+
+  /* Type scale. Hero H2 binds at 80px on desktop (devtools-confirmed
+   * 2026-05-20: hero "feel good soda sale" h2 = 80px / 80px). Section
+   * heads land at 48-52px. Body in Ano sits at 16-19px. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 40px;  --ds-text-4xl: 52px;
+  --ds-text-5xl: 64px;   --ds-text-6xl: 80px;  --ds-text-7xl: 96px;
+
+  /* Line heights. Windsor display sets at 1.0 (80/80 confirmed). */
+  --ds-leading-tight:   1.0;
+  --ds-leading-snug:    1.15;
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking. Windsor wants less negative tracking than a modern
+   * grotesque; Ano body sits at normal. */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;
+
+  /* Spacing. Olipop bands stack edge to edge; the rhythm is inside the
+   * band (top and bottom padding 64-128px), not between bands. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Every CTA pill clips at 100px (devtools confirmed: cookie
+   * banner Customize + Accept All pills, padding 11px 30px, radius
+   * 100px, border 1.6px). Card surfaces use 12-24px. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   24px;
+  --ds-radius-full: 9999px;
+
+  /* Shadows. Olipop avoids elevation; the secondary-button ring is the
+   * only shadow recipe the surface uses. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1.6px #034638;
+  --ds-shadow-sm:   0 1px 0 rgba(3,70,56,0.15);
+  --ds-shadow-md:   0 6px 20px rgba(3,70,56,0.18);
+  --ds-shadow-lg:   0 18px 40px rgba(3,70,56,0.22);
+  --ds-shadow-2xl:  0 36px 72px rgba(3,70,56,0.28);
+
+  /* Motion */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

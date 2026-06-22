@@ -1,0 +1,348 @@
+<!--
+  Asset: anthropic-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: Anthropic
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (warm paper, ink-on-paper palette register)
+    - type-pairings/serif-mono-editorial-001 (display serif wordmark + sans nav links)
+    - wordmarks/custom-display-001           (serif-tinged custom display wordmark register)
+    - buttons/primary-pill-001               (dark filled pill for Try Claude)
+    - links/nav-link-underline-001           (muted-to-ink nav link, underline-on-hover)
+  Notes:
+    - Flush against viewport top, no detached pill shell. Wordmark left,
+      restrained primary link cluster center, action cluster right with one
+      dark CTA pill (Try Claude). Two of the nav links carry mega-menu
+      panels revealed on hover (CSS-only).
+    - Variable vs inline: every color, type size, spacing step, and radius
+      comes from the contract. Inline ornaments: the mega-menu two-column
+      grid proportions (layout decision specific to this nav) and the EN
+      language toggle glyph.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif Pro stands in for Anthropic's custom serif-tinged
+     display face (Tiempos / Anthropic Serif register). Inter stands in
+     for the Styrene B-register humanist sans used in nav and body. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@500;600&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Flush-top header. Full-width, no detached pill, no shadow at rest.
+   * A single hairline appears under the bar to separate it from the page
+   * surface; restrained register. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--ds-bg) 88%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  .nav__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    height: 64px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Wordmark. Anthropic's wordmark is a custom serif-tinged display face;
+   * here Source Serif Pro stands in. No paired mark on the marketing
+   * surface (the burst monogram appears at app/dock scales, not here). */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+
+  /* Link cluster. Centered between the wordmark and the action cluster. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; }
+
+  /* Top-level link. From atoms/links/nav-link-underline-001. */
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+  }
+
+  /* Mega menu. Hidden until hover or focus on the parent. CSS-only.
+   * The panel uses a card lift via shadow-md, not a hairline border. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    min-width: 480px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column mega-menu grid. The 1fr 1fr split is a
+     * layout decision specific to this nav, not a contract value. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-1);
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Action cluster. EN toggle, Log in (text), Try Claude (dark pill). */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__locale {
+    /* Inline ornament: a single-letter language toggle (EN). Specific to
+     * this nav's right cluster; not a reusable atom. */
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__locale:hover { color: var(--ds-text); }
+
+  .nav__signin {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text); }
+
+  /* Primary pill. From atoms/buttons/primary-pill-001. Dark ink on paper. */
+  .nav__primary {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 8px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--ds-shadow-sm);
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: color-mix(in oklab, var(--ds-accent) 88%, white 12%);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the nav has something to sit on visually. */
+  .page-stub {
+    max-width: 1280px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 800px) {
+    .nav__links, .nav__signin, .nav__locale { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__link, .nav__menu, .nav__caret {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <span>Loremipsum</span>
+      </a>
+
+      <ul class="nav__links">
+        <li><a class="nav__link" href="#">Research</a></li>
+        <li><a class="nav__link" href="#">Economic Futures</a></li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Commitments
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Lorem Policy</span>
+              <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Responsible Scaling</span>
+              <span class="nav__menu-item-sub">Adipiscing elit vivamus sapien.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Usage Policy</span>
+              <span class="nav__menu-item-sub">Curabitur nec libero non nisi.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Transparency</span>
+              <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit.</span>
+            </a>
+          </div>
+        </li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Learn
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Courses</span>
+              <span class="nav__menu-item-sub">Sed do eiusmod tempor incididunt.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Documentation</span>
+              <span class="nav__menu-item-sub">Ut labore et dolore magna aliqua.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Customer Stories</span>
+              <span class="nav__menu-item-sub">Ut enim ad minim veniam quis nostrud.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Cookbook</span>
+              <span class="nav__menu-item-sub">Exercitation ullamco laboris nisi.</span>
+            </a>
+          </div>
+        </li>
+        <li><a class="nav__link" href="#">News</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <a class="nav__locale" href="#" aria-label="Language">EN</a>
+        <a class="nav__signin" href="#">Log in</a>
+        <a class="nav__primary" href="#">Try Loremclaude</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+  </main>
+</body>
+</html>

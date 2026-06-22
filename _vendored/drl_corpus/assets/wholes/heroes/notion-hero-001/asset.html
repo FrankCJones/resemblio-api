@@ -1,0 +1,386 @@
+<!--
+  Asset: notion-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, product-shot-hero
+  Inspired by: Notion
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001                (warm cream surface + ink text)
+    - type-pairings/sans-system-modern-001       (Inter across display + body)
+    - headings/display-tight-001                 (60-72px display H1 on the cream)
+    - buttons/primary-square-001                 (charcoal solid CTA, 8px radius)
+    - cards/warm-paper-rule-001                  (hairline-framed surface for the screenshot)
+    - backgrounds/gradient-mesh-warm-001         (faint warm wash behind the column)
+  Notes:
+    - Native context: notion.com homepage opening viewport, confirmed
+      live via WebFetch 2026-05-20. Warm-paper canvas (#F7F6F3 family),
+      H1 "Meet the night shift." set in Inter at the display-tight scale,
+      a single-paragraph dek beneath, paired primary "Get Notion free"
+      (charcoal solid, 8px radius) and secondary "Request a demo"
+      (hairline-outline) CTAs, then a soft-shadow card frame holding a
+      product screenshot as the dominant visual below the headline
+      column. Tokens cross-checked against the verified Notion atom canon
+      already in the library (warm-paper-rule-001, lowercase-geometric
+      wordmarks/001, inputs/text-underline-001) which carry score A
+      devtools captures from prior waves.
+    - Variable: every color, type, spacing, radius, shadow, motion via
+      tokens.css.
+    - Inline ornament: the product-screenshot stand-in (a Notion-style
+      page mock with sidebar + main column blocks) is rendered with
+      inline CSS because the geometry is whole-specific. The "N" sticker
+      glyph in the topbar wordmark is an inline SVG path. The warm
+      paper texture is a faint inline radial gradient because the
+      gradient stops have no contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the Notion marketing sans (Notion ships Inter
+     plus a GT Walsheim display weight on some surfaces; Inter covers
+     both registers cleanly for the asset). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm-paper canvas with a barely-there radial wash that
+   * softens the top center of the viewport. The wash is inline because
+   * its stop geometry has no contract slot; the base color is the
+   * --ds-bg cream so the wash sits over canon. */
+  body {
+    background:
+      radial-gradient(1200px 600px at 50% -100px, rgba(255, 230, 200, 0.35), transparent 60%),
+      var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: lowercase wordmark with N sticker, sparse nav, sign-in plus
+   * primary CTA. A single hairline separates the chrome from the canvas. */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: the N sticker tile. White paper sits on the cream behind
+   * a 0.8px hairline, with the letter set in a heavier display weight. */
+  .topbar__sticker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--ds-text);
+  }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 880px so the H1 holds a balanced two- or
+   * three-line shape. Generous vertical padding so the headline lands
+   * well below the chrome and the screenshot has room to breathe. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* H1: the display-tight signature on warm paper. clamp scales from
+   * 40px on mobile to 72px on wide viewports. text-wrap: balance keeps
+   * the two- or three-line shape Notion's writers pace to. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 7vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: one sentence at 19px on 1.5 leading, warm gray. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* CTA row: charcoal primary on the left, hairline-outline secondary on
+   * the right. The discipline is "one chromatic moment is the dark
+   * button on the cream page." */
+  .hero__actions {
+    margin-top: var(--ds-space-2);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    padding: 12px 18px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(25, 25, 24, 0.18);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface); }
+
+  /* Product screenshot frame. A soft-shadow card sits below the
+   * headline column. The frame uses --ds-shadow-lg (warm-tinted) and
+   * --ds-radius-lg (12px), the Notion-canon screenshot pose. */
+  .product {
+    width: 100%;
+    max-width: 1100px;
+    margin: var(--ds-space-8) auto var(--ds-space-16);
+    padding: 0 var(--ds-space-8);
+  }
+  .product__frame {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-lg);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 420px;
+  }
+
+  /* Inline ornament: the product-mock sidebar. A column of placeholder
+   * page rows imitating a Notion workspace tree. The geometry is
+   * whole-specific so it stays inline. */
+  .product__sidebar {
+    background: var(--ds-surface-2);
+    border-right: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-5) var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .product__sidebar-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: 6px 8px;
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .product__sidebar-row--active {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--ds-text);
+  }
+  .product__sidebar-emoji {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* Main column of the product mock. A page-cover-style strip at the
+   * top, then a stack of block placeholders below. */
+  .product__main {
+    padding: var(--ds-space-8) var(--ds-space-8) var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .product__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .product__meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+  }
+  /* Inline ornament: block placeholder bars. Three widths cycled to
+   * read as paragraphs without using real copy. */
+  .product__block {
+    height: 12px;
+    border-radius: var(--ds-radius-xs);
+    background: rgba(0, 0, 0, 0.06);
+  }
+  .product__block--80 { width: 80%; }
+  .product__block--65 { width: 65%; }
+  .product__block--90 { width: 90%; }
+  .product__block--40 { width: 40%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .product__frame { grid-template-columns: 1fr; min-height: 320px; }
+    .product__sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <span class="topbar__sticker" aria-hidden="true">L</span>
+      <span>lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Adipiscing</a>
+      <a href="#" class="btn btn--primary">Lorem Free</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <h1 class="hero__title">Lorem ipsum dolor sit amet.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,
+      ut enim ad minim veniam quis nostrud exercitation, all while you sleep.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum Free</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit Amet</a>
+    </div>
+  </section>
+
+  <figure class="product" aria-label="Lorem ipsum product preview">
+    <div class="product__frame">
+      <aside class="product__sidebar" aria-hidden="true">
+        <span class="product__sidebar-row">
+          <span class="product__sidebar-emoji">L</span> Lorem
+        </span>
+        <span class="product__sidebar-row product__sidebar-row--active">
+          <span class="product__sidebar-emoji">I</span> Ipsum Dolor
+        </span>
+        <span class="product__sidebar-row">
+          <span class="product__sidebar-emoji">S</span> Sit
+        </span>
+        <span class="product__sidebar-row">
+          <span class="product__sidebar-emoji">A</span> Amet
+        </span>
+        <span class="product__sidebar-row">
+          <span class="product__sidebar-emoji">C</span> Consectetur
+        </span>
+        <span class="product__sidebar-row">
+          <span class="product__sidebar-emoji">E</span> Elit
+        </span>
+        <span class="product__sidebar-row">
+          <span class="product__sidebar-emoji">T</span> Tempor
+        </span>
+      </aside>
+      <div class="product__main">
+        <h2 class="product__title">Lorem ipsum dolor sit amet</h2>
+        <p class="product__meta">Consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        <span class="product__block product__block--90"></span>
+        <span class="product__block product__block--80"></span>
+        <span class="product__block product__block--65"></span>
+        <span class="product__block product__block--90"></span>
+        <span class="product__block product__block--40"></span>
+        <span class="product__block product__block--80"></span>
+        <span class="product__block product__block--65"></span>
+      </div>
+    </div>
+  </figure>
+</body>
+</html>

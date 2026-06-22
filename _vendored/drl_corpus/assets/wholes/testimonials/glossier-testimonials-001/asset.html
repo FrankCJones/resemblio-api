@@ -1,0 +1,266 @@
+<!--
+  Asset: glossier-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, accent-on-neutral, single-typeface-system
+  Inspired by: Glossier (glossier.com homepage "You smell good" testimonial
+    carousel + glossier.com/products/boy-brow PDP review block)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/pastel-soft-001        (Glossier pink-and-paper register)
+    - type-pairings/sans-system-modern-001 (refined humanist sans)
+    - headings/display-light-001           (centered display heading)
+  Notes:
+    - Glossier ships the same testimonial mechanic in two places: a homepage
+      carousel of short customer quotes for the Glossier You fragrance
+      campaign, and a PDP review-card band on product pages. Both share the
+      same minimal voice - 5 dusty-pink stars above a short quote, first-name
+      attribution at most, no avatars, no verified badges, no review titles,
+      no aggregate count. The pink stars and the paper-on-paper surface do
+      all the work the chrome usually does.
+    - Variable: every color, every type family, the spacing rhythm, the
+      radius scale - all bound to contract tokens. Inline: the 5-star SVG
+      geometry (icons are visual primitives, not token slots), the 3-up
+      desktop breakpoint at 720px (composition geometry), the carousel-dot
+      width transition (one-off motion ornament on the active dot).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>glossier-testimonials-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Glossier Sans is the licensed brand face. Inter is the closest
+     open-license humanist-sans fallback in the same register. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Paper-white page surface. Generous vertical padding so the band reads
+   * as a deliberate editorial pause between sections, not a strip. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-weight: 400;
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  .band {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Centered section header. Sentence-case throughout - Glossier never
+   * uses uppercase here. The kicker is a small sans label, not the mono
+   * eyebrow that other systems use. */
+  .band__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    align-items: center;
+    text-align: center;
+    max-width: 56ch;
+    margin: 0 auto;
+  }
+  .band__kicker {
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .band__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 300;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Grid: 3-up on desktop, single column under 720px. The live homepage
+   * runs this as a carousel; the PDP runs it as a static 3-up. This asset
+   * captures the static 3-up surface and exposes carousel chrome below. */
+  .grid {
+    display: grid;
+    gap: var(--ds-space-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Tile. Paper-on-paper - no border, no shadow, no card chrome. The only
+   * visual lift is generous interior padding and the dusty-pink star row
+   * at the top. Center-aligned so the band reads as editorial composition. */
+  .tile {
+    background: var(--ds-surface);
+    padding: var(--ds-space-6) var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    align-items: center;
+    text-align: center;
+  }
+  /* Alternating tile fill picks up the faint warm tint - used on the
+   * homepage when the carousel pauses on a centered slide. */
+  .tile--tint { background: var(--ds-surface-2); }
+
+  /* Star row. Five filled stars in dusty pink, the only chromatic moment
+   * in the tile. SVG geometry is inline (not a token) - icons are visual
+   * primitives, not contract slots. */
+  .tile__stars {
+    display: flex;
+    gap: var(--ds-space-1);
+    color: var(--ds-accent);
+  }
+  .tile__stars svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  /* Quote. Sans body at the larger reading step. No quote marks - the
+   * absence is the mechanic; the stars carry the social-proof job. */
+  .tile__quote {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    text-wrap: pretty;
+    max-width: 32ch;
+  }
+
+  /* Attribution. First name only, mid-grey, small. Optional in this
+   * pattern - Glossier ships some quotes attributed, some unattributed. */
+  .tile__attr {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Carousel chrome. Circle arrow buttons and dot pagination beneath the
+   * grid. On the live homepage this is visible; on the PDP the static
+   * 3-up swaps the carousel for a "see all reviews" link. */
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-3);
+  }
+  .controls__btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+    background: transparent;
+    color: var(--ds-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .controls__btn:hover { background: var(--ds-surface-2); }
+  .controls__btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .controls__btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+  .dots { display: flex; gap: var(--ds-space-2); align-items: center; }
+  .dots__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-hairline);
+    /* Inline ornament: the active dot expands horizontally rather than
+     * just changing color - one-off motion moment that signals position
+     * without leaning on opacity. Width transition only on this element. */
+    transition: width var(--ds-duration-normal) var(--ds-ease-emphasize),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .dots__dot--active {
+    width: 24px;
+    background: var(--ds-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dots__dot, .controls__btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="band" aria-label="Lorem ipsum customer testimonials">
+    <header class="band__head">
+      <p class="band__kicker">Lorem ipsum dolor</p>
+      <h2 class="band__h2">Sit amet consectetur adipiscing elit sed do eiusmod.</h2>
+    </header>
+
+    <div class="grid" role="list">
+      <article class="tile" role="listitem">
+        <div class="tile__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="tile__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</p>
+        <p class="tile__attr">Alicia</p>
+      </article>
+
+      <article class="tile tile--tint" role="listitem">
+        <div class="tile__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="tile__quote">Curabitur nec libero non nisi convallis fringilla et bibendum velit aenean.</p>
+        <p class="tile__attr">Morgan</p>
+      </article>
+
+      <article class="tile" role="listitem">
+        <div class="tile__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="tile__quote">Vivamus sit amet sapien velit sed vitae lacus eu mi tincidunt finibus.</p>
+        <p class="tile__attr">Sasha</p>
+      </article>
+    </div>
+
+    <div class="controls" aria-label="Carousel pagination">
+      <button class="controls__btn" type="button" aria-label="Previous testimonial">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4L7.5 12l8 8 1.4-1.4L10.3 12l6.6-6.6z"/></svg>
+      </button>
+      <div class="dots" role="tablist" aria-label="Slide selector">
+        <span class="dots__dot dots__dot--active" role="tab" aria-selected="true"></span>
+        <span class="dots__dot" role="tab" aria-selected="false"></span>
+        <span class="dots__dot" role="tab" aria-selected="false"></span>
+      </div>
+      <button class="controls__btn" type="button" aria-label="Next testimonial">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4L7.1 5.4 13.7 12l-6.6 6.6L8.5 20l8-8z"/></svg>
+      </button>
+    </div>
+  </section>
+</body>
+</html>

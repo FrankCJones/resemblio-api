@@ -1,0 +1,156 @@
+/*
+ * webflow-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Webflow's /blog long-form posts.
+ * Inherits the Webflow system tokens captured by the precedent alphabet
+ * (assets/alphabets/webflow), which was verified against the live
+ * marketing-main CSS bundle on 2026-05-20. Light-mode canvas (#FFFFFF),
+ * near-black ink (#080808), and a single Webflow Blue (#146EF5) chromatic
+ * role that does inline links, the category kicker, and focus rings.
+ * Gray-600 (#5A5A5A) carries dek, byline, and date. Hairlines (gray-100
+ * #F0F0F0) do structural chrome - no shadows at rest on the article
+ * surface.
+ *
+ * Sources inspected via WebFetch on 2026-05-20:
+ *   - https://webflow.com/blog/introducing-webflow-aeo
+ *   - https://webflow.com/blog/simplified-plans-and-updated-pricing-2026
+ * Article header sequence confirmed across both: category kicker ("Inside
+ * Webflow") above sans H1, dek lead paragraph in muted gray, byline with
+ * author name plus role ("Caroline Ren, Product Marketing Lead"), publish
+ * date plus last-updated date, table-of-contents rail, body with H2
+ * subsections, customer-testimonial blockquote callouts, inline links in
+ * Webflow Blue.
+ *
+ * Free-font analog in `asset.html`:
+ *   - Inter (Google Fonts) substitutes for WF Visual Sans Variable; both
+ *     are humanist sans with weight axes and screen-tuned metrics. The
+ *     register reads similarly at the article scale used here.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Webflow light surface system. Blue 9 (#146EF5) is the single
+   * chromatic moment - inline links, category kicker, focus ring. Gray
+   * scale runs from the white canvas through gray-100 (#F0F0F0) hairlines
+   * and gray-600 (#5A5A5A) muted text to the near-black #080808 ink.
+   */
+  --ds-bg:           #FFFFFF;   /* Webflow background light; pure white canvas. */
+  --ds-surface:      #FFFFFF;   /* Card surface; flat against bg with hairline border. */
+  --ds-surface-2:    #F0F0F0;   /* Webflow secondary-background; gray-100 callout panel. */
+  --ds-text:         #080808;   /* Webflow text; near-black, not pure #000. */
+  --ds-text-muted:   #5A5A5A;   /* Webflow text-secondary; gray-600 for dek, byline, date. */
+  --ds-text-strong:  #080808;   /* Display ink matches body ink; no separate emphasis. */
+  --ds-border:       #D8D8D8;   /* Webflow gray-200; visible card edge. */
+  --ds-hairline:     #F0F0F0;   /* Gray-100; section breaks and faint dividers. */
+  --ds-accent:       #146EF5;   /* Webflow Blue; inline links, kicker, focus ring. */
+  --ds-accent-2:     #0055D4;   /* Webflow Blue-600; link hover / pressed state. */
+  --ds-success:      #00C875;   /* Operational green; reserved status indicator. */
+  --ds-warning:      #F5A623;   /* Amber; reserved status indicator. */
+  --ds-error:        #EE0000;   /* Red; reserved status indicator. */
+  --ds-info:         #146EF5;   /* Matches accent. */
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * WF Visual Sans Variable owns both display and body across the blog
+   * surface. Inconsolata is loaded for inline code spans inside rich-text
+   * article bodies (it appears in the article-content CSS scope).
+   * Arial is the documented fallback when the variable woff2 fails.
+   */
+  --ds-font-display: "WF Visual Sans Variable", "Inter", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", "Inter", Arial, system-ui, sans-serif;
+  --ds-font-mono:    "Inconsolata", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --ds-font-accent:  "WF Visual Sans Variable", "Inter", Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Article H1 lands at the H1 step (around 64px desktop, fluid down to
+   * 44px mobile). Dek paragraph reads at paragraph-lg (20px). Body anchors
+   * at 16px (the Webflow base reading size) with a 1.6 leading. Subheads
+   * (h2) inside body sit at H3 step (40px desktop) - the same step Webflow
+   * uses for inside-content section heads on /blog posts.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;  /* Category kicker, byline meta. */
+  --ds-text-sm:   14px;    /* Last-updated stamp, helper. */
+  --ds-text-base: 16px;    /* Body reading register. */
+  --ds-text-lg:   20px;    /* Dek lead paragraph. */
+  --ds-text-xl:   32px;    /* Major callout headline (rare). */
+  --ds-text-2xl:  40px;    /* H2 subhead inside body. */
+  --ds-text-3xl:  56px;
+  --ds-text-4xl:  64px;    /* Article H1 desktop ceiling. */
+  --ds-text-5xl:  80px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;
+
+  /* ---------- Line heights ----------
+   * H1 holds at 1.04 (the system's tightest display ratio). Body at 1.6
+   * is the Webflow paragraph standard - more generous than Vercel's 1.6
+   * looks at 18px because Webflow runs body at 16px.
+   */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.6;
+  --ds-leading-relaxed: 1.5;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * H1 takes -0.01em; everything else sits at 0em. The face has enough
+   * personality that tracking stays neutral on body and subheads.
+   */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px grid mapped to Webflow's rem-based rhythm. Paragraph rhythm at
+   * space-5 (24px). Header column ends with space-10 (64px) before the
+   * body. H2 subheads carry space-10 above and space-5 below.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Subtle rounding throughout. Callout panel takes md (8px); avatar
+   * monogram takes full (circle). Webflow never reaches for pills on
+   * article chrome.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;     /* Callout panel, code chip. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;  /* Avatar monogram circle. */
+
+  /* ---------- Shadows ----------
+   * Hairline-driven chrome. No shadows at rest on article surfaces.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* ---------- Motion ----------
+   * Standard cubic-bezier for hover; 150ms for link color, 300ms for
+   * larger state changes (matches the homepage CSS observed in the
+   * alphabet capture).
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

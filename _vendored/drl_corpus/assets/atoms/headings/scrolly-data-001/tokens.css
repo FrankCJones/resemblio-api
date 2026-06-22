@@ -1,0 +1,129 @@
+/*
+ * scrolly-data-001 tokens
+ *
+ * Native tokens for an editorial scrollytelling-essay display heading,
+ * inspired by The Pudding's data essays. The heading is the doorway:
+ * oversized sans display set on a warm off-white surface, with each
+ * section title reading as a self-contained claim ("Every Adjective
+ * has a Fingerprint", "Comparisons as Predictable as the Sunrise").
+ *
+ * Variables: colors, type families, the modular type scale, leading,
+ * tracking, spacing. The heading itself binds to --ds-text-5xl for H1
+ * and --ds-text-3xl for H2; the H3 binds to --ds-text-xl.
+ *
+ * Inline ornament: a one-time text-wrap balance hint inside asset.html
+ * (asset-specific layout tuning, not a token).
+ */
+:root {
+  /* ---------- Colors ----------
+   * Warm paper canvas, near-black ink, single rust accent for the rare
+   * emphasized word. The palette comes from The Pudding's editorial
+   * register: not cold neutral, not magazine-glossy, mid-warmth.
+   */
+  --ds-bg:           #F6F2EC;   /* Warm off-white paper observed on Pudding essay surfaces. */
+  --ds-surface:      #FBF8F3;   /* One step lighter for inline callout cards. */
+  --ds-surface-2:    #FFFFFF;   /* Two steps lighter for floating popovers above the page. */
+  --ds-text:         #1A1A1A;   /* Near-black ink; not pure #000 to soften long-read pages. */
+  --ds-text-muted:   #6E6A63;   /* Warm-grey for bylines, captions, kicker text. */
+  --ds-text-strong:  #0A0A0A;   /* Reserved emphasis; pure black for the rare strong run. */
+  --ds-border:       #D9D4CA;   /* Warm taupe border for cards and pull-quote frames. */
+  --ds-hairline:     #E8E2D5;   /* Subtle warm divider; used between essay sections. */
+  --ds-accent:       #C0492C;   /* Rust orange; Pudding's editorial accent for the rare em word. */
+  --ds-accent-2:     #2B5F8A;   /* Steel blue; the data-viz secondary used in inline charts. */
+  --ds-success:      #4F7A3A;   /* Olive green; warm cousin to the palette rather than spec green. */
+  --ds-warning:      #C68A1F;   /* Amber ochre. */
+  --ds-error:        #A1322C;   /* Brick red; sits with the rust accent rather than fighting it. */
+  --ds-info:         #2B5F8A;   /* Matches accent-2; information shares the data-viz blue. */
+  --ds-focus-ring:   #C0492C;   /* Rust ring for keyboard focus; brand-distinctive over generic blue. */
+
+  /* ---------- Type families ----------
+   * The Pudding's heading register reads as a modern sans with broad
+   * apertures and slightly humanist warmth. We declare a stack that
+   * resolves to Inter or close cousins; the asset binds the H1 to the
+   * display family and the H3 kicker to the mono utility face.
+   */
+  --ds-font-display: "Inter", "Söhne", "Inter Tight", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", "Söhne", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Modular scale tuned for editorial display. H1 sits at 72px (5xl);
+   * H2 at 42px (3xl); H3 at 24px (xl); kicker at 12px (xs).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 18px;   /* Wider reading default than dev-tool sites; editorial register. */
+  --ds-text-lg:   21px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Display sits at 1.08 (snug-to-tight); body at 1.55 for editorial
+   * reading; headlines balance air against impact.
+   */
+  --ds-leading-tight:   1.08;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.55;
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Mild negative tracking on display (-0.015em) is editorial, not dev-tool
+   * tight. Kicker uses wider tracking for the mono uppercase eyebrow.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base; editorial sites favor generous section spacing.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Soft warm shadows; the palette is paper, so shadows are subtle ink.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(26,26,26,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(26,26,26,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(26,26,26,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(26,26,26,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(26,26,26,0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

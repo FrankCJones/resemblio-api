@@ -1,0 +1,145 @@
+/*
+ * github-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by GitHub's editorial blog at github.blog.
+ * Tokens follow GitHub's Primer design system surfaces (the same vocabulary
+ * github.com itself uses): white canvas, Primer fg-default (#1F2328) for
+ * body ink, Primer fg-muted (#59636E) for metadata, Primer accent blue
+ * (#0969DA) for inline links, Primer success green (#1F883D) for the
+ * primary CTA register (the Octocat-green moment), Primer border-default
+ * (#D1D9E0) for hairlines.
+ *
+ * Sources inspected via WebFetch on 2026-05-20:
+ *   https://github.blog/news-insights/product-news/take-your-local-github-sessions-anywhere/
+ *   https://github.blog/engineering/architecture-optimization/from-latency-to-instant-modernizing-github-issues-navigation-performance/
+ * Header sequence verified across both posts: breadcrumb category trail
+ * ("Home / News & insights / Product"), large sans H1, one-paragraph dek,
+ * byline with author(s) + ISO date + reading-time, single-column body
+ * with hero banner illustration, h2/h3 subheads, occasional code block
+ * and pull-quote, related-posts tail. Primer color values are the
+ * GitHub.com canon; the blog re-skins WordPress with Primer tokens.
+ *
+ * Free-font analog in `asset.html`:
+ *   - Inter (Google Fonts) substitutes for "Mona Sans" / system font stack.
+ *     GitHub ships with a system-first stack and Mona Sans as the brand
+ *     display face; Inter behaves close enough at all steps used here.
+ *   - JetBrains Mono substitutes for "Monaspace" / ui-monospace on code.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Primer light surface system. White canvas with fg-default ink, one
+   * blue accent for inline links and one green accent for primary CTA
+   * surfaces. Hairlines (border-default) carry every structural break.
+   */
+  --ds-bg:           #FFFFFF;   /* Primer canvas-default; the page. */
+  --ds-surface:      #F6F8FA;   /* Primer canvas-subtle; code blocks, callouts. */
+  --ds-surface-2:    #EAEEF2;   /* Primer canvas-inset; nested code chrome. */
+  --ds-text:         #1F2328;   /* Primer fg-default; H1 and body ink. */
+  --ds-text-muted:   #59636E;   /* Primer fg-muted; dek, byline, breadcrumb. */
+  --ds-text-strong:  #0A0C10;   /* Primer fg-on-emphasis paired; deepest emphasis. */
+  --ds-border:       #D1D9E0;   /* Primer border-default; component borders. */
+  --ds-hairline:     #D1D9E0;   /* Same border-default; byline rule, section break. */
+  --ds-accent:       #0969DA;   /* Primer accent-fg; inline link, breadcrumb hover. */
+  --ds-accent-2:     #218BFF;   /* Primer accent-emphasis hover; link lift. */
+  --ds-success:      #1F883D;   /* Primer success-fg; primary CTA register (Octocat green). */
+  --ds-warning:      #9A6700;   /* Primer attention-fg. */
+  --ds-error:        #CF222E;   /* Primer danger-fg. */
+  --ds-info:         #0969DA;   /* Matches accent. */
+  --ds-focus-ring:   #0969DA;   /* Primer accent-fg; brand focus ring. */
+
+  /* ---------- Type families ----------
+   * GitHub ships with a system-first stack on github.com and the blog,
+   * with Mona Sans introduced as the brand display face on top of that.
+   * Inter is the closest free-foundry analog. Monaspace / ui-monospace
+   * for code; JetBrains Mono is the free-font analog used here.
+   */
+  --ds-font-display: "Mona Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica", "Arial", sans-serif;
+  --ds-font-body:    "Mona Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica", "Arial", sans-serif;
+  --ds-font-mono:    "Monaspace Neon", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --ds-font-accent:  "Monaspace Neon", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* ---------- Type sizes ----------
+   * GitHub blog H1 sits at ~48px on desktop; dek paragraph at 20-22px;
+   * body at 18px reading register. Breadcrumb and byline at 14px.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Reading-time chip. */
+  --ds-text-sm:   14px;   /* Breadcrumb, byline. */
+  --ds-text-base: 18px;   /* Body reading register. */
+  --ds-text-lg:   22px;   /* Dek paragraph. */
+  --ds-text-xl:   28px;   /* h2 subhead inside body. */
+  --ds-text-2xl:  36px;   /* h2 major heading. */
+  --ds-text-3xl:  48px;   /* Article H1. */
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * H1 at 1.1 on the 48px display. Body at 1.6 sits in the technical-
+   * reading register; one step above SaaS 16/1.5 default.
+   */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * GitHub's editorial uses near-neutral tracking; H1 takes -0.02em to
+   * hold the shape, breadcrumb gets +0.04em to read as a meta label.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Paragraph rhythm at space-5 (24px); section heads carry
+   * space-8 (48px) above; header column ends with space-8 before body.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Primer signature radii. Code blocks and callouts adopt md (6px);
+   * inline code chips adopt sm.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Primer uses hairlines and inset chrome over shadows. Shadow scale is
+   * kept for focus glows and any raised popovers.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 0 rgba(31,35,40,0.04);
+  --ds-shadow-md:   0 3px 6px rgba(140,149,159,0.15);
+  --ds-shadow-lg:   0 0 0 3px rgba(9,105,218,0.30);   /* Primer focus glow. */
+  --ds-shadow-2xl:  0 8px 24px rgba(140,149,159,0.20);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

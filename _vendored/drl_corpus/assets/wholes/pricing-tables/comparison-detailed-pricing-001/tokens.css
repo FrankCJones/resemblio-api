@@ -1,0 +1,87 @@
+/*
+ * comparison-detailed-pricing-001 tokens
+ *
+ * Whole pricing-tables asset modelled on Vercel's /pricing page: three tier
+ * cards stacked above a dense feature-comparison table grouped by category.
+ * Light surface, hairline borders, near-black text. Geist family with
+ * Geist Mono carrying the small uppercase row kickers.
+ *
+ * Composition_atoms in meta.json:
+ *   color-groups/paper-ink-zero-001       (light surface, near-black text)
+ *   type-pairings/grotesk-mono-001        (Geist-like sans + mono for labels)
+ *   cards/hairline-flat-001               (card frame: hairline border, no shadow)
+ *   buttons/primary-square-001            (small-radius primary CTA on featured tier)
+ *   buttons/ghost-bordered-001            (secondary CTAs on unfeatured tiers)
+ *   badges/status-pill-001                (the "Most popular" pill on the featured card)
+ *   tables/docs-comparison-table-001      (the feature-comparison table layout)
+ *   headings/display-tight-001            (tier name + price display)
+ *   kickers/mono-eyebrow-001              (mono section kickers in the comparison table)
+ *   icons/stroke-line-uniform-001         (check / dash row glyphs)
+ *   dividers/hairline-rule-001            (category-group separator inside the table)
+ */
+:root {
+  /* Colors. Light surface from Vercel pricing; near-black foreground. */
+  --ds-bg:           #FAFAFA;   /* Vercel pricing body background; warm-cool-neutral light. */
+  --ds-surface:      #FFFFFF;   /* Cards sit a half-step above the page so hairlines read. */
+  --ds-surface-2:    #F4F4F5;   /* Comparison-table category header band; subtle zebra. */
+  --ds-text:         #171717;   /* Geist near-black. Body, prices, plan names. */
+  --ds-text-muted:   #737373;   /* Captions, "per month" suffix, table value text. */
+  --ds-text-strong:  #0A0A0A;   /* Headline emphasis. Slightly stronger than body. */
+  --ds-border:       #E5E5E5;   /* Card outlines; comparison-table cell borders. */
+  --ds-hairline:     rgba(0,0,0,0.08); /* Vercel hairline alpha; table rule between groups. */
+  --ds-accent:       #0070F3;   /* Geist blue. Featured-tier CTA, focused inputs. */
+  --ds-accent-2:     #171717;   /* Inverted-as-accent: the featured CTA is near-black in many Vercel surfaces. */
+  --ds-success:      #17A34A;   /* Check-glyph color for included features. */
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #0070F3;
+  --ds-focus-ring:   #0070F3;   /* Geist blue at full saturation for keyboard focus. */
+
+  /* Type. Geist family with Geist Mono for row labels. System fallback to
+   * Inter so the asset renders standalone without a webfont network call. */
+  --ds-font-display: "Geist", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Geist", "Inter", sans-serif;
+
+  /* Modular scale. Tier name lands at 2xl; price at 4xl; table cells at sm. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.05;    --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;    --ds-leading-relaxed: 1.65;   --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.025em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.16em;
+
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii: cards use md (8px); CTAs use sm (6px); pills use full. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Vercel pricing cards do not elevate; borders carry definition.
+   * sm reserved for the featured card's optional lift on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:  0 4px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:  0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl: 0 32px 64px rgba(0,0,0,0.18);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

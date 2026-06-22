@@ -1,0 +1,127 @@
+/*
+ * mailchimp-pricing-page-001 tokens
+ *
+ * Native token values for the Mailchimp pricing-page skeleton, inspired
+ * by mailchimp.com/pricing. The pricing surface rides the Mailchimp
+ * marketing chrome: paper-white body, near-black ink, signature
+ * Cavendish Yellow (#FFE01B) as the primary accent on CTAs and the
+ * recommended-tier banner, sentence-case display in Cooper Light (the
+ * Mailchimp serif/grotesque hybrid), Helvetica-family body. Subtle
+ * rounded corners on cards (8-12px), never full pills on tier cards
+ * themselves (pills appear on CTAs and badges only).
+ *
+ * WebFetch returned section order (nav, hero, tier card grid Free /
+ * Essentials / Standard / Premium, comparison feature table grouped
+ * into named category bands, trust-badge strip, onboarding callout,
+ * nonprofit discount callout, pay-as-you-go callout, 10-item FAQ
+ * accordion, six-column mega-footer with Mailchimp Presents promo),
+ * confirmed the four tier names and prices, confirmed Premium as the
+ * recommended tier with a banner badge, but stripped inline computed
+ * styles. Chrome MCP was not available this session. Numeric token
+ * values inherit the Mailchimp marketing convention from
+ * systems/mailchimp/system.json design_principles (cavendish-yellow-
+ * signature-accent, subtle-rounded-corners-not-pills, neutral-black-
+ * ink-on-paper-white, feature-tile-density-with-warm-whitespace) and
+ * public brand documentation rather than from devtools.
+ *
+ * Layout-specific notes: the page container sits at 1280px; the
+ * comparison table is full container-width with a sticky tier-header
+ * row. Tier cards are four equal-width cards on desktop with the
+ * Premium card marked by a Cavendish Yellow banner badge above the
+ * card. Card radii at md (10px) per the subtle-rounded-corners
+ * principle. CTA pills full radius.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white pricing surface; matches the Mailchimp marketing pages. */
+  --ds-surface:      #FAFAFA;   /* Half-step lift; tier card backgrounds, callout strips. */
+  --ds-surface-2:    #F6F6F4;   /* Tinted surface; comparison-table category-band header strips, warm not cool. */
+  --ds-text:         #241C15;   /* Mailchimp peppercorn ink; body reading and feature-row labels. */
+  --ds-text-muted:   #6B6259;   /* Tier helper text, FAQ helper, table cell metadata. */
+  --ds-text-strong:  #000000;   /* Page H1 and tier price display. */
+  --ds-border:       #E4E0D8;   /* Card and table edges; warm hairline not cool gray. */
+  --ds-hairline:     rgba(36, 28, 21, 0.10);  /* Warm hairline alpha; table row rules, section dividers. */
+  --ds-accent:       #FFE01B;   /* Cavendish Yellow; primary CTA fill, recommended-tier banner. */
+  --ds-accent-2:     #007C89;   /* Mailchimp deep teal; inline link color and secondary emphasis. */
+  --ds-success:      #007A33;
+  --ds-warning:      #F0A202;
+  --ds-error:        #DA1E28;
+  --ds-info:         #007C89;
+  --ds-focus-ring:   #FFE01B;   /* Cavendish Yellow at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Cooper Light (the Mailchimp humanist serif/grotesque display face) for
+   * display moments; Graphik (Helvetica-family body) for reading; mono for
+   * tier labels and table metadata. Open fallbacks so the asset renders
+   * standalone without licensed faces.
+   */
+  --ds-font-display: "Cooper Light", "Cooper LT Std", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Graphik", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --ds-font-mono:    "Graphik Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Cooper Light", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono tier label, table cell unit, FAQ meta. */
+  --ds-text-sm:   14px;   /* Tier feature list, table cell text, FAQ body. */
+  --ds-text-base: 16px;   /* Body reading default. */
+  --ds-text-lg:   20px;   /* Tier name display, dek. */
+  --ds-text-xl:   24px;   /* FAQ question, table category-band heading. */
+  --ds-text-2xl:  32px;   /* Section heads (Compare plans, FAQ). */
+  --ds-text-3xl:  44px;   /* Tier price display. */
+  --ds-text-4xl:  56px;   /* Pricing hero H1. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* Hero H1 and tier price; serif display needs slightly looser than Geist. */
+  --ds-leading-snug:    1.25;   /* Section heads, tier name. */
+  --ds-leading-normal:  1.45;   /* Tier feature list. */
+  --ds-leading-relaxed: 1.6;    /* FAQ answer body. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em; /* Cooper Light display; gentler squeeze than Geist sans. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono tier label, comparison category band. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Subtle-rounded-corners principle: tier cards and comparison table at md
+   * (10px); pills for CTAs and recommended-tier banner badge only.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   10px;   /* Tier cards, comparison-table outer chrome. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px; /* CTA pills, recommended-tier banner. */
+
+  /* ---------- Shadows ----------
+   * Mailchimp uses a soft elevation cue on hovered tier cards. Resting
+   * cards are flat with a hairline border on a warm tinted surface.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(36,28,21,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(36,28,21,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(36,28,21,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(36,28,21,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(36,28,21,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

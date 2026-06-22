@@ -1,0 +1,420 @@
+<!--
+  Asset: substack-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet
+  Inspired by: Substack
+  Notes:
+    - Four short link columns (Discover, Creators, Company, Resources) sit
+      on a dark inverted band at page bottom. The warm-paper writing
+      surface above flips to near-black here; that inversion is the
+      Substack chrome signature.
+    - Signature orange logomark appears once, anchoring the app-badge row
+      above the legal strip. Column links stay muted gray and lift to
+      white on hover. A single hairline rule splits the link grid from
+      the meta-and-app row, and a second rule splits the meta row from
+      the bottom legal strip.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-footer-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter is the open-licensed analog of Substack's system sans stack.
+     Substack ships a custom serif for editorial moments; the footer
+     itself is UI register and binds to sans. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page background is the same dark band as the footer so the asset
+   * reads as a chrome basement; the warm writing surface above is not
+   * part of this asset's scope. Demo only. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* The footer band. Substack's vertical breathing room is generous;
+   * the dark surface needs the air to read as deliberate, not cramped. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-6);
+    color: var(--ds-text-muted);
+  }
+
+  .footer__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Upper grid: four link columns. Collapses to 2-up at tablet and
+   * stacks on mobile. Four (not six) is the Substack count; link copy
+   * is short enough that the columns breathe. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 880px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Column header: small body sans, sentence case (Discover, Creators,
+   * Company, Resources). Heavier weight, white on the dark band. */
+  .footer__col-header {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+
+  /* Footer link: muted gray at rest, lifts to pure white on hover.
+   * No underline at rest; underline-on-hover is optional and reserved
+   * for keyboard focus. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-text); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  /* Hairline: single rule across the band. Almost invisible against
+   * the dark surface; it functions as a paragraph break, not a wall. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* App row: the signature orange logomark anchors the left, app-store
+   * badges and a tagline anchor the right. The orange appears once. */
+  .footer__app {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--ds-space-6);
+    align-items: center;
+  }
+  @media (max-width: 720px) {
+    .footer__app {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-5);
+    }
+  }
+
+  /* Logomark: the orange Substack S inside a rounded-square container.
+   * Inline ornament: the container holds the only saturated color in
+   * the entire footer; the surrounding chrome is monochrome. */
+  .footer__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    text-decoration: none;
+    color: var(--ds-text);
+  }
+  .footer__mark-glyph {
+    /* Inline ornament: 36px rounded-square holding the Substack S.
+     * The glyph is the brand; the orange fill is the brand color. */
+    width: 36px;
+    height: 36px;
+    background: var(--ds-accent);
+    border-radius: 6px;     /* one-off; the mark's specific corner. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: 22px;        /* one-off; glyph is its own unit. */
+    line-height: 1;
+  }
+  .footer__mark-text {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+
+  /* App right block: tagline + two store badges. */
+  .footer__app-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  @media (max-width: 720px) {
+    .footer__app-right { justify-content: flex-start; }
+  }
+
+  .footer__tagline {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  .footer__badges {
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .footer__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: 8px 14px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-text);
+    text-decoration: none;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__badge:hover {
+    background: var(--ds-surface-2);
+    border-color: rgba(255, 255, 255, 0.20);
+  }
+  .footer__badge svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  /* Social row: small mono-toned icon cluster. Substack's footer-era
+   * social block is restrained; icons sit muted, lift to white on hover. */
+  .footer__social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    gap: var(--ds-space-3);
+  }
+  .footer__social a {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__social a:hover { color: var(--ds-text); }
+  .footer__social svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: currentColor;
+  }
+
+  /* Legal strip: copyright on the left, horizontal list of legal
+   * links on the right. Smallest type in the asset; warm gray. */
+  .footer__legal {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (max-width: 720px) {
+    .footer__legal {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-3);
+    }
+  }
+
+  .footer__copyright {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  .footer__legal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    justify-content: flex-end;
+  }
+  @media (max-width: 720px) {
+    .footer__legal-list { justify-content: flex-start; }
+  }
+
+  .footer__legal-link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__legal-link:hover { color: var(--ds-text); }
+  .footer__legal-link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link,
+    .footer__legal-link,
+    .footer__social a,
+    .footer__badge { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <div class="footer__grid">
+        <nav aria-label="Lorem discovery">
+          <p class="footer__col-header">Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Ipsum dolor</a></li>
+            <li><a class="footer__link" href="#">Sit amet</a></li>
+            <li><a class="footer__link" href="#">Consectetur reader</a></li>
+            <li><a class="footer__link" href="#">Top in adipiscing</a></li>
+            <li><a class="footer__link" href="#">Top in elit</a></li>
+            <li><a class="footer__link" href="#">Top in tempor</a></li>
+            <li><a class="footer__link" href="#">Top in incididunt</a></li>
+            <li><a class="footer__link" href="#">Top in labore</a></li>
+            <li><a class="footer__link" href="#">Topics</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Ipsum creators">
+          <p class="footer__col-header">Ipsum</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Switch to lorem</a></li>
+            <li><a class="footer__link" href="#">Get started</a></li>
+            <li><a class="footer__link" href="#">Go paid</a></li>
+            <li><a class="footer__link" href="#">For video</a></li>
+            <li><a class="footer__link" href="#">For podcasts</a></li>
+            <li><a class="footer__link" href="#">For bloggers</a></li>
+            <li><a class="footer__link" href="#">For authors</a></li>
+            <li><a class="footer__link" href="#">Lorem vs. ipsum</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Dolor company">
+          <p class="footer__col-header">Dolor</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">About</a></li>
+            <li><a class="footer__link" href="#">Help</a></li>
+            <li><a class="footer__link" href="#">Jobs</a></li>
+            <li><a class="footer__link" href="#">Blog</a></li>
+            <li><a class="footer__link" href="#">Vulnerability policy</a></li>
+            <li><a class="footer__link" href="#">Contact</a></li>
+            <li><a class="footer__link" href="#">Sitemap</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Sit-amet resources">
+          <p class="footer__col-header">Sit amet</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Resource center</a></li>
+            <li><a class="footer__link" href="#">Guide to going paid</a></li>
+            <li><a class="footer__link" href="#">Help center</a></li>
+            <li><a class="footer__link" href="#">Community programs</a></li>
+            <li><a class="footer__link" href="#">Brand assets</a></li>
+            <li><a class="footer__link" href="#">Features</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__app">
+        <a class="footer__mark" href="#" aria-label="Lorem ipsum home">
+          <span class="footer__mark-glyph" aria-hidden="true">L</span>
+          <span class="footer__mark-text">Lorem</span>
+        </a>
+
+        <div class="footer__app-right">
+          <p class="footer__tagline">Lorem ipsum is the home for great culture</p>
+          <ul class="footer__badges" aria-label="Mobile apps">
+            <li><a class="footer__badge" href="#" aria-label="Lorem on iOS">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 12.3c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.3-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.7 1.1 9 .7 1.1 1.6 2.3 2.7 2.3 1.1 0 1.5-.7 2.9-.7 1.3 0 1.7.7 2.9.7 1.2 0 2-1.1 2.7-2.2.5-.7.9-1.5 1.2-2.3-1.4-.5-2.3-1.9-2.3-3.4zM14.4 5.6c.6-.7 1-1.7.9-2.7-.8.1-1.8.6-2.4 1.3-.5.6-1 1.6-.9 2.6.9.1 1.8-.5 2.4-1.2z"/></svg>
+              App Store
+            </a></li>
+            <li><a class="footer__badge" href="#" aria-label="Lorem on Android">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 20.7l8.4-8.7-8.4-8.7c-.4.4-.6.9-.6 1.5v14.4c0 .6.2 1.1.6 1.5zM14.3 14.3l2.3 2.3-11 6.2c-.2.1-.4.2-.7.2l9.4-8.7zM17.7 12l3.4 1.9c.7.4.7 1.4 0 1.8l-3.1 1.8-2.6-2.6L17.7 12zM5.6 1.4c.2 0 .5.1.7.2l11 6.2-2.3 2.3L5.6 1.4z"/></svg>
+              Google Play
+            </a></li>
+          </ul>
+          <ul class="footer__social" aria-label="Social">
+            <li><a href="#" aria-label="Lorem on X">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.146 1.5h2.21l-4.83 5.52L15.2 14.5h-4.45l-3.49-4.56L3.27 14.5H1.06l5.17-5.91L0.6 1.5h4.56l3.15 4.17 3.84-4.17zm-.78 11.65h1.22L4.7 2.78H3.39l7.98 10.37z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.42.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.37 1.06.42 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.26 1.8-.42 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.37-2.23.42-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.26-2.23-.42-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.37-1.06-.42-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.42-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.37 2.23-.42 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.6 5.6 0 0 0-2.03 1.32A5.6 5.6 0 0 0 .79 3.98C.49 4.74.29 5.62.23 6.89.17 8.17.16 8.58.16 11.84s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.4 2.13a5.6 5.6 0 0 0 2.03 1.32c.76.3 1.64.5 2.91.56C8.33 23.79 8.74 23.8 12 23.8s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.6 5.6 0 0 0 2.03-1.32 5.6 5.6 0 0 0 1.32-2.03c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.6 5.6 0 0 0-1.32-2.03A5.6 5.6 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0zm0 5.84a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 9.9a3.9 3.9 0 1 1 0-7.8 3.9 3.9 0 0 1 0 7.8zm7.6-10.16a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on Facebook">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.23 2.69.23v2.97h-1.51c-1.5 0-1.96.93-1.96 1.88v2.26h3.33l-.53 3.49h-2.8V24C19.6 23.1 24 18.1 24 12.07z"/></svg>
+            </a></li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__legal">
+        <p class="footer__copyright">&copy; Lorem Ipsum Inc.</p>
+        <ul class="footer__legal-list">
+          <li><a class="footer__legal-link" href="#">Privacy</a></li>
+          <li><a class="footer__legal-link" href="#">Terms</a></li>
+          <li><a class="footer__legal-link" href="#">Accessibility</a></li>
+          <li><a class="footer__legal-link" href="#">Collection notice</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

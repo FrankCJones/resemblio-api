@@ -1,0 +1,408 @@
+<!--
+  Asset: airtable-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, single-cta-hero, story-card-grid, mono-eyebrow, mega-footer
+  Inspired by: Airtable (airtable.com/newsroom, the live company surface)
+  Notes:
+    - Company-page skeleton in the Airtable register: paper-white surface,
+      single Airtable Blue accent, humanist sans across display and body,
+      subtle rounded corners (never pills). Section sequence: top-bar nav,
+      mission hero, company-story prose band, leadership portrait grid,
+      values three-column row, press / investor logo strip, careers CTA,
+      eight-column mega-footer.
+    - Section blocks stand in for downstream wholes; the max-width
+      container (1216px), 24/48px gutter, 96px section padding, and
+      section sequence are the load-bearing variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web font: Inter substitutes for whatever humanist sans Airtable's Next.js
+  build serves. Roboto Mono carries the small uppercase kicker labels.
+-->
+<style>
+  /* Reset just what the layout needs. The harness handles cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1216px (Airtable runs slightly tighter than
+   * Vercel's 1248px); gutter 24px mobile, 48px desktop. Inline values; not
+   * contract slots.
+   */
+  .page {
+    max-width: 1216px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero band takes the extra step of breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Flush full-width with a hairline rule beneath; wordmark
+   * left, link cluster center, CTA controls right. Airtable runs a 64px
+   * bar height (taller than Vercel's 56px to fit the Book Demo button).
+   * Inline value: 64px height, not a contract slot.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.92);                /* glass over white; inline ornament */
+    backdrop-filter: saturate(180%) blur(16px);           /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 64px;                                        /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero statement. Sans display at 4xl on desktop (Airtable stays under
+   * editorial scale even on the company surface); tight leading; narrow
+   * measure; left-aligned. */
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-4xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Section heading shared style: mono kicker above sans title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Company-story two-column band: lead paragraph left, sub-paragraphs
+   * stacked right. Becomes single-column under 900px. */
+  .story-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 900px) {
+    .story-grid { grid-template-columns: 1fr 1.4fr; gap: var(--ds-space-10); }
+  }
+  .story-lead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Leadership portrait grid. Four-column desktop, two on tablet, one on
+   * mobile. Square portrait + name + title caption per card. Cards carry
+   * the single resting shadow used on this page. */
+  .leadership-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .leadership-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .leadership-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Values three-column band; one short copy block per value. */
+  .values-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .values-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-8); } }
+
+  /* Press / investor logo strip. Six-column hairline grid, no card chrome. */
+  .logo-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 640px) { .logo-strip { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .logo-strip { grid-template-columns: repeat(6, 1fr); } }
+  .logo-strip .slot {
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    border-radius: 0;
+    aspect-ratio: 5 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* CTA section: centered closing call-to-action, narrow measure. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 24ch;
+  }
+  @media (min-width: 768px) {
+    .cta__headline { font-size: var(--ds-text-3xl); }
+  }
+  .cta__support {
+    margin: var(--ds-space-5) auto 0;
+    max-width: 48ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Footer band: full-width, sits outside .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/airtable-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 540px;">
+          <span class="slot__label">nav-link-cluster</span>
+          Platform / Solutions / Resources / Learn / Enterprise / Pricing
+        </div>
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">auth-controls</span>
+          Sign in / Book demo
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: mission hero. Mono kicker above sans display statement, supporting paragraph. -->
+    <section class="section section--hero" aria-label="Mission hero">
+      <p class="hero__kicker">About / Our mission</p>
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
+      </p>
+    </section>
+
+    <!-- Section: company story. Two-column band, lead paragraph left, supporting prose right. -->
+    <section class="section" aria-label="Company story">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 / Our story</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="story-grid">
+        <p class="story-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <div class="slot" style="min-height: 200px;">
+          <span class="slot__label">story-prose-stack</span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: leadership portrait grid. Four-column on desktop. -->
+    <section class="section" aria-label="Leadership">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 / Leadership</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="leadership-grid">
+        <div class="slot" style="aspect-ratio: 4 / 5; box-shadow: var(--ds-shadow-sm);"><span class="slot__label">leader</span>Lorem · CEO</div>
+        <div class="slot" style="aspect-ratio: 4 / 5; box-shadow: var(--ds-shadow-sm);"><span class="slot__label">leader</span>Lorem · CTO</div>
+        <div class="slot" style="aspect-ratio: 4 / 5; box-shadow: var(--ds-shadow-sm);"><span class="slot__label">leader</span>Lorem · COO</div>
+        <div class="slot" style="aspect-ratio: 4 / 5; box-shadow: var(--ds-shadow-sm);"><span class="slot__label">leader</span>Lorem · CPO</div>
+      </div>
+    </section>
+
+    <!-- Section: values. Three-column band of value blocks. -->
+    <section class="section" aria-label="Values">
+      <div class="section-heading">
+        <span class="section-heading__kicker">03 / Values</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="values-grid">
+        <div class="slot"><span class="slot__label">value-01</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-02</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-03</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
+    </section>
+
+    <!-- Section: press / investor logo strip. Six-column hairline grid. -->
+    <section class="section" aria-label="Press and investors">
+      <div class="section-heading">
+        <span class="section-heading__kicker">04 / Press · Investors</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="logo-strip">
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: careers CTA. Centered closing call-to-action. -->
+    <section class="section section--cta" aria-label="Careers CTA">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      <p class="cta__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna.
+      </p>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">primary-cta</span>
+          See open roles
+        </div>
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">secondary-cta</span>
+          Read newsroom
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/airtable-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (Platform / Solutions / Resources / Learn / Company + legal row + social)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

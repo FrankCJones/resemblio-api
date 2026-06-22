@@ -1,0 +1,99 @@
+<!--
+  Asset: text-bordered-001
+  Class: inputs
+  Pattern: (none in TAXONOMY; bordered text input pattern)
+  Inspired by: Linear
+  Notes:
+    - Standard text input with hairline border, inset padding, label-above pattern.
+    - Border color and radius come from tokens; the white focus outline is the load-bearing chrome.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>text-bordered-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Linear ships Inter Variable; system Inter fallback is close enough for the registers we care about. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+  .field { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .field-label {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .field-input {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 0.8px solid var(--ds-border); /* inline: 0.8px matches Linear's sub-pixel hairline */
+    border-radius: var(--ds-radius-md);
+    padding: 0 10px; /* inline: matches Linear's 10px horizontal pad on a 40px row */
+    height: 40px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    outline: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .field-input::placeholder { color: var(--ds-text-muted); }
+  .field-input:focus-visible,
+  .field-input.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 1px;
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block { padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-hairline); }
+  .block:first-child { border-top: 0; padding-top: 0; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="block">
+      <div class="state-label">rest</div>
+      <div class="field">
+        <label class="field-label" for="i1">Full name</label>
+        <input class="field-input" id="i1" type="text" placeholder="Lorem Ipsum"/>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">focus</div>
+      <div class="field">
+        <label class="field-label" for="i2">Work email</label>
+        <input class="field-input is-focus" id="i2" type="email" placeholder="name@example.com"/>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">filled</div>
+      <div class="field">
+        <label class="field-label" for="i3">Company</label>
+        <input class="field-input" id="i3" type="text" value="Lorem Ipsum Industries"/>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

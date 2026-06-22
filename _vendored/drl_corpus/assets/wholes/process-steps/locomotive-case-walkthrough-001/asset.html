@@ -1,0 +1,269 @@
+<!--
+  Asset: locomotive-case-walkthrough-001
+  Class: process-steps
+  Pattern: numbered-section
+  Inspired by: Locomotive (locomotive.ca/en)
+  Notes:
+    - Studio-portfolio process narration: four numbered phases set on cream
+      paper, each headed by an oversized kinetic statement (the featured-link
+      treatment from the homepage repurposed as step titles). The closing
+      phase flips to the black inversion surface, so the result reads as a
+      payoff rather than another step.
+    - Variable: every color, every type size, every spacing step, the hairline
+      between steps. Inline: the step-title clamp() size pairing, the 4px
+      hover lift, the arrow translate distance, and the grid template that
+      offsets the numeral against the title - all one-off composition
+      decisions specific to this whole.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-case-walkthrough-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  System fallback chain only. LocomotiveNew is a licensed display face that
+  cannot be redistributed; the rendered fallback is Helvetica Now Display /
+  Helvetica Neue, which preserves the geometry but not the warmth.
+-->
+<style>
+  /* Reset only what the asset needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* ----- Section frame ----- */
+  .walkthrough {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--ds-space-16) var(--ds-space-8);
+  }
+
+  /* Section overline: solid 1.6px black rule above the title - the c-section
+     overline treatment observed on Locomotive. */
+  .walkthrough__overline {
+    border-top: 1.6px solid var(--ds-border);
+    padding-top: var(--ds-space-5);
+    margin-bottom: var(--ds-space-10);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .walkthrough__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .walkthrough__title {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-normal);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ----- Step list ----- */
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Each step. Inline grid: a narrow column for the numeral, a wide column
+     for the title and body. Stacks on mobile. */
+  .step {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--ds-space-8);
+    padding: var(--ds-space-12) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .step:last-of-type { border-bottom: none; }
+
+  @media (max-width: 720px) {
+    .step {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-4);
+      padding: var(--ds-space-10) 0;
+    }
+  }
+
+  /* Numbered prefix. Mono-uppercase kicker convention; weight stays light so
+     the title carries the visual weight, not the numeral. */
+  .step__number {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-top: var(--ds-space-5);
+    margin: 0;
+  }
+
+  /* Step title borrows the featured-link kinetic treatment: display face,
+     line-height 1.0, hover lifts the line. Anchor element so the lift reads
+     as an affordance when the step links to a sub-page. */
+  .step__title {
+    /* Inline: the clamp(40px, 7vw, 96px) range tracks the source featured-link
+       117.333px at full width but steps down to a manageable 40px on small
+       viewports. The exact range is one-off to this asset. */
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: clamp(40px, 7vw, 96px);
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    text-decoration: none;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+    /* Inline: 4px upward translate on hover. The amount mirrors the footer
+       sibling but is not a contract slot. */
+    will-change: transform;
+  }
+  .step__title:hover,
+  .step__title:focus-visible {
+    transform: translateY(-4px);
+  }
+  .step__title:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: var(--ds-space-2);
+  }
+  .step__arrow {
+    /* Inline: trailing diagonal glyph at 0.55em optically balances the step
+       title geometry; not a reusable icon size. */
+    font-size: 0.55em;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .step__title:hover .step__arrow,
+  .step__title:focus-visible .step__arrow {
+    transform: translate(6px, -6px);
+  }
+
+  .step__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* Closing step: black-inverted surface so the payoff out-punches the cream
+     phases above. The inversion itself is the divider; no top rule on this
+     step. */
+  .step.-finale {
+    background: var(--ds-surface-2);
+    color: var(--ds-accent-2);
+    /* Inline: bleed to viewport edges via negative inline margin. One-off
+       composition: the cream phases stay inside the 1280px frame; the finale
+       breaks out so the inversion reads as page-wide. */
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: var(--ds-space-16) max(var(--ds-space-8), calc(50vw - 640px));
+    border-bottom: none;
+    grid-template-columns: 120px 1fr;
+  }
+  @media (max-width: 720px) {
+    .step.-finale {
+      grid-template-columns: 1fr;
+      padding: var(--ds-space-12) var(--ds-space-6);
+    }
+  }
+  .step.-finale .step__number { color: rgba(250, 249, 245, 0.6); }
+  .step.-finale .step__title  { color: var(--ds-accent-2); }
+  .step.-finale .step__body   { color: rgba(250, 249, 245, 0.7); }
+
+  /* Reduced motion respects the kinetic lift. */
+  @media (prefers-reduced-motion: reduce) {
+    .step__title,
+    .step__arrow {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <section class="walkthrough" aria-labelledby="walkthrough-title">
+
+    <header class="walkthrough__overline">
+      <p class="walkthrough__kicker">Lorem ipsum / Dolor</p>
+      <h2 class="walkthrough__title" id="walkthrough-title">How the work happens</h2>
+    </header>
+
+    <ol class="steps">
+
+      <li class="step">
+        <p class="step__number">01 / Lorem</p>
+        <div>
+          <a class="step__title" href="#step-1">
+            <span>Discover</span>
+            <span class="step__arrow" aria-hidden="true">&#x2197;</span>
+          </a>
+          <p class="step__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <p class="step__number">02 / Ipsum</p>
+        <div>
+          <a class="step__title" href="#step-2">
+            <span>Define</span>
+            <span class="step__arrow" aria-hidden="true">&#x2197;</span>
+          </a>
+          <p class="step__body">Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <p class="step__number">03 / Dolor</p>
+        <div>
+          <a class="step__title" href="#step-3">
+            <span>Design</span>
+            <span class="step__arrow" aria-hidden="true">&#x2197;</span>
+          </a>
+          <p class="step__body">Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium, totam
+          rem aperiam, eaque ipsa quae ab illo inventore.</p>
+        </div>
+      </li>
+
+      <li class="step -finale">
+        <p class="step__number">04 / Sit amet</p>
+        <div>
+          <a class="step__title" href="#step-4">
+            <span>Deliver</span>
+            <span class="step__arrow" aria-hidden="true">&#x2197;</span>
+          </a>
+          <p class="step__body">Veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut
+          fugit, sed quia consequuntur magni dolores eos qui ratione.</p>
+        </div>
+      </li>
+
+    </ol>
+
+  </section>
+
+</body>
+</html>

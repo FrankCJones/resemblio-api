@@ -1,0 +1,117 @@
+<!--
+  Asset: editorial-required-001
+  Class: form-groups
+  Pattern: editorial-label-italic
+  Inspired by: Robin Sloan
+  Notes:
+    - Serif label sits above a borderless input; the input carries only a hairline rule underneath.
+    - Required marker is the brand terracotta rather than red; it doubles as the focus underline color.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-required-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Kyrios is Robin Sloan's licensed serif; Georgia is the closest system fallback. Trade Gothic Next is the licensed sans. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-3);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .field-label {
+    font-family: var(--ds-font-display);
+    font-style: italic;                   /* editorial register: italic serif above sans value */
+    font-weight: 400;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+  }
+  .field-required {
+    color: var(--ds-accent);
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    margin-left: 4px;                     /* inline: tight bind to the label word */
+  }
+  .field-input {
+    background: transparent;              /* the page bg shows through */
+    color: var(--ds-text);
+    border: 0;                            /* no border on the input itself */
+    border-bottom: 1px solid var(--ds-hairline); /* hairline rule under the input is the only chrome */
+    border-radius: 0;
+    padding: var(--ds-space-2) 0;
+    height: 40px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    outline: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .field-input::placeholder {
+    color: var(--ds-text-muted);
+    font-style: italic;
+  }
+  .field-input:focus-visible,
+  .field-input.is-focus {
+    outline: none;
+    border-bottom-color: var(--ds-focus-ring);
+    border-bottom-width: 2px;             /* thickens the rule on focus rather than adding a ring */
+  }
+  .field-help {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    font-style: italic;
+    line-height: var(--ds-leading-snug);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div>
+      <div class="state-label">rest, required</div>
+      <div class="field">
+        <label class="field-label" for="i1">Lorem electronicus<span class="field-required" aria-hidden="true">*</span></label>
+        <input class="field-input" id="i1" type="email" placeholder="lorem at ipsum dot net"/>
+        <p class="field-help">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+    </div>
+    <div>
+      <div class="state-label">filled + focus</div>
+      <div class="field">
+        <label class="field-label" for="i2">Lorem nomen<span class="field-required" aria-hidden="true">*</span></label>
+        <input class="field-input is-focus" id="i2" type="text" value="Lorem Ipsum Sloan"/>
+        <p class="field-help">Lorem ipsum dolor sit amet.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+/*
+ * quanta-section-001 tokens
+ *
+ * Quanta Magazine section kickers: lowercase sans labels above article
+ * titles, colored with the publication's signature deep violet. Quanta
+ * inverts the standard editorial convention - where most magazines set
+ * eyebrows in uppercase, Quanta uses a quiet lowercase with one decisive
+ * color shift. The lowercase is the transferable pattern.
+ *
+ * Sources inspected via webfetch 2026-05-19: quantamagazine.org, the
+ * physics tag page, and individual article cards. Specific computed
+ * style values are not available through webfetch; color values reflect
+ * Quanta's published brand identity (signature deep violet circa
+ * #4A2D7E, with a lighter category tint in use). Sizes and tracking
+ * are taken from the rendered visual.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink with one editorial accent. Background is paper, text
+   * is near-black; the kicker carries the single colored signal.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper background; Quanta sets articles on white. */
+  --ds-surface:      #FAFAFA;   /* Card hover surface; one half-step off paper. */
+  --ds-surface-2:    #F2F2F2;   /* Section dividers, raised cards. */
+  --ds-text:         #1A1A1A;   /* Article body and headline color; near-black. */
+  --ds-text-muted:   #6B6B6B;   /* Metadata, byline, date stamps. */
+  --ds-text-strong:  #000000;   /* Pure black for emphasis moments. */
+  --ds-border:       #E5E5E5;   /* Card edges and hairline borders. */
+  --ds-hairline:     #EDEDED;   /* The thinnest visible divider. */
+  --ds-accent:       #4A2D7E;   /* Quanta signature deep violet; the kicker color. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet; hover state on kicker links. */
+  --ds-success:      #2E8540;   /* Confirmation green; rarely seen on the site. */
+  --ds-warning:      #C77700;   /* Caution amber; reserved for errata. */
+  --ds-error:        #B3261E;   /* Destructive red. */
+  --ds-info:         #4A2D7E;   /* Info matches the brand accent. */
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet, visible against paper. */
+
+  /* ---------- Type families ----------
+   * Quanta pairs a humanist sans for the kicker and metadata with a
+   * serif (Tiempos Text) for body and headlines. The kicker itself
+   * uses the sans face. System-ui fallback chain is robust to font
+   * loading failures.
+   */
+  --ds-font-display: "Tiempos Headline", "Charter", Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Charter", Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Editorial scale; the kicker sits at xs (around 13px on Quanta),
+   * the article title reaches into the 2xl range on homepage cards.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Lowercase sans kicker carries a small positive tracking (0.04em);
+   * the wider step is reserved for any uppercase chrome.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Editorial spacing scale; generous gaps between kicker, title, dek.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Quanta uses sharp corners almost everywhere; only avatars are circular.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial pages eschew shadow for hairlines; shadows here are
+   * dialed down for card hover only.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

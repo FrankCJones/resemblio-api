@@ -1,0 +1,419 @@
+<!--
+  Asset: github-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: GitHub
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001       (near-black surface, single saturated accent)
+    - type-pairings/sans-system-modern-001 (Mona Sans body, ui-monospace utility)
+    - wordmarks/mono-uppercase-001         (compact left-anchored wordmark)
+    - links/nav-link-underline-001         (muted-to-bright nav link register)
+    - inputs/search-with-icon-001          (icon-prefix search input)
+    - buttons/primary-square-001           (small-radius primary CTA, Primer green)
+  Notes:
+    - Flush-top register on near-black: the bar pins to the absolute top
+      of the viewport with a hairline border at its foot. No shadow at
+      rest. The marketing nav for signed-out visitors carries six top-
+      level destinations (Platform, Solutions, Resources, Open Source,
+      Enterprise, Pricing), a long search input that swallows the
+      middle, and a Sign in / Sign up cluster on the right. The Sign up
+      button is the one saturated moment - Primer success-emphasis green
+      ("GitHub green").
+    - Variable vs inline: every color, type, spacing, radius, motion
+      value comes from the contract. Inline ornaments: the Octocat
+      wordmark SVG geometry (a one-off mark, not a reusable atom at
+      this scale), the bar's fixed 64 px height (a layout decision
+      specific to this flush register), the dropdown's column-pair grid.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Mona Sans is GitHub's marketing display and body family. The Google
+     Fonts release is the open fallback; the contract resolves to the
+     variable font first when installed. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Flush-top bar. Pinned to the top edge of the viewport; hairline
+   * border at the foot is the only chrome. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: GitHub's marketing bar runs at 64 px on desktop.
+     * Layout decision specific to the flush-top register. */
+    height: 64px;
+  }
+
+  .nav__inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-4);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+
+  /* Wordmark cluster: Octocat glyph plus the wordmark text. The mark
+   * is filled in --ds-text-strong; sits at 32 px square. From
+   * atoms/wordmarks/mono-uppercase-001 (register), with the glyph
+   * geometry inline as a per-site ornament. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    line-height: 1;
+  }
+  .nav__wordmark svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+    fill: currentColor;
+  }
+
+  /* Primary link cluster. Sits to the left of the search input. From
+   * atoms/links/nav-link-underline-001 - muted at rest, lifts to
+   * strong on hover, caret rotates when the dropdown opens. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-md);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 12px;
+    color: currentColor;
+    opacity: 0.75;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+  }
+
+  /* Search input. The wide input that swallows the middle of the bar.
+   * From atoms/inputs/search-with-icon-001, in the dark register: an
+   * inset surface with a hairline border, a leading search icon, and
+   * a trailing keyboard-shortcut hint pill. */
+  .nav__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 32px;
+    padding: 0 var(--ds-space-2) 0 var(--ds-space-2);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__search:focus-within {
+    border-color: var(--ds-accent);
+    box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.25);
+  }
+  .nav__search svg.nav__search-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    color: var(--ds-text-muted);
+    margin-right: var(--ds-space-2);
+  }
+  .nav__search input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+  }
+  .nav__search input::placeholder { color: var(--ds-text-muted); }
+  /* Inline ornament: keyboard shortcut hint pill. Mono register at
+   * 11 px in a hairline-bordered cell. */
+  .nav__kbd {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: 1px 6px;
+    margin-left: var(--ds-space-2);
+    line-height: 1.4;
+  }
+
+  /* Dropdown panel. Opens below the link on hover or focus. Two-column
+   * inline grid is a layout decision specific to GitHub's Platform
+   * menu - not a contract concern. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 560px;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: rgba(255, 255, 255, 0.04); }
+  .nav__menu-icon {
+    /* Inline ornament: small hairline-outlined square that stands in
+     * for the per-item glyph. */
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    flex: 0 0 28px;
+  }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    display: block;
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin-top: 2px;
+  }
+
+  /* Action cluster: Sign in (text link) and Sign up (primary CTA).
+   * The Sign up button is the bar's one saturated moment - Primer
+   * success-emphasis green ("GitHub green"). */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__signin {
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border-radius: var(--ds-radius-md);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { background: rgba(255, 255, 255, 0.06); }
+
+  .nav__primary {
+    appearance: none;
+    border: 1px solid color-mix(in oklab, var(--ds-success) 78%, white 22%);
+    background: var(--ds-success);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 6px var(--ds-space-3);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.5;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: color-mix(in oklab, var(--ds-success) 88%, white 12%);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible,
+  .nav__signin:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the bar has a surface to sit over. */
+  .page-stub {
+    max-width: 1248px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 1024px) {
+    .nav__links { gap: 0; }
+    .nav__link { padding: var(--ds-space-2) var(--ds-space-2); }
+  }
+  @media (max-width: 800px) {
+    .nav__links, .nav__signin, .nav__search { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__signin, .nav__link, .nav__menu, .nav__caret { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <!-- Inline ornament: simplified Octocat-style glyph. The wordmark
+             atom carries the register; this geometry is a per-site mark. -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 1.5C6.2 1.5 1.5 6.2 1.5 12c0 4.6 3 8.6 7.2 10 .5.1.7-.2.7-.5v-1.9c-2.9.6-3.5-1.4-3.5-1.4-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.6 1.1 1.6 1.1 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.3-.3-4.7-1.2-4.7-5.1 0-1.1.4-2 1.1-2.8-.1-.3-.5-1.4.1-2.8 0 0 .9-.3 2.9 1.1.8-.2 1.7-.3 2.6-.3.9 0 1.8.1 2.6.3 2-1.4 2.9-1.1 2.9-1.1.6 1.4.2 2.5.1 2.8.7.8 1.1 1.7 1.1 2.8 0 3.9-2.4 4.8-4.7 5.1.4.3.7 1 .7 2v3c0 .3.2.6.7.5 4.2-1.4 7.2-5.4 7.2-10 0-5.8-4.7-10.5-10.5-10.5z"/>
+        </svg>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Platform
+            <svg class="nav__caret" viewBox="0 0 12 12" aria-hidden="true">
+              <path d="M3 5 L6 8 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem Copilot</span>
+                <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur adipiscing elit.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Actions Lorem</span>
+                <span class="nav__menu-item-sub">Curabitur nec libero non nisi convallis fringilla.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Security Ipsum</span>
+                <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit lacinia.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Codespaces</span>
+                <span class="nav__menu-item-sub">Vivamus sit amet sapien velit tincidunt.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li><button class="nav__link" type="button">Solutions
+          <svg class="nav__caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 5 L6 8 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button></li>
+        <li><button class="nav__link" type="button">Resources
+          <svg class="nav__caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 5 L6 8 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button></li>
+        <li><button class="nav__link" type="button">Open Source
+          <svg class="nav__caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 5 L6 8 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button></li>
+        <li><button class="nav__link" type="button">Enterprise
+          <svg class="nav__caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 5 L6 8 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button></li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+      </ul>
+
+      <label class="nav__search" aria-label="Search">
+        <svg class="nav__search-icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path fill="currentColor" d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04Z"/>
+        </svg>
+        <input type="text" placeholder="Search or jump to..."/>
+        <span class="nav__kbd" aria-hidden="true">/</span>
+      </label>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Sign in</a>
+        <a class="nav__primary" href="#">Sign up</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

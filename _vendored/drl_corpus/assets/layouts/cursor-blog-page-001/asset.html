@@ -1,0 +1,514 @@
+<!--
+  Asset: cursor-blog-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, lead-paragraph, story-card-grid, mono-utility-pair
+  Inspired by: Cursor (cursor.com/blog/composer-2-5)
+  Notes:
+    - Single-article page skeleton for a Cursor research post. Flush-top
+      nav with cyan CTA pill, article hero with a mono "Blog / <category>"
+      breadcrumb kicker, display-sans title, three-up author byline with
+      avatars plus a mono reading-time pip, narrow reading column with H2
+      / H3 hierarchy, inline code wells, inline figure rows for benchmark
+      images, an author-bio attribution card, a pricing-CTA block before
+      footer, three-up related-posts grid with "View more posts" link, and
+      a five-column mega-footer.
+    - Variable: section sequence, page max-width (1200px), article column
+      measure (~70ch), section padding rhythm, type role per slot. Inline:
+      page max-width and column measure are page-grid character; avatar
+      sizes (24px in byline, 56px in bio card) are inline ornament; figure
+      aspect-ratios for the inline benchmark images are inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-blog-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter Display / Inter and GeistMono are the Cursor marketing
+  faces. Faces are not loaded inline; the fallback chain in tokens.css
+  (system Inter, JetBrains Mono) carries the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px so the related-posts grid and
+   * footer breathe; the article column inside is narrower. Inline value.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. ~70ch (about 700px at 16px sans). Slightly wider than
+   * the Vercel blog measure because Cursor research posts surface
+   * benchmark tables and figure rows that benefit from a few extra
+   * characters of measure. Page-grid character; lives inline.
+   */
+  .column {
+    max-width: 70ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Major section spacing. Padding scales up on desktop; the bottom
+   * hairline is the rule between article-page sections. */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Article hero. Mono breadcrumb kicker ("Blog / research"), then a
+   * display-sans title at 4xl with tight tracking, then a three-up
+   * byline row with author avatar stack on the left and a mono date and
+   * reading-time pair on the right. No cover image: imagery sits as
+   * inline figures inside the body.
+   */
+  .article-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-16); padding-bottom: var(--ds-space-10); }
+  }
+  .hero-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .hero-kicker__sep { opacity: 0.5; }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 24ch;
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+  }
+  .byline-authors {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Author avatar stack. Three overlapping 24px circles; the overlap is
+   * a Cursor-specific byline ornament and lives inline. */
+  .byline-avatars {
+    display: inline-flex;
+  }
+  .byline-avatars > span {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 2px solid var(--ds-bg);
+    display: inline-block;
+  }
+  .byline-avatars > span + span { margin-left: -8px; }
+  .byline-names {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .byline-meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    align-items: center;
+  }
+  .byline-meta__sep { opacity: 0.5; }
+
+  /*
+   * Article body. Lead paragraph one step above body. Body sans at 16px
+   * on 1.6 leading. H2 / H3 mark the hierarchy. Inline links pick up
+   * Cursor cyan with a thin underline; the underline carries the
+   * affordance. Inline `code` voice in mono. Fenced code blocks sit in
+   * a tinted hairline-bordered well that ignores the column measure.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.1em 0.35em;
+  }
+  .code-block {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    overflow-x: auto;
+    margin: var(--ds-space-8) 0;
+  }
+  .article-body figure {
+    margin: var(--ds-space-8) 0;
+  }
+  .article-body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-top: var(--ds-space-3);
+  }
+
+  /*
+   * Author-bio attribution card. Cursor research posts close the body
+   * with a small "Author: <Team>" attribution rather than a full bio
+   * paragraph. Tinted surface, hairline border, md radius, avatar on
+   * the left.
+   */
+  .author-bio {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  .author-bio__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .author-bio__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-1);
+  }
+  .author-bio__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /*
+   * Pricing-CTA block. Cursor research posts that announce a new model
+   * close with a pricing card before the footer: brand-tinted surface,
+   * cyan accent on a single inline link, mono-formatted token rates.
+   * Sits in the page container, not the article column, so it breathes.
+   */
+  .pricing-cta {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    text-align: center;
+  }
+  .pricing-cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    max-width: 32ch;
+    margin-inline: auto;
+  }
+  .pricing-cta__rate {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .pricing-cta__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /*
+   * Related posts. Section heading in display sans, then three-up card
+   * grid: desktop 3 columns, tablet 2, mobile 1. Sits in the page
+   * container so it widens past the body. A trailing "View more posts"
+   * link sits below the grid.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+  .related-more {
+    margin-top: var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    display: inline-block;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container. Stands
+   * in for a cursor-tagged wholes/footers mega-footer (five-column). */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a cursor-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem . Ipsum . Dolor . Sit . Amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill (cyan)</span>
+        Download Lorem
+      </div>
+    </nav>
+
+    <!-- Section: article-hero. Breadcrumb kicker, title, three-up byline row. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="hero-kicker">
+          Blog <span class="hero-kicker__sep">/</span> research
+        </p>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur.</h1>
+        <div class="byline-row">
+          <span class="byline-authors">
+            <span class="byline-avatars" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </span>
+            <span class="byline-names">Lorem Ipsum, Dolor Sit &amp; Amet Consectetur</span>
+          </span>
+          <span class="byline-meta">
+            <span>May 18, 2026</span>
+            <span class="byline-meta__sep">.</span>
+            <span>7 min read</span>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Narrow reading column with figures and inline code. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua, with
+          <code>lorem.ipsum()</code> as the canonical example. Read more
+          in <a href="#">the lorem documentation</a> for context.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+        <pre class="code-block" aria-label="Code example">lorem ipsum --dolor sit
+  amet consectetur adipiscing
+  --elit sed do eiusmod
+  tempor incididunt</pre>
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.
+        </p>
+        <figure>
+          <div class="slot" style="aspect-ratio: 16 / 9;">
+            <span class="slot__label">inline-benchmark-figure</span>
+            Lorem ipsum benchmark chart (light / dark variants)
+          </div>
+          <figcaption>
+            Lorem ipsum chart caption explaining the benchmark visualization above.
+          </figcaption>
+        </figure>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: author-bio. Compact "Author: <Team>" attribution. -->
+    <section class="section" aria-label="Author attribution">
+      <div class="column">
+        <div class="author-bio">
+          <div class="author-bio__avatar" aria-hidden="true"></div>
+          <div>
+            <p class="author-bio__label">Author</p>
+            <p class="author-bio__name">Lorem Ipsum Team</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: pricing CTA. Sits before the related grid, in the page container. -->
+    <section class="section" aria-label="Pricing CTA">
+      <div class="pricing-cta">
+        <p class="pricing-cta__headline">Lorem ipsum is available now in Cursor.</p>
+        <p class="pricing-cta__rate">$0.50 / M input . $2.50 / M output</p>
+        <a class="pricing-cta__link" href="#">Read the model documentation</a>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Three-up grid plus trailing "View more posts" link. -->
+    <section class="section" aria-label="Related posts">
+      <h2 class="related-heading">More posts</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+      <a class="related-more" href="#">View more posts</a>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (five columns)</span>
+        Product . Resources . Company . Legal . Connect
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

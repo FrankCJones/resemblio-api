@@ -1,0 +1,218 @@
+<!--
+  Asset: github-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses dual-cta-hero structure + display-tight + sans-system-modern + primary-square + ghost-bordered)
+  Inspired by: GitHub (github.com homepage close, github.com/enterprise closing block)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001              (mono surface; the green accent stands in for the electric reserve)
+    - type-pairings/sans-system-modern-001        (system sans single-family stack)
+    - headings/display-tight-001                  (sans display at 48-64px, tight tracking)
+    - body-text/lead-paragraph-001                (one-paragraph dek in muted ink)
+    - buttons/primary-square-001                  (green-fill 6px-radius primary)
+    - buttons/ghost-bordered-001                  (hairline-bordered ghost secondary)
+    - dividers/hairline-rule-001                  (Primer border-default hairline above the block)
+  Notes:
+    - The block sits on a dark Primer fg-emphasis band with a soft
+      decorative radial behind the headline. GitHub uses this dark band
+      at the close of /enterprise; the homepage variant runs the same
+      structure on a lighter canvas. We capture the dark band because
+      it is the more characteristic GitHub closing moment.
+    - The signature green (Primer success-emphasis #1f883d) is the one
+      chromatic moment. Everything else is monochrome ink. Ghost button
+      matches the primary at 40px height and 6px radius so the pair
+      reads as a deliberate two-action set.
+    - Inline ornament: the radial-gradient decoration behind the
+      headline (a single soft green-tinted vignette) and the 3px Primer
+      accent halo on focus-visible. Both held to one moment each.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-cta-block-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- GitHub marketing ships on the OS system sans stack rather than a
+     hosted webfont. No external font load required; tokens.css declares
+     the system fallback chain GitHub uses in production. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: the white Primer canvas above the closing CTA. The
+   * CTA itself sits inside a dark band that breaks the canvas at the
+   * close, signalling "this is the final ask". */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  /* Outer band: full-bleed dark Primer fg-emphasis surface. The
+   * decorative radial is the one ornamental moment; it sits behind the
+   * headline as a soft green vignette and does no other work. */
+  .cta {
+    position: relative;
+    width: 100%;
+    max-width: 1280px;
+    background: var(--ds-text-strong);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    /* Inline ornament: soft green radial vignette behind the headline,
+     * positioned off-center top. The only piece of decoration in the
+     * block; mirrors the enterprise-page background image at a lower
+     * fidelity. */
+    background-image:
+      radial-gradient(ellipse 60% 40% at 30% 20%, rgba(31, 136, 61, 0.28), transparent 70%),
+      radial-gradient(ellipse 50% 35% at 80% 80%, rgba(9, 105, 218, 0.15), transparent 70%);
+  }
+
+  /* Content column: centered, narrow measure. The close speaks at
+   * conversational display volume, centered to signal the page is
+   * resolving rather than starting a new movement. */
+  .cta__content {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: from atoms/headings/display-tight-001. System
+   * sans at 3xl-5xl (48-64px on desktop, fluid down on narrow). One
+   * step above the marketing dek; the close speaks loud because the
+   * decorative band amplifies it. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5.5vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: #FFFFFF;
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the two-line headline
+     * from orphaning a single word at the GitHub measure. */
+  }
+
+  /* Dek: from atoms/body-text/lead-paragraph-001. System sans at lg,
+   * normal leading, Primer fg-muted on white but lifted to a higher
+   * opacity here so it stays readable on the dark band. */
+  .cta__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: rgba(255, 255, 255, 0.78);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Button row: green-fill primary + ghost secondary at identical
+   * 40px height. Wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Primary: from atoms/buttons/primary-square-001. Primer
+   * success-emphasis fill (#1f883d), white label, 6px radius. The one
+   * chromatic moment in the block. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    height: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-instant) var(--ds-ease-standard);
+    /* Inline ornament: hairline white-alpha border picks up a glint on
+     * the dark band that the flat green alone would miss. */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+  }
+
+  /* Ghost secondary: from atoms/buttons/ghost-bordered-001. Transparent
+   * fill, hairline white-alpha border on the dark band, 6px radius.
+   * Matched 40px height with the primary so the pair reads as a
+   * weighed two-action set. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    height: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.55);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur adipiscing elit</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla. Sed posuere eros quis lorem.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+        <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

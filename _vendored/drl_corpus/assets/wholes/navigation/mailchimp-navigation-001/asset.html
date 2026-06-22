@@ -1,0 +1,432 @@
+<!--
+  Asset: mailchimp-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: Mailchimp
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (paper-white surface, ink text, single bright accent)
+    - type-pairings/sans-system-modern-001    (humanist sans body register)
+    - wordmarks/lowercase-geometric-001       (Mailchimp lowercase wordmark register, left)
+    - links/nav-link-underline-001            (muted-to-bright nav link register)
+    - buttons/primary-square-001              (small-radius yellow CTA on the right)
+  Notes:
+    - Conversational register: sentence-case nav labels ("Industries and
+      Solutions" rather than "INDUSTRIES"), the brand's documented voice
+      principle. The link cluster sits left after the wordmark, and the
+      right side carries the utility cluster (search, language, phone,
+      Log In) plus the Cavendish Yellow Start Free Trial CTA.
+    - Variable vs inline: every color, type, spacing, radius, motion
+      value comes from the contract. Inline ornaments: the chimp head
+      glyph used as a wordmark stand-in (Mailchimp's mark is a one-off
+      illustration, not a reusable atom), the bar's 72 px fixed height
+      (a layout decision specific to the conversational marketing
+      register), and the small SVG icons used in the right cluster.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Graphik (Mailchimp's brand sans) is licensed; Inter stands in as the
+     closest open humanist sans. The contract resolves to Graphik first
+     when installed. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Flush-top bar. Paper-white, no border at rest. The page below
+   * provides its own first-section edge. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-surface);
+    /* Inline ornament: bar height is a layout decision specific to the
+     * conversational marketing register; Mailchimp runs taller than the
+     * dev-tool default to give the chimp-head mark room. */
+    height: 72px;
+  }
+
+  .nav__inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Wordmark. Lowercase humanist sans with a yellow chimp-head glyph.
+   * From atoms/wordmarks/lowercase-geometric-001. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .nav__wordmark-mark {
+    /* Inline ornament: stand-in for Mailchimp's chimp-head mark. The
+     * yellow disk with a winking face is a one-off illustration, not a
+     * reusable atom at this scale. */
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    display: inline-block;
+    position: relative;
+  }
+  .nav__wordmark-mark::before,
+  .nav__wordmark-mark::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ds-text-strong);
+  }
+  .nav__wordmark-mark::before { left: 8px; }
+  .nav__wordmark-mark::after { right: 8px; }
+  .nav__wordmark-text {
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: lowercase;
+  }
+
+  /* Link cluster. Sits to the right of the wordmark, left-aligned in
+   * its grid cell. Sentence-case labels are the brand voice. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] { color: var(--ds-text-strong); }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  /* Underline-on-hover affordance, the brand's nav link register. */
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    left: var(--ds-space-3);
+    right: var(--ds-space-3);
+    bottom: 14px;
+    height: 2px;
+    background: var(--ds-text-strong);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover::after { transform: scaleX(1); }
+  .nav__caret {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    color: currentColor;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret { transform: rotate(180deg); }
+
+  /* Dropdown panel. Warm-paper surface, hairline edge, soft warm
+   * shadow. CSS-only on hover and focus-within. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    min-width: 560px;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column dropdown grid specific to Mailchimp's
+     * Industries and Solutions menu. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-bg); }
+  .nav__menu-icon {
+    /* Inline ornament: yellow chip standing in for Mailchimp's
+     * hand-illustrated per-item glyph (envelope, postcard, mailbox).
+     * Not a reusable atom at this scale. */
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-accent);
+    flex: 0 0 28px;
+  }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin-top: 4px;
+  }
+
+  /* Utility cluster on the right. Search icon, language selector,
+   * phone, Log In, then the Cavendish Yellow Start Free Trial CTA. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .nav__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ds-radius-full);
+    border: 0;
+    background: transparent;
+    color: var(--ds-text);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__icon-btn:hover { background: var(--ds-surface-2); }
+  .nav__icon-btn svg { width: 18px; height: 18px; }
+
+  .nav__lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: var(--ds-space-2);
+  }
+  .nav__lang:hover { color: var(--ds-text-strong); }
+
+  .nav__phone {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+  .nav__phone:hover { color: var(--ds-text-strong); }
+
+  .nav__signin {
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+  }
+  .nav__signin:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  /* The Cavendish Yellow CTA. Small-radius rectangle, never a pill;
+   * black text on yellow holds the highest contrast Mailchimp uses
+   * in the entire system. */
+  .nav__primary {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    padding: 10px var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    /* Inline ornament: a darker tint of Cavendish Yellow used only at
+     * hover. The token contract has one accent slot; the hover tint is
+     * a character moment. */
+    background: #E8CD17;
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .nav__divider {
+    width: 1px;
+    height: 20px;
+    background: var(--ds-border);
+    margin: 0 var(--ds-space-1);
+  }
+
+  /* Page stub so the bar has a surface to sit over. */
+  .page-stub {
+    max-width: 1280px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 960px) {
+    .nav__links, .nav__phone, .nav__lang, .nav__signin { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__link, .nav__menu, .nav__caret, .nav__icon-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <span class="nav__wordmark-mark" aria-hidden="true"></span>
+        <span class="nav__wordmark-text">lorem</span>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Industries and solutions
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem retail</span>
+                <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur adipiscing elit posuere.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Service businesses</span>
+                <span class="nav__menu-item-sub">Curabitur nec libero non nisi convallis fringilla aliquam.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Nonprofits</span>
+                <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit lacinia varius nec.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Creators</span>
+                <span class="nav__menu-item-sub">Vivamus sit amet sapien velit tincidunt fermentum.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li><a class="nav__link" href="#">Integrations</a></li>
+        <li><a class="nav__link" href="#">Resources</a></li>
+        <li><a class="nav__link" href="#">Switch to Lorem</a></li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <button class="nav__icon-btn" type="button" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M16 16 L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="nav__lang" type="button" aria-label="Language">
+          EN
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <a class="nav__phone" href="#">+1 (800) 000 0000</a>
+        <span class="nav__divider" aria-hidden="true"></span>
+        <a class="nav__signin" href="#">Log in</a>
+        <a class="nav__primary" href="#">Start free trial</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit tincidunt. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!--
+  Asset: pull-quote-breakout-001
+  Class: body-text
+  Pattern: pull-quote-breakout
+  Inspired by: Aeon (substituting for blocked NYT)
+  Notes:
+    - Full-column pull quote that interrupts the reading column with display-treated serif in a saturated accent.
+    - The 56px left padding and accent color come from tokens; the open-quote glyph is inline ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pull-quote-breakout-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Aeon ships a custom Aeon Serif; Georgia/Times stack carries the character. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-6); }
+  p { margin: 0; }
+  .pull-quote {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-accent);
+    font-weight: 400;
+    padding: var(--ds-space-2) 0 var(--ds-space-2) var(--ds-space-10); /* 56px left pad lifts quote off column edge */
+    margin: var(--ds-space-5) 0;
+    position: relative;
+  }
+  .pull-quote::before {
+    /* inline: open-quote glyph as a soft visual cue; not a contract slot */
+    content: "\201C";
+    position: absolute;
+    left: var(--ds-space-2);
+    top: -8px;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--ds-accent);
+    opacity: 0.55;
+  }
+</style>
+</head>
+<body>
+  <article class="stage">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <blockquote class="pull-quote">These takes ultimately consider books as some sort of processed foods for thought, a packaging of ideas that bypasses the slow labor of reading itself.</blockquote>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+  </article>
+</body>
+</html>

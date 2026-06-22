@@ -1,0 +1,634 @@
+<!--
+  Asset: airtable-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: Airtable (airtable.com/customer-stories/openai, /wondery)
+  Notes:
+    - Customer-story page skeleton in the Airtable register: flush-top nav,
+      breadcrumb + customer-logo + headline hero, AI-summary tool chip row,
+      industry tag, 1-to-3 tile metrics band, narrative body with H2 section
+      heads and full-width pull quotes, embedded product-screenshot figures,
+      use-case sidebar (Industry / Use case / Region / Products), 'Reimagine
+      teamwork with Enterprise' CTA card, related-stories three-up grid,
+      mega-footer. Reading column ~64ch; page container ~1200px.
+    - Variable: section sequence, page max-width, vertical rhythm, type
+      role per slot, color slot mapping. Inline: reading column measure
+      (64ch), page max-width (1200px), aside ratio, AI-summary chip row
+      composition, customer logo block geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: TWK Everett is Airtable's proprietary face. Not loaded; the
+  Inter / system-ui fallback chain in tokens.css carries the register so
+  the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. ~1200px page width. Inline value. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .page { padding-inline: var(--ds-space-8); } }
+
+  /* Reading column. ~64ch measure for TWK Everett at 16px. Inline. */
+  .column { max-width: 64ch; margin: 0 auto; }
+
+  /* Nav: flush-top, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Major section rhythm. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) { .section { padding-block: var(--ds-space-12); } }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Hero. Breadcrumb row, customer-logo block, H1 display headline. Unlike
+   * dev-tool stories that lead with a customer-name kicker, Airtable
+   * surfaces the customer-name inside the H1 sentence and shows the logo
+   * as a separate inline mark above the title.
+   */
+  .hero { padding-top: var(--ds-space-8); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-10); }
+  }
+  .breadcrumb {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+  }
+  .breadcrumb__sep { color: var(--ds-border); }
+  /* Customer logo block. 64x64 tinted tile beside customer-name kicker. */
+  .hero__logo-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-6);
+  }
+  .hero__logo {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-2xl);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  /* Hero photo: full-width 16:9 figure beneath the title. */
+  .hero__photo {
+    margin-top: var(--ds-space-8);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+  }
+
+  /*
+   * AI-summary tool row. A chip cluster letting readers send the article to
+   * Claude, ChatGPT, Gemini, Grok, or Perplexity for summarization. This is
+   * the distinctive Airtable customer-story 2025 affordance. Sits between
+   * the hero and the metrics band. Pill chips on tinted surface.
+   */
+  .ai-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-block: var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .ai-row__label {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-right: var(--ds-space-2);
+  }
+  .ai-row__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .ai-row__chip::before {
+    content: "";
+    width: 14px; height: 14px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Industry tag row beneath the AI row. Small pill, single value. */
+  .tag-row {
+    padding-block: var(--ds-space-5);
+    display: flex;
+    gap: var(--ds-space-3);
+    align-items: center;
+  }
+  .tag {
+    display: inline-block;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    color: var(--ds-text);
+  }
+
+  /*
+   * Metrics band. 1 to 3 tiles depending on story. Each tile: oversized
+   * value in TWK Everett display, small unit, sans label beneath. Value
+   * carries the Airtable blue accent so the band is the color moment
+   * before the body returns to grayscale.
+   */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
+  .metric {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .metric__unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-left: var(--ds-space-2);
+  }
+  .metric__label {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Narrative body + use-case aside. */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    /* Aside ratio: ~240px / 1fr. Inline. */
+    .body-grid { grid-template-columns: 1fr 240px; gap: var(--ds-space-10); align-items: start; }
+  }
+
+  .body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); max-width: 64ch; }
+  .body > * + * { margin-top: var(--ds-space-5); }
+  .body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .body figure { margin: var(--ds-space-8) 0; }
+  .body figcaption {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Pull quote. Airtable register: tinted surface card with quote glyph,
+   * speaker name and role beneath. No left rule (that is a Vercel move);
+   * here the surface lift carries the breakout. */
+  .pull-quote {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-8);
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .pull-quote__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .pull-quote__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+  }
+  .pull-quote__name {
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .pull-quote__role {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Use-case aside. */
+  .aside {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+  }
+  @media (min-width: 1024px) { .aside { position: sticky; top: var(--ds-space-8); } }
+  .aside__group + .aside__group { margin-top: var(--ds-space-5); }
+  .aside__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .aside__value { font-size: var(--ds-text-sm); color: var(--ds-text); margin: 0; }
+  .aside__tags { display: flex; flex-wrap: wrap; gap: var(--ds-space-2); margin: 0; padding: 0; list-style: none; }
+  .aside__tag {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-2);
+  }
+
+  /*
+   * CTA block. Airtable register: tinted surface card (not dark inversion),
+   * headline 'Reimagine teamwork with Enterprise' style, primary blue pill
+   * and ghost secondary. Two-column on desktop.
+   */
+  .cta {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: end;
+  }
+  @media (min-width: 768px) { .cta { grid-template-columns: 1.4fr 1fr; gap: var(--ds-space-10); } }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cta__body { font-size: var(--ds-text-base); color: var(--ds-text-muted); margin: 0; }
+  .cta__actions { display: flex; flex-wrap: wrap; gap: var(--ds-space-3); }
+  .cta__primary, .cta__secondary {
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid transparent;
+  }
+  .cta__primary { background: var(--ds-accent); color: #FFFFFF; }
+  .cta__secondary { background: transparent; color: var(--ds-text); border-color: var(--ds-border); }
+
+  /* Related stories. */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid { display: grid; grid-template-columns: 1fr; gap: var(--ds-space-6); }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Slot placeholders. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band, full-width outside .page. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for an airtable-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Platform . Solutions . Resources . Enterprise . Pricing
+      </div>
+      <div class="slot" style="min-width: 180px;">
+        <span class="slot__label">cta-pair</span>
+        Sign in . Book demo
+      </div>
+    </nav>
+
+    <!-- Section: hero. Breadcrumb, customer logo, H1, hero photo. -->
+    <header class="hero" aria-label="Customer story hero">
+      <p class="breadcrumb">
+        <span>Home</span>
+        <span class="breadcrumb__sep">/</span>
+        <span>Customer stories</span>
+        <span class="breadcrumb__sep">/</span>
+        <span>Lorem Customer</span>
+      </p>
+      <div class="hero__logo-row">
+        <span class="hero__logo" aria-hidden="true">L</span>
+      </div>
+      <h1 class="hero__title">Lorem Customer scales product operations with AI-powered Lorem Platform.</h1>
+      <div class="hero__photo">
+        <div class="slot" style="aspect-ratio: 16 / 9;">
+          <span class="slot__label">hero-photo</span>
+          Lorem ipsum dolor sit amet
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: AI-summary tool chip row. Distinctive Airtable 2025 affordance. -->
+    <section class="ai-row" aria-label="Summarize with AI tool">
+      <span class="ai-row__label">Summarize with</span>
+      <a class="ai-row__chip" href="#">Lorem</a>
+      <a class="ai-row__chip" href="#">Ipsum</a>
+      <a class="ai-row__chip" href="#">Dolor</a>
+      <a class="ai-row__chip" href="#">Sit</a>
+      <a class="ai-row__chip" href="#">Amet</a>
+    </section>
+
+    <!-- Section: industry tag. -->
+    <section class="tag-row" aria-label="Industry">
+      <span class="tag">Lorem industry</span>
+    </section>
+
+    <!-- Section: metrics band. 1-3 tiles. -->
+    <section class="section" aria-label="Outcome metrics">
+      <div class="metrics">
+        <div class="metric">
+          <p class="metric__value">50-60<span class="metric__unit">per week</span></p>
+          <p class="metric__label">Lorem ipsum active projects summarized.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">8<span class="metric__unit">weeks</span></p>
+          <p class="metric__label">Dolor sit amet rolling view of upcoming milestones.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">1<span class="metric__unit">source</span></p>
+          <p class="metric__label">Consectetur adipiscing source of truth across product development.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: narrative body + use-case aside. -->
+    <section class="section" aria-label="Narrative body">
+      <div class="body-grid">
+        <article class="body">
+          <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+          </p>
+          <h2>When the product moves faster than the ops</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+          </p>
+          <blockquote class="pull-quote">
+            <p class="pull-quote__body">
+              "Lorem ipsum dolor sit amet, you can feel the craft in the
+              consectetur. Adipiscing elit is what made the ipsum work."
+            </p>
+            <footer class="pull-quote__attribution">
+              <span class="pull-quote__avatar" aria-hidden="true"></span>
+              <span>
+                <p class="pull-quote__name">Lorem Ipsum</p>
+                <p class="pull-quote__role">Head of Lorem, Lorem Customer</p>
+              </span>
+            </footer>
+          </blockquote>
+          <h2>Structure first, then intelligence</h2>
+          <p>
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+            nostrud exercitation ullamco laboris nisi ut aliquip.
+          </p>
+          <figure>
+            <div class="slot" style="aspect-ratio: 16 / 9;">
+              <span class="slot__label">product-screenshot</span>
+              Lorem ipsum product surface visualization
+            </div>
+            <figcaption>
+              Lorem ipsum figure caption explaining the product surface above.
+            </figcaption>
+          </figure>
+          <h2>The eight-week view</h2>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </p>
+          <blockquote class="pull-quote">
+            <p class="pull-quote__body">
+              "You can go from a very unstructured lorem, just where ipsum
+              are conversing, to something that gives you dolor."
+            </p>
+            <footer class="pull-quote__attribution">
+              <span class="pull-quote__avatar" aria-hidden="true"></span>
+              <span>
+                <p class="pull-quote__name">Lorem Ipsum</p>
+                <p class="pull-quote__role">Head of Lorem, Lorem Customer</p>
+              </span>
+            </footer>
+          </blockquote>
+          <h2>What two years of commitment looks like</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.
+          </p>
+        </article>
+
+        <aside class="aside" aria-label="Customer details">
+          <div class="aside__group">
+            <p class="aside__label">Industry</p>
+            <p class="aside__value">Lorem Ipsum</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Use case</p>
+            <p class="aside__value">Dolor sit amet</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Region</p>
+            <p class="aside__value">Consectetur</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Products</p>
+            <ul class="aside__tags">
+              <li class="aside__tag">Lorem</li>
+              <li class="aside__tag">Ipsum</li>
+              <li class="aside__tag">Dolor</li>
+              <li class="aside__tag">Sit</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: CTA. Reimagine teamwork with Enterprise. -->
+    <section class="section" aria-label="Call to action">
+      <div class="cta">
+        <div>
+          <p class="cta__title">Reimagine lorem with Enterprise.</p>
+          <p class="cta__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <a class="cta__primary" href="#">Contact us</a>
+          <a class="cta__secondary" href="#">Lorem more</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related stories. -->
+    <section class="section" aria-label="Related stories">
+      <h2 class="related-heading">More stories</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Platform . Solutions . Resources . Learn . Company . Legal
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

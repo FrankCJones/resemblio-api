@@ -1,0 +1,41 @@
+<!--
+  Asset: link-arrow-001
+  Class: buttons
+  Pattern: link-button
+  Inspired by: marketing read-more affordance
+  Notes: Text-link with trailing arrow that animates on hover.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>link-arrow-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--ds-bg); color: var(--ds-text); font-family: var(--ds-font-body); padding: var(--ds-space-5); min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: var(--ds-space-5); flex-wrap: wrap; }
+  .link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: var(--ds-accent); font-weight: 500; font-size: var(--ds-text-base);
+    text-decoration: none; cursor: pointer;
+    /* Inline ornament: the arrow gap and translate distance are character
+     * choices specific to this asset, not contract tokens. */
+  }
+  .link__arrow { transition: transform var(--ds-duration-fast) var(--ds-ease-standard); }
+  .link:hover .link__arrow { transform: translateX(4px); }
+  .link svg { width: 16px; height: 16px; }
+  @media (prefers-reduced-motion: reduce) {
+    .link__arrow { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <a class="link" href="#">
+    Read the documentation
+    <span class="link__arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+  </a>
+</body>
+</html>

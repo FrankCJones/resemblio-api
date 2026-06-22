@@ -1,0 +1,400 @@
+<!--
+  Asset: vercel
+  Class: alphabets
+  Pattern: mono-utility-pair, mono-eyebrow, sku-mono-row, status-mono-uppercase, display-tight, hairline-as-chrome
+  Inspired by: Vercel (vercel.com, /pricing, /contact/sales, /docs)
+  Notes:
+    - The full Vercel typography vocabulary as one specimen: display Geist
+      Sans, body Geist Sans, mono Geist Mono. The mono is the signature
+      pair-mate: same foundry, shared letterform DNA, used for any value
+      being measured or recorded (deploy IDs, region codes, plan SKUs,
+      status labels, pricing line items).
+    - Editorial moves: hairline-as-chrome (1px ring box-shadow instead of
+      a real border), mono uppercase status indicators (READY / BUILDING /
+      ERROR), snake_case SKU rows in the pricing register, "New" pills
+      in 12px Geist Mono uppercase, the deploy-status footer line that
+      lists region + commit hash + duration in mono metadata.
+    - Inline ornament: the Vercel Blue #0070F3 used inside the focus
+      ring and the loading-state pulse, the "New" pill on feature
+      announcements, and the triangle wordmark glyph. Character moments,
+      not tokens.
+    - Web-font substitutes: Geist Sans and Geist Mono are open-license
+      (Vercel ships them from vercel.com/font) and are the actual faces
+      Vercel ships; Inter and JetBrains Mono are the metric-approximate
+      fallbacks when Geist is unavailable.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Geist Sans and Geist Mono are open-license and are the actual faces
+  Vercel ships. Loaded here from Google Fonts as Geist (Google's mirror).
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Marketing hero block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Mono uppercase kicker; Geist Mono 12px / 500. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: the "New" pill that appears next to feature
+     announcements; Vercel Blue background, white mono text. */
+  .eyebrow .pill {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-full);
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);            /* 72px hero ceiling. */
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);     /* 1.1 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.02em */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);             /* 20px lead paragraph. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row (Vercel Blue primary + outlined secondary) ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; }
+  .cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: var(--ds-text-strong);        /* Pure black primary, the Geist convention. */
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-sm);       /* 5px; small radius, not pill. */
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .cta-secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border: 0;
+    box-shadow: var(--ds-shadow-sm);          /* 1px ring; the hairline-as-chrome signature. */
+    border-radius: var(--ds-radius-sm);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+
+  /* ---------- Pricing tier card (hairline ring, mono SKU rows) ---------- */
+  .tier {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+  }
+  .tier-card {
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-sm);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier-card .tier-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);            /* 32px tier title. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .tier-card .tier-blurb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+  .tier-card .tier-price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);            /* 40px price. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+  .tier-card .tier-price span {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+  }
+
+  /* SKU rows: snake_case mono key + sans value. */
+  .sku-rows {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .sku-rows .row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--ds-space-4);
+    align-items: baseline;
+    font-size: var(--ds-text-sm);
+  }
+  .sku-rows .key {
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .sku-rows .val {
+    font-family: var(--ds-font-body);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* ---------- Deploy-status footer line (the most Vercel moment) ---------- */
+  .deploy-line {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .deploy-line .status {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-success);
+  }
+  /* Inline ornament: 10px dot indicator; the pulsing-dot pattern compressed. */
+  .deploy-line .status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: currentColor;
+    display: inline-block;
+  }
+  .deploy-line .meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .deploy-line .meta .sep { padding: 0 0.4em; opacity: 0.5; }
+  .deploy-line .meta b { color: var(--ds-text); font-weight: 500; }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 112px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">
+        <span class="pill">New</span>
+        <span>Lorem ipsum announcement</span>
+      </p>
+      <h1 class="title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta-secondary" type="button">Dolor sit amet</button>
+      </div>
+    </header>
+
+    <section class="tier" aria-label="Pricing tier specimen">
+      <div class="tier-card">
+        <h2 class="tier-name">Lorem</h2>
+        <p class="tier-blurb">Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+        <p class="tier-price">$20 <span>/ user / month</span></p>
+        <div class="sku-rows">
+          <div class="row"><span class="key">edge_requests</span><span class="val">1M included</span></div>
+          <div class="row"><span class="key">vercel_network</span><span class="val">100 GB included</span></div>
+          <div class="row"><span class="key">managed_infrastructure</span><span class="val">available</span></div>
+          <div class="row"><span class="key">ai_cloud</span><span class="val">available</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="deploy-line" aria-label="Deploy status footer">
+      <span class="status"><span class="dot"></span>Ready</span>
+      <span class="meta">
+        <b>iad1</b><span class="sep">·</span><span>commit a1b2c3d</span><span class="sep">·</span><span>built in 24s</span><span class="sep">·</span><span>2026-05-20 09:14</span>
+      </span>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">72 / 1.1 / 600</span>
+        <span class="step-sample" style="font-size:72px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl display</span>
+        <span class="step-size">56 / 1.1 / 600</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">40 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:40px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">32 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">24 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg body</span>
+        <span class="step-size">20 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">16 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm cta</span>
+        <span class="step-size">14 / 1.4 / 500</span>
+        <span class="step-sample body" style="font-size:14px; font-weight:500;">Lorem ipsum dolor sit amet.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono·u</span>
+        <span class="step-size">12 / 1.4 / 500</span>
+        <span class="step-sample mono" style="font-size:12px;">Lorem ipsum kicker status</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Geist Sans, wght 600</b></span>
+      <span>body · <b>Geist Sans, wght 400 / 500</b></span>
+      <span>mono · <b>Geist Mono, wght 500</b></span>
+      <span>base · <b>16px / 24px (1.50)</b></span>
+      <span>H1 · <b>72px / 79px / -1.44px / wght 600</b></span>
+      <span>cta · <b>14px / wght 500 / radius 5px</b></span>
+      <span>scale · <b>~1.25 ratio through body, wider at display tier</b></span>
+      <span>chrome · <b>1px ring box-shadow #EAEAEA; no drop shadow at rest</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

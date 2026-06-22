@@ -1,0 +1,478 @@
+<!--
+  Asset: pentagram (library)
+  Class: libraries
+  Pattern: paper-and-ink, accent-on-neutral, story-card-grid, oversized-statement
+  Inspired by: Pentagram (pentagram.com homepage, /work, /about, project pages)
+  Notes:
+    - Specimen demonstrates every component in one coherent system: project tile, swiss-rule kicker, red-dot accent, partner-portrait avatar, client-list-row, journal-article-card, news-card, filter-tag, alpha-letter sticky nav, studio-roster grid item, hairline section divider, oversized statement display.
+    - Variable values live in tokens.css. Inline ornament (the red dot, the specific 1px hairline thickness, the project-tile aspect ratio) stays in this file as character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram (library) · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* Reset */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page frame */
+  .specimen { padding: var(--ds-space-10) var(--ds-space-8); max-width: 1280px; margin: 0 auto; }
+  .section { margin: 0 0 var(--ds-space-12) 0; }
+  .section-label {
+    /* Mono kicker labeling each component block. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .section-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-6) 0;
+    font-weight: 500;
+  }
+
+  /* 1. Oversized statement display block */
+  .statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);
+    line-height: 0.95; /* inline: Pentagram's statement headers compress below leading-tight */
+    letter-spacing: -0.03em; /* inline: tighter than the global tight slot for true statement scale */
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+  .statement .red-dot {
+    /* Red as punctuation: a single saturated dot terminating the statement. */
+    color: var(--ds-accent);
+  }
+
+  /* 2. Hairline section divider */
+  .hairline {
+    border: 0;
+    border-top: 1px solid var(--ds-border);
+    margin: var(--ds-space-10) 0;
+  }
+
+  /* 3. Swiss-rule kicker (kicker with rule beneath) */
+  .swiss-kicker {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    padding: 0 0 var(--ds-space-2) 0;
+    border-bottom: 1px solid var(--ds-border);
+    display: inline-block;
+    min-width: 120px;
+  }
+
+  /* 4. Red dot accent (standalone) */
+  .red-dot-accent {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    vertical-align: middle;
+    margin: 0 var(--ds-space-2);
+  }
+
+  /* 5. Project tile (large media + caption) */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+  }
+  .project-tile { display: block; }
+  .project-tile .media {
+    aspect-ratio: 4 / 3; /* inline: the project-grid signature ratio Pentagram uses across /work */
+    background: var(--ds-surface-2);
+    /* Lorem ipsum placeholder texture; in production this is a project still. */
+    background-image:
+      linear-gradient(135deg, #d6d6d0 0%, #e8e8e2 50%, #c8c8c2 100%);
+  }
+  .project-tile .caption {
+    padding: var(--ds-space-3) 0 0 0;
+  }
+  .project-tile .client {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .project-tile .title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 4px 0 0 0;
+  }
+
+  /* 6. Filter-tag */
+  .filter-row { display: flex; flex-wrap: wrap; gap: var(--ds-space-2); }
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--ds-radius-none);
+  }
+  .filter-tag[aria-pressed="true"] {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+  }
+  .filter-tag .close {
+    font-family: var(--ds-font-mono);
+    font-size: 11px;
+    opacity: 0.6;
+  }
+
+  /* 7. Client-list-row */
+  .client-list { list-style: none; padding: 0; margin: 0; }
+  .client-list li {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-4) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    align-items: baseline;
+  }
+  .client-list .num {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .client-list .name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .client-list .sector {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* 8. Sticky alpha-letter nav (A-Z jumplist) */
+  .alpha-nav {
+    position: sticky;
+    top: 0;
+    background: var(--ds-bg);
+    padding: var(--ds-space-3) 0;
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--ds-border);
+    border-top: 1px solid var(--ds-border);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .alpha-nav a { color: var(--ds-text); }
+  .alpha-nav a.active { color: var(--ds-accent); }
+  .alpha-nav a:hover { color: var(--ds-accent); }
+
+  /* 9. Partner-portrait avatar */
+  .roster-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-6) var(--ds-space-5);
+  }
+  .roster-item .portrait {
+    aspect-ratio: 1 / 1; /* inline: Pentagram crops partner portraits square at 400x400 */
+    background: var(--ds-surface-2);
+    background-image: linear-gradient(160deg, #c0c0b8 0%, #e0e0d8 100%);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .roster-item .partner-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    margin: 0;
+  }
+  .roster-item .partner-city {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 2px 0 0 0;
+  }
+
+  /* 10. Journal article card */
+  .journal-card {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-5) 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .journal-card .thumb {
+    aspect-ratio: 4 / 3;
+    background: var(--ds-surface-2);
+    background-image: linear-gradient(135deg, #d0d0ca 0%, #b8b8b2 100%);
+  }
+  .journal-card .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .journal-card .headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 500;
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .journal-card .dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0 0 var(--ds-space-3) 0;
+    max-width: 60ch;
+  }
+  .journal-card .meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* 11. News card */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+  }
+  .news-card { display: flex; flex-direction: column; }
+  .news-card .thumb {
+    aspect-ratio: 16 / 10;
+    background: var(--ds-surface-2);
+    background-image: linear-gradient(110deg, #c5c5be 0%, #ebebe4 100%);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .news-card .date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .news-card .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+
+  /* Two-up labels for the demo */
+  h2.demo-h {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+</style>
+</head>
+<body>
+<main class="specimen">
+
+  <!-- 1. Oversized statement -->
+  <section class="section">
+    <p class="section-label">01 / Oversized statement</p>
+    <h1 class="statement">Lorem ipsum dolor sit amet<span class="red-dot">.</span></h1>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 2. Swiss-rule kicker + red dot -->
+  <section class="section">
+    <p class="section-label">02 / Swiss-rule kicker and red dot</p>
+    <div>
+      <span class="swiss-kicker">Lorem ipsum</span>
+      <p style="font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); line-height: var(--ds-leading-tight); letter-spacing: var(--ds-tracking-tight); font-weight: 500; margin: var(--ds-space-3) 0 0 0; max-width: 22ch;">
+        Consectetur adipiscing elit<span class="red-dot-accent" aria-hidden="true"></span>sed do eiusmod
+      </p>
+    </div>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 3. Project tile grid (large media + caption) -->
+  <section class="section">
+    <p class="section-label">03 / Project tile (large media plus caption)</p>
+    <div class="project-grid">
+      <a class="project-tile" href="#">
+        <div class="media"></div>
+        <div class="caption">
+          <p class="client">Lorem Ipsum Foundation</p>
+          <p class="title">Brand identity for a fictional civic institution</p>
+        </div>
+      </a>
+      <a class="project-tile" href="#">
+        <div class="media"></div>
+        <div class="caption">
+          <p class="client">Dolor Sit Amet Museum</p>
+          <p class="title">Wayfinding and signage</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 4. Filter tags -->
+  <section class="section">
+    <p class="section-label">04 / Filter tag</p>
+    <div class="filter-row">
+      <button class="filter-tag" type="button">Brand Identity</button>
+      <button class="filter-tag" type="button" aria-pressed="true">Books <span class="close">[close]</span></button>
+      <button class="filter-tag" type="button">Wayfinding</button>
+      <button class="filter-tag" type="button">Campaigns</button>
+      <button class="filter-tag" type="button">Data-Driven Experiences</button>
+    </div>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 5. Client-list-row + sticky alpha nav -->
+  <section class="section">
+    <p class="section-label">05 / Client list row and alpha-letter nav</p>
+    <nav class="alpha-nav" aria-label="A to Z client jumplist">
+      <a href="#a" class="active">A</a><a href="#b">B</a><a href="#c">C</a><a href="#d">D</a>
+      <a href="#e">E</a><a href="#f">F</a><a href="#g">G</a><a href="#h">H</a>
+      <a href="#i">I</a><a href="#j">J</a><a href="#k">K</a><a href="#l">L</a>
+      <a href="#m">M</a><a href="#n">N</a><a href="#o">O</a><a href="#p">P</a>
+      <a href="#q">Q</a><a href="#r">R</a><a href="#s">S</a><a href="#t">T</a>
+      <a href="#u">U</a><a href="#v">V</a><a href="#w">W</a><a href="#x">X</a>
+      <a href="#y">Y</a><a href="#z">Z</a>
+    </nav>
+    <ul class="client-list">
+      <li id="a"><span class="num">001</span><span class="name">Aliquip Ex Ea Commodo</span><span class="sector">Arts and Culture</span></li>
+      <li><span class="num">002</span><span class="name">Aute Irure Dolor</span><span class="sector">Civic and Public</span></li>
+      <li><span class="num">003</span><span class="name">Bona Fide Cupidatat</span><span class="sector">Consumer Brands</span></li>
+      <li><span class="num">004</span><span class="name">Consectetur Adipiscing</span><span class="sector">Climate and Sustainability</span></li>
+    </ul>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 6. Studio-roster grid (partner portrait avatar) -->
+  <section class="section">
+    <p class="section-label">06 / Studio roster grid item and partner-portrait avatar</p>
+    <h2 class="demo-h">Lorem partners</h2>
+    <div class="roster-grid">
+      <a class="roster-item" href="#">
+        <div class="portrait"></div>
+        <p class="partner-name">Aliqua Ut Enim</p>
+        <p class="partner-city">London</p>
+      </a>
+      <a class="roster-item" href="#">
+        <div class="portrait"></div>
+        <p class="partner-name">Veniam Quis Nostrud</p>
+        <p class="partner-city">New York</p>
+      </a>
+      <a class="roster-item" href="#">
+        <div class="portrait"></div>
+        <p class="partner-name">Laboris Nisi Ullamco</p>
+        <p class="partner-city">Austin</p>
+      </a>
+      <a class="roster-item" href="#">
+        <div class="portrait"></div>
+        <p class="partner-name">Exercitation Aliqua</p>
+        <p class="partner-city">Berlin</p>
+      </a>
+    </div>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 7. Journal-article-card -->
+  <section class="section">
+    <p class="section-label">07 / Journal article card</p>
+    <article class="journal-card">
+      <div class="thumb"></div>
+      <div>
+        <p class="kicker">Essay</p>
+        <h2 class="headline">Lorem ipsum dolor sit amet consectetur adipiscing elit</h2>
+        <p class="dek">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p class="meta">By Lorem Ipsum &middot; 12 May 2026</p>
+      </div>
+    </article>
+    <article class="journal-card">
+      <div class="thumb"></div>
+      <div>
+        <p class="kicker">Interview</p>
+        <h2 class="headline">Duis aute irure dolor in reprehenderit voluptate</h2>
+        <p class="dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p class="meta">By Dolor Sit &middot; 04 May 2026</p>
+      </div>
+    </article>
+  </section>
+
+  <hr class="hairline"/>
+
+  <!-- 8. News-card grid -->
+  <section class="section">
+    <p class="section-label">08 / News card</p>
+    <div class="news-grid">
+      <a class="news-card" href="#">
+        <div class="thumb"></div>
+        <p class="date">14 May 2026</p>
+        <p class="title">Lorem ipsum announces dolor sit amet</p>
+      </a>
+      <a class="news-card" href="#">
+        <div class="thumb"></div>
+        <p class="date">09 May 2026</p>
+        <p class="title">Consectetur adipiscing elicits new commission</p>
+      </a>
+      <a class="news-card" href="#">
+        <div class="thumb"></div>
+        <p class="date">02 May 2026</p>
+        <p class="title">Sed do eiusmod returns to the museum</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

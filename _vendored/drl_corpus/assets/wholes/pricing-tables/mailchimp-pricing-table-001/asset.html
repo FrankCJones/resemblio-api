@@ -1,0 +1,402 @@
+<!--
+  Asset: mailchimp-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid + comparison-feature-table
+  Inspired by: Mailchimp /pricing/marketing
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001            (paper-white surface, peppercorn ink)
+    - cards/hairline-flat-001                (tier card frame)
+    - buttons/primary-square-001             (yellow CTA button, small radius)
+    - buttons/ghost-bordered-001             (secondary tier CTAs)
+    - badges/status-pill-001                 ("Recommended" yellow flag)
+    - headings/display-tight-001             (tier name and price)
+    - kickers/mono-eyebrow-001               (mono category headers in table)
+    - icons/stroke-line-uniform-001          (check / dash glyphs)
+    - dividers/hairline-rule-001             (category-group separators)
+  Notes:
+    - Four-up tier grid (not three) is the distinguishing structural choice:
+      Free, Essentials, Standard, Premium. Standard carries the recommended
+      flag - Mailchimp surfaces best-value at the third position, not the
+      middle. Cavendish Yellow CTA is the signature color decision.
+    - Variable: every named role (card frame, CTA fill, accent flag, table
+      row layout, category band) lives in a token. Inline: the recommended
+      tier's yellow top-rail and "Recommended" flag offset are pricing-
+      page-specific tuning, not reusable atoms.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .pricing { max-width: 1200px; margin: 0 auto; }
+
+  /* Section header. Warm display; balanced wrap. */
+  .pricing__header {
+    text-align: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .pricing__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .pricing__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: var(--ds-space-3) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Save-band: warm chip above the tier grid. */
+  .pricing__save {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-5);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    background: var(--ds-accent);
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Four-up tier grid. Distinguishing choice vs the three-card default. */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-12);
+  }
+  @media (max-width: 1080px) { .tiers { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px)  { .tiers { grid-template-columns: 1fr; } }
+
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+
+  /* Recommended tier: yellow top rail + soft lift, no surface inversion.
+   * This is the inline pricing-page tuning; the rail thickness is
+   * calibrated to sit flush above the card without changing card height. */
+  .tier--recommended {
+    box-shadow: var(--ds-shadow-md);
+    border-color: var(--ds-text);
+  }
+  .tier--recommended::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 6px;
+    background: var(--ds-accent);
+    border-top-left-radius: var(--ds-radius-md);
+    border-top-right-radius: var(--ds-radius-md);
+  }
+  .tier__flag {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--ds-accent);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-text);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .tier__pitch {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    min-height: 3.5em;
+  }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+  }
+  .tier__amount {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+    color: var(--ds-text-strong);
+  }
+  .tier__period {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTAs. Yellow square primary on recommended tier; ghost-bordered on
+   * unfeatured tiers. Small radius - Mailchimp does not use pills here. */
+  .tier__cta {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+    margin-top: auto;
+  }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: var(--ds-text);
+    border: 1px solid var(--ds-text);
+  }
+  .tier__cta--primary:hover { box-shadow: var(--ds-shadow-sm); }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-text);
+  }
+  .tier__cta--ghost:hover { background: var(--ds-surface-2); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Highlights list inside each tier card. */
+  .tier__highlights {
+    list-style: none;
+    padding: 0;
+    margin: var(--ds-space-3) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier__highlights li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+  }
+  .check { width: 16px; height: 16px; color: var(--ds-success); flex-shrink: 0; }
+
+  /* Comparison table. Category band headers in mono; cells in sans. */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    text-align: left;
+  }
+  .compare thead th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-text);
+    position: sticky;
+    top: 0;
+    background: var(--ds-bg);
+  }
+  .compare thead th:first-child { color: var(--ds-text-muted); font-weight: 500; }
+  .compare tbody td,
+  .compare tbody th {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+    text-align: left;
+  }
+  .compare tbody td {
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .compare tbody tr:hover td,
+  .compare tbody tr:hover th { background: var(--ds-surface-2); }
+
+  .compare .group td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare .check-cell { color: var(--ds-success); }
+  .compare .dash-cell  { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="pricing">
+    <header class="pricing__header">
+      <div class="pricing__eyebrow">Lorem ipsum dolor</div>
+      <h1 class="pricing__h1">Sit amet consectetur adipiscing, elit pricing tiers.</h1>
+      <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+      <div class="pricing__save">Save 15% lorem ipsum dolor</div>
+    </header>
+
+    <div class="tiers">
+      <article class="tier">
+        <h2 class="tier__name">Lorem</h2>
+        <p class="tier__pitch">Curabitur nec libero non nisi convallis fringilla, for solo lorem ipsum dolor sit.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$0</span>
+          <span class="tier__period">per month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem ipsum dolor sit amet</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Consectetur adipiscing elit, sed do</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Eiusmod tempor incididunt</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Sign up free</button>
+      </article>
+
+      <article class="tier">
+        <h2 class="tier__name">Ipsum</h2>
+        <p class="tier__pitch">Aliqua ut enim ad minim veniam, quis nostrud exercitation ullamco lorem.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$13</span>
+          <span class="tier__period">per month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Lorem, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Laboris nisi ut aliquip ex</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Commodo consequat duis aute</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Irure dolor in reprehenderit</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Buy now</button>
+      </article>
+
+      <article class="tier tier--recommended">
+        <span class="tier__flag">Recommended</span>
+        <h2 class="tier__name">Dolor</h2>
+        <p class="tier__pitch">Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$20</span>
+          <span class="tier__period">per month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Ipsum, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Occaecat cupidatat non proident</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sunt in culpa qui officia</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Deserunt mollit anim id est</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Laborum sed perspiciatis</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--primary">Start free trial</button>
+      </article>
+
+      <article class="tier">
+        <h2 class="tier__name">Sit</h2>
+        <p class="tier__pitch">Unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$350</span>
+          <span class="tier__period">per month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Dolor, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Totam rem aperiam eaque ipsa</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Quae ab illo inventore veritatis</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Et quasi architecto beatae</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+      </article>
+    </div>
+
+    <table class="compare" aria-label="Detailed feature comparison">
+      <thead>
+        <tr>
+          <th scope="col">Compare plans</th>
+          <th scope="col">Lorem</th>
+          <th scope="col">Ipsum</th>
+          <th scope="col">Dolor</th>
+          <th scope="col">Sit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="5">Lorem email and campaigns</td></tr>
+        <tr><th scope="row">Monthly send limit</th><td>500</td><td>10x contacts</td><td>12x contacts</td><td>15x contacts</td></tr>
+        <tr><th scope="row">Audience contacts</th><td>250</td><td>50,000</td><td>100,000</td><td>Unlimited</td></tr>
+        <tr><th scope="row">Pop-up forms</th><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Landing pages</th><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+
+        <tr class="group"><td colspan="5">Ipsum automation and AI</td></tr>
+        <tr><th scope="row">Automation steps</th><td class="dash-cell">—</td><td>4</td><td>200</td><td>200</td></tr>
+        <tr><th scope="row">Generative AI assist</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Send-time optimisation</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">A/B and multivariate testing</th><td class="dash-cell">—</td><td>A/B only</td><td class="check-cell">Multivariate</td><td class="check-cell">Multivariate</td></tr>
+
+        <tr class="group"><td colspan="5">Dolor audience and segmentation</td></tr>
+        <tr><th scope="row">Predictive segments</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Advanced segmentation</th><td class="dash-cell">—</td><td>Basic</td><td class="check-cell">Advanced</td><td class="check-cell">Advanced</td></tr>
+        <tr><th scope="row">Multivariate journeys</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+
+        <tr class="group"><td colspan="5">Sit team and support</td></tr>
+        <tr><th scope="row">User seats</th><td>1</td><td>3</td><td>5</td><td>Unlimited</td></tr>
+        <tr><th scope="row">Email support</th><td>30 days</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Priority</td></tr>
+        <tr><th scope="row">Live chat</th><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Phone support</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">24/7</td></tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

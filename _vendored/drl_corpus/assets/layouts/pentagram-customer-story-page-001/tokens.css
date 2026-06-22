@@ -1,0 +1,126 @@
+/*
+ * pentagram-customer-story-page-001 tokens
+ *
+ * Native token values for the Pentagram project case-study skeleton,
+ * inspired by pentagram.com/work/doris-duke-artist-awards-2026 (visited
+ * 2026-05-20 via WebFetch). Pentagram's project pages are paper-and-ink
+ * with red reserved as punctuation: pure white field, near-black ink,
+ * one muted gray for metadata, hairline rules in ink (not gray) at
+ * section breaks. The hero is full-bleed editorial imagery; the body
+ * alternates full-bleed and inset image grids; pull quotes break to
+ * editorial display scale; credits and related-projects sit on
+ * hairline-ruled bands.
+ *
+ * Tokens mirror the system manifest (systems/pentagram/system.json) and
+ * the existing pentagram-tagged atoms (swatches/swiss-red-pentagram-001,
+ * press-strips/pentagram-client-strip-001). WebFetch confirmed page
+ * sequence, metadata field labels (Client, Sector, Discipline, Office,
+ * Partner, Project team, Collaborators), sans-serif register, slash
+ * separators between disciplines, and the related-project strip and
+ * three-column footer; computed style hex values were not exposed in
+ * markdown, so numeric values follow the Pentagram system convention.
+ *
+ * Layout-specific notes: the narrative reading column sits at ~64ch
+ * (inline rule in asset.html). The metadata band, full-bleed images,
+ * credits band, related-strip and footer all widen to the page
+ * container. Red is permitted only on the hero kicker dot, an inline
+ * editorial mark, and the related-strip arrow; the body itself stays in
+ * ink.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper and ink with red as punctuation. The accent is real Swiss red
+   * (matches swatches/swiss-red-pentagram-001) but the page uses it
+   * sparingly: not on body text, not on metadata, only on a hero dot,
+   * one inline credit mark, and the related-strip arrow.
+   */
+  --ds-bg:           #FFFFFF;   /* Pure white. Pentagram refuses to warm the page. */
+  --ds-surface:      #FFFFFF;   /* The story sits flush on the page; no raised surface. */
+  --ds-surface-2:    #FAFAFA;   /* Reserved; metadata band optional half-tint. */
+  --ds-text:         #111111;   /* Near-black ink for body and titles. */
+  --ds-text-muted:   #6B6B6B;   /* Metadata labels, credit roles, footer secondary. */
+  --ds-text-strong:  #000000;   /* Hero title and pull-quote display. */
+  --ds-border:       #E5E5E5;   /* Reserved; cards do not appear in this layout. */
+  --ds-hairline:     #1A1A1A;   /* Section rules drawn in ink, not gray. */
+  --ds-accent:       #E30613;   /* Swiss red; reserved for punctuation moments only. */
+  --ds-accent-2:     #6B6B6B;   /* Demoted hover state and secondary mark. */
+  --ds-success:      #1F6B3A;   /* Reserved. */
+  --ds-warning:      #8A6A1F;   /* Reserved. */
+  --ds-error:        #B11A1A;   /* Reserved. */
+  --ds-info:         #111111;   /* Info collapses to text color. */
+  --ds-focus-ring:   #111111;   /* Black focus ring against white paper. */
+
+  /* ---------- Type families ----------
+   * Pentagram ships custom F37 Foundry display on the live site; the
+   * open fallback here is Inter Display for display, Inter for body,
+   * JetBrains Mono for the rare technical kicker. No mono on metadata;
+   * Pentagram uses sans for everything including labels.
+   */
+  --ds-font-display: "Inter Display", "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --ds-font-body:    "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Display", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Metadata label, footer secondary. */
+  --ds-text-sm:   14px;   /* Metadata value, credits, related-card meta. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   20px;   /* Lead paragraph. */
+  --ds-text-xl:   26px;   /* Image caption display, body H3. */
+  --ds-text-2xl:  34px;   /* Body H2 section heads. */
+  --ds-text-3xl:  44px;   /* Pull quote display. */
+  --ds-text-4xl:  56px;   /* Related-strip title. */
+  --ds-text-5xl:  72px;   /* Hero project title. */
+  --ds-text-6xl:  96px;   /* Editorial statement override. */
+  --ds-text-7xl:  128px;  /* Reserved for statement moments. */
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.02;   /* Hero title; very tight Swiss display. */
+  --ds-leading-snug:    1.15;   /* Pull quote, H2 section heads. */
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;    /* Body reading. */
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.025em; /* Hero display squeeze. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;   /* Reserved; this layout uses sentence-case labels. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Hard corners. Pentagram does not round.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   8px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * No elevation anywhere. Editorial chrome only.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   none;
+  --ds-shadow-lg:   none;
+  --ds-shadow-2xl:  none;
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,559 @@
+<!--
+  Asset: linear-docs-page-001
+  Class: layouts
+  Pattern: docs-three-column, sticky-sidebar-nav, toc-rail, prev-next-pager
+  Inspired by: Linear docs (linear.app/docs)
+  Notes:
+    - The page skeleton is the load-bearing decision: a full-width
+      flush top-nav band over a centered three-column body (sticky
+      sidebar tree, article column, sticky TOC rail), closing with a
+      prev/next pager and a thin footer. Linear's docs surface is the
+      LIGHT mirror of the dark marketing register: same Inter Variable
+      single-family system, same indigo accent, but inverted to a
+      near-white reading page. Chrome carries zero chromatic accent;
+      indigo appears only on inline body links and the current
+      sidebar item.
+    - Sidebar items, TOC anchors, and prev/next labels are lorem ipsum
+      placeholders. The structural variables this asset captures are
+      the three-column grid (240px / 1fr / 220px - tighter than the
+      Anthropic 280/240 because Linear's sidebar runs more shallow and
+      its TOC anchors stay short), the sticky behavior of left and
+      right rails, the current-item indigo left-rule, the kbd-hint
+      pattern on the search input (Linear's Cmd+K signature), and the
+      section sequence inside the article.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-docs-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* Reset only what the layout needs. Cross-asset reset lives in the harness. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11", "ss01";  /* Inter Variable stylistic set; Linear's signature ink. */
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Top nav band. Full-width, flush against the viewport top, single
+   * hairline rule under it. Inside, content sits inside a 1280px max
+   * container with 32px horizontal padding. The nav itself is
+   * left-aligned wordmark + primary nav cluster, right-aligned search
+   * + theme + dual CTAs (Sign up + Open app). Sticky to viewport top.
+   */
+  .topnav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topnav__inner {
+    max-width: 1280px;            /* page chrome max-width; tighter than Anthropic's 1440. */
+    margin: 0 auto;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+  .topnav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 538;             /* Linear's wordmark weight signature. */
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    flex-shrink: 0;
+  }
+  .topnav__links {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+    font-weight: 510;             /* Linear nav-link weight signature. */
+    color: var(--ds-text-muted);
+  }
+  .topnav__spacer { flex: 1; }
+  .topnav__search {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    min-width: 240px;             /* search-input min width, inline. */
+  }
+  .topnav__kbd {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-text-muted);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: 1px 5px;             /* kbd-hint pill chrome; inline values. */
+  }
+  .topnav__cta-ghost {
+    font-size: var(--ds-text-sm);
+    font-weight: 510;
+    color: var(--ds-text);
+    padding: var(--ds-space-2) var(--ds-space-3);
+  }
+  .topnav__cta {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border-radius: var(--ds-radius-full);  /* Linear's CTA pill signature. */
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    font-weight: 510;
+  }
+
+  /*
+   * Body shell. Three columns: 240px sidebar / fluid article / 220px
+   * TOC. Maximum width 1280px centered. On tablet the TOC drops; on
+   * mobile both rails drop and the sidebar becomes a toggleable
+   * drawer (drawer chrome elided here for the skeleton).
+   */
+  .shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .shell { grid-template-columns: 240px minmax(0, 1fr); }
+  }
+  @media (min-width: 1200px) {
+    .shell { grid-template-columns: 240px minmax(0, 1fr) 220px; }
+  }
+
+  /*
+   * Sidebar nav (left rail). Sticky to top-nav offset. Group headers
+   * carry an uppercase tracked label (sans, --ds-tracking-wider).
+   * Group children sit at sm size with --ds-space-2 vertical rhythm
+   * (tighter than Anthropic's editorial --ds-space-3). Current item
+   * carries a left-edge indigo rule and ink-strong color.
+   */
+  .sidebar {
+    position: sticky;
+    top: calc(var(--ds-space-12));
+    align-self: start;
+    padding-block: var(--ds-space-6);
+    max-height: calc(100vh - var(--ds-space-12));
+    overflow-y: auto;
+    border-right: 1px solid var(--ds-hairline);
+    padding-right: var(--ds-space-4);
+  }
+  .sidebar__group { margin-bottom: var(--ds-space-5); }
+  .sidebar__group-label {
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+  }
+  .sidebar__item {
+    display: block;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .sidebar__item--current {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+    font-weight: 510;
+    /* Inline: current-item gets a 2px indigo left-edge rule, the only
+     * chromatic moment in the sidebar chrome. */
+    box-shadow: inset 2px 0 0 var(--ds-accent);
+  }
+
+  /*
+   * Article column. Max measure around 720px keeps reading rhythm
+   * within a reference-material column. Page title H1 at 3xl sans
+   * with display-tight tracking; section H2 at xl sans; body at base
+   * reading. Inline body links carry the indigo accent.
+   */
+  .article {
+    padding-block: var(--ds-space-8);
+    max-width: 720px;             /* article reading-column max-width; tighter than Anthropic's 760. */
+  }
+  .article__breadcrumb {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article__h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 538;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .article__lead {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .article__h2 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 538;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: -0.01em;       /* inline: H2 tracking slightly tighter than scale default. */
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+  .article p { margin: 0 0 var(--ds-space-5); }
+  .article__link {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;    /* inline: link underline sits a touch off the baseline. */
+    text-decoration-thickness: 1px;
+  }
+
+  /* Callout block: tinted strip with left-edge indigo rule. */
+  .callout {
+    background: var(--ds-surface-2);
+    border-left: 3px solid var(--ds-accent);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+    margin: var(--ds-space-6) 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+
+  /* Code block frame. Mono inside a tinted reference surface. */
+  .codeblock {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: var(--ds-space-5) 0;
+    overflow-x: auto;
+  }
+
+  /* Card group inside an article. Two- or three-up grid of slot cards. */
+  .card-grid {
+    display: grid;
+    gap: var(--ds-space-4);
+    grid-template-columns: 1fr;
+    margin: var(--ds-space-5) 0;
+  }
+  @media (min-width: 640px) { .card-grid--2 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 900px) { .card-grid--3 { grid-template-columns: repeat(3, 1fr); } }
+
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+  }
+  .card__title {
+    font-size: var(--ds-text-base);
+    font-weight: 538;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .card__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Prev/next pager. Sits at end of article column, before the footer. */
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .pager__cell {
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    background: var(--ds-surface);
+  }
+  .pager__cell--next { text-align: right; }
+  .pager__direction {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-1);
+  }
+  .pager__label {
+    font-size: var(--ds-text-base);
+    font-weight: 510;
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * TOC rail (right). Sticky to top-nav offset. Anchors at xs size in
+   * sans; current anchor takes indigo-accent color. Vertical rule on
+   * the left edge of the rail (--ds-hairline) so the column reads as
+   * a tertiary chrome surface rather than free-floating links.
+   */
+  .toc {
+    position: sticky;
+    top: calc(var(--ds-space-12));
+    align-self: start;
+    padding-block: var(--ds-space-8);
+    padding-left: var(--ds-space-5);
+    border-left: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-xs);
+    max-height: calc(100vh - var(--ds-space-12));
+    overflow-y: auto;
+  }
+  .toc__label {
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .toc__anchor {
+    display: block;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-1) 0;
+  }
+  .toc__anchor--current { color: var(--ds-accent); font-weight: 510; }
+  .toc__anchor--nested { padding-left: var(--ds-space-3); }
+
+  /* Footer band. Thin, full-width, single hairline above. */
+  .footer {
+    border-top: 1px solid var(--ds-hairline);
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-6);
+  }
+  .footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-nav. Flush, sticky. Wordmark + links + search-with-kbd-hint + ghost CTA + pill CTA. -->
+  <header class="topnav" aria-label="Primary">
+    <div class="topnav__inner">
+      <span class="topnav__wordmark">Lorem</span>
+      <nav class="topnav__links" aria-label="Primary links">
+        <a href="#">Lorem</a>
+        <a href="#">Ipsum</a>
+        <a href="#">Dolor</a>
+        <a href="#">Sit</a>
+      </nav>
+      <span class="topnav__spacer"></span>
+      <span class="topnav__search" role="search">
+        <span>Lorem ipsum&hellip;</span>
+        <span class="topnav__kbd">/</span>
+      </span>
+      <a class="topnav__cta-ghost" href="#">Lorem amet</a>
+      <a class="topnav__cta" href="#">Lorem app</a>
+    </div>
+  </header>
+
+  <!-- Body shell: sidebar + article + TOC rail. -->
+  <div class="shell">
+
+    <!-- Left rail: sidebar navigation tree. -->
+    <aside class="sidebar" aria-label="Documentation navigation">
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Lorem started</div>
+        <a class="sidebar__item sidebar__item--current" href="#">Lorem ipsum dolor</a>
+        <a class="sidebar__item" href="#">Consectetur adipiscing</a>
+        <a class="sidebar__item" href="#">Sed do eiusmod</a>
+        <a class="sidebar__item" href="#">Tempor incididunt</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Ipsum core</div>
+        <a class="sidebar__item" href="#">Ut enim ad minim</a>
+        <a class="sidebar__item" href="#">Quis nostrud</a>
+        <a class="sidebar__item" href="#">Exercitation ullamco</a>
+        <a class="sidebar__item" href="#">Laboris nisi</a>
+        <a class="sidebar__item" href="#">Aliquip ex ea</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Dolor flows</div>
+        <a class="sidebar__item" href="#">Duis aute irure</a>
+        <a class="sidebar__item" href="#">Reprehenderit in</a>
+        <a class="sidebar__item" href="#">Voluptate velit</a>
+      </div>
+
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Sit amet integrations</div>
+        <a class="sidebar__item" href="#">Excepteur sint</a>
+        <a class="sidebar__item" href="#">Occaecat cupidatat</a>
+        <a class="sidebar__item" href="#">Non proident</a>
+      </div>
+
+    </aside>
+
+    <!-- Article column. Pattern: docs-article. -->
+    <main class="article" aria-label="Article">
+
+      <div class="article__breadcrumb">Lorem &middot; Ipsum &middot; Dolor</div>
+
+      <h1 class="article__h1" id="lorem-h1">Lorem ipsum dolor sit amet</h1>
+
+      <p class="article__lead">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore. Visit
+        <a class="article__link" href="#">consectetur adipiscing</a> for
+        more context on the magna aliqua pattern.
+      </p>
+
+      <!-- Body block: tip / note callout. -->
+      <div class="callout">
+        <strong>Lorem.</strong> Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua.
+      </div>
+
+      <!-- Body block: code block. -->
+      <pre class="codeblock">lorem ipsum dolor sit amet
+  consectetur adipiscing elit
+  sed do eiusmod tempor</pre>
+
+      <!-- Section H2: setup steps as a card grid. -->
+      <h2 class="article__h2" id="setup">Lorem setup section</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+
+      <div class="card-grid card-grid--2">
+        <div class="card">
+          <h3 class="card__title">Lorem step one</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem step two</h3>
+          <p class="card__body">Sed do eiusmod tempor incididunt ut labore et dolore.</p>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem step three</h3>
+          <p class="card__body">Ut enim ad minim veniam, quis nostrud exercitation.</p>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem step four</h3>
+          <p class="card__body">Duis aute irure dolor in reprehenderit in voluptate velit.</p>
+        </div>
+      </div>
+
+      <!-- Section H2: core concepts as a three-up. -->
+      <h2 class="article__h2" id="concepts">Lorem core concepts</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore.
+      </p>
+
+      <div class="card-grid card-grid--3">
+        <div class="card">
+          <h3 class="card__title">Lorem issues</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem cycles</h3>
+          <p class="card__body">Sed do eiusmod tempor incididunt ut labore.</p>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem projects</h3>
+          <p class="card__body">Ut enim ad minim veniam, quis nostrud.</p>
+        </div>
+      </div>
+
+      <!-- Section H2: integrations two-up. -->
+      <h2 class="article__h2" id="integrations">Lorem integrations</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do.</p>
+
+      <div class="card-grid card-grid--2">
+        <div class="card">
+          <h3 class="card__title">Lorem source control</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+        </div>
+        <div class="card">
+          <h3 class="card__title">Lorem comms</h3>
+          <p class="card__body">Sed do eiusmod tempor incididunt ut labore.</p>
+        </div>
+      </div>
+
+      <!-- Prev/next pager. -->
+      <nav class="pager" aria-label="Page navigation">
+        <a class="pager__cell" href="#">
+          <span class="pager__direction">&larr; Previous</span>
+          <span class="pager__label">Lorem ipsum dolor</span>
+        </a>
+        <a class="pager__cell pager__cell--next" href="#">
+          <span class="pager__direction">Next &rarr;</span>
+          <span class="pager__label">Consectetur adipiscing</span>
+        </a>
+      </nav>
+
+    </main>
+
+    <!-- Right rail: TOC. Pattern: toc-rail. -->
+    <aside class="toc" aria-label="On this page">
+      <div class="toc__label">On this page</div>
+      <a class="toc__anchor toc__anchor--current" href="#lorem-h1">Lorem ipsum dolor</a>
+      <a class="toc__anchor" href="#setup">Lorem setup section</a>
+      <a class="toc__anchor toc__anchor--nested" href="#">Lorem step one</a>
+      <a class="toc__anchor toc__anchor--nested" href="#">Lorem step two</a>
+      <a class="toc__anchor" href="#concepts">Lorem core concepts</a>
+      <a class="toc__anchor" href="#integrations">Lorem integrations</a>
+    </aside>
+
+  </div>
+
+  <!-- Footer band. Thin meta strip, not a mega-footer. -->
+  <footer class="footer" aria-label="Footer">
+    <div class="footer__inner">
+      <span>Lorem ipsum &copy; dolor sit amet</span>
+      <span>Lorem &middot; Ipsum &middot; Dolor &middot; Sit</span>
+    </div>
+  </footer>
+
+</body>
+</html>

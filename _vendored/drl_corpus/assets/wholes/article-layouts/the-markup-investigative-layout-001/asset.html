@@ -1,0 +1,383 @@
+<!--
+  Asset: markup-investigative-layout-001
+  Class: article-layouts (whole)
+  Pattern: editorial-hero, kicker-with-rule, pull-quote-breakout
+  Inspired by: The Markup
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/duotone-blue-cream-001       (navy field + cream column triad)
+    - type-pairings/serif-mono-editorial-001    (serif headline and body, sans kicker, mono meta)
+    - headings/editorial-newspaper-001          (serif story headline)
+    - kickers/mono-eyebrow-001                  (uppercase category kicker)
+    - badges/category-saturated-badge-001       (coral category flag variant; here as kicker color)
+    - body-text/lead-paragraph-001              (dek styling above the lede)
+    - body-text/pull-quote-breakout-001         (image-led pull quote interrupting the column)
+    - labels/metadata-mono-001                  (mono byline and dateline)
+    - dividers/hairline-rule-001                (coral rule under the byline; hairline beneath kicker)
+  Notes:
+    - The layout reuses the documented Markup token triad (navy bg, cream
+      reading column, coral kicker). The cream column is the load-bearing
+      decision; it lifts the story off the navy field without a card frame.
+    - The pull quote is image-led: a 16:9 figure to the left of an oversized
+      serif quotation in the column. The figure's caption sits beneath the
+      figure in muted sans; the quotation attribution sits beneath the quote
+      in coral sans uppercase, echoing the kicker.
+    - Inline ornament that does not warrant a contract slot: the diagonal
+      grain on the figure placeholder (used in lieu of real lead imagery)
+      and the 2px coral rule beneath the byline (a one-off character cue).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>markup-investigative-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Ivar Display is a commercial face from Letters from Sweden; the asset
+     falls back to Newsreader (Google Fonts, open) for headline and body so
+     the file renders standalone. Inter substitutes for Messina humanist
+     sans. JetBrains Mono is the open-source mono fallback. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Page frame. The navy field surrounds a cream reading column.
+   * The cream column is the article surface; nothing else lives in it. */
+  .page {
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+  .column {
+    max-width: 720px;          /* Long-form measure; ~70 char on 19px body. */
+    margin: 0 auto;
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    padding: var(--ds-space-12) var(--ds-space-10);
+  }
+  @media (max-width: 640px) {
+    .page { padding: var(--ds-space-5) var(--ds-space-3); }
+    .column { padding: var(--ds-space-8) var(--ds-space-5); }
+  }
+
+  /* Article header. Kicker, headline, dek, byline. The kicker sits in
+   * coral uppercase sans; the headline drops large serif beneath. */
+  .article__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-4) 0;
+    /* Hairline beneath the kicker; cream-neutral. */
+    padding-bottom: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: inline-block;
+    padding-right: var(--ds-space-6);
+  }
+
+  .article__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5) 0;
+    text-wrap: balance;
+  }
+
+  .article__dek {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-8) 0;
+  }
+
+  /* Byline block. Mono dateline + sans byline; a 2px coral rule above
+   * brackets the header. The coral rule is inline ornament: a one-off
+   * accent moment, not a hairline-scale rule. */
+  .article__byline {
+    margin: 0 0 var(--ds-space-10) 0;
+    padding-top: var(--ds-space-4);
+    border-top: 2px solid var(--ds-accent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .article__byline-author {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .article__byline-meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Lead image. Full column width; 16:9 crop. Caption beneath in muted
+   * sans. The placeholder grain hints at lead imagery. */
+  .article__figure {
+    margin: 0 0 var(--ds-space-8) 0;
+  }
+  .article__figure-image {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 14px,
+        rgba(36,42,73,0.06) 14px,
+        rgba(36,42,73,0.06) 15px);
+  }
+  .article__figure-caption {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-3) 0 0 0;
+  }
+
+  /* Body prose. Serif at 19px on cream. Tracking normal; leading 1.55. */
+  .article__body p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+  .article__body p:first-of-type::first-letter {
+    /* Subtle drop-cap; the editorial pattern. */
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: 3.4em;          /* Inline value: drop-cap is a one-off character moment. */
+    line-height: 0.9;
+    float: left;
+    padding: 0.04em var(--ds-space-2) 0 0;
+    color: var(--ds-text-strong);
+  }
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover { color: var(--ds-accent-2); }
+  .article__body a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Section subhead inside the body. Serif, mid-scale; sits closer to
+   * the paragraph beneath than the one above. */
+  .article__subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-3) 0;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Image-led pull quote. A two-column breakout inside the column:
+   * 16:9 figure on the left, oversized serif quote on the right. The
+   * coral kicker label above the quote echoes the article kicker. */
+  .article__pullquote {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-6) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) {
+    .article__pullquote { grid-template-columns: 5fr 7fr; align-items: start; }
+  }
+  .article__pullquote-figure {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    background-image:
+      repeating-linear-gradient(135deg,
+        transparent 0,
+        transparent 10px,
+        rgba(36,42,73,0.07) 10px,
+        rgba(36,42,73,0.07) 11px);
+  }
+  .article__pullquote-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .article__pullquote-kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .article__pullquote-text {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+    /* Italic for the quote register; the source uses upright pull quotes
+     * but the italic reads more clearly as quoted speech. */
+    font-style: italic;
+  }
+  .article__pullquote-attribution {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Footer: tags + share row. Sans, muted; sits below the body. */
+  .article__footer {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .article__tags {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .article__tags span + span::before {
+    content: "  /  ";
+    color: var(--ds-text-muted);
+  }
+  .article__republish {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <article class="column" aria-labelledby="story-headline">
+      <header>
+        <p class="article__kicker">Privacy / Investigation</p>
+        <h1 class="article__headline" id="story-headline">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.
+        </h1>
+        <p class="article__dek">
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+          voluptate velit esse cillum.
+        </p>
+        <div class="article__byline">
+          <span class="article__byline-author">By Lorem Ipsum and Dolor Sit Amet</span>
+          <span class="article__byline-meta">March 09, 2026 &middot; 14 min read</span>
+        </div>
+      </header>
+
+      <figure class="article__figure">
+        <div class="article__figure-image" aria-hidden="true"></div>
+        <figcaption class="article__figure-caption">
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+          doloremque laudantium. Photo illustration by Lorem Ipsum.
+        </figcaption>
+      </figure>
+
+      <div class="article__body">
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+          doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore
+          veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+          ipsam voluptatem quia voluptas sit aspernatur aut odit aut <a href="#cite">fugit</a>,
+          sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+        </p>
+        <p>
+          Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur,
+          adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et
+          dolore magnam aliquam quaerat voluptatem.
+        </p>
+
+        <h2 class="article__subhead">Ut enim ad minima veniam</h2>
+        <p>
+          Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam
+          nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas
+          nulla pariatur. At vero eos et accusamus et iusto odio dignissimos ducimus
+          qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
+          et quas molestias excepturi sint occaecati cupiditate non provident.
+        </p>
+
+        <aside class="article__pullquote" aria-label="Pull quote">
+          <div class="article__pullquote-figure" aria-hidden="true"></div>
+          <div class="article__pullquote-body">
+            <span class="article__pullquote-kicker">From the record</span>
+            <p class="article__pullquote-text">
+              "Et harum quidem rerum facilis est et expedita distinctio nam libero
+              tempore, cum soluta nobis est eligendi optio cumque nihil impedit."
+            </p>
+            <span class="article__pullquote-attribution">Lorem Ipsum, Source Documents</span>
+          </div>
+        </aside>
+
+        <p>
+          Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum
+          et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
+          Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit
+          quo minus id quod maxime placeat facere possimus.
+        </p>
+        <p>
+          Omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem
+          quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut
+          et voluptates repudiandae sint et molestiae non recusandae.
+        </p>
+      </div>
+
+      <footer class="article__footer">
+        <div class="article__tags">
+          <span>Privacy</span><span>Surveillance</span><span>Machine Learning</span>
+        </div>
+        <div class="article__republish">
+          Republish this article under Creative Commons.
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

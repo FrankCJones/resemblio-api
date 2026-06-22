@@ -1,0 +1,157 @@
+<!--
+  Asset: cursor-ui-tooltip-001
+  Class: tooltips
+  Pattern: (none)
+  Inspired by: Cursor
+  Notes:
+    - Hover-revealed UI tooltip; dark slate (zinc-950 family) surface, near-white text, hairline border, subtle fade-in on hover.
+    - Surface, text, hairline, radius, and motion duration are token-driven; the 6px offset above trigger, the 4px arrow geometry, and the translateY(2px) starting position are inline because they are the tooltip's specific spatial recipe.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-ui-tooltip-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Cursor uses an Inter-style sans; system fallback chain in tokens.css. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+    align-items: center;
+  }
+  .label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  /* Trigger: small dark pill with a hairline border, the canonical Cursor UI button register. */
+  .trigger {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    cursor: default;
+    position: relative;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .trigger:hover { color: var(--ds-text-strong); }
+  .trigger svg { width: 14px; height: 14px; opacity: 0.85; }
+
+  /* Tooltip: dark slate pill, hairline border, near-white text, subtle fade-in. */
+  .tooltip {
+    position: absolute;
+    /* inline: 6px gap above the trigger; the arrow consumes ~3px of that gap. */
+    bottom: calc(100% + 6px);
+    left: 50%;
+    /* inline: starts at translateY(2px) so the fade-in carries a tiny upward drift. */
+    transform: translateX(-50%) translateY(2px);
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-2xl);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1.45;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      opacity var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  /* Arrow: rotated square, borrows the tooltip surface + border so it reads as a tail. */
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    /* inline: 4px square rotated 45 degrees becomes a 5.65px diagonal tail. */
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: var(--ds-surface);
+    border-right: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  /* Hover reveals the tooltip with a soft fade and a small upward drift. */
+  .trigger:hover .tooltip,
+  .trigger:focus-visible .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .row {
+    display: flex;
+    gap: var(--ds-space-5);
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .hint {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    font-family: var(--ds-font-mono);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="label">Lorem ipsum tooltip</div>
+
+    <div class="row">
+      <button class="trigger" type="button" aria-describedby="tip-1">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M8 5v3l2 2"/>
+        </svg>
+        Lorem ipsum
+        <span class="tooltip" id="tip-1" role="tooltip">Dolor sit amet</span>
+      </button>
+
+      <button class="trigger" type="button" aria-describedby="tip-2">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 8h10M8 3v10"/>
+        </svg>
+        Consectetur
+        <span class="tooltip" id="tip-2" role="tooltip">Adipiscing elit</span>
+      </button>
+
+      <button class="trigger" type="button" aria-describedby="tip-3">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 4h12M2 8h12M2 12h12"/>
+        </svg>
+        Tempor
+        <span class="tooltip" id="tip-3" role="tooltip">Incididunt ut labore</span>
+      </button>
+    </div>
+
+    <div class="hint">Hover any pill to reveal the tooltip.</div>
+  </div>
+</body>
+</html>

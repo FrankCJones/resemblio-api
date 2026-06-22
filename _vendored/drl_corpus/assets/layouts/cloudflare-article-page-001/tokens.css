@@ -1,0 +1,112 @@
+/*
+ * cloudflare-article-page-001 tokens
+ *
+ * Tokens drawn from the Cloudflare Blog single-post page
+ * (blog.cloudflare.com/claude-managed-agents/), the canonical
+ * Cloudflare engineering-blog skeleton: white surface, Cloudflare
+ * signature orange (#F6821F) used sparingly on the topic-tag cluster
+ * and primary CTA, near-black headlines, mono utility for code blocks
+ * and the post-meta row, dense related-post grid below the body, a
+ * subscribe band before the dark footer.
+ *
+ * Chrome MCP refused the blog.cloudflare.com domain this session
+ * ("Navigation to this domain is not allowed"); WebFetch returned the
+ * section sequence (nav, kicker + title + byline + date + feature
+ * image, narrow body with code blocks, related-posts grid, subscribe
+ * CTA, footer), author/date/duration format, related-post count, and
+ * topic-tag vocabulary, but stripped inline computed styles. Color and
+ * type values come from the published Cloudflare brand register (the
+ * signature #F6821F orange, the Inter + JetBrains Mono pairing that
+ * defines blog.cloudflare.com), cross-checked against the system
+ * manifest's design_principles. Layout-specific values (column
+ * measure, page max-width, feature-image aspect) live inline in
+ * asset.html as page-grid character, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Page canvas. Cloudflare blog sits on pure white. */
+  --ds-surface:      #F7F8F9;   /* Raised surface; code-block fill, subscribe band. */
+  --ds-surface-2:    #EEF0F2;   /* Second surface tint; inline figures and related-card placeholders. */
+  --ds-text:         #222222;   /* Article body ink; near-black reading color. */
+  --ds-text-muted:   #6B7177;   /* Byline, date, duration, post metadata. */
+  --ds-text-strong:  #0A0A0A;   /* Article title display, H2/H3. */
+  --ds-border:       #E2E5E8;   /* Card edges, hairline card chrome. */
+  --ds-hairline:     #E8EBEE;   /* Section breaks between hero / body / related / subscribe. */
+  --ds-accent:       #F6821F;   /* Cloudflare signature orange; primary CTA, topic-tag cluster. */
+  --ds-accent-2:     #2C7CB0;   /* Cool blue; in-body link affordance. */
+  --ds-success:      #00A95C;
+  --ds-warning:      #D6A300;
+  --ds-error:        #C0392B;
+  --ds-info:         #2C7CB0;
+  --ds-focus-ring:   #F6821F;   /* Focus ring picks up the brand accent. */
+
+  /* ---------- Type families ----------
+   * Cloudflare's marketing and blog surfaces use Inter as the working
+   * sans across display and body, paired with JetBrains Mono for
+   * code blocks and technical metadata. The post-meta row ("7 min read",
+   * tag pills) sits in sans, not mono.
+   */
+  --ds-font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --ds-font-accent:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Topic-tag kicker; uppercase mono meta. */
+  --ds-text-sm:   14px;   /* Byline, date, duration, footer links. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   20px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   24px;   /* Body H3. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* Related-posts / subscribe section heading. */
+  --ds-text-4xl:  52px;   /* Article H1 display. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Article title. */
+  --ds-leading-snug:    1.2;    /* Body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.75;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;   /* Inter display tightens negative for headlines. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;   /* Uppercase mono topic-tag and post-meta. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;   /* Buttons, inputs, code-block frames. */
+  --ds-radius-md:   8px;   /* Card frames, subscribe band. */
+  --ds-radius-lg:   12px;  /* Feature image frame. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(10,10,10,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(10,10,10,0.04), 0 1px 3px rgba(10,10,10,0.06);
+  --ds-shadow-md:   0 3px 6px rgba(10,10,10,0.10);
+  --ds-shadow-lg:   0 8px 24px rgba(10,10,10,0.14);
+  --ds-shadow-2xl:  0 24px 48px rgba(10,10,10,0.28);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

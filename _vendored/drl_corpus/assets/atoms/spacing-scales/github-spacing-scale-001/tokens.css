@@ -1,0 +1,175 @@
+/*
+ * github alphabet tokens
+ *
+ * GitHub's full typography expression as one coherent vocabulary. The
+ * marketing surface (github.com, /features/copilot, /pricing) is built on
+ * Primer Primitives; the same tokens that ship the product (repository
+ * pages, pull requests, the issue tracker) drive the marketing canvas.
+ *
+ * Two faces do the entire job: Mona Sans VF (GitHub's open-license
+ * variable font) across display and body, plus a long platform monospace
+ * stack (ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas) for
+ * every value that is code, a CLI snippet, a commit hash, a SHA, a
+ * keyboard shortcut, a file path, an issue number, or a flag/SKU label.
+ * The mono is heavily load-bearing here in a way it is not on most
+ * marketing sites: GitHub's product IS code, so the marketing surface
+ * is dense with mono utility text.
+ *
+ * Display register is a tight weighted Mona Sans at 600 (semibold);
+ * H1 hero settles around 40-56px (text-display = 2.5rem at the
+ * Primer default), with editorial hero pages reaching higher via
+ * inline overrides. Body sits at 14-16px / 1.5 (smaller than most
+ * marketing reads; GitHub treats its marketing as continuous with
+ * product chrome where 14px is the dashboard default).
+ *
+ * The signature color is "GitHub green" #1f883d - the success-emphasis
+ * fill used as the primary CTA background ("Sign up", "Get started").
+ * It is the single most recognizable button on the modern internet
+ * and the load-bearing chromatic decision: GitHub's CTA is not a brand
+ * color, it is the success-state color promoted to primary action.
+ * The link/accent color #0969da is a saturated blue that does the
+ * inline-text-link work; #d1242f the danger; #9a6700 the attention
+ * amber; #1a7f37 the success fg.
+ *
+ * Marketing canvas inverts for editorial hero moments: brand-color-
+ * canvas-default switches from #ffffff (default chrome) to #000 / near-
+ * black on landing-page heroes. This alphabet captures the light-mode
+ * marketing surface as the canonical register; the dark hero is a
+ * secondary mode.
+ *
+ * Token values extracted from Primer Primitives CSS (primer-primitives-
+ * cad3bfedf5cd56c3.css), light theme (light-35756efcac164365.css), and
+ * landing-page brand-color overlays (home-dae0b7c8b8d0c78b.css,
+ * site-c162c6483ed8c1bc.css) loaded directly via WebFetch from
+ * github.githubassets.com on 2026-05-20.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Light-mode marketing chrome. The bg is pure white; the muted bg is
+   * the universally recognizable GitHub canvas-subtle #f6f8fa (the same
+   * panel color that sits behind every README on the platform).
+   */
+  --ds-bg:           #ffffff;   /* --bgColor-default; pure white marketing canvas. */
+  --ds-surface:      #f6f8fa;   /* --bgColor-muted; the canonical GitHub panel grey. */
+  --ds-surface-2:    #eaeef2;   /* Inset panel; nested card / hovered surface. */
+  --ds-text:         #1f2328;   /* --fgColor-default; near-black body ink. */
+  --ds-text-muted:   #59636e;   /* --fgColor-muted; metadata, captions, timestamps. */
+  --ds-text-strong:  #1f2328;   /* Same as default; GitHub uses weight, not color, for emphasis. */
+  --ds-border:       #d1d9e0;   /* --borderColor-default; card and input edges. */
+  --ds-hairline:     #d1d9e0b3; /* --borderColor-muted; subtler dividers, section breaks. */
+  --ds-accent:       #0969da;   /* --fgColor-accent; saturated blue link / focus color. */
+  --ds-accent-2:     #1f883d;   /* --bgColor-success-emphasis; the iconic GitHub green CTA. */
+  --ds-success:      #1a7f37;   /* --fgColor-success; operational green for text. */
+  --ds-warning:      #9a6700;   /* --fgColor-attention; amber attention text. */
+  --ds-error:        #d1242f;   /* --fgColor-danger; red destructive / failed state. */
+  --ds-info:         #0969da;   /* Matches accent; info banners share link color. */
+  --ds-focus-ring:   #0969da;   /* --focus-outlineColor resolves to accent emphasis. */
+
+  /* ---------- Type families ----------
+   * Mona Sans VF (variable font) carries display and body. The variable
+   * axes (wght, wdth, opsz) let one file serve every step in the scale.
+   * The platform mono stack runs deep: it falls back through SF Mono,
+   * Menlo, Consolas because GitHub's audience reads code in those faces
+   * across every IDE and terminal they use; matching the user's editor
+   * face is a deliberate decision, not a fallback accident.
+   */
+  --ds-font-display: "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  /* No separate accent face. GitHub is a two-face system; the mono is the
+   * only secondary, and it is functional rather than ornamental. */
+  --ds-font-accent:  ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+
+  /* ---------- Type sizes ----------
+   * Primer base scale: --base-text-size-xs .75rem, sm .875rem, md 1rem,
+   * lg 1.25rem, xl 2rem, 2xl 2.5rem. Display tier (text-display) sits at
+   * 2.5rem / 40px (medium weight, 1.375 line-height); editorial hero
+   * pages push higher via inline overrides up to ~72px.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* .75rem; metadata, mono labels, badge captions. */
+  --ds-text-sm:   14px;   /* .875rem; default UI text and nav links. */
+  --ds-text-base: 16px;   /* 1rem; body reading. */
+  --ds-text-lg:   20px;   /* 1.25rem; lead paragraph / title-small. */
+  --ds-text-xl:   32px;   /* 2rem; title-large (H2). */
+  --ds-text-2xl:  40px;   /* 2.5rem; text-display default (H1). */
+  --ds-text-3xl:  48px;   /* Editorial pages hero override. */
+  --ds-text-4xl:  56px;   /* Hero ceiling on landing pages. */
+  --ds-text-5xl:  72px;   /* Editorial statement moments (Copilot feature page). */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Primer base: tight 1.25, snug 1.375, normal 1.5, relaxed 1.625, loose 1.75.
+   * Display sits at snug 1.375 (Mona Sans needs a touch more room than tight 1.1
+   * grotesks). Body at normal 1.5.
+   */
+  --ds-leading-tight:   1.25;   /* Hero, title-large. */
+  --ds-leading-snug:    1.375;  /* text-display default. */
+  --ds-leading-normal:  1.5;    /* Body reading. */
+  --ds-leading-relaxed: 1.625;  /* Longform / docs. */
+  --ds-leading-loose:   1.75;
+
+  /* ---------- Tracking ----------
+   * GitHub barely tracks. Display sits near 0; uppercase mono kickers and
+   * status labels carry the only meaningful positive tracking on the surface.
+   */
+  --ds-tracking-tight:  -0.01em;   /* Hero only; very mild negative tracking. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;    /* Mono kicker / status label. */
+  --ds-tracking-wider:  0.12em;    /* Smallest uppercase mono labels (NEW, BETA, PREVIEW). */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Primer uses a 4-8-16-24-32 rhythm with --base-size-*
+   * tokens; the marketing rhythm breathes wider at section breaks (64-96px).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Primer radius tokens: small 3px, medium 6px, large 12px. The 6px
+   * medium is the canonical GitHub corner; pills are reserved for small
+   * chips (issue labels, "New" badges).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;     /* Inputs, small chips. */
+  --ds-radius-sm:   6px;     /* The canonical GitHub corner; buttons, cards. */
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;    /* Featured cards, modals. */
+  --ds-radius-full: 9999px;  /* Issue labels, status pills, "New" badges. */
+
+  /* ---------- Shadows ----------
+   * GitHub uses very little shadow. The chrome work is done by 1px
+   * --borderColor-default outlines; cards sit flat at rest with a soft
+   * lift on hover, popovers carry a real drop shadow.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 1px 3px rgba(31, 35, 40, 0.06), 0 8px 24px rgba(31, 35, 40, 0.04);
+  --ds-shadow-lg:   0 8px 24px rgba(31, 35, 40, 0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(31, 35, 40, 0.18);
+
+  /* ---------- Motion ----------
+   * Primer motion tokens are mild. UI feedback is fast (150ms), state
+   * changes use the standard cubic-bezier.
+   */
+  --ds-ease-standard:   cubic-bezier(0.33, 1, 0.68, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

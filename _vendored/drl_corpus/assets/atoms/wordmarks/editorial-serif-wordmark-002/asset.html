@@ -1,0 +1,121 @@
+<!--
+  Asset: editorial-serif-wordmark-002
+  Class: wordmarks
+  Pattern: custom-display-wordmark
+  Inspired by: A24 Films
+  Notes:
+    - Editorial serif wordmark in the A24 title-card register; paper-white
+      serif on cinema black with one italic word as accent.
+    - Color, type family, and tracking are tokens; the kicker rule and the
+      "An [Italic] Release" italic span are inline character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-serif-wordmark-002 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- A24 uses licensed Times Now / Tiempos in production; Newsreader and
+     Source Serif Pro are open-licensed fallbacks for standalone rendering. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  /* Native-size wordmark: sits at the 16px header height most marketing
+     headers ship. */
+  .wordmark--ui {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    text-decoration: none;
+  }
+  /* Title-card display: where the serif character does the work. */
+  .wordmark--display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    text-decoration: none;
+  }
+  /* The italic span is the accent move; one word leans, the rest holds
+     upright. Color shifts to warm paper to recall a film-credit footer. */
+  .wordmark__italic {
+    font-style: italic;
+    color: var(--ds-accent-2);
+  }
+  /* "AN ____ RELEASE" eyebrow above the title card; the classic A24
+     pre-roll moment. Inline because the layout is character, not a token. */
+  .release-line {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .release-line .rule {
+    /* Inline hairline ornament flanking the kicker; 32px each side. */
+    width: 32px;
+    height: 1px;
+    background: var(--ds-border);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">native size (16px)</span>
+    <a class="wordmark--ui" href="#">Lorem Aedis</a>
+  </div>
+  <div class="stage">
+    <span class="state-label">title-card display (76px)</span>
+    <a class="wordmark--display" href="#">
+      <span>Lorem Aedis</span>
+    </a>
+  </div>
+  <div class="stage">
+    <span class="state-label">release-line variant</span>
+    <div class="release-line" aria-hidden="true">
+      <span class="rule"></span>
+      <span>An</span>
+      <span style="font-style: italic; text-transform: none; letter-spacing: var(--ds-tracking-normal); font-family: var(--ds-font-display); font-size: var(--ds-text-sm); color: var(--ds-text);">Lorem Aedis</span>
+      <span>Release</span>
+      <span class="rule"></span>
+    </div>
+    <span class="wordmark--display">
+      Lorem <span class="wordmark__italic">Ipsum</span>
+    </span>
+  </div>
+</body>
+</html>

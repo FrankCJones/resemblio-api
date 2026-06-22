@@ -1,0 +1,115 @@
+/*
+ * github-docs-page-001 tokens
+ *
+ * Native token values for the GitHub Docs article page, inspired by
+ * docs.github.com/en/get-started/start-your-journey/hello-world. The
+ * docs surface rides the Primer Light palette: paper-white body
+ * (canvas-default), near-black text (fg-default), GitHub Blue accent
+ * (#0969DA, Primer accent.fg) reserved for inline links, the active
+ * sidebar item, and the active TOC item. Mona Sans is the marketing
+ * face; the body uses the Primer system stack; SF Mono / Menlo carry
+ * code samples and the "In this article" TOC labels.
+ *
+ * Layout-specific notes: the three-column docs grid (296px left
+ * sidebar / 1fr content / 256px right TOC rail) is inline page-grid
+ * character, not a contract slot. Reading column caps near 88ch so
+ * a wide bash block plus inline screenshots clear without horizontal
+ * scroll. WebFetch returned section sequence and content roles;
+ * numeric values follow public Primer design-system documentation
+ * for color (Primer Primitives) and type (Mona Sans + system stack).
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Primer canvas-default; paper-white body. */
+  --ds-surface:      #F6F8FA;   /* Primer canvas-subtle; code-block fill, sidebar hover. */
+  --ds-surface-2:    #EAEEF2;   /* Primer canvas-inset; callout note tint. */
+  --ds-text:         #1F2328;   /* Primer fg-default; body reading. */
+  --ds-text-muted:   #59636E;   /* Primer fg-muted; sidebar inactive, captions. */
+  --ds-text-strong:  #0A0E14;   /* Primer fg-onEmphasis-like; doc title, H2 heads. */
+  --ds-border:       #D0D7DE;   /* Primer border-default; card edges, code-block chrome. */
+  --ds-hairline:     #D8DEE4;   /* Primer border-muted; column dividers, section rule. */
+  --ds-accent:       #0969DA;   /* GitHub Blue (Primer accent.fg); inline links, active nav, focus. */
+  --ds-accent-2:     #1F883D;   /* GitHub Green (Primer success.fg); primary CTA, "Sign up". */
+  --ds-success:      #1A7F37;   /* Primer success.fg darker. */
+  --ds-warning:      #9A6700;   /* Primer attention.fg. */
+  --ds-error:        #CF222E;   /* Primer danger.fg. */
+  --ds-info:         #0969DA;   /* Primer accent.fg. */
+  --ds-focus-ring:   #0969DA;   /* GitHub Blue at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Mona Sans is the GitHub marketing face; the docs body uses the Primer
+   * system stack (-apple-system, BlinkMacSystemFont, "Segoe UI", ...).
+   * SF Mono carries code samples. Open fallbacks so the asset renders
+   * standalone without licensed faces.
+   */
+  --ds-font-display: "Mona Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+  --ds-font-body:    -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "SF Mono", "Menlo", "Consolas", "Liberation Mono", monospace;
+  --ds-font-accent:  "Mona Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono breadcrumb, TOC heading tag, sidebar group label. */
+  --ds-text-sm:   14px;   /* Sidebar links, TOC links, code-block content, callout body. */
+  --ds-text-base: 16px;   /* Body reading; Primer default. */
+  --ds-text-lg:   20px;   /* Lead paragraph / intro. */
+  --ds-text-xl:   24px;   /* Body H3. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* Doc title (Primer h00). */
+  --ds-text-4xl:  48px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* Doc title. */
+  --ds-leading-snug:    1.25;   /* Body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.5;    /* Body reading; Primer default. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em; /* Mona Sans display squeeze. */
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;   /* Mono breadcrumb / sidebar group label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Primer's small-radii principle: 6px on most surfaces, 12px on
+   * marketing cards, full pills only for status dots and avatars.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;   /* Code-block, sidebar item hover, callout. */
+  --ds-radius-md:   8px;   /* Prev/next nav cards. */
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadows suppressed across docs.
+   * Code-blocks and callouts lift via 1px border on tinted surface,
+   * not via cast shadow. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(31,35,40,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(31,35,40,0.04);
+  --ds-shadow-md:   0 3px 6px rgba(140,149,159,0.15);
+  --ds-shadow-lg:   0 8px 24px rgba(140,149,159,0.2);
+  --ds-shadow-2xl:  0 24px 48px rgba(140,149,159,0.3);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

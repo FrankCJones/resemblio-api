@@ -1,0 +1,209 @@
+<!--
+  Asset: editorial-band-001
+  Class: newsletter-bands (whole)
+  Pattern: (newsletter band; uses kicker-with-rule + bordered-text-input + primary-square + lead-paragraph)
+  Inspired by: Quanta Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - type-pairings/quanta-science-pair-001   (three-family editorial stack)
+    - kickers/quanta-section-001              (lowercase violet kicker)
+    - headings/display-editorial-serif-001    (high-contrast serif headline)
+    - body-text/lead-paragraph-001            (the dek beneath the headline)
+    - inputs/text-bordered-001                (the email field chrome)
+    - buttons/primary-square-001              (the small-radius submit)
+    - dividers/hairline-rule-001              (the brackets above and below)
+  Notes:
+    - The band's markup composes the patterns from each constituent atom.
+      It does not import the atoms' files; each pattern's structure and
+      tokens are re-implemented here so the band renders self-contained.
+    - The hairline brackets above and below are the editorial signal that
+      reads "module" without a colored or shadowed container. The single
+      violet accent is the only color the band spends.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-band-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Fraunces stands in for Tiempos Headline/Text; Inter for GT America.
+     The atoms use the same fallback chain. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: paper. The band sits inside an article surface so the
+   * surface-shift to --ds-surface reads as a deliberate module break. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+    display: grid;
+    place-items: center;
+  }
+
+  /* The band itself: full-width within a 720px reading column, half-step
+   * surface, hairline brackets top and bottom. From dividers/hairline-rule-001. */
+  .band {
+    width: 100%;
+    max-width: 720px;
+    background: var(--ds-surface);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Kicker: from atoms/kickers/quanta-section-001. Lowercase humanist sans
+   * with a small positive tracking, in the signature deep violet. The
+   * lowercase choice is the transferable pattern. */
+  .band__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin: 0;
+    text-transform: none;
+  }
+
+  /* Headline: from atoms/headings/display-editorial-serif-001. Tiempos
+   * Headline at 2xl, tight tracking, near-black. The serif owns the
+   * announcement; the rest of the band defers to it. */
+  .band__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 4.5vw, var(--ds-text-2xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: from atoms/body-text/lead-paragraph-001. Serif reading face,
+   * muted color, narrow measure. Reads as the magazine's voice extending
+   * one beat past the headline. */
+  .band__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* Form row: input + button. Composed from inputs/text-bordered-001 and
+   * buttons/primary-square-001. The two share a row at desktop width and
+   * stack at narrow widths via the flex-wrap rule below. */
+  .band__form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ds-space-2);
+    width: 100%;
+    max-width: 480px;
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Input: from atoms/inputs/text-bordered-001. Paper fill, hairline
+   * border, near-black text, the focus ring is the lifted violet. */
+  .band__input {
+    flex: 1 1 240px;
+    appearance: none;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .band__input::placeholder { color: var(--ds-text-muted); }
+  .band__input:focus-visible {
+    outline: none;
+    border-color: var(--ds-accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ds-focus-ring) 25%, transparent);
+    /* Inline ornament: the focus halo is tuned to 25% mix so the violet
+     * reads as a soft glow against paper rather than a hard outline. */
+  }
+
+  /* Submit: from atoms/buttons/primary-square-001. Small-radius pill in
+   * the signature violet; white label. */
+  .band__submit {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .band__submit:hover {
+    background: var(--ds-accent-2);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .band__submit:active { transform: translateY(1px); }
+  .band__submit:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Privacy / legal line: muted, sans, very small. The polite footnote. */
+  .band__legal {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-2) 0 0;
+  }
+  .band__legal a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--ds-accent) 30%, transparent);
+    /* Inline ornament: a 30% violet hairline under the link reads as a
+     * quiet underline against paper rather than a CTA. */
+  }
+  .band__legal a:hover { color: var(--ds-accent-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .band__input, .band__submit { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="band" aria-labelledby="band-headline">
+    <p class="band__kicker">lorem newsletter</p>
+    <h2 class="band__h2" id="band-headline">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+    <p class="band__dek">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, lorem turpis vehicula nibh.</p>
+    <form class="band__form" onsubmit="event.preventDefault()">
+      <label class="visually-hidden" for="band-email" style="position:absolute;left:-9999px">Email address</label>
+      <input class="band__input" id="band-email" type="email" placeholder="Email address" autocomplete="email"/>
+      <button class="band__submit" type="submit">Subscribe</button>
+    </form>
+    <p class="band__legal">Lorem ipsum dolor sit amet. <a href="#">Privacy policy</a>.</p>
+  </section>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!--
+  Asset: ai-customer-quote-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, centered-narrow-column
+  Inspired by: Cursor (cursor.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001         (dark dev-tool palette)
+    - type-pairings/sans-system-modern-001   (Inter display + body + mono)
+    - body-text/pull-quote-breakout-001      (oversized quote treatment)
+    - avatars/circle-photo-001               (96px circular portrait)
+    - kickers/mono-eyebrow-001               (mono uppercase pre-label)
+    - cards/hairline-flat-001                (single-hairline card frame)
+  Notes:
+    - The whole composes one customer quote with avatar plus attribution.
+      Cursor's homepage stacks six of these vertically; this asset extracts
+      one canonical unit so future-Claude can render N of them.
+    - The composition deliberately omits a company logo: Cursor's design
+      relies on the named human plus their role / company line to carry
+      the proof, no logomark required.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ai-customer-quote-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell: near-black ground from mono-electric-001. The testimonial
+   * floats centered with generous side breathing room. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  /* The testimonial card. Card frame from cards/hairline-flat-001:
+   * single hairline border, low elevation, rounded-md corners. Narrow
+   * measure (centered-narrow-column pattern) keeps the quote scannable
+   * at one glance. */
+  .quote {
+    max-width: 680px;
+    width: 100%;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+    box-shadow: var(--ds-shadow-sm);
+  }
+
+  /* Kicker: from atoms/kickers/mono-eyebrow-001. Mono, uppercase, wider
+   * tracking, muted; followed by a short hairline rule. */
+  .quote__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .quote__kicker::after {
+    content: "";
+    width: 32px;
+    height: 1px;
+    background: var(--ds-accent);
+    /* Inline ornament: the trailing rule is a one-off accent flourish
+     * for the kicker; it is not a contract slot because most kickers do
+     * not include a rule. */
+  }
+
+  /* Pull-quote body: from atoms/body-text/pull-quote-breakout-001.
+   * Larger than reading body, tight leading, slight negative tracking
+   * on the display family so the quote reads as a statement, not as
+   * flowing copy. */
+  .quote__body {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    text-wrap: balance;
+  }
+
+  /* Decorative open-quote glyph that sits to the top-left of the card.
+   * The glyph is character ornament, not a contract slot; the size is
+   * hero-specific tuning so the curl reads at testimonial scale. */
+  .quote__body::before {
+    content: "\201C";
+    position: absolute;
+    top: 12px;
+    left: 20px;
+    font-family: var(--ds-font-display);
+    font-size: 72px;
+    line-height: 1;
+    color: color-mix(in oklab, var(--ds-accent-2) 60%, transparent);
+    pointer-events: none;
+  }
+
+  /* Hairline divider between quote body and attribution row.
+   * From atoms/dividers conceptually, but the hairline here is a
+   * one-line rule using --ds-hairline directly. */
+  .quote__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    border: 0;
+    margin: 0;
+  }
+
+  /* Attribution row. Avatar from avatars/circle-photo-001 at 56px
+   * (the testimonial-scale variant of the 96px hero avatar); name in
+   * body weight 600; role / company in muted small text. */
+  .quote__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .quote__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    background:
+      radial-gradient(circle at 30% 30%,
+        color-mix(in oklab, var(--ds-accent-2) 40%, var(--ds-surface-2)),
+        var(--ds-surface-2) 70%);
+    border: 1px solid var(--ds-border);
+    flex-shrink: 0;
+    /* Inline ornament: the radial-gradient fills the avatar with a soft
+     * indigo glow as a placeholder; real avatars would carry a portrait
+     * image. The 56px size is the testimonial-row variant; Cursor's
+     * homepage hero uses 96px. */
+  }
+  .quote__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    line-height: var(--ds-leading-tight);
+    margin: 0 0 var(--ds-space-1) 0;
+  }
+  .quote__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+  }
+
+  /* Focus state for the implicit testimonial link (if wrapped in <a>) */
+  .quote a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+  <figure class="quote" aria-labelledby="quote-body">
+    <span class="quote__kicker">Customer story</span>
+    <blockquote id="quote-body" class="quote__body" cite="#">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet
+      sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean
+      fermentum, magna at suscipit lacinia, sapien ipsum dictum nisi.
+    </blockquote>
+    <hr class="quote__rule" aria-hidden="true"/>
+    <figcaption class="quote__attribution">
+      <span class="quote__avatar" aria-hidden="true"></span>
+      <span>
+        <p class="quote__name">Lorem Ipsum</p>
+        <p class="quote__role">Dolor sit amet, consectetur adipiscing</p>
+      </span>
+    </figcaption>
+  </figure>
+</body>
+</html>

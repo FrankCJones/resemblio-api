@@ -1,0 +1,444 @@
+<!--
+  Asset: notion-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid, comparison-feature-table
+  Inspired by: Notion /pricing
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001            (warm-paper page surface)
+    - type-pairings/sans-system-modern-001   (Inter-class sans, single family)
+    - cards/warm-paper-rule-001              (hairline card frame, no shadow)
+    - buttons/primary-square-001             (recommended-tier primary CTA)
+    - buttons/ghost-bordered-001             (secondary tier CTAs)
+    - badges/status-pill-001                 ("Recommended" pill on Business card)
+    - tables/docs-comparison-table-001       (the dense category-grouped table)
+    - headings/display-tight-001             (tier name + price)
+    - icons/stroke-line-uniform-001          (check glyphs in feature lists and rows)
+    - dividers/hairline-rule-001             (category-group separators)
+  Notes:
+    - Four-up tier card grid on warm paper. Free / Plus / Business / Enterprise.
+      Business carries the "Recommended" accent: blue pill above + tinted
+      surface inversion to warm ink. Other tiers stay white with hairline border.
+      Billing toggle (Pay monthly / Pay yearly) sits between the section header
+      and the cards. Comparison table beneath groups features by category band.
+    - Variable: every named role (card frame, CTA chrome, price scale, table
+      cell, category band, accent color) lives in a token. Inline: the pill's
+      negative-translate above the recommended card, the segmented-toggle
+      knob position, and the per-cell tabular-nums alignment are asset-specific
+      tuning notes the contract does not name.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .pricing { max-width: 1180px; margin: 0 auto; }
+
+  /* Section header. Centered, balanced wrap. */
+  .pricing__header { text-align: center; margin-bottom: var(--ds-space-8); }
+  .pricing__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4.6vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: var(--ds-space-3) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Billing toggle. Segmented pill on warm paper with a tinted knob.
+   * Inline tuning: the knob position is driven by data-active state. */
+  .toggle {
+    display: inline-flex;
+    margin: var(--ds-space-6) auto 0;
+    padding: 4px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    gap: 2px;
+  }
+  .toggle__opt {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .toggle__opt[aria-pressed="true"] {
+    background: var(--ds-accent-2);
+    color: #FFFFFF;
+  }
+  .toggle__hint {
+    margin: var(--ds-space-3) 0 0;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .toggle-wrap { text-align: center; margin-bottom: var(--ds-space-10); }
+
+  /* Tier-card row. Four equal cards; Business (third) carries the accent. */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-12);
+  }
+  @media (max-width: 1080px) { .tiers { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px)  { .tiers { grid-template-columns: 1fr; } }
+
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+  .tier--recommended {
+    border-color: var(--ds-accent);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  /* Inline ornament: pill offset above the recommended card. The translate
+   * value is calibrated to the pill height and is asset-specific tuning. */
+  .tier__badge {
+    position: absolute;
+    top: 0;
+    left: var(--ds-space-5);
+    transform: translateY(-50%);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .tier__pitch {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    min-height: 3.6em; /* equalise card height across tiers */
+  }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-1);
+  }
+  .tier__amount {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .tier__period {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* CTAs. Recommended tier gets the primary blue; others stay ghost. */
+  .tier__cta {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: auto;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover { background: var(--ds-surface-2); }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .tier__cta--primary:hover { box-shadow: var(--ds-shadow-md); filter: brightness(0.96); }
+  .tier__cta:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  /* Feature list inside each tier card. */
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: var(--ds-space-3) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier__features li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+    color: var(--ds-text);
+  }
+  .tier__features li.lead {
+    color: var(--ds-text-muted);
+    font-weight: 500;
+    margin-bottom: var(--ds-space-1);
+  }
+  .check { width: 16px; height: 16px; color: var(--ds-success); flex-shrink: 0; margin-top: 3px; }
+
+  /* Comparison table. Bordered grid; mono category band above each group. */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    text-align: left;
+  }
+  .compare thead th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-4) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    position: sticky;
+    top: 0;
+  }
+  .compare thead th:first-child {
+    color: var(--ds-text-muted);
+    font-weight: 500;
+  }
+  .compare tbody td,
+  .compare tbody th {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+    text-align: left;
+  }
+  .compare tbody td {
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .compare tbody tr:hover td,
+  .compare tbody tr:hover th { background: var(--ds-surface-2); }
+
+  /* Category-group band. Tinted paper row; sans label (Notion uses sentence
+   * case, not all-caps mono - that's the distinguishing Notion choice). */
+  .compare .group td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+
+  .compare .check-cell { color: var(--ds-success); }
+  .compare .dash-cell  { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="pricing">
+    <header class="pricing__header">
+      <h1 class="pricing__h1">Lorem ipsum pricing for sit amet teams</h1>
+      <p class="pricing__sub">Consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla.</p>
+      <div class="toggle-wrap">
+        <div class="toggle" role="group" aria-label="Billing period">
+          <button type="button" class="toggle__opt" aria-pressed="false">Pay monthly</button>
+          <button type="button" class="toggle__opt" aria-pressed="true">Pay yearly</button>
+        </div>
+        <p class="toggle__hint">Save up to 20% with yearly</p>
+      </div>
+    </header>
+
+    <div class="tiers">
+      <!-- Tier 1: Free -->
+      <article class="tier">
+        <h2 class="tier__name">Lorem</h2>
+        <p class="tier__pitch">Essentials for staying organized, for individuals to manage personal projects.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$0</span>
+          <span class="tier__period">per member<br/>per month</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--ghost">Sign up</button>
+        <ul class="tier__features">
+          <li class="lead"><span></span><span>Lorem ipsum dolor includes:</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Trial of consectetur adipiscing</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Basic ipsum forms</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Basic dolor sites</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem calendar</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Databases with subtasks, dependencies, custom properties</span></li>
+        </ul>
+      </article>
+
+      <!-- Tier 2: Plus -->
+      <article class="tier">
+        <h2 class="tier__name">Ipsum</h2>
+        <p class="tier__pitch">For small teams and professionals to collaborate on shared projects.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$10</span>
+          <span class="tier__period">per member<br/>per month</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--ghost">Get started</button>
+        <ul class="tier__features">
+          <li class="lead"><span></span><span>Everything in Lorem, plus:</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Custom forms and sites</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited charts</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited collaborative blocks</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited file uploads</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Basic connections</span></li>
+        </ul>
+      </article>
+
+      <!-- Tier 3: Business (recommended) -->
+      <article class="tier tier--recommended">
+        <span class="tier__badge">Recommended</span>
+        <h2 class="tier__name">Dolor</h2>
+        <p class="tier__pitch">For growing businesses to streamline teamwork across departments.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$20</span>
+          <span class="tier__period">per member<br/>per month</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--primary">Get started</button>
+        <ul class="tier__features">
+          <li class="lead"><span></span><span>Everything in Ipsum, plus:</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sit amet agent</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>AI meeting notes</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Enterprise search (beta)</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SAML SSO</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Granular database permissions</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Private teamspaces</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Premium connections</span></li>
+        </ul>
+      </article>
+
+      <!-- Tier 4: Enterprise -->
+      <article class="tier">
+        <h2 class="tier__name">Sit</h2>
+        <p class="tier__pitch">For organizations to operate with scalability, control, and security.</p>
+        <div class="tier__price">
+          <span class="tier__amount">Custom</span>
+          <span class="tier__period">contact<br/>our sales team</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+        <ul class="tier__features">
+          <li class="lead"><span></span><span>Everything in Dolor, plus:</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Zero data retention with LLM providers</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>User provisioning (SCIM)</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Advanced security and controls</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Audit log</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Customer success manager</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Domain management</span></li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- Comparison table. Sentence-case category bands; tinted paper. -->
+    <table class="compare" aria-label="Detailed plan comparison">
+      <thead>
+        <tr>
+          <th scope="col">Compare plans</th>
+          <th scope="col">Lorem</th>
+          <th scope="col">Ipsum</th>
+          <th scope="col">Dolor</th>
+          <th scope="col">Sit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="5">Content</td></tr>
+        <tr><th scope="row">Pages and blocks</th><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td></tr>
+        <tr><th scope="row">File uploads</th><td>5 MB</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td></tr>
+        <tr><th scope="row">Version history</th><td>7 day</td><td>30 day</td><td>90 day</td><td class="check-cell">Unlimited</td></tr>
+        <tr><th scope="row">Page analytics</th><td class="dash-cell">—</td><td>Basic</td><td class="check-cell">Advanced</td><td class="check-cell">Advanced</td></tr>
+
+        <tr class="group"><td colspan="5">Sharing and collaboration</td></tr>
+        <tr><th scope="row">Guest collaborators</th><td>10</td><td>100</td><td>250</td><td class="check-cell">Unlimited</td></tr>
+        <tr><th scope="row">Permission groups</th><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Private teamspaces</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+
+        <tr class="group"><td colspan="5">Notion AI</td></tr>
+        <tr><th scope="row">AI trial</th><td class="check-cell">Trial</td><td class="check-cell">Trial</td><td class="check-cell">Trial</td><td class="check-cell">Trial</td></tr>
+        <tr><th scope="row">AI meeting notes</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Enterprise search</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Beta</td><td class="check-cell">Beta</td></tr>
+
+        <tr class="group"><td colspan="5">Connected apps</td></tr>
+        <tr><th scope="row">Basic connections</th><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Premium connections</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+
+        <tr class="group"><td colspan="5">Admin and security</td></tr>
+        <tr><th scope="row">SAML SSO</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">SCIM provisioning</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Audit log</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Domain management</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+
+        <tr class="group"><td colspan="5">Support</td></tr>
+        <tr><th scope="row">Help center</th><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Priority support</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+        <tr><th scope="row">Customer success manager</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

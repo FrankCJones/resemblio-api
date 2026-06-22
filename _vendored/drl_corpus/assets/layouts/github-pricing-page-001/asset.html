@@ -1,0 +1,676 @@
+<!--
+  Asset: github-pricing-page-001
+  Class: layouts
+  Pattern: three-tier-pricing-table, feature-comparison-matrix, faq-accordion, hairline-as-chrome, accent-on-neutral
+  Inspired by: GitHub (github.com/pricing)
+  Notes:
+    - Pricing-page skeleton in the GitHub Primer register: dark near-black
+      hero band on top, three-up tier-card row on near-white canvas with a
+      ringed Team tier (Most popular) and an Enterprise card carrying the
+      Recommended badge, dense feature-comparison matrix grouped by
+      category, add-ons grid for Copilot/Codespaces/Advanced Security,
+      customer-logo proof band, faq stack, centered cta, dark mega-footer.
+    - Tier cards and the green CTA pill are the variables; section
+      padding rhythm, hairline rules, and the dark-light-dark surface
+      sandwich match the rest of the GitHub system layouts.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-pricing-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; }
+
+  /*
+   * Page container. 1280px max-width with 16px (mobile) / 32px (desktop)
+   * gutters matching github.com marketing pages. Inline value, not a slot.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-6); }
+  }
+
+  /* Section rhythm. 64px mobile, 96px desktop. */
+  .section { padding-block: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /* ---------- Announcement banner ---------- */
+  .banner {
+    background: var(--ds-surface-2);
+    color: #FFFFFF;
+    text-align: center;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+  }
+  .banner a {
+    color: #FFFFFF;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-left: var(--ds-space-2);
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav {
+    background: var(--ds-surface-2);
+    color: #FFFFFF;
+    padding-block: var(--ds-space-3);
+  }
+  .nav__row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+  .nav__brand {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .nav__brand::before {
+    /* GitHub octocat slot. Inline glyph as placeholder mark. */
+    content: "";
+    display: inline-block;
+    width: 24px; height: 24px;
+    border-radius: var(--ds-radius-full);
+    background: #FFFFFF;
+    vertical-align: -6px;
+    margin-right: var(--ds-space-2);
+  }
+  .nav__links { display: flex; gap: var(--ds-space-5); font-size: var(--ds-text-sm); }
+  .nav__links a { opacity: 0.85; }
+  .nav__cta { display: flex; gap: var(--ds-space-3); font-size: var(--ds-text-sm); }
+  .nav__cta a:last-child {
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-1) var(--ds-space-3);
+  }
+
+  /* ---------- Hero band (dark) ---------- */
+  .hero {
+    background: var(--ds-surface-2);
+    color: #FFFFFF;
+    padding-block: var(--ds-space-12);
+    text-align: center;
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-3);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-4);
+  }
+  .hero__dek {
+    max-width: 640px; margin: 0 auto var(--ds-space-6);
+    color: #B7BDC6;  /* Inline. Muted body on emphasis bg; the dark-mode counterpart of fgColor-muted. */
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta { display: inline-flex; gap: var(--ds-space-3); }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-block;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary { background: var(--ds-accent); color: #FFFFFF; }
+  .btn--primary:hover { background: var(--ds-accent-2); }
+  .btn--secondary { background: transparent; color: inherit; border-color: rgba(255,255,255,0.25); }
+  .btn--ghost { background: transparent; color: var(--ds-text); border-color: var(--ds-border); }
+
+  /* ---------- Pricing tier row ---------- */
+  .tiers {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .tiers { grid-template-columns: repeat(3, 1fr); }
+  }
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+  .tier--popular { border-color: var(--ds-accent); border-width: 2px; }
+  .tier__badge {
+    position: absolute;
+    top: calc(-1 * var(--ds-space-3));
+    left: var(--ds-space-5);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+  }
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    margin: 0;
+  }
+  .tier__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+  }
+  .tier__unit { font-size: var(--ds-text-sm); color: var(--ds-text-muted); font-weight: 400; margin-left: var(--ds-space-1); }
+  .tier__features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); font-size: var(--ds-text-sm); }
+  .tier__features li::before {
+    /* Primer check glyph in success-emphasis green. Inline value. */
+    content: "✓";
+    color: var(--ds-accent);
+    margin-right: var(--ds-space-2);
+    font-weight: 700;
+  }
+
+  /* ---------- Feature comparison table ---------- */
+  .compare__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-6);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .compare__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare__table th, .compare__table td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    text-align: left;
+    vertical-align: top;
+  }
+  .compare__table th {
+    color: var(--ds-text-muted);
+    font-weight: 600;
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .compare__group td {
+    /* Group-band row: tinted background reading as a category header. */
+    background: #F6F8FA;  /* Inline. Primer canvas-subtle; one step warmer than canvas-default. */
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+  }
+  .compare__check { color: var(--ds-accent); font-weight: 700; }
+  .compare__dash { color: var(--ds-text-muted); }
+
+  /* ---------- Add-ons grid ---------- */
+  .addons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 700px) {
+    .addons { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .addons { grid-template-columns: repeat(3, 1fr); }
+  }
+  .addon {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    background: var(--ds-surface);
+  }
+  .addon__name { font-weight: 600; margin: 0 0 var(--ds-space-2); }
+  .addon__price { font-family: var(--ds-font-mono); font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+
+  /* ---------- Logo proof band ---------- */
+  .proof {
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+  }
+  .proof__logos {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ds-space-8);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-lg);
+    opacity: 0.7;
+  }
+
+  /* ---------- FAQ accordion ---------- */
+  .faq__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-6);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-4);
+  }
+  .faq__q {
+    font-weight: 600;
+    font-size: var(--ds-text-lg);
+    cursor: pointer;
+    list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .faq__q::after { content: "+"; color: var(--ds-text-muted); font-size: var(--ds-text-xl); }
+  details[open] .faq__q::after { content: "−"; }
+  .faq__a {
+    margin-top: var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* ---------- CTA band ---------- */
+  .cta {
+    text-align: center;
+    padding-block: var(--ds-space-12);
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .cta__dek { color: var(--ds-text-muted); max-width: 560px; margin: 0 auto var(--ds-space-6); }
+
+  /* ---------- Footer (dark) ---------- */
+  .footer {
+    background: var(--ds-surface-2);
+    color: #B7BDC6;  /* Inline muted-on-emphasis. */
+    padding-block: var(--ds-space-12);
+  }
+  .footer__grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ds-space-8);
+  }
+  @media (min-width: 900px) {
+    .footer__grid { grid-template-columns: 1.5fr repeat(5, 1fr); }
+  }
+  .footer__col h4 {
+    color: #FFFFFF;
+    font-size: var(--ds-text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .footer__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); font-size: var(--ds-text-sm); }
+  .footer__bottom {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: var(--ds-text-xs);
+    color: #6E7681;  /* Inline. Primer dark-mode fg-subtle. */
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--ds-space-4);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Announcement banner -->
+  <div class="banner">
+    Lorem ipsum pricing update dolor sit amet. <a href="#">Lorem more</a>
+  </div>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="page nav__row">
+      <a class="nav__brand" href="#">Loremhub</a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#">Platform</a>
+        <a href="#">Solutions</a>
+        <a href="#">Resources</a>
+        <a href="#">Open Source</a>
+        <a href="#">Enterprise</a>
+        <a href="#">Pricing</a>
+      </nav>
+      <div class="nav__cta">
+        <a href="#">Sign in</a>
+        <a href="#">Sign up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero band -->
+  <section class="hero">
+    <div class="page">
+      <div class="hero__kicker">Lorem ipsum pricing</div>
+      <h1 class="hero__title">Try the lorem-powered platform</h1>
+      <p class="hero__dek">Lorem ipsum dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua bundled trial offering.</p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#">Start free for 30 days</a>
+        <a class="btn btn--secondary" href="#">Contact sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing tier row -->
+  <section class="section">
+    <div class="page">
+      <div class="tiers">
+        <article class="tier">
+          <h2 class="tier__name">Lorem Free</h2>
+          <p class="tier__price">$0<span class="tier__unit">USD per month forever</span></p>
+          <p style="color: var(--ds-text-muted); font-size: var(--ds-text-sm); margin: 0;">Lorem ipsum dolor sit amet consectetur adipiscing elit individual sed do.</p>
+          <a class="btn btn--ghost" href="#">Join for free</a>
+          <ul class="tier__features">
+            <li>Lorem unlimited public and private ipsum</li>
+            <li>Dependabot lorem dolor amet</li>
+            <li>2,000 lorem-minutes / month consectetur</li>
+            <li>500MB ipsum storage dolor</li>
+            <li>Issues and projects sit amet</li>
+            <li>Community support adipiscing</li>
+          </ul>
+        </article>
+        <article class="tier tier--popular">
+          <span class="tier__badge">Most popular</span>
+          <h2 class="tier__name">Lorem Team</h2>
+          <p class="tier__price">$4<span class="tier__unit">USD per user / month</span></p>
+          <p style="color: var(--ds-text-muted); font-size: var(--ds-text-sm); margin: 0;">Lorem ipsum dolor sit amet small teams consectetur adipiscing growing organizations.</p>
+          <a class="btn btn--primary" href="#">Continue with Team</a>
+          <ul class="tier__features">
+            <li>Everything in Free, plus lorem</li>
+            <li>Lorem codespaces access ipsum</li>
+            <li>Repository rules dolor sit</li>
+            <li>Multiple reviewers consectetur</li>
+            <li>Draft pull requests adipiscing</li>
+            <li>3,000 lorem-minutes / month</li>
+            <li>Web-based support eiusmod</li>
+          </ul>
+        </article>
+        <article class="tier">
+          <span class="tier__badge" style="background: var(--ds-surface-2);">Recommended</span>
+          <h2 class="tier__name">Lorem Enterprise</h2>
+          <p class="tier__price">$21<span class="tier__unit">+ USD per user / month</span></p>
+          <p style="color: var(--ds-text-muted); font-size: var(--ds-text-sm); margin: 0;">Lorem ipsum dolor sit amet large organizations sed do eiusmod compliance.</p>
+          <a class="btn btn--primary" href="#">Start a free trial</a>
+          <ul class="tier__features">
+            <li>Everything in Team, plus lorem</li>
+            <li>Data residency dolor ipsum</li>
+            <li>Lorem managed users consectetur</li>
+            <li>SCIM provisioning sit amet</li>
+            <li>50,000 lorem-minutes / month</li>
+            <li>Premium support availability</li>
+            <li>SOC and FedRAMP attestations</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature comparison matrix -->
+  <section class="section" style="border-top: 1px solid var(--ds-hairline);">
+    <div class="page">
+      <h2 class="compare__title">Compare all features</h2>
+      <table class="compare__table">
+        <thead>
+          <tr>
+            <th>Lorem feature</th>
+            <th>Free</th>
+            <th>Team</th>
+            <th>Enterprise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="compare__group"><td colspan="4">Code management</td></tr>
+          <tr>
+            <td>Lorem public and private repos</td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Repository rules ipsum dolor</td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+
+          <tr class="compare__group"><td colspan="4">Code workflow</td></tr>
+          <tr>
+            <td>Lorem codespaces access</td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Actions minutes / month</td>
+            <td>2,000</td>
+            <td>3,000</td>
+            <td>50,000</td>
+          </tr>
+
+          <tr class="compare__group"><td colspan="4">Code security</td></tr>
+          <tr>
+            <td>Dependabot lorem updates</td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>CodeQL analysis consectetur</td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+
+          <tr class="compare__group"><td colspan="4">Platform security</td></tr>
+          <tr>
+            <td>SAML SSO lorem ipsum</td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Audit log streaming</td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+
+          <tr class="compare__group"><td colspan="4">Support and deployment</td></tr>
+          <tr>
+            <td>Community support</td>
+            <td><span class="compare__check">✓</span></td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__dash">—</span></td>
+          </tr>
+          <tr>
+            <td>Premium support availability</td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__dash">—</span></td>
+            <td><span class="compare__check">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Add-ons grid -->
+  <section class="section" style="border-top: 1px solid var(--ds-hairline);">
+    <div class="page">
+      <h2 class="compare__title">Lorem ipsum add-ons</h2>
+      <div class="addons">
+        <div class="addon">
+          <h3 class="addon__name">Lorem Copilot</h3>
+          <p class="addon__price">From $0 / user / month</p>
+          <p style="font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin-top: var(--ds-space-2);">Lorem ipsum dolor sit amet 2,000 completions consectetur adipiscing 50 chat requests.</p>
+        </div>
+        <div class="addon">
+          <h3 class="addon__name">Lorem Advanced Security</h3>
+          <p class="addon__price">$49 / committer / month</p>
+          <p style="font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin-top: var(--ds-space-2);">Lorem CodeQL analysis dolor sit amet secret scanning ipsum.</p>
+        </div>
+        <div class="addon">
+          <h3 class="addon__name">Lorem Codespaces</h3>
+          <p class="addon__price">$0.18 / hour compute · $0.07 / GB storage</p>
+          <p style="font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin-top: var(--ds-space-2);">Lorem cloud development environment ipsum dolor sit amet.</p>
+        </div>
+        <div class="addon">
+          <h3 class="addon__name">Lorem LFS storage</h3>
+          <p class="addon__price">$5 / data pack / month</p>
+          <p style="font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin-top: var(--ds-space-2);">Lorem large-file storage consectetur adipiscing elit dolor.</p>
+        </div>
+        <div class="addon">
+          <h3 class="addon__name">Lorem Models</h3>
+          <p class="addon__price">Usage-based</p>
+          <p style="font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin-top: var(--ds-space-2);">Lorem ipsum dolor sit amet model integration eiusmod tempor.</p>
+        </div>
+        <div class="addon">
+          <h3 class="addon__name">Lorem Premium Support</h3>
+          <p class="addon__price">Contact sales</p>
+          <p style="font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin-top: var(--ds-space-2);">Lorem ipsum 24/7 dolor sit amet response sla consectetur.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Logo proof band -->
+  <section class="proof">
+    <div class="page proof__logos">
+      <span>Lorem</span><span>Ipsum</span><span>Dolor</span><span>Sit Amet</span><span>Consectetur</span><span>Adipiscing</span>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="page" style="max-width: 880px;">
+      <h2 class="faq__title">Frequently asked lorem</h2>
+      <details class="faq__item" open>
+        <summary class="faq__q">What lorem ipsum dolor sit amet?</summary>
+        <div class="faq__a">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</div>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Can I switch lorem between tiers?</summary>
+        <div class="faq__a">Lorem ipsum consectetur dolor sit amet sed do eiusmod tempor incididunt ut labore.</div>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">How does the Enterprise lorem trial work?</summary>
+        <div class="faq__a">Lorem ipsum dolor sit amet 30 days consectetur adipiscing elit free trial sed.</div>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Do you offer lorem educational pricing?</summary>
+        <div class="faq__a">Lorem ipsum dolor sit amet education program adipiscing elit consectetur eiusmod.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="cta">
+    <div class="page">
+      <h2 class="cta__title">Get started with lorem today</h2>
+      <p class="cta__dek">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</p>
+      <a class="btn btn--primary" href="#">Sign up for free</a>
+    </div>
+  </section>
+
+  <!-- Footer (dark) -->
+  <footer class="footer">
+    <div class="page">
+      <div class="footer__grid">
+        <div class="footer__col">
+          <h4>Loremhub</h4>
+          <p style="font-size: var(--ds-text-sm); margin: 0;">Lorem ipsum dolor sit amet consectetur adipiscing elit developer platform sed.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Enterprise</a></li>
+            <li><a href="#">Copilot</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Ecosystem</h4>
+          <ul>
+            <li><a href="#">Developer API</a></li>
+            <li><a href="#">Partners</a></li>
+            <li><a href="#">Education</a></li>
+            <li><a href="#">CLI</a></li>
+            <li><a href="#">Marketplace</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Docs</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Status</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Newsroom</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Sitemap</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© Lorem Ipsum Inc.</span>
+        <span>Lorem English (US)</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

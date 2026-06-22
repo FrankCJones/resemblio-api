@@ -1,0 +1,424 @@
+<!--
+  Asset: locomotive-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, oversized-statement, story-card-grid, mega-footer
+  Inspired by: Locomotive (locomotive.ca/en/agency)
+  Notes:
+    - Studio-statement page skeleton: flush kinetic nav, oversized studio
+      statement hero, Digital-First-Design manifesto band, three-column
+      team roster split by department (Design / Development / Operations),
+      single Montréal office card with phone + email, awards tally,
+      newsletter CTA, kinetic black-inverted footer. The page reads as
+      evidence-of-craft rather than evidence-of-product: the load-bearing
+      block is the studio statement and the team, not a feature pitch.
+    - Section blocks are placeholders for downstream wholes; the cream
+      surface, hard corners, 1.6px-feel hairline rules, max-width
+      container, and section sequence are the variables this asset
+      captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Locomotive ships a custom display face (LocomotiveNew) and
+  Helvetica Now Display for body / UI. The token contract uses system
+  fallbacks; no external font import here.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1440px; Locomotive runs wider than the
+   * dev-tool conventions because the studio statement and team grid
+   * benefit from generous horizontal real estate. Gutter 24px on mobile,
+   * 64px on desktop. Inline value; not a contract slot.
+   */
+  .page {
+    max-width: 1440px;            /* page container max-width, inline */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-10); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /* Hero gets the extra vertical breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Hard corners, hairline dashed border.
+   * Each slot names the whole it stands in for. */
+  .slot {
+    background: transparent;
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-none);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Flush kinetic nav. Sits at the top with a hairline rule beneath,
+   * no floating-pill chrome; the Locomotive register refuses the glass
+   * blur convention. Inline value: the 72px height is specific to this
+   * shell, not a contract slot.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 72px;                                        /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Studio statement hero. Oversized display sans at 5xl on desktop;
+   * tight leading; full-width measure (the statement is the page).
+   * Left-aligned with a small location pill and a Let's-talk CTA in a
+   * supporting row beneath. */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); max-width: 18ch; }
+  }
+  .hero__meta {
+    margin-top: var(--ds-space-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+
+  /* Manifesto / Digital-First-Design band. Two-column on desktop: a
+   * left kicker rail naming the section and a right reading column
+   * carrying the studio philosophy. */
+  .manifesto {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    .manifesto { grid-template-columns: 1fr 2fr; gap: var(--ds-space-16); }
+  }
+  .manifesto__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .manifesto__body { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Team roster. Three-column layout on desktop, one per department.
+   * Each column is a vertical list of name + role + join-year rows. */
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+  }
+  @media (min-width: 1024px) {
+    .team-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-8); }
+  }
+  .team-col__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-text-strong);     /* heavier rule under department title; the inversion principle in miniature */
+  }
+  .team-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .team-list .slot { padding-block: var(--ds-space-4); }
+
+  /* Office locations + awards. Two-column on desktop: a left office
+   * card with address, phone, email; a right awards tally listing
+   * competition names with counts. */
+  .office-awards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    .office-awards { grid-template-columns: 1fr 1fr; gap: var(--ds-space-16); }
+  }
+
+  /* Contact CTA. Newsletter or Let's-talk block; the page closes on
+   * voice, not on a feature list. Centered narrow measure. */
+  .section--cta { text-align: left; }
+  @media (min-width: 768px) {
+    .section--cta { text-align: left; }
+  }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 24ch;
+  }
+  @media (min-width: 768px) {
+    .cta__headline { font-size: var(--ds-text-4xl); }
+  }
+  .cta__form-wrap {
+    margin-top: var(--ds-space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+
+  /* Section heading shared style: small uppercase kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Footer band: full-width, inverts to black, sits outside .page
+   * container, no hairline above (the inversion IS the separator). */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-16);
+    background: var(--ds-surface-2);                     /* black inversion */
+    color: var(--ds-accent-2);                           /* cream as ink */
+    border-top: 0;
+  }
+  .footer-band .slot {
+    border-color: var(--ds-accent-2);
+    color: var(--ds-accent-2);
+  }
+  .footer-band .slot__label { color: var(--ds-accent-2); }
+</style>
+</head>
+<body>
+
+  <!-- Section: kinetic nav. Stands in for wholes/navigation/locomotive-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem&reg;</span>
+        <div class="slot" style="flex: 1; max-width: 480px;">
+          <span class="slot__label">nav-link-cluster (kinetic hover)</span>
+          Lorem / Ipsum / Dolor / Sit
+        </div>
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">lets-talk-cta + lang-toggle</span>
+          Lorem ipsum
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: studio statement hero. Oversized left-aligned mission line; supporting location pill and CTA underneath. -->
+    <section class="section section--hero" aria-label="Studio statement">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</h1>
+      <div class="hero__meta">
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">location-badge</span>
+          Lorem ipsum, QC
+        </div>
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">primary-cta (lets-talk)</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: manifesto / Digital-First Design band. Two-column on desktop. -->
+    <section class="section" aria-label="Manifesto">
+      <div class="manifesto">
+        <div class="section-heading">
+          <span class="section-heading__kicker">01 / Lorem ipsum</span>
+          <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+        </div>
+        <p class="manifesto__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: team roster. Three columns by department: Design / Development / Operations. -->
+    <section class="section" aria-label="Team">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 / Lorem ipsum</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="team-grid">
+        <div>
+          <h3 class="team-col__title">Lorem</h3>
+          <ul class="team-list">
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="team-col__title">Ipsum</h3>
+          <ul class="team-list">
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="team-col__title">Dolor</h3>
+          <ul class="team-list">
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+            <li class="slot"><span class="slot__label">name + role + year</span>Lorem ipsum</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: office locations + awards tally. Two-column on desktop. -->
+    <section class="section" aria-label="Office and awards">
+      <div class="office-awards">
+        <div>
+          <div class="section-heading">
+            <span class="section-heading__kicker">03 / Lorem ipsum</span>
+            <h2 class="section-heading__title">Lorem ipsum dolor.</h2>
+          </div>
+          <div class="slot" style="min-height: 200px;">
+            <span class="slot__label">office-card (address + phone + email)</span>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </div>
+        </div>
+        <div>
+          <div class="section-heading">
+            <span class="section-heading__kicker">04 / Lorem ipsum</span>
+            <h2 class="section-heading__title">Lorem ipsum sit amet.</h2>
+          </div>
+          <div class="slot" style="min-height: 200px;">
+            <span class="slot__label">awards-tally (competition + count rows)</span>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: newsletter / contact CTA. Page closes on voice, not on a feature list. -->
+    <section class="section section--cta" aria-label="Contact">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
+      <div class="cta__form-wrap">
+        <div class="slot" style="min-width: 280px;">
+          <span class="slot__label">email-input (underline-input)</span>
+          your@lorem
+        </div>
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">primary-cta (subscribe)</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, inverts to black. Stands in for wholes/footers/locomotive-kinetic-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 320px;">
+        <span class="slot__label">kinetic-footer (oversized contact statement + menu / social / external columns + animated wordmark)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

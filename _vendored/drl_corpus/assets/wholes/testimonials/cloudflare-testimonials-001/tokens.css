@@ -1,0 +1,142 @@
+/*
+ * cloudflare-testimonials-001 tokens
+ *
+ * Native token values for the Cloudflare customer-testimonial / case-study
+ * quote-card treatment. Captured via WebFetch on
+ * https://www.cloudflare.com/case-studies/shopify/ and
+ * https://www.cloudflare.com/case-studies/canva/ on 2026-05-20. WebFetch
+ * returned the markdown-rendered version of these pages (Cloudflare ships an
+ * AI-consumable markdown twin), so quote text + attribution were extracted
+ * cleanly and the design tokens were cross-referenced against the public
+ * Cloudflare brand surface: signature orange #F6821F as the single accent
+ * color, white paper canvas (#FFFFFF), near-black ink (#222), and the
+ * Inter / Open Sans body system the marketing pages have used since the
+ * 2018 redesign.
+ *
+ * Cloudflare's testimonial blocks pair an oversized customer quote with a
+ * compact attribution row (avatar circle + name stack + company logo). The
+ * surface stays paper-and-orange: orange is reserved for the kicker and any
+ * trailing "Read case study" link, never used as a background fill on the
+ * card itself. Multi-up cards sit on the white canvas separated by 24-32px
+ * gaps, with a logo strip below the grid showing other customer marks.
+ *
+ * All variable names come from TOKEN_CONTRACT.md.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper canvas, near-black ink, signature Cloudflare orange as the only
+   * chromatic moment. The card surface is a faint cool-gray lift (#F8F9FB)
+   * that reads against the page white; the hairline ring (#E4E7EB) carries
+   * the card chrome instead of a drop shadow. Orange touches the kicker and
+   * trailing link arrow. */
+  --ds-bg:           #FFFFFF;   /* Page canvas; the customer-stories grid sits here. */
+  --ds-surface:      #F8F9FB;   /* Card fill; a sub-1% cool gray lift off page white. */
+  --ds-surface-2:    #EEF1F4;   /* Avatar placeholder wash, slightly cooler. */
+  --ds-text:         #222222;   /* Cloudflare body ink; near-black, marketing-page default. */
+  --ds-text-muted:   #555A60;   /* Attribution role line; secondary metadata. */
+  --ds-text-strong:  #0F1419;   /* Attribution name; the only place the ink goes deeper. */
+  --ds-border:       #E4E7EB;   /* Card hairline ring; the only chrome on the card surface. */
+  --ds-hairline:     #E4E7EB;   /* Same hairline; the divider rule above attribution. */
+  --ds-accent:       #F6821F;   /* Signature Cloudflare orange; kicker + link arrow. */
+  --ds-accent-2:     #FBAD41;   /* Lighter orange; hover state on the accent. */
+  --ds-success:      #2DC76D;
+  --ds-warning:      #FBAD41;   /* Brand secondary orange doubles as warning. */
+  --ds-error:        #E5484D;
+  --ds-info:         #0051C3;   /* Cloudflare deep blue; reserved for info badges. */
+  --ds-focus-ring:   #F6821F;   /* Orange focus ring on the clickable card link. */
+
+  /* ---------- Type families ----------
+   * Cloudflare's marketing system runs on Inter (with Open Sans fallback the
+   * brand site shipped before the Inter migration). System sans is the
+   * fallback. A monospace slot is reserved for the small uppercase kicker
+   * ("CUSTOMER STORY" / "CASE STUDY") that mirrors the dev-tool metadata
+   * register Cloudflare uses across product-tile chrome. */
+  --ds-font-display: "Inter", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, Consolas, monospace;
+  --ds-font-accent:  "Inter", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Cloudflare marketing scale. The quote body bounds 20-26px so it sits
+   * just below H2 — large enough to feel pulled-out but not competing with
+   * the page headline. Kicker at 12px mono uppercase; attribution name at
+   * 16px sans-bold; role and company at 14px. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono "CASE STUDY" kicker. */
+  --ds-text-sm:   14px;   /* Role / company line under the name. */
+  --ds-text-base: 16px;   /* Attribution name. */
+  --ds-text-lg:   20px;   /* Quote body lower bound. */
+  --ds-text-xl:   26px;   /* Quote body upper bound (desktop). */
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.3;   /* Quote body; readable at 20-26px. */
+  --ds-leading-normal:  1.5;   /* Attribution stack. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Inter at marketing sizes; the kicker carries wider tracking for the
+   * dev-tool metadata register. Quote body sits at near-zero tracking. */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;        /* Quote body and attribution. */
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;   /* Mono uppercase kicker. */
+
+  /* ---------- Spacing ----------
+   * Card internal rhythm: 32px vertical padding on mobile, 40px on desktop.
+   * 24px between the kicker and quote, 24px between quote and the hairline
+   * rule, 16px between rule and the attribution row. The grid gap is also
+   * 24px so the card chrome and the grid breathe at the same step. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;    /* Rule to attribution row. */
+  --ds-space-5:  24px;    /* Kicker to quote; quote to rule; grid gap. */
+  --ds-space-6:  32px;    /* Card vertical padding (mobile). */
+  --ds-space-8:  40px;    /* Card horizontal padding (desktop). */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cloudflare uses subtle rounded corners across marketing chrome - 6-8px,
+   * never pills. The card lands at 8px; the avatar circle uses radius-full. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   8px;     /* Card chrome. */
+  --ds-radius-full: 9999px;  /* Avatar circle; logo-strip mark wells. */
+
+  /* ---------- Shadows ----------
+   * Cloudflare convention on light marketing surfaces: hairline ring as
+   * chrome at rest, then a barely-there shadow on hover. The 1px ring
+   * preserves the 8px corner. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);                                   /* Card at rest. */
+  --ds-shadow-md:   0 2px 6px rgba(15,20,25,0.04), 0 0 0 1px var(--ds-border);    /* Card on hover. */
+  --ds-shadow-lg:   0 8px 24px rgba(15,20,25,0.08), 0 0 0 1px var(--ds-border);   /* Card focus. */
+  --ds-shadow-2xl:  0 24px 48px rgba(15,20,25,0.10);
+
+  /* ---------- Motion ----------
+   * Cloudflare transitions on marketing chrome: 150ms standard for hover,
+   * 80ms instant for the trailing arrow nudge on link hover. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

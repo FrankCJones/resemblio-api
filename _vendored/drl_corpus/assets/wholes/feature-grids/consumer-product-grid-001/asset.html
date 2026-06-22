@@ -1,0 +1,317 @@
+<!--
+  Asset: consumer-product-grid-001
+  Class: feature-grids (whole)
+  Pattern: bento-grid (loose), single-cta-hero (per card), primary-pill, mono-eyebrow
+  Inspired by: Olipop (drinkolipop.com/collections/all)
+  Composition (declared in meta.json > composition_atoms):
+    - headings/retro-soda-001            (chunky Windsor display for section title)
+    - buttons/soft-pill-pink-001         (forest-green pill add-to-cart per card)
+    - cards/hairline-flat-001            (flat card frame on cream)
+    - type-pairings/display-distinctive-001 (serif display plus humanist sans body)
+    - badges/tag-chip-001                (the "9g Fiber" sub-label chip per card)
+    - kickers/mono-eyebrow-001           (uppercase mono kicker above section title)
+  Notes:
+    - The grid composes the patterns from each constituent atom; it does not
+      import their files at runtime. Each pattern is re-implemented here so
+      the whole renders standalone.
+    - Variable: every color, type family, spacing step, radius, motion
+      curve. Inline ornament: the soft-pink card-rest tint, the inline
+      product-bottle SVGs, and the per-card aspect ratio - all character
+      specific to the CPG-DTC bottle shot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>consumer-product-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Fraunces stands in for WindsorEF (Olipop's licensed display); Geist
+     mirrors Ano (Olipop's licensed body). Both free and variable-axis. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..900,30..100,0..1&family=Geist:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell on warm cream. The body bg is the dominant Olipop product
+   * surface; section is constrained to a comfortable max width. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .section {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* Header band: kicker over display title; centered on cream. Pattern is
+   * mono-eyebrow-001 plus retro-soda-001. */
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-3);
+    text-align: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-weight: 800;
+    /* Olipop H1 measured 80px / lineHeight 88px. Asset bounds the title
+     * from --ds-text-4xl on narrow viewports to --ds-text-6xl at the top
+     * of the scale. */
+    font-size: clamp(var(--ds-text-4xl), 7vw, var(--ds-text-6xl));
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    /* Inline ornament: a touch of SOFT/WONK on Fraunces to lean toward
+     * Windsor's chunky 70s feel. Variable-axis only; the asset's character. */
+    font-variation-settings: "SOFT" 80, "WONK" 1, "opsz" 96;
+  }
+  .section__sub {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* The grid. Olipop's collection-group-grid measured display:flex with
+   * gap 24px on the live page; the asset uses CSS Grid auto-fill with
+   * minmax to keep three-up on desktop, two-up on tablet, one-up on
+   * mobile, matching the visible cadence at /collections/all. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  /* Card frame: hairline-flat-001 pattern adapted for cream. Flat white
+   * surface, 1px ring rather than drop shadow at rest, square corners
+   * carried over from the source's flat-card discipline. */
+  .card {
+    background: var(--ds-surface-2);  /* Soft peach inside the cell; the bottle sits on it. */
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5) var(--ds-space-4) var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+    transition:
+      transform var(--ds-duration-normal) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-md);
+  }
+
+  /* The bottle stage. Inline ornament: the aspect ratio and centered
+   * placement are character specific to a CPG product grid. */
+  .card__media {
+    aspect-ratio: 3 / 4;
+    display: grid;
+    place-items: center;
+    border-radius: var(--ds-radius-md);
+    background: transparent;
+  }
+  .card__media svg {
+    width: 60%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 6px 12px rgba(20, 67, 61, 0.14));
+  }
+
+  /* Sub-label chip (badges/tag-chip-001 pattern adapted for CPG attribute).
+   * "9g Fiber" style: muted text on a translucent dark tint, pill shape. */
+  .card__chip {
+    align-self: flex-start;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    background: color-mix(in oklab, var(--ds-text) 8%, transparent);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    text-transform: none;
+  }
+
+  /* Card title: bold humanist sans, forest-green ink, 16px observed. */
+  .card__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0;
+    line-height: var(--ds-leading-snug);
+  }
+  .card__meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Add-to-cart pill: soft-pill-pink-001 pattern. Forest-green fill,
+   * white text, pill radius, Ano-style weight 700. Padding mirrors the
+   * source's 3px 20px 1px asymmetry rounded to a sensible value. */
+  .card__cta {
+    appearance: none;
+    border: 0;
+    background: var(--ds-text-strong);
+    color: var(--ds-surface);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    align-self: stretch;
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card__cta:hover {
+    background: color-mix(in oklab, var(--ds-text-strong) 90%, white 10%);
+  }
+  .card__cta:active { transform: translateY(1px); }
+  .card__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .card__cta { transition: none; }
+    .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="grid-title">
+    <header class="section__head">
+      <p class="section__kicker">Lorem · ipsum</p>
+      <h2 class="section__title" id="grid-title">Sit amet consectetur</h2>
+      <p class="section__sub">Adipiscing elit nullam vitae quam at eros pellentesque. Suspendisse magna purus consequat nec velit.</p>
+    </header>
+
+    <div class="grid" role="list">
+      <!-- Card 1 -->
+      <article class="card" role="listitem">
+        <div class="card__media" aria-hidden="true">
+          <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="14" width="40" height="12" rx="3" fill="#034638"/>
+            <rect x="14" y="26" width="52" height="86" rx="10" fill="#FCC100"/>
+            <rect x="22" y="56" width="36" height="22" rx="2" fill="#FFF6EA"/>
+            <circle cx="40" cy="67" r="6" fill="#034638"/>
+          </svg>
+        </div>
+        <span class="card__chip">Lorem ipsum</span>
+        <h3 class="card__title">Vintage lorem</h3>
+        <p class="card__meta">4.6 out of 5 stars. 1024 reviews</p>
+        <button type="button" class="card__cta">Lorem 12 pack</button>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card" role="listitem">
+        <div class="card__media" aria-hidden="true">
+          <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="14" width="40" height="12" rx="3" fill="#034638"/>
+            <rect x="14" y="26" width="52" height="86" rx="10" fill="#FFB8B3"/>
+            <rect x="22" y="56" width="36" height="22" rx="2" fill="#FFF6EA"/>
+            <circle cx="40" cy="67" r="6" fill="#034638"/>
+          </svg>
+        </div>
+        <span class="card__chip">Dolor sit</span>
+        <h3 class="card__title">Strawberry lorem</h3>
+        <p class="card__meta">4.7 out of 5 stars. 884 reviews</p>
+        <button type="button" class="card__cta">Lorem 12 pack</button>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card" role="listitem">
+        <div class="card__media" aria-hidden="true">
+          <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="14" width="40" height="12" rx="3" fill="#034638"/>
+            <rect x="14" y="26" width="52" height="86" rx="10" fill="#98E1C3"/>
+            <rect x="22" y="56" width="36" height="22" rx="2" fill="#FFF6EA"/>
+            <circle cx="40" cy="67" r="6" fill="#034638"/>
+          </svg>
+        </div>
+        <span class="card__chip">Lorem ipsum</span>
+        <h3 class="card__title">Classic lorem</h3>
+        <p class="card__meta">4.5 out of 5 stars. 712 reviews</p>
+        <button type="button" class="card__cta">Lorem 12 pack</button>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="card" role="listitem">
+        <div class="card__media" aria-hidden="true">
+          <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="14" width="40" height="12" rx="3" fill="#034638"/>
+            <rect x="14" y="26" width="52" height="86" rx="10" fill="#FFE1D9"/>
+            <rect x="22" y="56" width="36" height="22" rx="2" fill="#FFF6EA"/>
+            <circle cx="40" cy="67" r="6" fill="#034638"/>
+          </svg>
+        </div>
+        <span class="card__chip">Consectetur</span>
+        <h3 class="card__title">Tropical lorem</h3>
+        <p class="card__meta">4.4 out of 5 stars. 543 reviews</p>
+        <button type="button" class="card__cta">Lorem 12 pack</button>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="card" role="listitem">
+        <div class="card__media" aria-hidden="true">
+          <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="14" width="40" height="12" rx="3" fill="#034638"/>
+            <rect x="14" y="26" width="52" height="86" rx="10" fill="#FCC100"/>
+            <rect x="22" y="56" width="36" height="22" rx="2" fill="#034638"/>
+            <circle cx="40" cy="67" r="6" fill="#FFF6EA"/>
+          </svg>
+        </div>
+        <span class="card__chip">Lorem ipsum</span>
+        <h3 class="card__title">Orange lorem</h3>
+        <p class="card__meta">4.6 out of 5 stars. 992 reviews</p>
+        <button type="button" class="card__cta">Lorem 12 pack</button>
+      </article>
+
+      <!-- Card 6 -->
+      <article class="card" role="listitem">
+        <div class="card__media" aria-hidden="true">
+          <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="14" width="40" height="12" rx="3" fill="#034638"/>
+            <rect x="14" y="26" width="52" height="86" rx="10" fill="#98E1C3"/>
+            <rect x="22" y="56" width="36" height="22" rx="2" fill="#FFF6EA"/>
+            <circle cx="40" cy="67" r="6" fill="#034638"/>
+          </svg>
+        </div>
+        <span class="card__chip">Adipiscing</span>
+        <h3 class="card__title">Lemon lorem</h3>
+        <p class="card__meta">4.5 out of 5 stars. 421 reviews</p>
+        <button type="button" class="card__cta">Lorem 12 pack</button>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

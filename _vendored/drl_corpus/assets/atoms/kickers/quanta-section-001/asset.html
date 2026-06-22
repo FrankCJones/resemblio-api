@@ -1,0 +1,112 @@
+<!--
+  Asset: quanta-section-001
+  Class: kickers
+  Pattern: mono-eyebrow
+  Inspired by: Quanta Magazine
+  Notes:
+    - Quanta inverts the editorial eyebrow convention: lowercase sans
+      in a deep violet, no rule, no dot. The lowercase choice is the
+      transferable pattern; the violet is the brand color.
+    - All values are variables. The :hover lift is the only motion.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-section-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif as the closest free analog to Tiempos Text for the
+     headline; Inter for the kicker as a humanist sans analog to GT America. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:wght@400;600&display=swap"/>
+<style>
+  /* Asset-local reset so the file opens standalone. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: "Source Serif 4", var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Article card container. The kicker reads as a section signal only
+   * when paired with the article title beneath; we render the pair to
+   * show how the kicker performs in context. */
+  .card {
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  /* The kicker. Quanta's signature move: lowercase, sans, deep violet.
+   * Small positive tracking compensates for the lowercase letterforms
+   * losing the structural rhythm uppercase usually provides. */
+  .kicker {
+    font-family: "Inter", var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    text-decoration: none;
+    /* The kicker is a link to the topic page on Quanta; the hover lift
+     * is the only motion. */
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .kicker:hover { color: var(--ds-accent-2); }
+
+  /* Article headline beneath. High-contrast serif, tight leading,
+   * normal tracking. Demonstrates the kicker against its native
+   * companion typography. */
+  .title {
+    font-family: "Source Serif 4", var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Dek (subtitle/description). Smaller, muted, body family. */
+  .dek {
+    font-family: "Source Serif 4", var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* A second card to show how the same kicker pattern handles a
+   * different category. The accent stays consistent; on the real
+   * Quanta site, some categories carry slight hue shifts but the
+   * brand violet anchors the system. */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+</style>
+</head>
+<body>
+  <div class="stack">
+    <article class="card">
+      <a class="kicker" href="#">mathematics</a>
+      <h2 class="title">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</h2>
+      <p class="dek">Tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud.</p>
+    </article>
+    <article class="card">
+      <a class="kicker" href="#">computer science</a>
+      <h2 class="title">Duis aute irure dolor in reprehenderit voluptate velit esse cillum.</h2>
+      <p class="dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit.</p>
+    </article>
+  </div>
+</body>
+</html>

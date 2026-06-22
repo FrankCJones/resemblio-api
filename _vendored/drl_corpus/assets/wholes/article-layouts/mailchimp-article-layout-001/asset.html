@@ -1,0 +1,417 @@
+<!--
+  Asset: mailchimp-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, editorial-hero, lead-paragraph, callout-aside, accent-on-neutral
+  Inspired by: Mailchimp /resources/<slug>/ (create-a-successful-promotional-strategy, email-marketing-strategy)
+  Notes:
+    - Mechanic: SMB-marketing editorial register on a paper-white canvas.
+      Cooper Light (warm humanist serif) carries the H1 while Graphik
+      (humanist sans) carries body, byline, and UI. Cavendish Yellow
+      (#FFE01B) is held back to do four jobs only: the kicker tag pill
+      above the H1, the tint on the expert-tip callout, the underline
+      under the inline CTA pin label, and the fill on the CTA pin itself.
+      Peacock Teal (#007C89) is the editorial inline-link color (the
+      paper-canvas counterpart to the all-ink marketing CTA). Hairlines
+      in warm gray (#E8E2D6) carry every structural break.
+    - Variable: paper bg, Peppercorn ink, Cavendish Yellow accent on
+      kicker / callout / CTA, Peacock Teal inline link, Cooper Light
+      display, Graphik body, 56px H1, 17px body at 1.6 leading, 680px
+      centered measure.
+    - Inline ornament: the 32px circular avatar in the byline, the
+      "Posted by Mailchimp · Apr 10, 2026" middle-dot separator, the
+      yellow underline that runs the full width of the inline-CTA pin's
+      label band, the 4px-thick yellow accent stripe on the callout's
+      left edge.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Lora (Google Fonts) substitutes for Cooper Light shipped by Mailchimp.
+     Inter substitutes for Graphik on body, byline, and UI. Both are warm
+     humanist faces with low contrast that behave the same at these steps. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Mailchimp's resources article sits inside a centered shell that
+   * holds the hero header at a wider measure (~880px) and the body
+   * column at a narrow ~680px reading measure. The two measures share
+   * the same horizontal center.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Sequence: breadcrumb / kicker tag / H1 / dek / byline row. The
+   * Mailchimp resources hero does not run an illustration band by
+   * default in the captured posts; the asset surfaces the optional
+   * post-byline image-band as a hairline-bordered figure so the
+   * pattern is available without forcing it.
+   */
+  .article__header {
+    max-width: 880px;
+    margin: 0 auto var(--ds-space-8);
+  }
+
+  /* Breadcrumb - small Graphik, peppercorn ink for the active leaf,
+   * muted for the parents, slash-separated. Mailchimp uses ' / ' as
+   * the separator on the resources surface. */
+  .article__breadcrumb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article__breadcrumb a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .article__breadcrumb a:hover { color: var(--ds-text); }
+  .article__breadcrumb .sep {
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-text-muted);
+    /* Inline ornament: '/' separator carried over from the live
+     * Mailchimp resources breadcrumb chrome. */
+  }
+  .article__breadcrumb .current {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* Kicker tag - small Graphik on a Cavendish Yellow pill chip with
+   * Peppercorn ink. The chip is the brand's signature article-page
+   * categorical tag; sits alone above the H1. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+    background: var(--ds-accent);
+    padding: 6px 12px;
+    border-radius: var(--ds-radius-md);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  /* Article H1 - Cooper Light at 4xl (~56px), tight leading, soft
+   * negative tracking. The H1 reads as warm humanist editorial,
+   * the typographic counterpart to the brand's hand-illustration
+   * vocabulary. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5.5vw, var(--ds-text-4xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - Graphik sans at lg (20px), muted, regular weight. Always
+   * present on the observed Mailchimp posts; one paragraph telling
+   * the reader what the article argues. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+    max-width: 720px;
+  }
+
+  /* Byline row - 32px circular avatar + author + middle-dot + date.
+   * "Posted by Mailchimp" is the captured byline format on the live
+   * resources surface; the date follows in Graphik regular. */
+  .article__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .article__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    /* Inline ornament: 32px avatar circle; the byline anchor. */
+  }
+  .article__byline strong {
+    color: var(--ds-text);
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+  }
+  .article__byline .dot {
+    color: var(--ds-text-muted);
+    /* Inline ornament: middle-dot separator between author name and
+     * date; Mailchimp's resources byline convention. */
+  }
+  .article__byline time {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--ds-text-sm);
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 680px. Reading register at 17px / 1.6
+   * sits one step above the marketing UI default; the editorial-product
+   * reading move.
+   */
+  .article__body {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline body link - Peacock Teal at rest, hairline underline,
+   * lifted ink on hover. The editorial counterpart to the all-ink
+   * marketing CTA. */
+  .article__body a {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-text);
+  }
+
+  /* H2 subhead inside body - Cooper Light at 2xl, generous gap above. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+
+  /* H3 subhead inside body - Graphik sans at xl, semibold. The
+   * Mailchimp resources hierarchy switches from serif (H2) to sans
+   * (H3) to keep H2 as the dominant section voice. */
+  .article__body h3 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: var(--ds-space-8) 0 var(--ds-space-3);
+  }
+
+  /* ---------------- Expert-tip callout ----------------
+   * Warm off-white tint surface, 12px radius, 4px-thick Cavendish
+   * Yellow accent stripe on the left edge. Cooper Light heading
+   * inside, Graphik body. The captured posts run this pattern
+   * multiple times per article; it is the brand's signature
+   * editorial interruption.
+   */
+  .article__callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 4px solid var(--ds-accent);
+    /* Inline ornament: 4px yellow accent stripe on the left edge;
+     * the visual cue that distinguishes Mailchimp's expert-tip
+     * callout from a generic info box. */
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    margin: var(--ds-space-8) 0;
+  }
+  .article__callout h4 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .article__callout p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------------- Inline CTA pin ----------------
+   * Cavendish Yellow rectangular pin with Peppercorn ink label and
+   * a Peppercorn primary button inside. Held back to one or two
+   * appearances per article; the brand's mid-body conversion device.
+   */
+  .article__cta-pin {
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6) var(--ds-space-6);
+    margin: var(--ds-space-8) 0;
+    text-align: left;
+  }
+  .article__cta-pin h4 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .article__cta-pin p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .article__cta-pin a {
+    display: inline-block;
+    background: var(--ds-text);
+    color: var(--ds-accent);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__cta-pin a:hover { background: #000000; }
+
+  /* ---------------- Section break ----------------
+   * Hairline rule between major sections. Short centered; the editorial
+   * chrome consistent with the Mailchimp marketing surface's restraint.
+   */
+  .article__sectionbreak {
+    display: block;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) auto;
+    max-width: 120px;
+    /* Inline ornament: 120px centered short rule; not a contract slot. */
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-2xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__body h2 { font-size: var(--ds-text-xl); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__cta-pin a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+
+      <nav class="article__breadcrumb" aria-label="Breadcrumb">
+        <a href="#">Lorem Library</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="#">Dolor Sit</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span class="current">Amet Consectetur</span>
+      </nav>
+
+      <span class="article__kicker">Lorem Ipsum</span>
+
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos.</p>
+
+      <div class="article__byline">
+        <span class="article__avatar" aria-hidden="true"></span>
+        <strong>Posted by Lorem</strong>
+        <span class="dot" aria-hidden="true">&middot;</span>
+        <time datetime="2026-04-10">Apr 10, 2026</time>
+      </div>
+
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <aside class="article__callout">
+        <h4>Expert tip: lorem ipsum dolor sit amet</h4>
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto.</p>
+      </aside>
+
+      <h3>Consectetur adipiscing elit</h3>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et <a href="#">quas molestias excepturi</a> sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.</p>
+
+      <div class="article__cta-pin">
+        <h4>Unlock lorem ipsum dolor</h4>
+        <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae.</p>
+        <a href="#">Start free trial</a>
+      </div>
+
+      <h2>Pellentesque habitant morbi tristique</h2>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit nullam id dolor.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum dolorem.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h2>Sed do eiusmod tempor</h2>
+
+      <p>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+
+      <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

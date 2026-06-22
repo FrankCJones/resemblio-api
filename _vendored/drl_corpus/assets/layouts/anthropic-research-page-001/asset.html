@@ -1,0 +1,580 @@
+<!--
+  Asset: anthropic-research-page-001
+  Class: layouts (layout)
+  Pattern: story-card-grid, kicker-with-rule, serif-display-sans-body
+  Inspired by: Anthropic (anthropic.com/research)
+  Notes:
+    - Page-level skeleton of the Anthropic research index. Section
+      sequence: nav -> research hero -> filter rail (team categories) ->
+      featured paper grid (2-up) -> publications list with load-more ->
+      recruitment cta -> mega-footer. Tokens inherit from the warm-cream
+      Anthropic system (devtools-verified on subtle-noise-001).
+    - Variable in tokens.css: every color, font, size, spacing, radius.
+    - Inline in this file: section gaps, the page max-width and 12-col
+      grid template, the featured-card aspect ratio, the table-style row
+      template for publications, the load-more ghost-button geometry,
+      and the footer's 6-column rhythm.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-research-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Anthropic Serif / Tiempos and Söhne are licensed; Newsreader and Inter
+     carry the same serif-display-sans-body posture for library demo. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  a { color: inherit; text-decoration: none; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Page container. 1200px max with a 12-col grid. Inline ornament: the
+   * container is the same on every section so wholes share a vertical
+   * axis even when their internal columns differ. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+  }
+
+  /* --- 1. NAVIGATION ----------------------------------------------------
+   * Flush-top nav. Wordmark left, primary links centered/right, single CTA
+   * far right. Sits flat against the warm cream; no shadow, no shrink. */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-5) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-6);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nav__links a {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .nav__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* --- 2. RESEARCH HERO -------------------------------------------------
+   * Serif H1, short editorial dek, brick rule above as the only chromatic
+   * punctuation. No imagery; type carries the entire hero. */
+  .hero {
+    padding: var(--ds-space-16) 0 var(--ds-space-12) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .hero__rule {
+    width: 32px;
+    height: 2px;
+    background: var(--ds-accent);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4) 0;
+    display: block;
+  }
+  .hero__h1 {
+    font-family: var(--ds-font-display);
+    /* Inline clamp: the hero title bounds between 4xl and 6xl per viewport.
+     * Not a token role - this is the page's single display moment. */
+    font-size: clamp(var(--ds-text-4xl), 7vw, var(--ds-text-6xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6) 0;
+    max-width: 14ch;
+  }
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* --- 3. FILTER RAIL ---------------------------------------------------
+   * Team-category pill row. Inline filter, not a sidebar. Pills are
+   * surface-2 cream so they read as quiet affordances, not buttons. */
+  .filter-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-8) 0 var(--ds-space-10) 0;
+  }
+  .filter-rail__pill {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .filter-rail__pill[aria-pressed="true"] {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+  }
+  .filter-rail__pill:hover { border-color: var(--ds-border); }
+
+  /* --- 4. FEATURED PAPER GRID ------------------------------------------
+   * 2-up grid of featured papers. Each card: image (16:9), mono category
+   * label, mono date, serif title, sans dek. Card itself has no chrome;
+   * the image and the hairline below are the only structure. */
+  .featured {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-10) var(--ds-space-8);
+    padding: 0 0 var(--ds-space-16) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .paper-card { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+  .paper-card__image {
+    /* Inline 16:9 aspect ratio; matches the 1280x720 source artwork. */
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    background: linear-gradient(135deg, #E8E2D0 0%, #D6CDB5 100%);
+    border-radius: var(--ds-radius-md);
+  }
+  .paper-card__meta {
+    display: flex;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .paper-card__category { color: var(--ds-accent); }
+  .paper-card__h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 28ch;
+  }
+  .paper-card__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  /* --- 5. PUBLICATIONS LIST --------------------------------------------
+   * Chronological list of every paper. Three-column row: date | category |
+   * title. Borrowed register from a journal contents page; the rhythm is
+   * a hairline between every row, no zebra striping. */
+  .publications { padding: var(--ds-space-16) 0; }
+  .publications__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 0 var(--ds-space-8) 0;
+  }
+  .publications__h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .publications__search {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    color: var(--ds-text);
+    min-width: 240px;
+  }
+  .publications__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  /* Row template. Date column is fixed-width tabular figures; category is
+   * fixed-width mono; title takes the remaining space. The fixed columns
+   * are the load-bearing structural decision. */
+  .publications__row {
+    display: grid;
+    grid-template-columns: 120px 180px 1fr;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+    padding: var(--ds-space-5) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .publications__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+  }
+  .publications__category {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .publications__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+  }
+  .publications__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-8);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+  }
+  .publications__more:hover { background: var(--ds-surface-2); }
+
+  /* --- 6. RECRUITMENT CTA ----------------------------------------------
+   * Centered editorial cta. Serif heading, mono link with trailing arrow.
+   * Sits in the page's editorial register; no card chrome. */
+  .recruit {
+    text-align: center;
+    padding: var(--ds-space-16) 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .recruit__h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+  .recruit__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-accent);
+    border-bottom: 1px solid var(--ds-accent);
+    padding-bottom: 2px;
+  }
+
+  /* --- 7. FOOTER --------------------------------------------------------
+   * Mega-footer. Multi-column link groups; wordmark and legal row at the
+   * bottom. Surface stays warm cream; only the rule changes weight. */
+  .footer {
+    border-top: 1px solid var(--ds-border);
+    padding: var(--ds-space-12) 0 var(--ds-space-8) 0;
+  }
+  .footer__grid {
+    display: grid;
+    /* Inline 6-col footer rhythm. The first column carries the wordmark
+     * and tagline; remaining five columns are link groups. */
+    grid-template-columns: 1.4fr repeat(5, 1fr);
+    gap: var(--ds-space-8);
+    margin: 0 0 var(--ds-space-10) 0;
+  }
+  .footer__brand {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+  .footer__col h4 {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .footer__col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .footer__col a {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .footer__col a:hover { color: var(--ds-accent); }
+  .footer__legal {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  /* --- Responsive collapse --------------------------------------------- */
+  @media (max-width: 880px) {
+    .featured { grid-template-columns: 1fr; }
+    .publications__row {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-2);
+      padding: var(--ds-space-5) 0;
+    }
+    .footer__grid { grid-template-columns: repeat(2, 1fr); }
+    .nav__links { display: none; }
+    .publications__head { flex-direction: column; gap: var(--ds-space-4); align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- 1. NAVIGATION -->
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__wordmark" href="#">Lorem</a>
+      <ul class="nav__links">
+        <li><a href="#">Research</a></li>
+        <li><a href="#">Lorem Futures</a></li>
+        <li><a href="#">Commitments</a></li>
+        <li><a href="#">Learn</a></li>
+        <li><a href="#">News</a></li>
+      </ul>
+      <a class="nav__cta" href="#">Try Lorem</a>
+    </nav>
+
+    <!-- 2. RESEARCH HERO -->
+    <header class="hero">
+      <div class="hero__rule" aria-hidden="true"></div>
+      <span class="hero__kicker">Research</span>
+      <h1 class="hero__h1">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__dek">Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla.</p>
+    </header>
+
+    <!-- 3. FILTER RAIL -->
+    <nav class="filter-rail" aria-label="Research teams">
+      <button class="filter-rail__pill" aria-pressed="true">All</button>
+      <button class="filter-rail__pill" aria-pressed="false">Alignment</button>
+      <button class="filter-rail__pill" aria-pressed="false">Economic Research</button>
+      <button class="filter-rail__pill" aria-pressed="false">Interpretability</button>
+      <button class="filter-rail__pill" aria-pressed="false">Societal Impacts</button>
+    </nav>
+
+    <!-- 4. FEATURED PAPER GRID -->
+    <section class="featured" aria-label="Featured research">
+      <article class="paper-card">
+        <a class="paper-card__image" href="#" aria-label="Lorem paper one"></a>
+        <div class="paper-card__meta">
+          <span class="paper-card__category">Interpretability</span>
+          <span class="paper-card__date">May 7, 2026</span>
+        </div>
+        <h3 class="paper-card__h3">Lorem ipsum dolor sit amet consectetur adipiscing.</h3>
+        <p class="paper-card__dek">Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor.</p>
+      </article>
+
+      <article class="paper-card">
+        <a class="paper-card__image" href="#" aria-label="Lorem paper two"></a>
+        <div class="paper-card__meta">
+          <span class="paper-card__category">Alignment</span>
+          <span class="paper-card__date">Apr 22, 2026</span>
+        </div>
+        <h3 class="paper-card__h3">Ipsum dolor sit amet adipiscing elit vivamus.</h3>
+        <p class="paper-card__dek">Curabitur nec libero non nisi convallis fringilla. Aenean fermentum magna at suscipit lacinia elit nisl.</p>
+      </article>
+
+      <article class="paper-card">
+        <a class="paper-card__image" href="#" aria-label="Lorem paper three"></a>
+        <div class="paper-card__meta">
+          <span class="paper-card__category">Societal Impacts</span>
+          <span class="paper-card__date">Apr 3, 2026</span>
+        </div>
+        <h3 class="paper-card__h3">Consectetur adipiscing elit nullam vivamus sapien.</h3>
+        <p class="paper-card__dek">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla magna at suscipit.</p>
+      </article>
+
+      <article class="paper-card">
+        <a class="paper-card__image" href="#" aria-label="Lorem paper four"></a>
+        <div class="paper-card__meta">
+          <span class="paper-card__category">Economic Research</span>
+          <span class="paper-card__date">Mar 14, 2026</span>
+        </div>
+        <h3 class="paper-card__h3">Sit amet consectetur adipiscing nullam fermentum.</h3>
+        <p class="paper-card__dek">Magna at suscipit lacinia, elit nisl tristique velit, nec malesuada lorem ipsum dolor sit amet.</p>
+      </article>
+    </section>
+
+    <!-- 5. PUBLICATIONS LIST -->
+    <section class="publications" aria-label="All publications">
+      <div class="publications__head">
+        <h2 class="publications__h2">Publications</h2>
+        <input class="publications__search" type="search" placeholder="Search publications" aria-label="Search publications"/>
+      </div>
+      <ol class="publications__list" role="list">
+        <li class="publications__row">
+          <span class="publications__date">May 7, 2026</span>
+          <span class="publications__category">Interpretability</span>
+          <a class="publications__title" href="#">Lorem ipsum dolor sit amet consectetur adipiscing elit nullam.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Apr 22, 2026</span>
+          <span class="publications__category">Alignment</span>
+          <a class="publications__title" href="#">Vivamus sit amet sapien velit curabitur nec libero non nisi.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Apr 3, 2026</span>
+          <span class="publications__category">Societal Impacts</span>
+          <a class="publications__title" href="#">Aenean fermentum magna at suscipit lacinia elit nisl tristique.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Mar 14, 2026</span>
+          <span class="publications__category">Economic Research</span>
+          <a class="publications__title" href="#">Curabitur nec libero non nisi convallis fringilla sapien velit.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Feb 28, 2026</span>
+          <span class="publications__category">Interpretability</span>
+          <a class="publications__title" href="#">Lorem ipsum dolor sit amet consectetur adipiscing elit nullam.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Feb 11, 2026</span>
+          <span class="publications__category">Alignment</span>
+          <a class="publications__title" href="#">Magna at suscipit lacinia elit nisl tristique velit nec malesuada.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Jan 30, 2026</span>
+          <span class="publications__category">Societal Impacts</span>
+          <a class="publications__title" href="#">Sit amet consectetur adipiscing nullam fermentum suscipit.</a>
+        </li>
+        <li class="publications__row">
+          <span class="publications__date">Jan 8, 2026</span>
+          <span class="publications__category">Economic Research</span>
+          <a class="publications__title" href="#">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis.</a>
+        </li>
+      </ol>
+      <button class="publications__more">See more publications</button>
+    </section>
+
+    <!-- 6. RECRUITMENT CTA -->
+    <section class="recruit" aria-label="Recruitment">
+      <h2 class="recruit__h2">Join the research team.</h2>
+      <a class="recruit__link" href="#">See open roles</a>
+    </section>
+
+    <!-- 7. FOOTER -->
+    <footer class="footer" aria-label="Site footer">
+      <div class="footer__grid">
+        <div class="footer__brand">Lorem</div>
+
+        <div class="footer__col">
+          <h4>Products</h4>
+          <ul>
+            <li><a href="#">Lorem One</a></li>
+            <li><a href="#">Lorem Code</a></li>
+            <li><a href="#">Lorem API</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Models</h4>
+          <ul>
+            <li><a href="#">Lorem Opus</a></li>
+            <li><a href="#">Lorem Sonnet</a></li>
+            <li><a href="#">Lorem Haiku</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Research</a></li>
+            <li><a href="#">News</a></li>
+            <li><a href="#">Learn</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Commitments</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Policies</h4>
+          <ul>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Security</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>(c) Lorem ipsum 2026</span>
+        <span>Lorem ipsum dolor sit amet</span>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

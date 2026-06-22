@@ -1,0 +1,724 @@
+<!--
+  Asset: airtable-pricing-page-001
+  Class: layouts
+  Pattern: tiered-pricing-grid, comparison-feature-table, faq-accordions, mega-footer
+  Inspired by: Airtable (airtable.com/pricing)
+  Notes:
+    - Pricing-page skeleton: nav (flush-top), pricing-hero (centered H1
+      "A plan for every organization's needs" + short dek, no imagery),
+      tiered-pricing-grid (four equal cards Free / Team $20 / Business
+      $45 / Enterprise Scale Custom with the Team card lifted as the
+      recommended tier via accent-blue border and a small recommended
+      pill marker), comparison-feature-table (sticky tier-header row
+      over category-banded sections covering bases, interface, AI,
+      automations, governance, and support), faq-accordion (seven items),
+      gradient cta-block (nonprofits / education / enterprise contact
+      band), mega-footer. The page rides at 1216px; tier cards are equal
+      width on desktop; the comparison table is full container-width.
+    - Variable: section sequence, page max-width, tier card structure,
+      comparison-table category banding, typographic role per slot.
+      Inline: page max-width (1216px), four-column tier grid, sticky
+      comparison-header offset, recommended-tier border treatment, CTA
+      button geometry, included / not_available cell glyph.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-pricing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Airtable's marketing site uses a humanist-sans display and
+  body face. We do not load it; the Inter + system-ui fallback in
+  tokens.css carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1216px so the four-card tier grid, the
+   * comparison table, and the FAQ all breathe on the same gutter. Inline
+   * value, not a contract slot, because it is page-grid character.
+   */
+  .page {
+    max-width: 1216px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Pricing hero. H1 alone, no imagery, no kicker. A short dek under
+   * the H1 names the audience. Centered with a max-width on both
+   * lines so the tier grid below is the page's first wide moment.
+   */
+  .pricing-hero { text-align: center; padding-block: var(--ds-space-12) var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .pricing-hero { padding-block: var(--ds-space-16) var(--ds-space-12); }
+  }
+  .pricing-hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 22ch;
+  }
+  .pricing-hero__dek {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin: 0 auto;
+    max-width: 60ch;
+  }
+
+  /*
+   * Tier grid. Four equal cards on desktop, stacks two-up at tablet,
+   * single-column on mobile. The Team card is the recommended tier and
+   * lifts via an accent-blue border plus a small "Recommended" pill;
+   * the surface stays paper-white so the four cards keep equal mass on
+   * the row. Four-column inline value, not a contract slot.
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) {
+    .tier-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .tier-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .tier-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+  .tier-card--featured {
+    /* Recommended tier: accent-blue border, white surface kept. The
+       border weight is what lifts the card; no full inversion. */
+    border-color: var(--ds-accent);
+    border-width: 2px;
+    background: var(--ds-bg);
+  }
+  .tier-card__pill {
+    position: absolute;
+    top: -10px;
+    left: var(--ds-space-5);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    padding: 4px var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier-card__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .tier-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+
+  .tier-card__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier-card__price-unit {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-1);
+  }
+
+  .tier-card__tagline {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  .tier-card__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier-card__feature::before {
+    content: "+ ";
+    font-family: var(--ds-font-mono);
+    color: var(--ds-accent);
+  }
+
+  /* CTA button. Small radius (md), not a full pill, per Airtable chrome.
+     Featured card uses solid accent fill; other cards use outline. */
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+    align-self: stretch;
+    text-align: center;
+  }
+  .tier-card--featured .cta-button {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-color: var(--ds-accent);
+  }
+
+  /*
+   * Comparison feature table. Full container-width, hairline-bordered.
+   * Sticky tier-header row sits at the top so Free / Team / Business /
+   * Enterprise labels persist while the user scrolls long category
+   * groupings. The table is grouped by named feature categories
+   * (Bases and records, Interface designer, AI, Automations, Governance
+   * and admin, Support); each category leads with a tinted
+   * mono-uppercase band heading. Cells render check (included),
+   * em-marker (not_available), numeric usage limits, or "Custom".
+   */
+  .compare-section { padding-top: var(--ds-space-10); }
+  .compare-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .compare-table-wrap {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  /* Sticky tier-header row. Inline value: top offset is 0; the table
+     wrap is the scroll container on long screens. */
+  .compare-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    text-align: left;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .compare-table tbody tr.category-band td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody td {
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare-table tbody tr:first-child td { border-top: 0; }
+  .compare-table .feature-cell { color: var(--ds-text); }
+  .compare-table .cell-tier {
+    color: var(--ds-text);
+    width: 14%;
+  }
+  .compare-table .glyph-included { color: var(--ds-success); font-family: var(--ds-font-mono); }
+  .compare-table .glyph-na { color: var(--ds-text-muted); font-family: var(--ds-font-mono); }
+  .compare-table .cell-unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * FAQ accordion. Single column. Each item is a hairline-divided row
+   * with a sans question on the left and a mono "+ / -" affordance on
+   * the right. Open items reveal a smaller muted answer beneath.
+   */
+  .faq-list { border-top: 1px solid var(--ds-hairline); }
+  .faq-item {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--ds-space-5) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+  }
+  .faq-item[open] summary::after { content: "-"; }
+  .faq-item__body {
+    padding-bottom: var(--ds-space-6);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+  }
+  .faq-item__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /*
+   * CTA band. Full-width gradient-fill brand band that stands in for
+   * Airtable's nonprofits / education / enterprise call-out. The
+   * gradient is inline ornament (a specific stop set) rather than a
+   * contract value; it is the Airtable brand-band signature.
+   */
+  .cta-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    background: linear-gradient(135deg, #2D7FF9 0%, #6E47C2 100%);
+    color: #FFFFFF;
+    text-align: center;
+  }
+  .cta-band__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 auto var(--ds-space-4);
+    max-width: 28ch;
+    color: #FFFFFF;
+  }
+  .cta-band__dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: rgba(255,255,255,0.86);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 56ch;
+  }
+  .cta-band .cta-button {
+    background: #FFFFFF;
+    color: var(--ds-text-strong);
+    border-color: #FFFFFF;
+    align-self: auto;
+    display: inline-flex;
+  }
+
+  /* Footer band: full-width, sits outside .page container. Stands in
+     for an airtable-tagged mega-footer whole. */
+  .footer-band {
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for an airtable-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 180px;">
+        <span class="slot__label">cta-button</span>
+        Sign up lorem
+      </div>
+    </nav>
+
+    <!-- Section: pricing-hero. Title + dek only, no imagery. -->
+    <header class="pricing-hero" aria-label="Pricing hero">
+      <h1 class="pricing-hero__title">A lorem ipsum for every organization's needs.</h1>
+      <p class="pricing-hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </header>
+
+    <!-- Section: tiered-pricing-grid. Four equal cards; second is recommended. -->
+    <section class="section" aria-label="Pricing tiers">
+      <div class="tier-grid">
+
+        <article class="tier-card" aria-label="Free tier">
+          <span class="tier-card__label">Tier 01</span>
+          <h2 class="tier-card__name">Lorem Free</h2>
+          <p class="tier-card__price">
+            $0
+            <span class="tier-card__price-unit">Lorem ipsum forever</span>
+          </p>
+          <p class="tier-card__tagline">For individuals lorem ipsum dolor sit amet getting started.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+          </ul>
+          <a class="cta-button" href="#">Sign up lorem</a>
+        </article>
+
+        <article class="tier-card tier-card--featured" aria-label="Team tier (recommended)">
+          <span class="tier-card__pill">Recommended</span>
+          <span class="tier-card__label">Tier 02</span>
+          <h2 class="tier-card__name">Lorem Team</h2>
+          <p class="tier-card__price">
+            $20
+            <span class="tier-card__price-unit">per user / month, billed annually</span>
+          </p>
+          <p class="tier-card__tagline">For teams collaborating lorem ipsum on shared workflows.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+          </ul>
+          <a class="cta-button" href="#">Try lorem free</a>
+        </article>
+
+        <article class="tier-card" aria-label="Business tier">
+          <span class="tier-card__label">Tier 03</span>
+          <h2 class="tier-card__name">Lorem Business</h2>
+          <p class="tier-card__price">
+            $45
+            <span class="tier-card__price-unit">per user / month, billed annually</span>
+          </p>
+          <p class="tier-card__tagline">For larger teams lorem ipsum that need governance and scale.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-button" href="#">Try lorem free</a>
+        </article>
+
+        <article class="tier-card" aria-label="Enterprise Scale tier">
+          <span class="tier-card__label">Tier 04</span>
+          <h2 class="tier-card__name">Lorem Enterprise Scale</h2>
+          <p class="tier-card__price">
+            Custom
+            <span class="tier-card__price-unit">Contact lorem sales</span>
+          </p>
+          <p class="tier-card__tagline">For organizations lorem ipsum needing custom controls and support.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-button" href="#">Contact lorem sales</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: comparison-feature-table. Sticky tier row over banded categories. -->
+    <section class="section compare-section" aria-label="Compare plans">
+      <h2 class="compare-heading">Compare lorem plans</h2>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Free</th>
+              <th scope="col">Team</th>
+              <th scope="col">Business</th>
+              <th scope="col">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="category-band">
+              <td colspan="5">Lorem bases and records</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Lorem ipsum dolor sit amet</td>
+              <td class="cell-tier"><span class="cell-unit">1,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">50,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">125,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">500,000</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Consectetur adipiscing elit</td>
+              <td class="cell-tier"><span class="cell-unit">1 GB</span></td>
+              <td class="cell-tier"><span class="cell-unit">20 GB</span></td>
+              <td class="cell-tier"><span class="cell-unit">100 GB</span></td>
+              <td class="cell-tier"><span class="cell-unit">1 TB</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="5">Lorem interface designer</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Sed do eiusmod tempor</td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="5">Lorem AI</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Incididunt ut labore</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="cell-unit">500 runs</span></td>
+              <td class="cell-tier"><span class="cell-unit">2,500 runs</span></td>
+              <td class="cell-tier"><span class="cell-unit">Custom</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="5">Lorem automations</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Et dolore magna aliqua</td>
+              <td class="cell-tier"><span class="cell-unit">100</span></td>
+              <td class="cell-tier"><span class="cell-unit">25,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">100,000</span></td>
+              <td class="cell-tier"><span class="cell-unit">500,000</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="5">Lorem governance and admin</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Ut enim ad minim veniam</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Quis nostrud exercitation</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="5">Lorem support</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Ullamco laboris nisi</td>
+              <td class="cell-tier"><span class="cell-unit">Email</span></td>
+              <td class="cell-tier"><span class="cell-unit">Priority</span></td>
+              <td class="cell-tier"><span class="cell-unit">24/7</span></td>
+              <td class="cell-tier"><span class="cell-unit">Dedicated</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section: faq-accordion. Seven-item FAQ; hairline-divided rows. -->
+    <section class="section" aria-label="Pricing FAQ">
+      <h2 class="compare-heading">Frequently lorem questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>How does lorem ipsum pricing work?</summary>
+          <div class="faq-item__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. <a href="#">Lorem ipsum link</a>
+            for further reading.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How does lorem Business and Enterprise pricing work?</summary>
+          <div class="faq-item__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Is lorem free to use?</summary>
+          <div class="faq-item__body">
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+            aute irure dolor in reprehenderit in voluptate velit esse.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How much does lorem cost?</summary>
+          <div class="faq-item__body">
+            Cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What are my payment options?</summary>
+          <div class="faq-item__body">
+            Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+            natus error sit voluptatem accusantium doloremque laudantium.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What happens when I hit my usage limits?</summary>
+          <div class="faq-item__body">
+            Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis
+            et quasi architecto beatae vitae dicta sunt explicabo.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>I am on a lorem legacy plan, where can I see my features?</summary>
+          <div class="faq-item__body">
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+            odit aut fugit, sed quia consequuntur magni dolores eos.
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- CTA band: full-width gradient brand band, outside .page. -->
+  <aside class="cta-band" aria-label="Special offers">
+    <div class="page">
+      <h2 class="cta-band__heading">Lorem ipsum for nonprofits, education, and enterprise.</h2>
+      <p class="cta-band__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <a class="cta-button" href="#">Contact lorem sales</a>
+    </div>
+  </aside>
+
+  <!-- Footer: full-width band outside .page. Stands in for the
+       airtable-tagged mega-footer whole with social and app store rows. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

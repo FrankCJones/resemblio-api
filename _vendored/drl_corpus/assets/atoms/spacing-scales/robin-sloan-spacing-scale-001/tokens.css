@@ -1,0 +1,146 @@
+/*
+ * robin-sloan alphabet tokens
+ *
+ * Robin Sloan's complete typography expression captured in its 2024+ warm
+ * terracotta era. The page bg is a saturated terracotta (oklch(0.7 0.195 37),
+ * approximated #DD7041); body type is Filosofia, a high-contrast modern serif,
+ * set at 21px / 28px (~1.33 leading). Display headlines run Kyrios, a
+ * characterful display serif, measured at 84px weight 700 on h1.
+ *
+ * The system is paper-and-ink discipline pushed past the typical off-white:
+ * ink near-black on warm terracotta, deep cocoa as the secondary chromatic
+ * voice, and absolutely no third color. Asterism dividers replace hairlines
+ * between sections. Mono (IBM Plex Mono) is reserved for the tiniest
+ * metadata, never reading.
+ *
+ * Era convention: this asset captures the terracotta-era 2024+; the prior
+ * paper-and-ink era is honored as a readable origin (see system.json
+ * design_principles "era-shift-honored-both-eras-readable") but tokens here
+ * commit to the live era. Cross-checked against system-tagged atom
+ * body-text/lead-paragraph-001 (captured 2026-05-19 via devtools at score A)
+ * which holds the same Filosofia 21px / 28px / terracotta values, and
+ * confirmed via WebFetch structural inspection of the homepage and /notes/
+ * page on 2026-05-20.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Saturated terracotta is the page; the bg IS the brand. Ink sits at
+   * rgba(0,0,0,0.95) which reads as a slightly translucent near-black,
+   * letting the terracotta breathe through. Deep cocoa is the only other
+   * chromatic voice, used for accents on the warm field.
+   */
+  --ds-bg:           #DD7041;   /* Saturated terracotta; live 2024+ page bg, oklch(0.7 0.195 37). */
+  --ds-surface:      #E58460;   /* One step lifted off the page. */
+  --ds-surface-2:    #EE9A7E;   /* Two steps; tinted callouts. */
+  --ds-text:         #0D0D0D;   /* Body ink, ~rgba(0,0,0,0.95) on terracotta. */
+  --ds-text-muted:   #4A2A18;   /* Captions, byline date; warm reduced contrast. */
+  --ds-text-strong:  #000000;   /* Display headlines. */
+  --ds-border:       #B85A2E;   /* Borders that read warm against the bg. */
+  --ds-hairline:     #C66A3C;   /* Section separators when not asterism. */
+  --ds-accent:       #2A1410;   /* Deep cocoa; the single non-bg chromatic voice. */
+  --ds-accent-2:     #6B3A20;   /* Lifted cocoa for secondary states. */
+  --ds-success:      #4A6B2E;   /* Olive on terracotta. */
+  --ds-warning:      #B0801F;   /* Mustard. */
+  --ds-error:        #7A1F12;   /* Deep brick. */
+  --ds-info:         #2A1410;   /* Reuses cocoa accent. */
+  --ds-focus-ring:   #0D0D0D;   /* Ink ring on warm paper. */
+
+  /* ---------- Type families ----------
+   * Two licensed display serifs do the work: Kyrios for display headlines,
+   * Filosofia for body reading. The pairing is print-press provenance:
+   * Filosofia (Zuzana Licko, Emigre) is a Bodoni-family modern serif at
+   * a text optical size; Kyrios is a contemporary display companion.
+   * IBM Plex Mono drops in for the rare metadata moment.
+   * Sans is essentially absent from the site; Trade Gothic Next is the
+   * fallback chrome face if a UI moment ever calls for it.
+   */
+  --ds-font-display: "Kyrios", "Filosofia", "Bodoni 72", Georgia, serif;
+  --ds-font-body:    "Filosofia", "Bodoni 72", "Times New Roman", Georgia, serif;
+  --ds-font-mono:    "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Trade Gothic Next", -apple-system, system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Base body 21px (an editorial-register choice well above the 16-17px
+   * SaaS default); lead paragraph bumps to 24px. Display h1 measured at
+   * 84px on Kyrios. The scale ratio sits near 1.2 in the reading range
+   * and widens at the editorial display steps.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Mono metadata, byline date. */
+  --ds-text-sm:   15px;   /* Captions, small print. */
+  --ds-text-base: 21px;   /* Body reading (Filosofia). */
+  --ds-text-lg:   24px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   28px;   /* Subheads (H3). */
+  --ds-text-2xl:  36px;   /* Section heads (H2). */
+  --ds-text-3xl:  48px;   /* Statement subhead. */
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  84px;   /* H1 Kyrios (measured). */
+  --ds-text-6xl:  104px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Body sits at 1.33 (the 21/28 ratio measured on the live site). This is
+   * tighter than the SaaS 1.5; the Filosofia face's tall x-height plus the
+   * warm bg need air without floating apart. Display headlines tighten to
+   * 1.05 to let Kyrios's character carry the rhythm.
+   */
+  --ds-leading-tight:   1.05;   /* Display H1 Kyrios. */
+  --ds-leading-snug:    1.2;    /* Subheads. */
+  --ds-leading-normal:  1.33;   /* Sloan body rhythm (21/28). */
+  --ds-leading-relaxed: 1.55;   /* Lead paragraph. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Negative tracking on display (modern serif convention). Wide tracking
+   * on the small-caps lead-in (font-feature-settings 'smcp' 1 plus +0.16em);
+   * this is the editorial signature move.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;   /* Byline metadata register. */
+  --ds-tracking-wider:  0.16em;   /* Small-caps lead-in, mono eyebrow. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. The reading column hits its max at 32em (~512px at base
+   * size) which gives roughly 60-65 characters per line in Filosofia at
+   * 21px. The narrow measure is the structural commitment; everything else
+   * follows from it.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Print register. Sloan's site rounds nothing structural; the only round
+   * shape is the rare avatar. Buttons sit at sm (4px) at most.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Warm shadows tinted brown rather than pure black to sit on terracotta.
+   * The site uses shadow effectively never; tokens here are reasonable
+   * defaults if a component must lift.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60,30,12,0.10);
+  --ds-shadow-sm:   0 2px 4px rgba(60,30,12,0.14);
+  --ds-shadow-md:   0 6px 14px rgba(60,30,12,0.18);
+  --ds-shadow-lg:   0 14px 30px rgba(60,30,12,0.22);
+  --ds-shadow-2xl:  0 24px 56px rgba(60,30,12,0.28);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

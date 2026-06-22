@@ -1,0 +1,159 @@
+<!--
+  Asset: full-bleed-quote-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, oversized-statement, paper-and-ink
+  Inspired by: A24 Films
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/a24-cinematic-palette-001   (cinema-black + paper-white)
+    - type-pairings/a24-cinematic-pair-001     (humanist sans + mono labels)
+    - headings/oversized-statement-001         (viewport-spanning single line)
+    - kickers/mono-eyebrow-001                 (uppercase tracked attribution kicker)
+    - dividers/hairline-rule-001               (the thin paper-white rule between kicker and quote)
+  Notes:
+    - One quote, full-bleed, paper-on-ink. The testimonial sits in the
+      A24 title-card register: oversized humanist sans on cinema-black,
+      mono kicker overhead, attribution as a quiet credit line below.
+    - The closing quote-mark glyph and the hairline rule between kicker
+      and quote are inline ornaments; everything else is variable.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>full-bleed-quote-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Tight is the open-licensed analog for A24's GT America / Söhne register.
+     JetBrains Mono carries the small mono kicker label. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Full-bleed shell. The whole section is the testimonial; there is no
+   * card, no panel, no chrome. The bg is the cinema-black from the palette;
+   * everything sits on it. Vertical padding leans large so the quote
+   * breathes like a title-card reel between scenes. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-16) var(--ds-space-6);
+  }
+
+  /* The quote column. Centered, capped narrow enough that the oversized
+   * statement wraps to two or three lines (the typographic event), wide
+   * enough that single-line scenarios still feel anchored. */
+  .quote {
+    max-width: 1040px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-8);
+  }
+
+  /* Kicker row: mono small-caps label flanking a paper-white hairline. The
+   * structure mirrors atoms/kickers/mono-eyebrow-001 but centered, with
+   * the rule continuing under the label so it reads as a film slug-line. */
+  .quote__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  /* Hairline rule from atoms/dividers/hairline-rule-001. Paper-white at low
+   * opacity; the rule reads as etched into the black field, not painted. */
+  .quote__kicker::before,
+  .quote__kicker::after {
+    content: "";
+    width: 48px;
+    height: 1px;
+    background: color-mix(in oklab, var(--ds-text) 22%, transparent);
+    /* Inline ornament: the 22% mix gives the rule a credit-roll quietness
+     * specific to this asset; not promoted to a variable. */
+  }
+
+  /* The quote itself: from atoms/headings/oversized-statement-001. Humanist
+   * sans, tight tracking, near-tight leading. Mixed case (sentence case),
+   * not display caps, matching A24's title-card register where the title
+   * itself is the visual event, not its caseing. */
+  .quote__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6.5vw, var(--ds-text-6xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    color: var(--ds-text);
+  }
+  /* The closing quote glyph. Inline ornament: positioned and sized
+   * independently of the headline scale because the punctuation reads as a
+   * stamp rather than a continuation of the type. */
+  .quote__mark {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    line-height: 1;
+    color: var(--ds-text);
+    /* Slight visual size bump beyond the headline cap-height; a single
+     * tuned multiplier so the glyph feels like a signature, not a typo. */
+    transform: translateY(0.08em);
+  }
+
+  /* Attribution: byline-quiet. Same mono family as kicker, but lowercase
+   * mixed-case (sentence case) for the name and a dash prefix in the
+   * traditional credit style. Muted text color. */
+  .quote__attribution {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .quote__attribution-name {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .quote__attribution-role {
+    /* A single nbsp-comma rhythm: "Name, role at company" */
+    color: var(--ds-text-muted);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Subtle one-shot reveal on first paint. Honors reduced-motion default;
+     * the section is fully readable without it. */
+    .quote { animation: rise var(--ds-duration-slow) var(--ds-ease-decelerate) both; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+</head>
+<body>
+  <figure class="quote">
+    <span class="quote__kicker" aria-hidden="true">Lorem ipsum</span>
+    <blockquote class="quote__h1">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+      <span class="quote__mark">&rdquo;</span>
+    </blockquote>
+    <figcaption class="quote__attribution">
+      <span class="quote__attribution-name">Lorem Ipsum</span><span class="quote__attribution-role">, dolor sit amet at Consectetur Adipiscing</span>
+    </figcaption>
+  </figure>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!--
+  Asset: editorial-newspaper-001
+  Class: headings
+  Pattern: display-editorial
+  Inspired by: The Markup
+  Notes:
+    - Newspaper register: heavy serif H1 on cream card surface, navy ink, coral
+      section kicker in compact sans. Two faces, two roles: ivar-display
+      (Newsreader as fallback) for story title, messina (Inter as fallback) for
+      the editorial section label.
+    - All type scale, color, and rhythm come from tokens.css. The accent
+      square-rule under the section label is the only inline asset ornament; it
+      is a one-off character moment, not a tokenized divider.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-newspaper-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Newsreader stands in for ivar-display (Adobe Fonts, license-gated); Inter
+     stands in for messina. Both are open and render close to the source
+     character at display sizes. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* The navy page bg is the publication's surround; the cream card is the
+     reading surface. This split is the load-bearing decision of the design. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    font-optical-sizing: auto;
+  }
+
+  /* The card: cream surface, square corners, generous interior padding so the
+     headline has room to breathe. Max-width caps the measure at the editorial
+     newspaper sweet spot. */
+  .card {
+    background: var(--ds-surface);
+    padding: var(--ds-space-8) var(--ds-space-8);
+    max-width: 720px;
+    width: 100%;
+  }
+
+  /* Section label: small sans in coral, lifted just above the headline. The
+     letter-spacing is normal (verified from the live site) but tracking-wide
+     is preserved as a typographic option for downstream remixes. */
+  .kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+
+  /* Inline accent rule under the kicker. This is the one ornamental moment of
+     the asset: a 24px coral square-rule used as a typographic anchor. Inline
+     because it is not a tokenized divider; it is a one-off character cue. */
+  .kicker::after {
+    content: "";
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--ds-accent);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* The headline: ivar-display register at display scale, 700 weight, tight
+     leading per the live site. Measure capped at 18ch to honor newspaper
+     column rhythm; text-wrap balance because the headline is short and any
+     orphaned word reads as a typesetting mistake at this scale. */
+  h1.display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Optional dek (lead paragraph beneath the headline) shown to demonstrate
+     vertical rhythm with the headline. Reuses body sans at lg size. */
+  .dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-5) 0 0 0;
+    max-width: 48ch;
+  }
+
+  /* Responsive lift: at viewports above 900px the headline goes up one step
+     to demonstrate the display-scale headline pattern available in tokens. */
+  @media (min-width: 900px) {
+    h1.display { font-size: var(--ds-text-4xl); }
+  }
+</style>
+</head>
+<body>
+  <article class="card">
+    <p class="kicker">Lorem ipsum</p>
+    <h1 class="display">Lorem ipsum dolor sit amet, consectetur adipiscing.</h1>
+    <p class="dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+  </article>
+</body>
+</html>

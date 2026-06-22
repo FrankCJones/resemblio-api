@@ -1,0 +1,187 @@
+<!--
+  Asset: quanta-science-pair-001
+  Class: type-pairings
+  Pattern: serif-display-sans-body, mono-utility-pair
+  Inspired by: Quanta Magazine
+  Notes:
+    - Three-family editorial system: serif owns reading, sans owns
+      utility, mono owns the rare technical label. One accent violet
+      colors only the sans-side category signals.
+    - The demo renders a card stack and an article opening; the
+      proportional relationship between kicker, title, dek, and body
+      is the specimen.
+    - Asset-local rule: the kicker color is a token; the kicker hover
+      is a token; all sizes and tracking come from token slots. No
+      inline magic values.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-science-pair-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 as the closest free analog to Tiempos Text and
+     Tiempos Headline; Inter as a humanist sans analog to GT America;
+     JetBrains Mono as the technical-label utility. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  /* Asset-local reset so the file opens standalone. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: "Source Serif 4", var(--ds-font-body);
+    font-optical-sizing: auto;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+
+  .stage {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Specimen heading row pairs feature display with a sans kicker. */
+  .specimen-kicker {
+    font-family: "Inter", var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .specimen-display {
+    font-family: "Source Serif 4", var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .specimen-dek {
+    font-family: "Source Serif 4", var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+    max-width: 56ch;
+  }
+  /* Byline row: sans, muted, with a mono date stamp. Demonstrates the
+   * voice split: sans for human metadata, mono for machine metadata. */
+  .specimen-byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: "Inter", var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-4);
+  }
+  .specimen-byline .author { color: var(--ds-text); font-weight: 500; }
+  .specimen-byline .stamp {
+    font-family: "JetBrains Mono", var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin-left: auto;
+  }
+
+  /* Article body block. Serif at base size, relaxed leading, narrow
+   * measure (60-72ch is the editorial sweet spot for serif at 17px). */
+  .body-prose {
+    font-family: "Source Serif 4", var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    max-width: 60ch;
+    margin-top: var(--ds-space-5);
+  }
+  .body-prose p { margin: 0 0 var(--ds-space-4) 0; }
+  .body-prose em { font-style: italic; }
+  .body-prose strong { font-weight: 600; }
+
+  /* Card row at the bottom shows the same families running at card scale:
+   * smaller kicker, smaller title, dek. The system holds at multiple
+   * sizes without family swaps. */
+  .card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+  }
+  .card { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .card-kicker {
+    font-family: "Inter", var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card-kicker:hover { color: var(--ds-accent-2); }
+  .card-title {
+    font-family: "Source Serif 4", var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .card-dek {
+    font-family: "Source Serif 4", var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <article>
+      <p class="specimen-kicker">mathematics</p>
+      <h1 class="specimen-display">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do.</h1>
+      <p class="specimen-dek">Eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+      <div class="specimen-byline">
+        <span>By <span class="author">Lorem Author</span></span>
+        <span class="stamp">2026-05-19</span>
+      </div>
+      <div class="body-prose">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, vitae rhoncus nibh massa eu erat.</p>
+        <p>Pellentesque habitant morbi tristique <em>senectus et netus</em> et malesuada fames ac turpis egestas. <strong>Donec consectetur</strong> ligula sit amet justo gravida, eget tincidunt nibh imperdiet. Quisque eget ante in nibh consequat porta.</p>
+      </div>
+    </article>
+
+    <section class="card-row">
+      <article class="card">
+        <a class="card-kicker" href="#">computer science</a>
+        <h2 class="card-title">Duis aute irure dolor in reprehenderit voluptate velit.</h2>
+        <p class="card-dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia.</p>
+      </article>
+      <article class="card">
+        <a class="card-kicker" href="#">quantum physics</a>
+        <h2 class="card-title">Sed ut perspiciatis unde omnis iste natus error sit.</h2>
+        <p class="card-dek">Voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa.</p>
+      </article>
+    </section>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!--
+  Asset: footer-link-mono-001
+  Class: links
+  Pattern: (none in TAXONOMY; footer link style)
+  Inspired by: Vercel
+  Notes:
+    - Footer link in mid-gray with no underline at rest; lifts to ink on hover.
+    - Vertical rhythm and column gap come from spacing tokens; everything else is type.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>footer-link-mono-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist via Google Fonts approximation. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .footer {
+    max-width: 880px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-8);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-border);
+  }
+  .col-heading {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-4);
+  }
+  .col-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .f-link {
+    display: inline-block;
+    padding: 2px 0;                /* inline: matches Vercel's 2px hit-area padding */
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .f-link:hover,
+  .f-link.is-hover {
+    color: var(--ds-text-strong);
+  }
+  .f-link:focus-visible,
+  .f-link.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-xs);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    text-align: center;
+    margin-bottom: var(--ds-space-4);
+  }
+</style>
+</head>
+<body>
+  <div style="max-width: 880px; margin: 0 auto;">
+    <div class="state-label">rest, hover, focus shown in columns</div>
+    <nav class="footer" aria-label="footer">
+      <div>
+        <div class="col-heading">Lorem</div>
+        <ul class="col-links">
+          <li><a class="f-link" href="#">Ipsum dolor</a></li>
+          <li><a class="f-link" href="#">Sit amet</a></li>
+          <li><a class="f-link" href="#">Consectetur</a></li>
+          <li><a class="f-link" href="#">Adipiscing</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-heading">Ipsum</div>
+        <ul class="col-links">
+          <li><a class="f-link is-hover" href="#">Hovered link</a></li>
+          <li><a class="f-link" href="#">Tempor incididunt</a></li>
+          <li><a class="f-link" href="#">Ut labore</a></li>
+          <li><a class="f-link" href="#">Et dolore</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-heading">Dolor</div>
+        <ul class="col-links">
+          <li><a class="f-link" href="#">Magna aliqua</a></li>
+          <li><a class="f-link is-focus" href="#">Focused link</a></li>
+          <li><a class="f-link" href="#">Veniam quis</a></li>
+          <li><a class="f-link" href="#">Nostrud</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</body>
+</html>

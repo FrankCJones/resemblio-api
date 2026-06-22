@@ -1,0 +1,225 @@
+<!--
+  Asset: notion-process-steps-001
+  Class: process-steps (whole)
+  Pattern: numbered-section, illustrated-step, three-up-grid
+  Inspired by: Notion (notion.com/affiliates, notion.com/product/sites)
+  Notes:
+    - Three illustrated steps arranged as a row on desktop and a stack on
+      mobile. Each step pairs a small spot illustration, a large warm-green
+      numeral, a sentence-case headline, and a one-sentence dek. No
+      connecting line between steps; whitespace plus the numeral carries
+      the sequence. The illustration is a hand-drawn spot, not a product
+      screenshot, which keeps the register friendly rather than technical.
+    - Variable in tokens.css: every color, font, size, spacing, radius.
+    - Inline in this file: the three-column grid template, the SVG geometry
+      of the spot illustrations, the numeral sizing, the illustration-frame
+      aspect ratio.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-process-steps-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- GT Walsheim is licensed; Inter carries the same humanist-sans posture
+     for library demonstration. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Section shell. Generous gutter; the warm cream surface itself does
+   * most of the breathing. */
+  .section {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  /* Section header. Centered headline + dek. Sentence-case throughout. */
+  .section__header {
+    text-align: center;
+    margin: 0 auto var(--ds-space-10) auto;
+    max-width: 680px;
+  }
+  .section__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .section__lede {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Three-up grid. Desktop: row of 3. Mobile: vertical stack. No
+   * connecting line; the numeral and whitespace are the rhythm. */
+  .steps {
+    list-style: none;
+    counter-reset: notion-step;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-8);
+  }
+
+  .steps__item {
+    counter-increment: notion-step;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-4);
+  }
+
+  /* Illustration frame. Square-ish aspect, soft Notion radius, white
+   * inset against the cream page so the spot drawing has its own
+   * lit surface. Hairline at Notion's 0.8px equivalent.
+   * Inline ornament: the aspect ratio and inset padding are tuned to the
+   * specific spot illustrations rather than a token role. */
+  .steps__frame {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-5);
+    overflow: hidden;
+  }
+  .steps__frame svg {
+    width: 60%;
+    height: auto;
+    color: var(--ds-text);
+  }
+
+  /* Numeral. Large, warm-green, display-sans. Set as a counter so the
+   * sequence is real rather than typed in. Tabular figures keep "01"
+   * through "03" optically aligned. */
+  .steps__numeral {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-4xl));
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ds-accent);
+    letter-spacing: var(--ds-tracking-tight);
+    font-variant-numeric: tabular-nums;
+    margin-top: var(--ds-space-2);
+  }
+  .steps__numeral::before {
+    content: counter(notion-step, decimal-leading-zero);
+  }
+
+  /* Step headline. Sentence case, display sans, snug leading. */
+  .steps__h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 24ch;
+  }
+
+  /* Step dek. One sentence, muted warm grey, relaxed leading. */
+  .steps__dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  /* Mobile. Stack vertically. The illustration frame loses some of its
+   * width; the row gap relaxes so the steps still read as a sequence. */
+  @media (max-width: 720px) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-10);
+    }
+    .steps__frame { aspect-ratio: 16 / 10; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="how-heading">
+    <header class="section__header">
+      <h2 class="section__h2" id="how-heading">Lorem ipsum dolor sit amet</h2>
+      <p class="section__lede">Consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla.</p>
+    </header>
+
+    <ol class="steps" role="list">
+      <!-- Step 1. Spot illustration: a stylized pen / mark-making tool. -->
+      <li class="steps__item" role="listitem">
+        <div class="steps__frame" aria-hidden="true">
+          <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 96 L60 58 L80 78 L42 116 Z" transform="translate(0,-12)"/>
+            <path d="M60 58 L80 38 A8 8 0 0 1 92 38 L100 46 A8 8 0 0 1 100 58 L80 78"/>
+            <line x1="22" y1="84" x2="30" y2="92"/>
+            <circle cx="92" cy="46" r="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="steps__numeral" aria-hidden="true"></span>
+        <h3 class="steps__h3">Lorem ipsum dolor sit amet.</h3>
+        <p class="steps__dek">Consectetur adipiscing elit. Vivamus sit amet sapien velit nec libero convallis.</p>
+      </li>
+
+      <!-- Step 2. Spot illustration: a lighthouse / signal beacon. -->
+      <li class="steps__item" role="listitem">
+        <div class="steps__frame" aria-hidden="true">
+          <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M50 30 L70 30 L74 92 L46 92 Z"/>
+            <rect x="44" y="50" width="32" height="6"/>
+            <rect x="56" y="20" width="8" height="10"/>
+            <circle cx="60" cy="36" r="6" fill="currentColor" opacity="0.15"/>
+            <path d="M38 28 L26 22 M82 28 L94 22 M60 14 L60 6"/>
+            <line x1="34" y1="98" x2="86" y2="98"/>
+          </svg>
+        </div>
+        <span class="steps__numeral" aria-hidden="true"></span>
+        <h3 class="steps__h3">Ipsum dolor sit amet adipiscing.</h3>
+        <p class="steps__dek">Aenean fermentum magna at suscipit lacinia, elit nisl tristique velit malesuada.</p>
+      </li>
+
+      <!-- Step 3. Spot illustration: a sprouting plant / growth. -->
+      <li class="steps__item" role="listitem">
+        <div class="steps__frame" aria-hidden="true">
+          <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M40 96 Q44 80 52 76 M80 96 Q76 80 68 76"/>
+            <path d="M60 96 L60 50"/>
+            <path d="M60 60 Q44 56 38 42 Q52 40 60 54"/>
+            <path d="M60 50 Q76 46 82 32 Q68 30 60 44"/>
+            <path d="M44 96 Q60 102 76 96"/>
+            <line x1="34" y1="102" x2="86" y2="102"/>
+          </svg>
+        </div>
+        <span class="steps__numeral" aria-hidden="true"></span>
+        <h3 class="steps__h3">Sit amet consectetur adipiscing.</h3>
+        <p class="steps__dek">Curabitur nec libero non nisi convallis fringilla. Vivamus sit amet sapien velit dolor.</p>
+      </li>
+    </ol>
+  </section>
+</body>
+</html>

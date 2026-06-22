@@ -1,0 +1,141 @@
+/*
+ * a24-about-page-001 tokens
+ *
+ * Page-level layout skeleton for the A24 /about page. A24 ships two surface
+ * registers across the site: the cinema-black title-card register (the
+ * pre-roll moment) and the paper-cream editorial register used on the
+ * about/shop/notes surfaces. The about page sits in the paper register: a
+ * warm-cream field, near-ink text, no chromatic accent, a single foliage
+ * masthead image carrying the entire identity, and footer-utility chrome
+ * (newsletter band, secondary nav cluster, social row) closing the page.
+ *
+ * Tokens here track the systems/a24/system.json principles documented for
+ * the brand: warm-cinema-black-on-paper-white, title-card-serif-display,
+ * no-chromatic-accent, editorial-restraint-on-film-marketing, near-sharp
+ * radii (2px, not pills), mono-utility for credits and metadata, image as
+ * poster art rather than stock.
+ *
+ * Provenance: a24films.com/about source character was confirmed via
+ * WebFetch HTML inspection. Section sequence (foliage masthead, copyright
+ * line, newsletter band, utility-link cluster, social row, AAA disclaimer,
+ * footer nav) was captured verbatim from the live HTML body order. Chrome
+ * MCP was unavailable this session; specific hex values are not retrievable
+ * since WebFetch strips computed styles. Hex values inherit the A24
+ * cinematic-palette atom and the wider system register; sizes and spacing
+ * mirror the system-tagged atoms shipped to date. Score B per
+ * AGENT_BRIEFING rules.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper register: warm cream field, warm ink text, no chromatic accent.
+   * The accent is "the inverse slab" (ink on paper or paper on ink) rather
+   * than a saturated hue. */
+  --ds-bg:           #F5F1EA;   /* Warm paper cream; carries the entire about-page surface. */
+  --ds-surface:      #ECE7DD;   /* One step deeper cream; for the newsletter band and form chrome. */
+  --ds-surface-2:    #E3DDD0;   /* Second step; reserved for nested cards or hover state. */
+  --ds-text:         #14110F;   /* Warm-ink body text; reads as printed type on cream. */
+  --ds-text-muted:   #6E665C;   /* Secondary metadata; copyright line, social labels, footer links. */
+  --ds-text-strong:  #0A0908;   /* Wordmark, masthead caption, section titles. */
+  --ds-border:       #D6CFC1;   /* Card and feature-block edges; warmer than a neutral grey. */
+  --ds-hairline:     #D6CFC1;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #0A0908;   /* The inverse slab; ink rectangle on cream is the brand's "accent." */
+  --ds-accent-2:     #14110F;   /* A single step lighter ink; for hover or secondary inverse moments. */
+  --ds-success:      #4A8A5C;   /* Reserved; muted forest, not signage green. */
+  --ds-warning:      #C49449;   /* Reserved; editorial amber. */
+  --ds-error:        #B24A3F;   /* Reserved; editorial red family, not signage red. */
+  --ds-info:         #14110F;   /* Info collapses to ink; palette refuses chromatic UI. */
+  --ds-focus-ring:   #0A0908;   /* Focus ring is ink; offset gives it visibility against cream. */
+
+  /* ---------- Type families ----------
+   * A24 ships a humanist sans system across the marketing surface; a
+   * serif slot is reserved for cinematic title-card display moments
+   * (Times Now register). The about page is sans-led; the serif slot
+   * is present for any downstream override that wants the title-card
+   * register on the masthead caption. */
+  --ds-font-display: "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * About page does not run an oversized hero statement; the masthead
+   * carries identity through the image, not type. Display ceiling sits
+   * at 4xl (the AAA disclaimer / masthead caption); body sits at base. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Small positive track on the kicker register; negative tight on any
+   * display moment. Mono labels (the "Want More A24?" register) sit at
+   * wider. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid. About page leans roomy; --ds-space-12 (96px) between
+   * sections on desktop, --ds-space-8 (48px) on mobile. The masthead
+   * gets --ds-space-16 (128px) below for breathing room before the
+   * utility band starts. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp. 2px is the editorial-cinema register: not zero (brutalist)
+   * and not full (dev-tool pill). Newsletter input and any inline pills
+   * sit at xs. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial restraint: no drop shadows on the field itself. Slots
+   * present for contract conformance. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(10,9,8,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(10,9,8,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(10,9,8,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(10,9,8,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(10,9,8,0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

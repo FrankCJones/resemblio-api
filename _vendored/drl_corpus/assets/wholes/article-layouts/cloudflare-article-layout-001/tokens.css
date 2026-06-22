@@ -1,0 +1,158 @@
+/*
+ * cloudflare-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Cloudflare's /blog surface. The Cloudflare
+ * Blog is the public engineering and product longform channel; its register
+ * is a white canvas with the signature Cloudflare Orange (#F6821F) doing the
+ * single chromatic role across inline links and category tags, technical
+ * sans body type, mono for inline identifiers and code blocks, hairlines
+ * for structural chrome, and a category-pill + read-time + ISO-date byline
+ * strip.
+ *
+ * Sources inspected via WebFetch on 2026-05-20:
+ *   https://blog.cloudflare.com/claude-managed-agents/
+ *   https://blog.cloudflare.com/quic-death-spiral-fix/
+ *
+ * Structural confirmation across both posts (verified): H1 sans title,
+ * byline with author photo (64x64 face-crop) + linked author name + "N min
+ * read" + ISO date, multiple H2 subheads with anchor links, prose
+ * paragraphs with inline links, fenced code blocks with language label
+ * (e.g. cubic.rs), pull-quote-style indented italic callouts, tag list at
+ * article tail (Security / AI / Agents / Workers / Networking etc.). Live
+ * computed styles unavailable on this session (Cloudflare ships processed
+ * markdown to WebFetch); token values for the orange accent and hairline
+ * Gray follow the design_principles block in systems/cloudflare/system.json
+ * (provenance-anchored in the published Cloudflare brand kit).
+ *
+ * Free-font analog in `asset.html`:
+ *   - Inter (Google Fonts) substitutes for the Cloudflare humanist sans on
+ *     display and body; both are screen-tuned humanist sans families and
+ *     behave identically at the steps used here.
+ *   - JetBrains Mono substitutes for the Cloudflare blog mono used in code
+ *     blocks and inline identifiers.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cloudflare light surface system. White canvas, near-black ink, Gray 4
+   * hairlines, signature Cloudflare Orange (#F6821F) as the only chromatic
+   * role across inline links, category pills, and focus rings. A muted
+   * Gray 9 carries byline / read-time / date metadata.
+   */
+  --ds-bg:           #FFFFFF;   /* White canvas; Cloudflare Blog body. */
+  --ds-surface:      #F7F7F7;   /* Very light gray; code block inset surface. */
+  --ds-surface-2:    #EFEFEF;   /* Slightly deeper gray; nested chrome. */
+  --ds-text:         #222222;   /* Near-black body ink; Cloudflare blog body text. */
+  --ds-text-muted:   #717070;   /* Muted gray; byline, read time, ISO date. */
+  --ds-text-strong:  #000000;   /* Black; H1 title ink. */
+  --ds-border:       #E5E5E5;   /* Gray hairline border; code block edge. */
+  --ds-hairline:     #E5E5E5;   /* Same hairline; byline strip rule, section breaks. */
+  --ds-accent:       #F6821F;   /* Signature Cloudflare Orange; inline links, category pill, focus ring. */
+  --ds-accent-2:     #FAAE40;   /* Lighter orange; link hover state. */
+  --ds-success:      #2DB452;   /* Cloudflare green. */
+  --ds-warning:      #F6821F;   /* Cloudflare convention: orange doubles as warning emphasis. */
+  --ds-error:        #BD2527;   /* Cloudflare red. */
+  --ds-info:         #2C7CB0;   /* Cloudflare info blue. */
+  --ds-focus-ring:   #F6821F;   /* Orange focus ring; matches accent. */
+
+  /* ---------- Type families ----------
+   * Cloudflare Blog runs a humanist sans across display and body (close to
+   * Open Sans / Inter in metrics on the current public surface). Code
+   * blocks and inline identifiers use a workhorse mono. Fallback chains
+   * mirror the public Cloudflare stack.
+   */
+  --ds-font-display: "Inter", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --ds-font-body:    "Inter", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Source Code Pro", "SF Mono", ui-monospace, Consolas, monospace;
+  --ds-font-accent:  "JetBrains Mono", "Source Code Pro", "SF Mono", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * Cloudflare Blog H1 sits at the 3xl-4xl step (~44px on desktop, smaller
+   * than the marketing hero scale). Body runs at the 18px reading step.
+   * H2 subheads inside the column at the xl-2xl step.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Tag pills, ISO date, read time. */
+  --ds-text-sm:   14px;   /* Helper, author name. */
+  --ds-text-base: 18px;   /* Body reading register. */
+  --ds-text-lg:   22px;   /* Dek paragraph, lead. */
+  --ds-text-xl:   28px;   /* Subhead (h2) inside body. */
+  --ds-text-2xl:  34px;   /* Larger subhead step. */
+  --ds-text-3xl:  44px;   /* Article H1. */
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * H1 at 1.15 holds the 44px display without crushing. Body at 1.6 sits
+   * in the technical-blog reading register; one step above the SaaS
+   * 16/1.5 default.
+   */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Humanist sans at this scale takes only slight negative tracking on H1.
+   * Mono category-pill labels and tags get positive tracking to read as
+   * uppercase technical labels.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.1em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Vertical rhythm between paragraphs is space-5 (24px); the
+   * header column ends with space-8 (48px) before the body. Section
+   * headings carry space-8 above and space-4 below.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cloudflare surfaces use subtle rounded corners (sm-md), not pills.
+   * Tag pills sit at radius-md (6px). Code blocks at radius-sm (4px).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   8px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cloudflare on light uses hairlines, not shadows, for structural chrome.
+   * Shadow scale is held for focus glows.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 4px rgba(246,130,31,0.20);   /* Orange focus glow. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Standard humanist-sans web register; 150ms ease for hover.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

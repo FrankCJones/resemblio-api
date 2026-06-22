@@ -1,0 +1,195 @@
+<!--
+  Asset: webgl-3d-001
+  Class: buttons
+  Pattern: primary-pill
+  Inspired by: Bruno Simon
+  Notes:
+    - A flat, hand-drawn answer pill that breaks a WebGL 3D scene with a
+      cream-on-orange comic-bubble overlay. Comic Neue 700 carries the
+      whole tone; the warm gradient bubble sits behind the pill so the
+      pair reads as one speech moment.
+    - Renders four states (rest, hover, focus, disabled) plus the
+      bubble context so the button is shown where it actually lives.
+    - Variables: every color, type size, spacing, radius, easing.
+    - Inline ornament: the bubble gradient's exact alpha stops (the
+      #fdb572ab to #fdb5721a fade) live inline because they are a
+      single creative moment, not a named role.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webgl-3d-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Comic Neue 700 is the single face the source site loads from Google Fonts. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=block"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* The page background is a flat tan that stands in for the WebGL
+   * desert. Not a token because it represents the 3D scene canvas,
+   * which the asset's job is to overlay; documenting it as a one-off
+   * scene background. */
+  body {
+    background: #E8D5A7;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+
+  /* The dialogue bubble. The gradient stops are the exact alpha fade
+   * read from the source's main.css; kept inline because the precise
+   * #fdb572ab to #fdb5721a hex-with-alpha is a one-off character
+   * choice, not a contract role. */
+  .bubble {
+    width: 420px;
+    max-width: 100%;
+    padding: var(--ds-space-5) var(--ds-space-5) var(--ds-space-6);
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: linear-gradient(#fdb572ab, #fdb5721a);
+    box-shadow: var(--ds-shadow-md);
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    transition:
+      transform var(--ds-duration-slow) var(--ds-ease-emphasize),
+      opacity var(--ds-duration-slow) var(--ds-ease-emphasize);
+  }
+
+  /* Row of answer pills. The site uses a Yes pill (light) plus a No
+   * pill (transparent, lighter weight). Both are 8px radius. */
+  .answers {
+    display: flex;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-4);
+  }
+
+  /* The button itself. Variant classes shift fill and label; the
+   * geometry is shared. */
+  .answer {
+    appearance: none;
+    border: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    padding: var(--ds-space-2) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    transition:
+      transform var(--ds-duration-fast) var(--ds-ease-standard),
+      opacity var(--ds-duration-fast) var(--ds-ease-standard),
+      background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  /* "Yes" variant: white at 75% opacity over the bubble, with the
+   * accent orange as the label color. The opacity-not-color treatment
+   * is what gives the pill its hand-drawn feel against the bubble. */
+  .answer--yes {
+    background: var(--ds-border);
+    color: var(--ds-accent);
+    opacity: 0.75;
+  }
+  .answer--yes:hover { opacity: 1; transform: scaleX(1.04); }
+
+  /* "No" variant: transparent fill that echoes the bubble, white
+   * label. The hover drops opacity rather than lifting it; the design
+   * treats No as the less-rewarded choice. */
+  .answer--no {
+    background: linear-gradient(#fdb572ab, #fdb5721a);
+    color: var(--ds-text);
+    opacity: 0.9;
+  }
+  .answer--no:hover { opacity: 0.2; transform: scaleX(1.04); }
+
+  /* Focus ring: white, offset against the orange bubble for visibility
+   * without breaking the warm comic register. The 3px offset is a
+   * one-time geometric tuning; not a token. */
+  .answer:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+  .answer[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* State-label specimen above each demo bubble; reads as a UI caption,
+   * not part of the asset itself. Comic Neue here too keeps the
+   * specimen tonally honest. */
+  .state-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: #6B4F2A;   /* Darker tan; one-off caption color over the desert bg. */
+    margin-bottom: var(--ds-space-2);
+  }
+
+  .group { display: flex; flex-direction: column; align-items: stretch; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .answer, .bubble { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="group">
+    <span class="state-label">rest</span>
+    <div class="bubble">
+      Lorem ipsum dolor sit amet, vis-tu une dolor avec moi?
+      <div class="answers">
+        <button type="button" class="answer answer--yes">Lorem yes</button>
+        <button type="button" class="answer answer--no">Ipsum no</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="state-label">hover</span>
+    <div class="bubble">
+      Consectetur adipiscing elit, lorem ipsum dolor?
+      <div class="answers">
+        <button type="button" class="answer answer--yes" style="opacity:1; transform:scaleX(1.04);">Lorem yes</button>
+        <button type="button" class="answer answer--no">Ipsum no</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="state-label">focus</span>
+    <div class="bubble">
+      Sed do eiusmod tempor incididunt ut labore?
+      <div class="answers">
+        <button type="button" class="answer answer--yes" style="outline:2px solid var(--ds-focus-ring); outline-offset:3px;">Lorem yes</button>
+        <button type="button" class="answer answer--no">Ipsum no</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="state-label">disabled</span>
+    <div class="bubble">
+      Ut enim ad minim veniam quis nostrud exercitation?
+      <div class="answers">
+        <button type="button" class="answer answer--yes" disabled>Lorem yes</button>
+        <button type="button" class="answer answer--no" disabled>Ipsum no</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

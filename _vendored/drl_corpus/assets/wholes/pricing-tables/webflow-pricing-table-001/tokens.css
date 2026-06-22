@@ -1,0 +1,151 @@
+/*
+ * webflow-pricing-table-001 tokens
+ *
+ * Webflow's two-section pricing surface: Site plans (Starter / Basic /
+ * Premium) above a billing-period toggle, and Platform plans (Team /
+ * Enterprise) beneath. Light-mode-native paper with Webflow Blue #146EF5
+ * as the only chromatic punctuation, hairline gray-200 #D8D8D8 borders,
+ * subtle 8px card radius, and 4px CTA radius. The visual register is
+ * inherited wholesale from the Webflow alphabet (extracted directly from
+ * the marketing-main CSS bundle on 2026-05-20). Webflow does not invert
+ * a "most popular" tier into near-black the way Vercel does; the
+ * recommended-tier accent here is a Webflow Blue inset stroke and a
+ * "Recommended" pill, not a surface flip.
+ *
+ * Composition_atoms in meta.json:
+ *   color-groups/paper-ink-zero-001       (light surface, near-black ink)
+ *   type-pairings/sans-system-modern-001  (humanist sans system)
+ *   cards/hairline-flat-001               (tier cards with hairline borders, no shadow)
+ *   buttons/primary-square-001            (filled-blue small-radius CTA on featured)
+ *   buttons/ghost-bordered-001            (bordered secondary CTAs)
+ *   inputs/switch-toggle-001              (monthly / yearly billing-period toggle)
+ *   badges/status-pill-001                ("Recommended" and "New" pills)
+ *   headings/display-tight-001            (tier name + section heading)
+ *   tables/docs-comparison-table-001      (the feature-comparison table beneath each section)
+ *   kickers/mono-eyebrow-001              (the comparison-table category band kickers)
+ *   icons/stroke-line-uniform-001         (row check / dash glyphs)
+ *   dividers/hairline-rule-001            (section break between Site plans and Platform plans)
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pulled forward from assets/alphabets/webflow/tokens.css, which carries
+   * the values extracted from marketing-main.webflow...opt.min.css on
+   * 2026-05-20. Pure white body, near-black #080808 ink, Webflow Blue
+   * #146EF5 as the only saturated accent. Gray scale: gray-100 #F0F0F0
+   * panel, gray-200 #D8D8D8 border, gray-600 #5A5A5A muted text.
+   */
+  --ds-bg:           #FFFFFF;   /* --colors--background light mode; pure white body. */
+  --ds-surface:      #FFFFFF;   /* Card surface; flat against bg with hairline border. */
+  --ds-surface-2:    #F0F0F0;   /* --colors--secondary-background; gray-100 panel, table category band. */
+  --ds-text:         #080808;   /* --colors--text; near-black, never pure #000. */
+  --ds-text-muted:   #5A5A5A;   /* --colors--text-secondary; gray-600 for muted captions. */
+  --ds-text-strong:  #080808;   /* Display ink matches body; Webflow uses one ink weight. */
+  --ds-border:       #D8D8D8;   /* --colors--border; gray-200 visible card edge. */
+  --ds-hairline:     #F0F0F0;   /* Subtle table row rule; gray-100 alpha equivalent. */
+  --ds-accent:       #146EF5;   /* Webflow Blue; the brand and primary CTA fill. */
+  --ds-accent-2:     #0055D4;   /* Pressed / hover state; blue-600 in the scale. */
+  --ds-success:      #00C875;   /* Operational green; check-glyph color. */
+  --ds-warning:      #F5A623;
+  --ds-error:        #EE0000;
+  --ds-info:         #146EF5;
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full saturation for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Single-family system. WF Visual Sans Variable carries display and
+   * body alike; the Arial system fallback documented in the production
+   * CSS preserves character when the variable woff2 fails to load.
+   */
+  --ds-font-display: "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", Arial, system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "WFVisualSans-Mono", "Inconsolata", ui-monospace, monospace;
+  --ds-font-accent:  "WFVisualSans-Mono", "Inconsolata", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * Fluid clamps on the live site; ceiling values used here. Tier price
+   * digit lands at 4xl (64px); section heading at 3xl (56px); body at
+   * 1rem; tier name at xl (32px desktop ceiling). Comparison table cells
+   * at sm. Caption-highlight numbers at xs (0.8rem).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;  /* --_typography---caption--font-size. */
+  --ds-text-sm:   14px;    /* Comparison-table cells; tier highlight bullets. */
+  --ds-text-base: 16px;    /* Paragraph body. */
+  --ds-text-lg:   20px;    /* Section subhead; tier pitch text. */
+  --ds-text-xl:   32px;    /* Tier name display. */
+  --ds-text-2xl:  40px;    /* H3 ceiling; intermediate display. */
+  --ds-text-3xl:  56px;    /* Section heading ceiling. */
+  --ds-text-4xl:  64px;    /* Tier price digit ceiling. */
+  --ds-text-5xl:  80px;    /* H1 ceiling. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;
+
+  /* ---------- Line heights ----------
+   * Display tight at 1.04, body generous at 1.6. Tier pitches and
+   * highlight bullets read at 1.6.
+   */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.6;
+  --ds-leading-relaxed: 1.5;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Only display heads and button labels carry -0.01em; everything else
+   * stays at 0em. Webflow tracking is deliberately neutral.
+   */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;     /* Card horizontal padding. */
+  --ds-space-8:  48px;     /* Card vertical padding; section internal rhythm. */
+  --ds-space-10: 64px;     /* Section break rhythm; 4rem. */
+  --ds-space-12: 96px;     /* Between Site plans and Platform plans. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Card surface at 8px (0.5rem); CTAs at 4px (0.25rem); featured
+   * pricing panels can climb to 16px. Pills reserved for the small
+   * "Recommended" / "New" status badges.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;    /* --_components---button--border-radius; CTA radius. */
+  --ds-radius-md:   8px;    /* Card surface radius. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px; /* Recommended / New status pills. */
+
+  /* ---------- Shadows ----------
+   * Hairline-driven. Cards at rest use a 1px solid border, not a drop
+   * shadow. Hover adds a subtle 2px lift. Featured tier uses an inset
+   * Webflow Blue stroke rather than a colored fill or shadow.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* ---------- Motion ----------
+   * Standard cubic-bezier for hover state changes; toggle slide on the
+   * monthly/yearly switch animates at 300ms.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

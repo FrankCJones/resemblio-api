@@ -1,0 +1,129 @@
+<!--
+  Asset: section-label-numbered-001
+  Class: labels
+  Pattern: numbered-section
+  Inspired by: Anthropic
+  Notes:
+    - Numbered mono label (01. 02. 03.) marks each feature row; the number sets the section, the kicker sets the topic.
+    - Mono face, color, and tracking come from tokens; the slash-space between number and label is inline because it is a one-off ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>section-label-numbered-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Anthropic ships Anthropic Serif and Anthropic Mono. EB Garamond and JetBrains Mono are the closest free substitutes. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .section-title {
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-3xl);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-10) 0;
+  }
+  .feature {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    /* inline: 24px column gap pairs the number with the content without making the number feel orphaned */
+    gap: 24px;
+    padding: var(--ds-space-6) 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .feature:first-of-type { border-top: 1px solid var(--ds-text); }
+  .feature:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .num-label {
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  /* inline: the period after the number is part of the prefix; we type it inline rather than as a generated pseudo so screen readers read "zero-one period" naturally */
+  .feature-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1.2;
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .feature-body {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+    max-width: 50ch;
+  }
+  .kicker {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <p class="kicker">Lorem ipsum capabilities</p>
+    <h2 class="section-title">What the system can do</h2>
+
+    <div class="feature">
+      <span class="num-label">01.</span>
+      <div>
+        <h3 class="feature-title">Lorem ipsum dolor sit</h3>
+        <p class="feature-body">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, consectetur adipiscing elit.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <span class="num-label">02.</span>
+      <div>
+        <h3 class="feature-title">Ut enim ad minim veniam</h3>
+        <p class="feature-body">Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <span class="num-label">03.</span>
+      <div>
+        <h3 class="feature-title">Duis aute irure dolor</h3>
+        <p class="feature-body">In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <span class="num-label">04.</span>
+      <div>
+        <h3 class="feature-title">Excepteur sint occaecat</h3>
+        <p class="feature-body">Cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

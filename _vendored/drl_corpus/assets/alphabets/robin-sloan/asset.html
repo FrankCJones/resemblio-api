@@ -1,0 +1,468 @@
+<!--
+  Asset: robin-sloan
+  Class: alphabets
+  Pattern: single-typeface-system, small-caps-lead-in, lead-paragraph, mono-eyebrow, centered-narrow-column, warm-earth-palette, editorial-label-italic
+  Inspired by: Robin Sloan (robinsloan.com, /notes/)
+  Notes:
+    - The full Robin Sloan typography vocabulary in one specimen: Kyrios at
+      display, Filosofia at body and lead, IBM Plex Mono for the rare
+      metadata moment, and a small-caps lead-in opening the article.
+    - Reading column locked at 32em; this measure is the structural
+      commitment of the system, not a tunable.
+    - Asterism (three dots) replaces the hairline divider between
+      sections; the print-press provenance the site signals.
+    - Era convention: the warm terracotta page bg captures the 2024+ live
+      era. The paper-and-ink prior era is honored as a readable origin
+      via the "earlier era" specimen at the bottom of the page (both
+      eras readable in one place).
+    - Inline ornament: the asterism, the small-caps OpenType feature
+      toggle (font-feature-settings 'smcp'), and the cocoa byline
+      separator are character moments; the system tokens carry the
+      structure (family, scale, leading, tracking, measure).
+    - Open-license substitutes for the proprietary faces: Filosofia ->
+      Bodoni Moda (modern serif analog, open license); Kyrios -> Bodoni
+      72 or Playfair Display at the display register; IBM Plex Mono is
+      already open license.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for the proprietary Kyrios / Filosofia:
+   - Bodoni Moda: contemporary Bodoni family at display and text optical
+     sizes; closest open-license analog to Filosofia.
+   - IBM Plex Mono: already open; carries metadata moments.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,400;1,6..96,500&family=IBM+Plex+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Filosofia substitute: Bodoni Moda picks the text optical-size variant
+   * at body sizes and the display variant at the editorial steps. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-optical-sizing: auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  /* 32em is the structural measure. Locked, not tunable. */
+  .specimen {
+    max-width: 32em;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* ---------- Editorial header block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+
+  .eyebrow {
+    /* Mono eyebrow; the only place mono appears at this register. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);          /* 84px measured h1. */
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* Italic accent word inside the headline; editorial print convention. */
+  .title em { font-style: italic; font-weight: 500; }
+
+  .byline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin: 0;
+  }
+  /* Inline ornament: cocoa byline separator dot. Character moment. */
+  .byline .sep {
+    display: inline-block;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+  }
+  .byline .date {
+    font-family: var(--ds-font-mono);
+    font-style: normal;
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* ---------- Lead paragraph (dek) ---------- */
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);            /* 24px lead step-up. */
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    font-style: italic;
+    margin: 0;
+  }
+  .lead em { font-style: normal; }   /* Inversion inside italic lead. */
+
+  /* ---------- Body article ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);          /* 21px Filosofia body. */
+    line-height: var(--ds-leading-normal);   /* 1.33 = 28px. */
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Small-caps lead-in on the opening paragraph. OpenType feature toggle.
+   * This is the editorial signature move on the Sloan site: the opening
+   * clause typed in small-caps as a self-styled lead-in. */
+  .body-block p.opening .leadin {
+    font-feature-settings: "smcp" 1, "c2sc" 1;
+    font-variant-caps: all-small-caps;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  .body-block p em { font-style: italic; }
+  .body-block p a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Subhead (H2) */
+  .subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-5) 0 0 0;
+  }
+
+  /* Editorial italic label (per TAXONOMY editorial-label-italic). */
+  .ed-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-style: italic;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* ---------- Asterism divider ---------- */
+  /* Inline ornament: three-dot asterism replacing the hairline; print
+   * editorial section break. The Sloan signature divider. */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    letter-spacing: 0.6em;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    margin: var(--ds-space-2) 0;
+  }
+
+  /* ---------- Writings list ---------- */
+  /* Categorical-grouping list (writings-index pattern): novellas, essays,
+   * notes. Each row is a title + venue parenthetical + date. */
+  .writings {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .writings h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .writings ol { list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .writings li {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+  }
+  .writings li .venue {
+    color: var(--ds-text-muted);
+    font-style: italic;
+  }
+  .writings li .star {
+    color: var(--ds-accent);
+    margin-right: 0.25em;
+  }
+  .writings li .date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin-left: 0.5em;
+  }
+
+  /* ---------- Caption ---------- */
+  .caption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    color: var(--ds-text-muted);
+    text-align: center;
+    margin: 0;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 96px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text-strong);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* ---------- Era-shift specimen ---------- */
+  /* Both eras readable: the current terracotta era (above) and the prior
+   * paper-and-ink era preserved here as origin. Convention from
+   * AGENT_BRIEFING "Asset character vs live-site character". */
+  .era-shift {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .era-shift h3 {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+  .era-card {
+    background: #FBFAF7;   /* Prior era paper-and-ink bg; inline ornament,
+                              not a token, because the current era ships
+                              terracotta. */
+    color: #141413;
+    padding: var(--ds-space-6);
+    border: 1px solid #E5E1D2;
+  }
+  .era-card .era-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: #0A0A09;
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .era-card .era-body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: #141413;
+    margin: 0;
+  }
+  .era-card .era-body .leadin {
+    font-feature-settings: "smcp" 1, "c2sc" 1;
+    font-variant-caps: all-small-caps;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">Novellas · A season of change</p>
+      <h1 class="title">Lorem ipsum dolor <em>sit amet</em>, consectetur.</h1>
+      <p class="byline">
+        <span>by Lorem Ipsum</span>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="date">May 20, 2026</span>
+      </p>
+    </header>
+
+    <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, <em>ut eros nibh sodales</em> lacus, nec elementum nibh sapien at lorem.</p>
+
+    <section class="body-block">
+      <p class="opening">
+        <span class="leadin">It is a season of change.</span> Magna at suscipit lacinia consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus. Praesent <a href="#">nec elementum nibh</a> sapien at lorem fermentum vivamus.
+      </p>
+
+      <p>Aenean fermentum magna at suscipit lacinia, <em>eros nibh sodales</em> lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus.</p>
+
+      <p class="asterism" aria-hidden="true">⁂</p>
+
+      <h2 class="subhead">Praesent nec elementum nibh sapien</h2>
+
+      <p class="ed-label">A note from the printer.</p>
+
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem.</p>
+
+      <p class="caption">Figure 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    </section>
+
+    <section class="writings" aria-label="Writings index">
+      <h3>Novellas, Essays, Notes</h3>
+      <ol>
+        <li><span class="star" aria-hidden="true">★</span>Lorem ipsum dolor sit amet <span class="venue">(consectetur)</span><span class="date">2024</span></li>
+        <li>Aenean fermentum magna at suscipit <span class="venue">(Aeon)</span><span class="date">2023</span></li>
+        <li>Curabitur nec libero non nisi convallis <span class="venue">(The Atlantic)</span><span class="date">2022</span></li>
+      </ol>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">7xl display</span>
+        <span class="step-size">128 / 1.05</span>
+        <span class="step-sample" style="font-size:128px;">Aa Bb</span>
+      </div>
+      <div class="row">
+        <span class="step-label">6xl display</span>
+        <span class="step-size">104 / 1.05</span>
+        <span class="step-sample" style="font-size:104px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">84 / 1.05</span>
+        <span class="step-sample" style="font-size:84px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">48 / 1.20</span>
+        <span class="step-sample" style="font-size:48px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">36 / 1.20</span>
+        <span class="step-sample" style="font-size:36px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">28 / 1.20</span>
+        <span class="step-sample" style="font-size:28px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg body</span>
+        <span class="step-size">24 / 1.55</span>
+        <span class="step-sample body" style="font-size:24px; font-style:italic;">Lorem ipsum dolor sit amet, consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">21 / 1.33</span>
+        <span class="step-sample body" style="font-size:21px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm body</span>
+        <span class="step-size">15 / 1.33</span>
+        <span class="step-sample body" style="font-size:15px; font-style:italic;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono</span>
+        <span class="step-size">13 / 1.40</span>
+        <span class="step-sample mono" style="font-size:13px;">Lorem ipsum metadata kicker date</span>
+      </div>
+    </section>
+
+    <section class="era-shift" aria-label="Prior era specimen">
+      <h3>Earlier era · paper and ink</h3>
+      <div class="era-card">
+        <h4 class="era-title">Lorem ipsum dolor sit amet</h4>
+        <p class="era-body"><span class="leadin">In the prior era</span> the same system shipped on off-white paper with near-black ink. The structure was identical: Filosofia at 21px / 28px, Kyrios at display, small-caps lead-in, asterism divider, 32em measure. Only the page bg shifted from #FBFAF7 paper to the saturated terracotta the site wears today.</p>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Kyrios 700 / 500 italic</b></span>
+      <span>body · <b>Filosofia 400 / 400 italic / 600 small-caps</b></span>
+      <span>mono · <b>IBM Plex Mono 400 / 500</b></span>
+      <span>base · <b>21px / 28px (1.33 leading)</b></span>
+      <span>measure · <b>32em (~60-65 characters)</b></span>
+      <span>scale · <b>~1.2 in reading range; hand-tuned editorial display steps</b></span>
+      <span>opentype · <b>'smcp' 1, 'c2sc' 1 on the small-caps lead-in</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

@@ -1,0 +1,149 @@
+/*
+ * a24 alphabet tokens
+ *
+ * A24's complete typography expression as one coherent vocabulary.
+ *
+ * Editorial-cinema register. The display face is a Tiempos / Times Now class
+ * high-contrast serif used for film titles, festival callouts, and the
+ * title-card moment ("AN A24 RELEASE"). Body and chrome sit in a humanist
+ * grotesk (GT America / Söhne family in production; Inter as open-license
+ * analog). Mono carries the uppercase-tracked credit and metadata register
+ * (NOW PLAYING, COMING SOON, runtime / rating / year).
+ *
+ * Whole system sits on cinema-black rgb(10,9,8) — a warm-tinted near-black
+ * that reads as a theater wall rather than a dev-tool void — with paper-white
+ * type rgb(245,241,234) and no chromatic accent. The "accent" is the lift to
+ * pure paper white (#FFFFFF) reserved for the strongest display moment. Each
+ * film's still carries its own color story; the chrome refuses to compete.
+ *
+ * Inspection: a24films.com (home), /films, /about, /films/the-zone-of-interest
+ * all reached via WebFetch on 2026-05-20. Confirmed: paper-on-ink films
+ * register, mixed-case film titles set in a serif, uppercase tracked
+ * navigation labels (FILMS, TELEVISION, DOCS, SHOP, MEMBERSHIP, NOTES),
+ * editorial restraint in marketing copy. Specific token values corroborated
+ * against same-week system-tagged atoms (color-groups/a24-cinematic-palette-001,
+ * type-pairings/a24-cinematic-pair-001, wordmarks/editorial-serif-wordmark-002)
+ * which captured the values via earlier WebFetch inspection on 2026-05-19.
+ *
+ * Open-license substitutes: Times Now → Newsreader / Source Serif 4;
+ * GT America → Inter Tight; Söhne Mono → JetBrains Mono.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cinema black field, paper-white type, no chromatic accent. Refusing a
+   * brand color is the discipline; each film still carries its own palette.
+   */
+  --ds-bg:           #0A0908;   /* Cinema black; warm-tinted near-black. Theater wall, not dev-tool void. */
+  --ds-surface:      #14110F;   /* One step up; card or modal that sits on the black field. */
+  --ds-surface-2:    #1E1A17;   /* Two steps; nested overlay or paper-bias card. */
+  --ds-text:         #F5F1EA;   /* Paper-white body; reads as projected light against the field. */
+  --ds-text-muted:   #9C968A;   /* Credit lines, dates, runtime, rating metadata. */
+  --ds-text-strong:  #FFFFFF;   /* Reserved for title-card display and the strongest serif moment. */
+  --ds-border:       #2A2522;   /* Hairline frame on film tiles; warm-black family. */
+  --ds-hairline:     #1A1714;   /* Subtle divider; barely visible between bg and surface. */
+  --ds-accent:       #FFFFFF;   /* The accent IS the lift to pure paper. No chromatic hue. */
+  --ds-accent-2:     #C7BFAE;   /* Warm paper tone for the rare secondary moment (italics, footer mark). */
+  --ds-success:      #4A8A5C;   /* Reserved; muted forest, never dev-tool green. */
+  --ds-warning:      #C49449;   /* Reserved; editorial amber. */
+  --ds-error:        #B24A3F;   /* Reserved; editorial red family, not signage red. */
+  --ds-info:         #F5F1EA;   /* Info collapses to paper text; palette refuses chromatic UI. */
+  --ds-focus-ring:   #F5F1EA;   /* Paper outline; reads against the cinema-black slab. */
+
+  /* ---------- Type families ----------
+   * Title-card serif on display; humanist grotesk for body and chrome; mono
+   * for credit / metadata register.
+   *
+   * A24 ships licensed faces in production (Times Now class for the serif
+   * title-card register; GT America / Söhne for chrome). Names are listed
+   * first; open-license analogs (Newsreader, Inter Tight, JetBrains Mono)
+   * carry the file when opened standalone.
+   */
+  --ds-font-display: "Times Now", "Tiempos Headline", "Newsreader", "Source Serif 4", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "GT America", "Söhne", "Inter", "Inter Tight", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Söhne Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Tiempos Text", "Newsreader", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Base 16px (the editorial-cinema register sits at the SaaS-standard base;
+   * the slowness comes from leading and measure, not base size). Display
+   * climbs to 5xl-7xl for title-card moments and festival callouts. Mono
+   * credit labels live at xs (12px) to read as titlecard register rather
+   * than nav UI.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono credit labels: NOW PLAYING, COMING SOON, RUNTIME. */
+  --ds-text-sm:   14px;   /* Secondary metadata: director, year, country. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   24px;   /* Subheads (H3). */
+  --ds-text-2xl:  32px;   /* Section heads (H2). */
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;   /* News article H1 / mid-tier film title. */
+  --ds-text-5xl:  76px;   /* Film title display target. */
+  --ds-text-6xl:  96px;   /* Festival callout / title-card display. */
+  --ds-text-7xl:  128px;  /* Statement display, rare. */
+
+  /* ---------- Line heights ----------
+   * Display sits tight (1.04) so film titles read as a single title-card
+   * object; body sits editorial-normal (1.5) — slower than SaaS chrome,
+   * faster than print. Relaxed (1.65) for longform notes pieces.
+   */
+  --ds-leading-tight:   1.04;   /* Title-card display. */
+  --ds-leading-snug:    1.18;   /* Subheads. */
+  --ds-leading-normal:  1.5;    /* Body reading. */
+  --ds-leading-relaxed: 1.65;   /* Notes / longform articles. */
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Negative tight on the serif display (high-contrast serif convention at
+   * title-card scale). Wider (0.18em) on the mono credit register — this is
+   * the titlecard label register, wider than dev-tool kicker tracking
+   * because the cue is film-poster, not technical.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;   /* Sans metadata: director, year. */
+  --ds-tracking-wider:  0.18em;   /* Mono uppercase: NOW PLAYING, FILMS, SHOP. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Cinema marketing leans roomy; vertical rhythm between
+   * sections runs space-8 (48px) and between paragraphs space-5 (24px).
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp 2px corners. Editorial-cinema register: not zero (brutalist),
+   * not pill (dev-tool). Buttons and tiles all sit at xs.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cinema surfaces refuse drop shadows; depth comes from surface tone.
+   * Slots are present for contract conformance and reserved for rare
+   * modal moments.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.6);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.7);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.8);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

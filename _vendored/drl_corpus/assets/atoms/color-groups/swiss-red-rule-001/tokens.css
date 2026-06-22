@@ -1,0 +1,134 @@
+/*
+ * swiss-red-rule-001 tokens
+ *
+ * Pentagram-inspired color group: cream-paper ground, dense ink-black text,
+ * one saturated red as the only chromatic event. The studio has run this
+ * combination for decades across case-study indexes, news lists, and book
+ * jackets. The personality is in the ratio: 95% paper, 4% ink, 1% red.
+ *
+ * Source per SITE_REGISTRY entry for Pentagram (Neue Haas Grotesk plus a
+ * saturated red accent) and prior WebFetch inspection of /work and /news
+ * which surface bracketed category labels and date stamps with the red
+ * reserved for category and active-state markers. Live homepage is gated
+ * to Chrome MCP; WebFetch returns processed markup without computed
+ * styles, so the red is sourced from the documented identity rather than
+ * a live devtools read. Provenance is B per the rubric.
+ *
+ * Every color is a variable because the palette character is exactly the
+ * combination of these specific values. Tracking and spacing follow the
+ * tight Swiss-poster rhythm Pentagram uses on listings.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cream-paper ground sits one tick warm of pure white. The red is held at
+   * a single saturation across light backgrounds; secondary red is reserved
+   * for pressed and hover. Borders are full-ink because Swiss tradition
+   * treats rules as structural beats, not whispers.
+   */
+  --ds-bg:           #FAFAF7;   /* Cream-paper page; warmer than pure white, the Swiss poster surface. */
+  --ds-surface:      #FFFFFF;   /* Pure white card; one step brighter than the page. */
+  --ds-surface-2:    #F2F2EE;   /* Sunken nested surface; one step into the page. */
+  --ds-text:         #111111;   /* Near-black ink; Pentagram body density. */
+  --ds-text-muted:   #6B6B6B;   /* Mid-gray for date stamps and discipline labels. */
+  --ds-text-strong:  #000000;   /* Pure black for category brackets and rules. */
+  --ds-border:       #111111;   /* Full-ink border; the rule itself carries weight. */
+  --ds-hairline:     #1A1A1A;   /* Near-ink subtle separator between sibling rows. */
+  --ds-accent:       #E2231A;   /* Pentagram red; the studio's signature accent across identity work. */
+  --ds-accent-2:     #B91C16;   /* Deeper red for pressed / hover. */
+  --ds-success:      #1F7A4D;   /* In-family green; restrained to match the print register. */
+  --ds-warning:      #C68A14;   /* Ochre warning; sits beside red without competing. */
+  --ds-error:        #C0211A;   /* Distinct from accent so red-as-brand stays separable from red-as-error. */
+  --ds-info:         #1F4FA8;   /* Single blue note; held for non-critical info banners only. */
+  --ds-focus-ring:   #E2231A;   /* Accent at full saturation; red ring on cream is unambiguous. */
+
+  /* ---------- Type families ----------
+   * Pentagram has run Neue Haas Grotesk as their marketing identity for
+   * over a decade. Declared across display, body, and accent so this palette
+   * pairs cleanly with kicker and heading atoms from the same brand voice.
+   */
+  --ds-font-display: "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Neue Haas Grotesk Text Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Tight modular scale matching Swiss-poster discipline; body bounds at 16px.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   11px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Tight on display, wide on the kicker. 0.14em reads Swiss rather than
+   * dev-tool eyebrow.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Pentagram-style listings hold compact vertical rhythm.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Zero-radius. Swiss design refuses rounded corners on principle; any
+   * pill in this palette would betray the voice. The full slot stays
+   * available for downstream avatars that genuinely need a circle.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   2px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Near-absent. Print sensibility avoids elevation as ornament; borders
+   * and rules carry separation instead.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 8px 20px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

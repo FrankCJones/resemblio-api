@@ -1,0 +1,289 @@
+<!--
+  Asset: studio-roster-team-001
+  Class: about-team (whole)
+  Pattern: asymmetric-grid, paper-and-ink, mono-eyebrow, lead-paragraph
+  Inspired by: Pentagram (pentagram.com/about)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (paper-and-ink discipline)
+    - type-pairings/display-distinctive-001   (custom display sans + body)
+    - headings/display-light-001              (light-weight display heading)
+    - avatars/squircle-avatar-001             (slightly softened square crop)
+    - labels/metadata-mono-001                (city label under each name)
+    - kickers/mono-eyebrow-001                (section eyebrow)
+    - dividers/hairline-rule-001              (section break)
+  Notes:
+    - Studio-roster format: short editorial manifesto, then a 4-column
+      grid of partner tiles (square portrait, name, city), then a
+      typeset list of associates, then a list of partners emeriti.
+      The grid is the proof of scale; the list is the proof of memory.
+    - Variable parts: every --ds-* token. Inline ornament: the strict
+      4-column grid at 1024px+ and the 1:1 aspect ratio on the portrait
+      tile are page-specific composition choices, not contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>studio-roster-team-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Display stands in for Pentagram's F37 Plain custom commission;
+     they share a geometric, low-contrast register at display sizes.
+     JetBrains Mono carries the small mono labels. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Outer page rail: wide measure (Pentagram's grid runs near edge-to-
+   * edge on desktop; we cap at 1200 to keep the asset readable in the
+   * library harness preview). */
+  .roster {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-12);
+  }
+
+  /* Section eyebrow: from atoms/kickers/mono-eyebrow-001. */
+  .roster__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  /* Manifesto headline: from atoms/headings/display-light-001. Light
+   * weight, large, tight tracking; the studio defines itself in one
+   * paragraph. */
+  .roster__manifesto {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 3vw, var(--ds-text-2xl));
+    font-weight: 300;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-10) 0;
+    max-width: 32em;
+    text-wrap: balance;
+  }
+
+  /* Section break hairline: from atoms/dividers/hairline-rule-001. */
+  .roster__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) 0 var(--ds-space-8) 0;
+  }
+
+  .roster__section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    margin: 0 0 var(--ds-space-6) 0;
+  }
+  .roster__section-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text);
+  }
+  .roster__section-count {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Partner grid: 4 across at 1024+, 3 at 768-1023, 2 at 480-767, 1
+   * below. Pentagram's live page uses 4-up consistently. */
+  .roster__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--ds-space-5);
+    row-gap: var(--ds-space-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (max-width: 1023px) { .roster__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 767px)  { .roster__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 479px)  { .roster__grid { grid-template-columns: 1fr; } }
+
+  /* Partner tile: square portrait, name beneath, city in mono. The
+   * 1:1 aspect ratio is the load-bearing composition choice; the soft
+   * 4px corner is the only deviation from Pentagram's strict squares,
+   * borrowed from atoms/avatars/squircle-avatar-001. */
+  .partner {
+    display: block;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+  .partner__portrait {
+    aspect-ratio: 1 / 1;       /* Inline ornament: 1:1 portrait crop. */
+    width: 100%;
+    border-radius: var(--ds-radius-sm);
+    /* Inline ornament: a paper-toned placeholder gradient. In a real
+     * deployment this becomes an <img>; the gradient stands in here
+     * because the library uses no bundled photography. */
+    background:
+      linear-gradient(135deg, #D9D5CD 0%, #8C887F 60%, #4A4842 100%);
+    margin-bottom: var(--ds-space-3);
+    transition: opacity var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .partner:hover .partner__portrait { opacity: 0.85; }
+
+  .partner__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-1) 0;
+  }
+  .partner__city {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .partner:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Associates and Emeriti: typeset lists, mono labels, two-column
+   * on wide viewports. The list is the studio's institutional memory;
+   * the grid above is the studio today. */
+  .roster__list {
+    columns: 3;
+    column-gap: var(--ds-space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (max-width: 767px) { .roster__list { columns: 2; } }
+  @media (max-width: 479px) { .roster__list { columns: 1; } }
+
+  .roster__list li {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    break-inside: avoid;
+    padding: var(--ds-space-1) 0;
+  }
+  .roster__list--muted li { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="roster" aria-label="Studio about and roster">
+
+    <p class="roster__eyebrow">Lorem &middot; About the studio</p>
+
+    <h1 class="roster__manifesto">
+      Lorem ipsum is a creative collective where twenty-three partners
+      work independently and collaboratively to shape the future of
+      dolor sit amet, consectetur adipiscing elit.
+    </h1>
+
+    <!-- Partners grid -->
+    <div class="roster__section-head">
+      <h2 class="roster__section-title">Partners</h2>
+      <span class="roster__section-count">24 / Mundi</span>
+    </div>
+
+    <ul class="roster__grid">
+      <!-- Twelve partner tiles. Lorem-ipsum names; placeholder portraits. -->
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Lorem Ipsum</h3><p class="partner__city">New York</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Dolor Sit</h3><p class="partner__city">London</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Amet Consect</h3><p class="partner__city">Austin</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Adipisc Elit</h3><p class="partner__city">Berlin</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Sed Eiusmod</h3><p class="partner__city">New York</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Tempor Incid</h3><p class="partner__city">London</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Ut Labore</h3><p class="partner__city">New York</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Magna Aliqua</h3><p class="partner__city">London</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Quis Nostrud</h3><p class="partner__city">Berlin</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Exerci Tation</h3><p class="partner__city">Austin</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Ullamco Lab</h3><p class="partner__city">New York</p></a></li>
+      <li><a class="partner" href="#"><span class="partner__portrait" role="img" aria-label="Lorem ipsum portrait placeholder"></span><h3 class="partner__name">Aliquip Ex</h3><p class="partner__city">London</p></a></li>
+    </ul>
+
+    <hr class="roster__rule" aria-hidden="true"/>
+
+    <!-- Associates list -->
+    <div class="roster__section-head">
+      <h2 class="roster__section-title">Associates</h2>
+      <span class="roster__section-count">40+ / Studio</span>
+    </div>
+    <ul class="roster__list">
+      <li>Lorem Ipsum</li>
+      <li>Dolor Sit Amet</li>
+      <li>Consect Adipiscing</li>
+      <li>Elit Sed</li>
+      <li>Do Eiusmod</li>
+      <li>Tempor Incid</li>
+      <li>Ut Labore</li>
+      <li>Et Dolore</li>
+      <li>Magna Aliqua</li>
+      <li>Ut Enim Ad</li>
+      <li>Minim Veniam</li>
+      <li>Quis Nostrud</li>
+      <li>Exerci Tation</li>
+      <li>Ullamco Laboris</li>
+      <li>Nisi Ut Aliquip</li>
+      <li>Ex Ea Commodo</li>
+      <li>Consequat Duis</li>
+      <li>Aute Irure</li>
+      <li>Dolor In Reprehend</li>
+      <li>Voluptate Velit</li>
+      <li>Esse Cillum</li>
+      <li>Eu Fugiat Nulla</li>
+      <li>Pariatur Excepteur</li>
+      <li>Sint Occaecat</li>
+    </ul>
+
+    <hr class="roster__rule" aria-hidden="true"/>
+
+    <!-- Partners Emeriti -->
+    <div class="roster__section-head">
+      <h2 class="roster__section-title">Partners Emeriti</h2>
+      <span class="roster__section-count">In memoriam</span>
+    </div>
+    <ul class="roster__list roster__list--muted">
+      <li>Lorem Ipsum</li>
+      <li>Dolor Sit</li>
+      <li>Amet Consect</li>
+      <li>Adipiscing Elit</li>
+      <li>Sed Eiusmod</li>
+      <li>Tempor Inc</li>
+      <li>Ut Labore</li>
+      <li>Et Dolore</li>
+      <li>Magna Aliqua</li>
+      <li>Quis Nostrud</li>
+      <li>Exerci Tation</li>
+      <li>Ullamco Lab</li>
+    </ul>
+
+  </section>
+</body>
+</html>

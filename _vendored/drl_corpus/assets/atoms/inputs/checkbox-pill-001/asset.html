@@ -1,0 +1,133 @@
+<!--
+  Asset: checkbox-pill-001
+  Class: inputs
+  Pattern: (none in TAXONOMY; custom-checkbox pattern)
+  Inspired by: Vercel (Geist)
+  Notes:
+    - Custom checkbox: 16px square at 4px radius, hairline gray border at rest, ink fill with white check on check.
+    - Native input is hidden; the visible square is a styled sibling that listens to :checked via sibling selectors.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>checkbox-pill-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Vercel ships Geist Sans; Arial system fallback approximates the register. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    cursor: pointer;
+    user-select: none;
+  }
+  .row > input[type=checkbox] {
+    position: absolute;          /* visually hide native input but keep it focusable */
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+  .row .box {
+    width: 16px;
+    height: 16px;
+    background: var(--ds-surface);
+    border: 0.8px solid var(--ds-border); /* inline: matches Geist's sub-pixel hairline */
+    border-radius: var(--ds-radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .row .box svg {
+    width: 12px;
+    height: 12px;
+    color: var(--ds-surface);
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-emphasize);
+  }
+  .row input:checked + .box,
+  .row.is-checked .box {
+    background: var(--ds-accent);
+    border-color: var(--ds-accent);
+  }
+  .row input:checked + .box svg,
+  .row.is-checked .box svg { opacity: 1; transform: scale(1); }
+  .row input:focus-visible + .box,
+  .row.is-focus .box {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block { padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-hairline); }
+  .block:first-child { border-top: 0; padding-top: 0; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="block">
+      <div class="state-label">rest</div>
+      <label class="row">
+        <input type="checkbox"/>
+        <span class="box" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5L7 12L13 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>Lorem ipsum dolor</span>
+      </label>
+    </div>
+    <div class="block">
+      <div class="state-label">checked</div>
+      <label class="row is-checked">
+        <input type="checkbox" checked/>
+        <span class="box" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5L7 12L13 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>Consectetur adipiscing</span>
+      </label>
+    </div>
+    <div class="block">
+      <div class="state-label">focus</div>
+      <label class="row is-focus">
+        <input type="checkbox"/>
+        <span class="box" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5L7 12L13 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>Sed do eiusmod tempor</span>
+      </label>
+    </div>
+  </div>
+</body>
+</html>

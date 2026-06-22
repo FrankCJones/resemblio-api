@@ -1,0 +1,181 @@
+/*
+ * cloudflare alphabet tokens
+ *
+ * Cloudflare's complete typography expression as one coherent vocabulary.
+ *
+ * The 2026 system pairs FT Kunst Grotesk (the new brand display + body
+ * face by F37 / Rick Banks, ?cfFont=kunst is the live default) with
+ * Apercu Mono Pro as the technical mono. A second brand face,
+ * STK Bureau Sans, ships behind the .font-stk-bureau-sans body class
+ * (toggle via ?cfFont=stk) as Cloudflare's mid-rebrand alternate; the
+ * Kunst register is the one a fresh visitor sees.
+ *
+ * Verbatim from the page's CSS custom properties:
+ *   --font-sans: "FT Kunst Grotesk", sans-serif;
+ *   --font-mono: "Apercu Mono Pro", monospace;
+ *   --text-xs: 12px; --text-sm: 13px; --text-base: 14px; --text-lg: 16px;
+ *   --text-xl: 1.25rem; --text-2xl: 1.5rem; --text-3xl: 1.875rem;
+ *   --text-4xl: 2.25rem; --text-5xl: 3rem;
+ *   --tracking-tight: -0.025em; --tracking-wider: 0.05em;
+ *   --tracking-widest: 0.1em;
+ *   --leading-tight: 1.25; --leading-snug: 1.375;
+ *   --leading-normal: 1.5; --leading-relaxed: 1.625;
+ *   --radius-sm: 0.25rem; --radius-md: 0.375rem; --radius-lg: 0.5rem;
+ *   --radius-xl: 0.75rem;
+ *
+ * The Kunst Grotesk face is a humanist grotesque with slightly inflected
+ * terminals; it reads warmer than Inter but more disciplined than a true
+ * humanist (Söhne, GT America). Apercu Mono Pro is the matching mono
+ * (Apercu family is Colophon Foundry; Cloudflare uses it for any value
+ * that wants to read as data: edge-location codes, latency numbers,
+ * Workers code snippets, plan SKU labels).
+ *
+ * Signature orange #F6821F is the only chromatic punctuation in the
+ * marketing chrome and survives both font toggles. Surface system is
+ * Tailwind v4 plus a Kumo theme layer; body sits on near-white
+ * (oklch 98.75% = #FBFBFB equivalent) with near-black ink (oklch 14.5%
+ * = #222 equivalent). Status colors live in the kumo-info / warning /
+ * danger / success block and only surface on dashboard chrome leaking
+ * into marketing surfaces.
+ *
+ * Source: cf.css bundle at /_astro/index.BEOITNL8.css inspected via
+ * WebFetch + curl this session against https://www.cloudflare.com and
+ * https://www.cloudflare.com/plans/. Score B (webfetch_html_inspection).
+ */
+:root {
+  /* ---------- Colors ----------
+   * Tailwind v4 + Kumo theme. Near-white body with near-black ink and
+   * one saturated Cloudflare orange. Status colors observed in the kumo
+   * tokens but rare on marketing surfaces.
+   */
+  --ds-bg:           #FBFBFB;   /* light-dark canvas, light side; oklch(98.75% 0 0). */
+  --ds-surface:      #FFFFFF;   /* kumo-base / white card surface. */
+  --ds-surface-2:    #F5F5F5;   /* kumo-recessed nested panel. */
+  --ds-text:         #222222;   /* kumo-contrast near-black; oklch(14.5% 0 0). */
+  --ds-text-muted:   #6B6B6B;   /* neutral-600; oklch(43.9% 0 0). */
+  --ds-text-strong:  #0D0D0D;   /* hero H1 maximum-contrast; oklch ~8.5%. */
+  --ds-border:       #E8E8E8;   /* card border; standard. */
+  --ds-hairline:     #EFEFEF;   /* kumo-hairline; section breaks. */
+  --ds-accent:       #F6821F;   /* Cloudflare orange; the signature. */
+  --ds-accent-2:     #D86A12;   /* Pressed / hover state of orange. */
+  --ds-success:      #4FAE5A;   /* kumo-success green-300 / 900 family. */
+  --ds-warning:      #F2C24E;   /* kumo-warning yellow-300. */
+  --ds-error:        #E0334C;   /* kumo-danger red-500; oklch(63.7% .237 25.3). */
+  --ds-info:         #5A9EE8;   /* kumo-info blue-300; oklch(80.9% .105 251.8). */
+  --ds-focus-ring:   #F6821F;   /* Cloudflare orange at full strength on :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Two brand faces from F37 and STK foundries with Apercu Mono Pro
+   * carrying the data face. The Kunst Grotesk register is the live
+   * default on the marketing site as of 2026-05; STK Bureau Sans is the
+   * alternate behind .font-stk-bureau-sans (?cfFont=stk toggle).
+   *
+   * Inter is the documented fallback in the brand stack and approximates
+   * the Kunst metrics for offline rendering.
+   */
+  --ds-font-display: "FT Kunst Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "FT Kunst Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Apercu Mono Pro", "JetBrains Mono", ui-monospace, "SFMono-Regular", "Roboto Mono", monospace;
+  /* Accent face: the STK Bureau Sans alternate brand register, observed
+   * shipping behind .font-stk-bureau-sans. Cloudflare is mid-rebrand and
+   * keeps both faces live; STK is the legacy / B2B side of the system. */
+  --ds-font-accent:  "STK Bureau Sans", "FT Kunst Grotesk", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Cloudflare uses a 14px UI base (--text-base: 14px) rather than the
+   * usual 16px — a dev-tool dashboard register that reads as denser and
+   * more technical. Reading body lifts to 16px (--text-lg) on marketing
+   * surfaces. Display ceiling sits around 60-72px on the homepage hero;
+   * the conventional 1.25 ratio runs through the body steps and steps
+   * wider at the display tier.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Apercu Mono Pro uppercase kicker / data label. */
+  --ds-text-sm:   13px;   /* Secondary UI, nav links, plan footnotes. */
+  --ds-text-base: 14px;   /* Dashboard UI default; --text-base verbatim. */
+  --ds-text-lg:   16px;   /* Marketing reading default; --text-lg verbatim. */
+  --ds-text-xl:   20px;   /* Subheads H3; --text-xl 1.25rem. */
+  --ds-text-2xl:  24px;   /* Section heads H2; --text-2xl 1.5rem. */
+  --ds-text-3xl:  30px;   /* Pricing tier headline; --text-3xl 1.875rem. */
+  --ds-text-4xl:  36px;   /* Marketing subhero; --text-4xl 2.25rem. */
+  --ds-text-5xl:  48px;   /* --text-5xl 3rem; lower hero range. */
+  --ds-text-6xl:  60px;   /* Homepage hero H1 ceiling. */
+  --ds-text-7xl:  72px;
+
+  /* ---------- Line heights ----------
+   * Display sits tight at 1.25 (Cloudflare's hero leading is roomier
+   * than Linear / Vercel; Kunst Grotesk's tall x-height needs the air).
+   * Body at 1.5. Long-form / docs at 1.625.
+   */
+  --ds-leading-tight:   1.25;   /* Hero H1; --leading-tight verbatim. */
+  --ds-leading-snug:    1.375;  /* H2 / H3; --leading-snug verbatim. */
+  --ds-leading-normal:  1.5;    /* Body reading; --leading-normal verbatim. */
+  --ds-leading-relaxed: 1.625;  /* Docs longform; --leading-relaxed verbatim. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Negative tracking on display (-0.025em on hero H1; --tracking-tight
+   * verbatim). Body sits at 0. Wide tracking on uppercase mono labels;
+   * widest on the smallest mono utility text (latency codes, region
+   * names, plan SKUs).
+   */
+  --ds-tracking-tight:  -0.025em;  /* Hero H1; --tracking-tight verbatim. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.025em;   /* --tracking-wide verbatim. */
+  --ds-tracking-wider:  0.05em;    /* Uppercase Apercu Mono kicker; --tracking-wider verbatim. */
+
+  /* ---------- Spacing ----------
+   * Tailwind v4 4px-base (--spacing: 0.25rem verbatim). Marketing sections
+   * breathe at space-10 to space-12. Card interior padding lands at
+   * space-5 to space-6.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;   /* Card padding. */
+  --ds-space-8:  48px;   /* Section internal rhythm. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;   /* Marketing section rhythm. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Small to medium radii. The signature radius is 6-8px on cards and
+   * buttons; never pills outside small chips. Kunst Grotesk's geometric
+   * cleanness reads better against soft corners than crisp 0px squares.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;     /* --radius-xs 0.125rem. */
+  --ds-radius-sm:   4px;     /* CTA buttons, input fields; --radius-sm 0.25rem. */
+  --ds-radius-md:   6px;     /* Card corner; --radius-md 0.375rem. */
+  --ds-radius-lg:   8px;     /* Featured tier card; --radius-lg 0.5rem. */
+  --ds-radius-full: 9999px;  /* Small status chips and counters. */
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome dominates. Drop shadows appear on hover lift but
+   * never at rest. The kumo theme exposes a shadow-edge / shadow-drop
+   * pair (oklch 0% 0 0/.08 light, /.3 dark) that drives elevation.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);   /* Card at rest. */
+  --ds-shadow-md:   0 0 0 1px var(--ds-border), 0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 1px var(--ds-border), 0 8px 24px rgba(0,0,0,0.08);
+  --ds-shadow-2xl:  0 0 0 1px var(--ds-border), 0 24px 48px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ----------
+   * Standard ease; Cloudflare's marketing motion is subdued (rare hover
+   * lifts, no parallax on hero). Fast UI feedback at 150ms.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,330 @@
+<!--
+  Asset: substack-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav
+  Inspired by: Substack
+  Notes:
+    - Flush-top marketing nav. The orange Substack mark sits left, paired
+      with the lowercase "substack" wordmark. The link cluster runs
+      sentence-case: Explore, Creators, Resources. A quiet "Sign in"
+      text link sits to the left of the single dark primary CTA
+      ("Start writing"). The bar is flat over a near-white page; the
+      only chrome at rest is a hairline foot.
+    - Variable vs inline: every color, type, spacing, radius, motion
+      value comes from the contract. Inline ornaments: the orange
+      Substack mark geometry (the small filled square with the
+      stacked-bars S; per-brand, not reusable), the 60 px bar height
+      (layout-specific to this flush register), and the small caret
+      glyph on dropdown items.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Flush-top bar. Pinned to top over a near-white page. Hairline foot
+   * is the only chrome at rest; no shadow. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: bar height. Substack's marketing bar reads at
+     * roughly 60 px on desktop. */
+    height: 60px;
+  }
+
+  .nav__inner {
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Wordmark. Orange filled mark + lowercase wordmark. The mark is
+   * the only saturated color on the bar at rest. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  .nav__mark {
+    /* Inline ornament: orange Substack mark stand-in. Small filled
+     * square at radius-xs with three stacked white horizontals.
+     * Geometry is per-brand, not reusable as an atom. */
+    width: 24px;
+    height: 24px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-xs);
+    display: grid;
+    place-content: center;
+    flex: 0 0 24px;
+  }
+  .nav__mark-bars {
+    display: block;
+    width: 14px;
+    height: 12px;
+  }
+  .nav__mark-bars rect { fill: #FFFFFF; }
+
+  /* Link cluster. Sentence-case, muted-to-strong on hover. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    /* Inline ornament: small caret indicator for dropdown items. */
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    color: var(--ds-text-muted);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+    color: var(--ds-text-strong);
+  }
+
+  /* Dropdown panel. Plain-white surface with soft shadow; one-column
+   * list rather than Notion's two-column grid. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 260px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-2);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav__menu-item {
+    padding: var(--ds-space-2) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); color: var(--ds-text-strong); }
+
+  /* Action cluster: quiet "Sign in" text link plus single dark CTA.
+   * The primary CTA stays monochrome so the orange wordmark mark
+   * does not compete with a second saturated element. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .nav__signin {
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text-strong); }
+  .nav__signin:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .nav__primary {
+    appearance: none;
+    border: 1px solid var(--ds-text-strong);
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 8px var(--ds-space-4);
+    /* Inline ornament: small-medium radius. Substack's primary CTAs
+     * sit at a small radius rather than a full pill. */
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: color-mix(in oklab, var(--ds-text-strong) 85%, transparent);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the bar has surface to sit over. Lorem ipsum only. */
+  .page-stub {
+    max-width: 720px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 880px) {
+    .nav__links, .nav__signin { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__link, .nav__menu, .nav__caret, .nav__signin { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <span class="nav__mark" aria-hidden="true">
+          <!-- Orange Substack mark stand-in: three stacked white bars
+               inside a filled-orange small-radius square. -->
+          <svg class="nav__mark-bars" viewBox="0 0 14 12" aria-hidden="true">
+            <rect x="0" y="0" width="14" height="2"/>
+            <rect x="0" y="5" width="14" height="2"/>
+            <rect x="0" y="10" width="14" height="2"/>
+          </svg>
+        </span>
+        <span>lorem</span>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Explore
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">App</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Discover</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Featured</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Globe</a>
+          </div>
+        </li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Creators
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">Switch</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Go paid</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Growth</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Video</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Podcasts</a>
+          </div>
+        </li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Resources
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">Getting started</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Help center</a>
+            <a class="nav__menu-item" href="#" role="menuitem">Community</a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Sign in</a>
+        <a class="nav__primary" href="#">Start writing</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

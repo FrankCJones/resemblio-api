@@ -1,0 +1,141 @@
+<!--
+  Asset: progress-bar-001
+  Class: status-indicators
+  Pattern: (none)
+  Inspired by: Supabase (brand palette and deploy convention on supabase.com)
+  Notes:
+    - Three states: determinate 64%, indeterminate sweep, complete.
+    - Bar height 3px; track and fill share the same radius for symmetric ends.
+    - The indeterminate sweep keyframe is inline because the exact path is one-off.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>progress-bar-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter as a public fallback for the Circular face Supabase ships. -->
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--ds-space-6);
+  }
+
+  .deploy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 480px;
+  }
+
+  .deploy__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+  }
+
+  .deploy__label {
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-weight: 500;
+  }
+
+  /* Track: 3px tall, full-pill radius so the fill terminates with a rounded
+   * cap rather than a flat edge. Subtle enough to read as ambient ruler,
+   * crisp enough to show progress. */
+  .bar {
+    position: relative;
+    width: 100%;
+    height: 3px;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-full);
+    overflow: hidden;
+  }
+
+  .bar__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    transition: width var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+
+  .bar--determinate .bar__fill { width: 64%; }
+
+  /* Indeterminate sweep: a 35% slug travels left to right on a slow loop.
+   * The bezier shape is inline because it is ornament specific to this one
+   * motion moment; not promoted to a contract motion slot. */
+  .bar--indeterminate .bar__fill {
+    width: 35%;
+    left: -35%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .bar--indeterminate .bar__fill {
+      animation: ds-sweep var(--ds-duration-slow) cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+    }
+  }
+  @keyframes ds-sweep {
+    0%   { left: -35%; }
+    100% { left: 100%; }
+  }
+
+  .bar--complete .bar__fill { width: 100%; }
+  .bar--failed  .bar__fill { width: 100%; background: var(--ds-error); }
+</style>
+</head>
+<body>
+  <div class="deploy">
+    <div class="deploy__meta">
+      <span class="deploy__label">Lorem ipsum deploying</span>
+      <span>64%</span>
+    </div>
+    <div class="bar bar--determinate" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100">
+      <div class="bar__fill"></div>
+    </div>
+  </div>
+
+  <div class="deploy">
+    <div class="deploy__meta">
+      <span class="deploy__label">Sit amet building</span>
+      <span>...</span>
+    </div>
+    <div class="bar bar--indeterminate" role="progressbar" aria-busy="true" aria-valuemin="0" aria-valuemax="100">
+      <div class="bar__fill"></div>
+    </div>
+  </div>
+
+  <div class="deploy">
+    <div class="deploy__meta">
+      <span class="deploy__label">Consectetur deployed</span>
+      <span>100%</span>
+    </div>
+    <div class="bar bar--complete" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+      <div class="bar__fill"></div>
+    </div>
+  </div>
+
+  <div class="deploy">
+    <div class="deploy__meta">
+      <span class="deploy__label">Ipsum build failed</span>
+      <span>FAIL</span>
+    </div>
+    <div class="bar bar--failed" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+      <div class="bar__fill"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+/*
+ * notion-docs-page-001 tokens
+ *
+ * Native token values for the Notion help-center docs-article skeleton,
+ * inspired by notion.com/help/intro-to-databases. The Help Center sits on
+ * a near-white surface (slightly warmer than stark white, in keeping with
+ * Notion's warm-paper-surface-not-stark-white principle) with near-black
+ * text in Notion's house sans, a quiet blue inline-link accent, and an
+ * illustration-led callout vocabulary (Note / Tip / Resources boxes with
+ * small illustration glyphs). The Help Center is whiter than the
+ * marketing surface and the accent is the cool blue inline-link color
+ * rather than the marketing-side green; the warm-cream brand identity is
+ * captured separately by atoms/cards/warm-paper-rule-001.
+ *
+ * Layout-specific notes: the three-column grid (260px sidebar / 1fr
+ * content / 220px Contents rail) is inline page-grid character, not a
+ * contract slot. The main reading column caps near 70ch so screenshots
+ * and callouts breathe without horizontal scroll. WebFetch returned
+ * structure, breadcrumb sequence, section order, callout vocabulary, and
+ * the "Up next" forward-only pagination pattern; inline computed styles
+ * were stripped, so numeric values mirror the canonical Notion tokens
+ * captured in prior waves (atoms/cards/warm-paper-rule-001) rather than
+ * devtools reads.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Help Center body surface; whiter than the marketing cream. */
+  --ds-surface:      #F7F6F3;   /* Callout box tint; warm gray that reads as paper. */
+  --ds-surface-2:    #FBFAF8;   /* Up-next card surface; one step above body. */
+  --ds-text:         #37352F;   /* Notion canonical body text; near-black with warm cast. */
+  --ds-text-muted:   #787774;   /* Sidebar inactive, captions, breadcrumb crumbs. */
+  --ds-text-strong:  #191919;   /* Page title and H2 section heads. */
+  --ds-border:       #E9E9E7;   /* Card edges, Up-next card chrome. */
+  --ds-hairline:     rgba(55, 53, 47, 0.09);  /* Sidebar divider, section rule. */
+  --ds-accent:       #0B6BCB;   /* Notion inline-link blue; the quiet docs accent. */
+  --ds-accent-2:     #2E6F50;   /* Notion marketing green; reserved for tags / second accents. */
+  --ds-success:      #2E6F50;
+  --ds-warning:      #B88E3A;
+  --ds-error:        #A14438;
+  --ds-info:         #0B6BCB;
+  --ds-focus-ring:   #0B6BCB;   /* Inline-link blue picks up keyboard focus too. */
+
+  /* ---------- Type families ----------
+   * Notion's house sans across body and display; serif accent reserved
+   * for editorial pull moments (not used in this layout). Open fallbacks
+   * so the asset renders standalone without licensed faces.
+   */
+  --ds-font-display: "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Newsreader", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;   /* Sidebar links, Contents rail links, breadcrumb. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph beneath title. */
+  --ds-text-xl:   22px;   /* Body H3. */
+  --ds-text-2xl:  30px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* Doc title. */
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.15;   /* Doc title. */
+  --ds-leading-snug:    1.25;   /* H2 / H3. */
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;   /* Body reading; Notion's generous reading rhythm. */
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;   /* Sidebar group label, Contents label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Notion principle: subtle rounded corners, not pills. Card frames sit
+   * at 12px; smaller chrome at 6px.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;    /* Sidebar item hover, breadcrumb chip. */
+  --ds-radius-md:   12px;   /* Callout, Up-next card. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Notion holds card edges with a hairline border, not a cast shadow.
+   * Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   0 2px 8px rgba(60, 50, 30, 0.06);
+  --ds-shadow-lg:   0 8px 24px rgba(60, 50, 30, 0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(60, 50, 30, 0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,86 @@
+<!--
+  Asset: inline-link-accent-001
+  Class: links
+  Pattern: (none in TAXONOMY; inline body link pattern)
+  Inspired by: Anthropic
+  Notes:
+    - Inline body link in flowing prose; ink text at rest with 1px underline, accent color on hover.
+    - Underline thickness comes from text-decoration; the accent color comes from tokens.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>inline-link-accent-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Anthropic ships custom Anthropic Serif; we approximate with a Georgia stack. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+  p { margin: 0; }
+  .a-link {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-color: var(--ds-text);
+    text-decoration-thickness: 1px; /* inline: matches Anthropic's 1px rule; not a contract slot */
+    text-underline-offset: 3px;     /* inline: keeps descenders clear */
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                text-decoration-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .a-link:hover,
+  .a-link.is-hover {
+    color: var(--ds-accent);
+    text-decoration-color: var(--ds-accent);
+  }
+  .a-link:focus-visible,
+  .a-link.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-xs);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block { padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-hairline); }
+  .block:first-child { border-top: 0; padding-top: 0; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="block">
+      <div class="state-label">rest</div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut <a class="a-link" href="#">labore et dolore magna aliqua</a>, ut enim ad minim veniam quis nostrud exercitation.</p>
+    </div>
+    <div class="block">
+      <div class="state-label">hover</div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut <a class="a-link is-hover" href="#">labore et dolore magna aliqua</a>, ut enim ad minim veniam quis nostrud exercitation.</p>
+    </div>
+    <div class="block">
+      <div class="state-label">focus</div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut <a class="a-link is-focus" href="#">labore et dolore magna aliqua</a>, ut enim ad minim veniam quis nostrud exercitation.</p>
+    </div>
+  </div>
+</body>
+</html>

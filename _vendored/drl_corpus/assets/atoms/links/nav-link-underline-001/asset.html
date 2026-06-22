@@ -1,0 +1,132 @@
+<!--
+  Asset: nav-link-underline-001
+  Class: links
+  Pattern: (none in TAXONOMY; nav link inline pattern)
+  Inspired by: Linear
+  Notes:
+    - Top-nav link with muted-gray rest color, white on hover; underline animates in from left.
+    - Underline thickness, offset, and origin are inline character choices; color and type come from tokens.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>nav-link-underline-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Variable approximation via Google Fonts; Linear ships its own woff2. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-8);
+  }
+  .nav {
+    display: flex;
+    gap: var(--ds-space-2);
+    align-items: center;
+    background: transparent;
+  }
+  .nav-link {
+    position: relative;
+    display: inline-block;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: var(--ds-leading-normal);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-normal);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  /* Underline is the asset's added affordance. Linear's native nav is color-only;
+     here we expand the muted-to-white transition with a 1px rule that scales from
+     the left edge. Thickness and offset are inline character choices. */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: var(--ds-space-3);
+    right: var(--ds-space-3);
+    bottom: 2px; /* inline: underline offset from baseline; not a contract slot */
+    height: 1px; /* inline: hairline thickness for the underline rule */
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-emphasize);
+  }
+  .nav-link:hover,
+  .nav-link.is-hover {
+    color: var(--ds-text-strong);
+  }
+  .nav-link:hover::after,
+  .nav-link.is-hover::after {
+    transform: scaleX(1);
+  }
+  .nav-link:focus-visible,
+  .nav-link.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+  }
+  .state-label {
+    display: block;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    font-family: var(--ds-font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    gap: var(--ds-space-10);
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link, .nav-link::after { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="col">
+      <span class="state-label">rest</span>
+      <nav class="nav" aria-label="rest example">
+        <a class="nav-link" href="#">Lorem</a>
+        <a class="nav-link" href="#">Ipsum</a>
+        <a class="nav-link" href="#">Dolor</a>
+      </nav>
+    </div>
+    <div class="col">
+      <span class="state-label">hover</span>
+      <nav class="nav" aria-label="hover example">
+        <a class="nav-link is-hover" href="#">Lorem</a>
+        <a class="nav-link" href="#">Ipsum</a>
+        <a class="nav-link" href="#">Dolor</a>
+      </nav>
+    </div>
+    <div class="col">
+      <span class="state-label">focus</span>
+      <nav class="nav" aria-label="focus example">
+        <a class="nav-link" href="#">Lorem</a>
+        <a class="nav-link is-focus" href="#">Ipsum</a>
+        <a class="nav-link" href="#">Dolor</a>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>

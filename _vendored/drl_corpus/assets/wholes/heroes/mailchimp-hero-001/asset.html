@@ -1,0 +1,300 @@
+<!--
+  Asset: mailchimp-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, no-imagery, oversized-statement
+  Inspired by: Mailchimp
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-accent-yellow-001            (Cavendish Yellow ground + Peppercorn ink)
+    - type-pairings/serif-display-sans-body-001      (Cooper Light display + Graphik body)
+    - headings/display-tight-001                     (64-96px display H1 in warm humanist serif)
+    - kickers/mono-eyebrow-001                       (uppercase wide-tracked claim row)
+    - buttons/primary-square-001                     (Peppercorn solid rectangle CTA)
+    - dividers/hairline-rule-001                     (Cavendish-darkened hairlines on yellow ground)
+  Notes:
+    - Native context: mailchimp.com homepage opening viewport, captured via
+      WebFetch 2026-05-20. Cavendish Yellow canvas (Mailchimp brand-assets
+      page explicitly names this "Mailchimp's hero color"), Peppercorn ink,
+      uppercase wide-tracked claim eyebrow ("THE #1 AI-POWERED EMAIL
+      MARKETING AND AUTOMATIONS PLATFORM"), a single sentence-case
+      conversational H1 ("Email & SMS marketing minus the learning curve."),
+      a one-line dek ("Drive revenue with intuitive marketing analytics,
+      automations, and AI tools."), paired primary "Start Free Trial"
+      (Peppercorn solid rectangle on yellow) and secondary "Log In"
+      (Peppercorn outline) CTAs, and a hand-drawn Freddie-style envelope
+      mark anchoring the visual to the brand's illustration vocabulary.
+    - Variable: every color, type, spacing, radius, motion value via
+      tokens.css.
+    - Inline ornament: the hand-drawn envelope SVG geometry stands in for
+      Mailchimp's illustrated mailbox/envelope motif (Freddie's vocabulary
+      is proprietary; lorem geometry approximates the warm hand-line
+      character without copying the trademark mascot). The Peppercorn
+      focus ring radius and the CTA's exact inset padding are inline
+      because they are hero-specific compositions, not contract values.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- DM Serif Display stands in for Cooper Light on machines without the
+     Mailchimp-commissioned woff2; both are warm humanist display serifs.
+     Inter stands in for Graphik on the body. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Cavendish Yellow canvas. The first viewport has exactly
+   * two value moments: the yellow ground and the Peppercorn ink. No
+   * third color enters until the supporting illustration. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: Freddie mark on the left, sparse Graphik nav center, log-in
+   * + free-trial affordance right. A Peppercorn hairline separates the
+   * chrome from the canvas. */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: a hand-drawn envelope mark stands in for the Freddie chimp;
+   * no contract slot for arbitrary path data. */
+  .topbar__mark svg { width: 28px; height: 28px; display: block; }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { opacity: 0.7; }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 960px so the H1 holds a balanced two- or
+   * three-line shape. Generous vertical padding so the headline lands
+   * well below the chrome. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-10);
+    max-width: 1080px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Uppercase claim eyebrow. Wide-tracked, sentence-fragment register;
+   * Mailchimp uses this row as a category-leadership marker. */
+  .hero__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* H1: Cooper Light at 72-96px, sentence-case, the brand's
+   * conversational voice ("...minus the learning curve."). text-wrap
+   * balance holds the two-line shape Mailchimp headline writers pace
+   * toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 8vw, var(--ds-text-6xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading, in Peppercorn ink. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* CTA row: Peppercorn solid primary on the left, Peppercorn outline
+   * secondary on the right. Mailchimp ships dual CTA more reliably than
+   * single CTA; the secondary is "Log In" on the marketing surface. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 14px 22px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: Peppercorn focus ring on yellow ground; the rgba offset is
+     * hero-specific and there is no contract slot for ring geometry. */
+    box-shadow: 0 0 0 3px rgba(36,28,21,0.25);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: rgba(36,28,21,0.06); }
+
+  /* Illustration anchor. A single hand-drawn envelope sits below the
+   * CTA row; Mailchimp's vocabulary leans on warm hand-illustrated
+   * mailbox / envelope / postcard motifs rather than product
+   * screenshots. The mark uses Peppercorn stroke on yellow ground. */
+  .hero__illo {
+    margin-top: var(--ds-space-6);
+    color: var(--ds-text);
+  }
+  .hero__illo svg {
+    display: block;
+    width: clamp(220px, 24vw, 320px);
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .hero { padding: var(--ds-space-10) var(--ds-space-5) var(--ds-space-8); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: hand-drawn envelope mark; stands in for Freddie the
+           Mailchimp chimp. The wobbly stroke is intentional, reading as
+           hand-illustration rather than vector primitive. -->
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path
+          d="M6 18 Q7 16 10 16 L54 16 Q57 16 58 18 L58 48 Q58 50 55 50 L9 50 Q6 50 6 48 Z"
+          fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+        <path
+          d="M7 18 L32 36 Q33 37 34 36 L57 18"
+          fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Log In</a>
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <p class="hero__kicker">Lorem Ipsum Dolor Sit Amet Consectetur</p>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet minus the learning curve.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+      enim ad minim veniam quis nostrud.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit</a>
+    </div>
+    <div class="hero__illo" aria-hidden="true">
+      <!-- Inline: a larger hand-drawn envelope with a postcard peek;
+           approximates the brand's illustration vocabulary without
+           reproducing Freddie's trademark geometry. -->
+      <svg viewBox="0 0 280 200">
+        <path
+          d="M18 50 Q20 44 28 44 L252 44 Q260 44 262 50 L262 170 Q262 178 254 178 L26 178 Q18 178 18 170 Z"
+          fill="#FFFFFF" stroke="currentColor" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round"/>
+        <path
+          d="M20 50 L138 132 Q140 134 142 132 L260 50"
+          fill="none" stroke="currentColor" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round"/>
+        <path
+          d="M60 76 L96 76 M60 92 L120 92 M60 108 L88 108"
+          fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" opacity="0.55"/>
+      </svg>
+    </div>
+  </section>
+</body>
+</html>

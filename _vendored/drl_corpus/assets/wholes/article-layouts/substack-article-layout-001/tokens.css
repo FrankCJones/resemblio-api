@@ -1,0 +1,160 @@
+/*
+ * substack-article-layout-001 tokens
+ *
+ * The canonical Substack post-shell that millions of newsletters render
+ * inside. Title + dek + byline-with-small-avatar + centered narrow reading
+ * column + signature toolbar of like / comment / restack / share counts +
+ * paywall divider when applicable + comment-reply thread + a closing
+ * "Discussion about this post" / restack panel.
+ *
+ * Sources inspected via WebFetch on 2026-05-20 (two posts, two
+ * publications, to confirm the shell is the platform template rather than
+ * one publication's customization):
+ *   https://on.substack.com/p/scott-galloway-had-the-audience-heres
+ *   https://post.substack.com/p/the-most-intellectual-thirst-trap
+ * Both render the same header sequence (h1 -> subtitle -> small circular
+ * avatar + author + publication + ISO date), the same body column
+ * register, the same toolbar layout (numeric like / restack / reply
+ * counts with a trailing share affordance), and the same comment surface
+ * shape (avatar + name + relative time + body + reply / heart). WebFetch
+ * returns post markdown without computed style values; the token values
+ * below follow Substack's well-known reading register (Spectral or
+ * source-serif body, light ink, the signature Substack orange #FF6719 as
+ * the single chromatic accent, hairline chrome, no shadows at rest).
+ *
+ * Free-font analogs in `asset.html`:
+ *   - Spectral (Google Fonts) is the reading serif Substack uses for body
+ *     and h1 on the default "Reuters" / "Sans" theme variants - the
+ *     editorial choice that mirrors the writing surface.
+ *   - Source Sans 3 (Google Fonts) substitutes for source-sans-pro used
+ *     on metadata and the toolbar labels.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Substack default post chrome runs on a near-white canvas with
+   * near-black ink. The signature Substack orange does links, the
+   * subscribe affordance, and the active state on the toolbar. A single
+   * muted grey carries metadata (date, counts, role). The paywall
+   * divider runs the orange as a left-edge accent.
+   */
+  --ds-bg:           #FFFFFF;   /* Substack post background; near-white canvas. */
+  --ds-surface:      #FAFAFA;   /* Comment-card surface, one step off the page. */
+  --ds-surface-2:    #F0F0F0;   /* Reply-nested comment surface, one step deeper. */
+  --ds-text:         #1A1A1A;   /* Body ink; near-black, never pure. */
+  --ds-text-muted:   #6B6B6B;   /* Date, counts, role, byline secondary. */
+  --ds-text-strong:  #000000;   /* H1 ink at maximum emphasis. */
+  --ds-border:       rgba(0, 0, 0, 0.12);   /* Hairline on toolbar, comment cards, byline rule. */
+  --ds-hairline:     rgba(0, 0, 0, 0.08);   /* Section rule above the toolbar and between comments. */
+  --ds-accent:       #FF6719;   /* Substack orange; the platform's signature chromatic role. */
+  --ds-accent-2:     #E45200;   /* Pressed / hover state for the orange. */
+  --ds-success:      #1F8A4C;
+  --ds-warning:      #B88E3A;
+  --ds-error:        #C0392B;
+  --ds-info:         #2B6CB0;
+  --ds-focus-ring:   #FF6719;
+
+  /* ---------- Type families ----------
+   * Substack ships Spectral (Reuters theme) as the default editorial
+   * serif; the platform also offers a "Sans" theme but Spectral is the
+   * one the post-shell carries by default. Body and H1 share the family.
+   * Sans is reserved for metadata, byline labels, and the toolbar.
+   * Mono lands on inline code and metadata pills when authors use them.
+   */
+  --ds-font-display: "Spectral", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Spectral", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --ds-font-mono:    "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --ds-font-accent:  "Source Sans 3", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Substack body sits at 20px on desktop (one step above the SaaS 16px
+   * default; the editorial surface earns it). H1 lands at the 3xl-4xl
+   * step around 42-52px. Subtitle / dek runs 22px italic regular. The
+   * toolbar metadata sits at 14px sans.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Footnote marker, count badge. */
+  --ds-text-sm:   14px;   /* Byline name, date, toolbar count, comment meta. */
+  --ds-text-base: 20px;   /* Reading body register. */
+  --ds-text-lg:   22px;   /* Subtitle / dek paragraph. */
+  --ds-text-xl:   28px;   /* H2 subhead inside body. */
+  --ds-text-2xl:  34px;   /* H3 / large section heading. */
+  --ds-text-3xl:  42px;   /* H1 base step (mobile). */
+  --ds-text-4xl:  52px;   /* H1 desktop ceiling. */
+  --ds-text-5xl:  64px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Body at 1.6 sits in the editorial-shaded reading register, slightly
+   * tighter than Notion's 1.7 because Spectral is a higher-contrast
+   * serif that benefits from a denser measure. H1 holds at 1.15.
+   */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.15;
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Spectral is a moderate-contrast serif; H1 takes a gentle -0.01em.
+   * Sans metadata holds at 0. Toolbar count badges read at +0.04em.
+   */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Header column ends with space-8 before the body. Body
+   * paragraphs separated by space-5. Toolbar floats at space-6 above
+   * and below. Comment cards space-5 padding.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Substack shells lean square. Avatars and the small toolbar pills
+   * are the only rounded elements. Comment cards carry a 6px radius.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;   /* Comment card, toolbar button. */
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;   /* Avatar circle, like-count pill. */
+
+  /* ---------- Shadows ----------
+   * No drop shadows at rest on the post chrome. Hairlines do all the
+   * structural work. A single soft shadow lifts the paywall divider
+   * card so it reads as one decisive structural break.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   0 2px 8px rgba(0, 0, 0, 0.05);
+  --ds-shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.08);   /* Paywall card lift. */
+  --ds-shadow-2xl:  0 20px 48px rgba(0, 0, 0, 0.12);
+
+  /* ---------- Motion ----------
+   * Standard fast register. The toolbar's like-tap heartbeat is the only
+   * deliberately characterful motion moment and it lives inline.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

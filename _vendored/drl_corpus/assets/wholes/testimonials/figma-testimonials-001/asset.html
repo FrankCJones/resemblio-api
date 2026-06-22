@@ -1,0 +1,310 @@
+<!--
+  Asset: figma-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, accent-on-neutral, monochrome-palette
+  Inspired by: Figma (homepage, /customers index, /design)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/saturated-tech-001     (paper-white surface with plum accent)
+    - type-pairings/sans-system-modern-001 (Whyte / Inter across display and body)
+    - cards/hairline-flat-001              (white card, hairline edge, soft 16px corner, no rest shadow)
+    - avatars/circle-photo-001             (round headshot)
+    - kickers/mono-eyebrow-001             (mono section eyebrow above the grid)
+  Notes:
+    - The mechanic is monochrome restraint with a single plum accent. Two
+      cards sit side by side on a pure-white page; each card is white on
+      white, held only by a hairline edge and a soft 16px corner. The
+      quote runs at lead-display scale (24px) so it reads like a statement
+      not a paragraph. Attribution stacks under the quote: name (black,
+      semibold) on top, role + company (muted) below, with a circular
+      headshot at left.
+    - Variable: every color, type size, spacing step, radius. Inline
+      ornament: the placeholder logo chip gradient and the headshot
+      gradient (real implementations swap SVG marks and photographs).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>figma-testimonials-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Figma's licensed Whyte. The marketing surface uses Whyte across display and body; Inter is the documented fallback in Figma's stack and the closest free analog. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Pure white page lets the hairline-edged card carry the
+   * frame; the only color that fires is the trailing link plum. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. Centered, capped measure; eyebrow + headline above
+   * the two-up grid in Figma's typical rhythm. */
+  .testimonials {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Mono eyebrow. Uppercase, wide tracking, sits above the section head.
+   * The single mono moment on the section. */
+  .testimonials__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Section headline. Bold display sans at 3xl; Figma's preferred section
+   * register. Sentence case, not title case. */
+  .testimonials__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+
+  /* Two-up grid; collapses to one column below 720px. */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  /* The card. Hairline edge stands in for the border so the 16px corner
+   * stays crisp. No drop shadow at rest; the white-on-white register
+   * holds via the hairline. */
+  .quote-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition: box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* Company logo lockup at the top of the card. Chip + wordmark; Figma
+   * uses the lockup to anchor brand recognition before the reader hits
+   * the quote. */
+  .quote-card__lockup {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  .quote-card__logo-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-sm);
+    /* Inline ornament: placeholder logo chip. Real implementations swap
+     * in an SVG wordmark or product mark. */
+    background: linear-gradient(135deg, #1E1E1E 0%, #4A4A4A 100%);
+    flex-shrink: 0;
+  }
+
+  .quote-card__company {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Quote body. Inter at lead-display scale (24px). The display lean is
+   * the structural choice: the quote reads as a statement, not a
+   * paragraph. Sentence-case body matches the source. */
+  .quote-card__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Internal divider above attribution; the only hairline inside the
+   * card. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-1) 0 0 0;
+  }
+
+  /* Attribution row. Round headshot left, name + role stacked. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Round headshot. Placeholder gradient circle stands in for a real
+   * portrait; Figma ships actual photographs. */
+  .quote-card__headshot {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ds-radius-full);
+    background: radial-gradient(circle at 30% 30%, #C8B5F0, #6E56CF);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    flex-shrink: 0;
+  }
+
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  /* Name: the load-bearing attribution line. Semibold so the eye lands
+   * on the human before the role. */
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Role + company on one muted line. Sentence-style separator; Figma
+   * uses a comma to join role and company ("Head of Design, Perplexity"). */
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Trailing link: the only accent color on the card. Figma plum with a
+   * trailing arrow affordance. */
+  .quote-card__link {
+    align-self: flex-start;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:hover { color: var(--ds-accent-2); }
+
+  .quote-card__link:hover .quote-card__link-arrow {
+    transform: translateX(3px);
+  }
+
+  .quote-card__link-arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-card__link,
+    .quote-card__link-arrow { transition: none; }
+    .quote-card:hover { transform: none; }
+  }
+
+  @media (max-width: 520px) {
+    .quote-card { padding: var(--ds-space-5); }
+    .quote-card__quote { font-size: var(--ds-text-lg); }
+    .testimonials__title { font-size: var(--ds-text-2xl); }
+  }
+</style>
+</head>
+<body>
+  <section class="testimonials" aria-label="Customer testimonials">
+
+    <div>
+      <p class="testimonials__eyebrow">Lorem Ipsum</p>
+      <h2 class="testimonials__title">Dolor sit amet, consectetur adipiscing.</h2>
+    </div>
+
+    <div class="quote-grid">
+
+      <figure class="quote-card">
+        <div class="quote-card__lockup">
+          <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+          <span class="quote-card__company">Lorem Ipsum</span>
+        </div>
+        <blockquote class="quote-card__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Aenean Tortor</span>
+            <span class="quote-card__role">Head of Design, Lorem Ipsum</span>
+          </span>
+        </figcaption>
+        <a class="quote-card__link" href="#">
+          Read the story
+          <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </figure>
+
+      <figure class="quote-card">
+        <div class="quote-card__lockup">
+          <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+          <span class="quote-card__company">Dolor Sit Amet</span>
+        </div>
+        <blockquote class="quote-card__quote">
+          Curabitur eros nulla, eleifend nec consectetur a, hendrerit ac arcu. Pellentesque habitant morbi tristique senectus.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Vivamus Nullam</span>
+            <span class="quote-card__role">Product Manager, Dolor Sit Amet</span>
+          </span>
+        </figcaption>
+        <a class="quote-card__link" href="#">
+          Read the story
+          <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </figure>
+
+    </div>
+  </section>
+</body>
+</html>

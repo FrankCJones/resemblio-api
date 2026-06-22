@@ -1,0 +1,371 @@
+<!--
+  Asset: cursor-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, single-cta-hero, mono-eyebrow, mega-footer
+  Inspired by: Cursor (cursor.com/en-US/future)
+  Notes:
+    - Cursor has no /about, /company, /team, or /manifesto route; the
+      closest live surface is /en-US/future, a mission-statement-plus-
+      historical-timeline page that the company uses as its public
+      identity statement. The about-page skeleton captured here:
+      flush top-bar nav, left-aligned mission hero, a long numbered
+      timeline of computing milestones (the manifesto-as-history move),
+      a single recruitment CTA, and the mega-footer. No team grid and
+      no investor section exist on the source.
+    - The timeline-row slot is the load-bearing block; section-block
+      rhythm and the narrow centered measure are the variables.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter Tight (display) and Inter (body) are the cursor-
+  system canonical pair; JetBrains Mono carries year prefixes.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1100px (the cursor about-equivalent runs
+   * narrower than the marketing page; the timeline reads as a single
+   * column of running prose, not a grid). Gutter 24px mobile / 48px
+   * desktop. Inline value; not a contract slot.
+   */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Section block. 48px mobile / 96px desktop padding-block, hairline
+   * rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero gets extra breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Flush at the top, hairline rule beneath. Cursor runs a
+   * flat full-width bar with the wordmark left, link cluster center,
+   * auth controls right. Inline values: 56px height and the sticky
+   * top offset are inline ornament specific to this nav shell.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(251, 251, 250, 0.85);             /* warm glass; inline ornament */
+    backdrop-filter: saturate(180%) blur(16px);        /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 56px;                                       /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero. Mission statement at 5xl on desktop; tight leading; narrow
+   * measure. Left-aligned, single supporting paragraph beneath. */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Section heading: small mono kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /*
+   * Timeline rows. The load-bearing block of the cursor about-equivalent:
+   * a long numbered list of computing milestones, each row a mono year
+   * column plus a sans title-and-byline body. Two-column grid on
+   * desktop (mono year at 96px, body fluid), single-column on mobile.
+   */
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .timeline__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-3);
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .timeline__row {
+      grid-template-columns: 96px 1fr;                 /* year column inline width */
+      gap: var(--ds-space-6);
+    }
+  }
+  .timeline__year {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    padding-top: 2px;                                  /* optical baseline lift */
+  }
+  .timeline__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-1);
+  }
+  .timeline__byline {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+  .timeline__byline a {
+    color: var(--ds-accent);
+    border-bottom: 1px solid var(--ds-border);
+  }
+
+  /* Recruitment CTA: centered, narrow measure, single button. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 24ch;
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Footer band: full-width, single hairline rule above. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/ai-product-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 480px;">
+          <span class="slot__label">nav-link-cluster</span>
+          Lorem ipsum dolor sit amet
+        </div>
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">auth-controls</span>
+          Sign in / Download
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: hero. Mission statement plus single supporting paragraph. -->
+    <section class="section section--hero" aria-label="Hero">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam, quis nostrud exercitation ullamco laboris
+        nisi ut aliquip ex ea commodo consequat.
+      </p>
+    </section>
+
+    <!-- Section: historical timeline. The manifesto-as-history load-bearing block. -->
+    <section class="section" aria-label="Historical timeline">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 / Timeline</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      </div>
+      <ol class="timeline">
+        <li class="timeline__row">
+          <span class="timeline__year">1837</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">1936</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet consectetur.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">1968</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">1991</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">2007</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">2017</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet consectetur.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">2023</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+        <li class="timeline__row">
+          <span class="timeline__year">2025</span>
+          <div>
+            <h3 class="timeline__title">Lorem ipsum dolor sit amet consectetur.</h3>
+            <p class="timeline__byline">Lorem ipsum, <a href="#">consectetur</a> adipiscing elit.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Section: recruitment CTA. Centered, single primary button. -->
+    <section class="section section--cta" aria-label="Recruitment">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur.</h2>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">primary-cta</span>
+          Join Lorem
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 260px;">
+        <span class="slot__label">mega-footer (product / resources / company / legal / social)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

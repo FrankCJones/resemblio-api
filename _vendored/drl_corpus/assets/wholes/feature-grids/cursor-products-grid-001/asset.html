@@ -1,0 +1,405 @@
+<!--
+  Asset: cursor-products-grid-001
+  Class: feature-grids (whole)
+  Pattern: bento-grid, accent-on-neutral, mono-eyebrow, external-link-arrow
+  Inspired by: Cursor
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (light-surface palette context; this asset
+                                              overrides the strict paper-ink hex slot for
+                                              tile surface, accent, and radii to match Cursor)
+    - type-pairings/sans-system-modern-001   (Inter + JetBrains Mono families)
+    - cards/bento-tile-001                   (white tile, hairline border, generous radius)
+    - headings/display-tight-001             (tile headline pattern: tight tracking sans)
+    - kickers/mono-eyebrow-001               (per-tile mono uppercase eyebrow)
+    - links/external-arrow-001               (blue arrow link CTA at tile foot)
+    - icons/stroke-line-uniform-001          (small icon glyph beside each tile heading)
+  Notes:
+    - The grid is a 2x2 bento at desktop, stacking to one column at mobile.
+      Each tile holds: eyebrow + icon + heading + body + demo strip + arrow link.
+      The four product cells map to Cursor's documented homepage products
+      (Agents, Tab, Cloud Agents, Everywhere Integration) but use lorem ipsum
+      copy and abstracted demo strips; no real Cursor product text.
+    - Variable: every color, type size, spacing step, and radius declared
+      in tokens.css. Inline: the demo strip backgrounds inside each tile
+      (a subtle gradient, a code-strip mock, a dotted matrix, a pill row)
+      are tile-specific ornaments and stay inline with comments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-products-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page surface. Warm-leaning off-white reads as paper; tiles lift above it
+   * via pure white plus hairline border, no shadow at rest. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .section {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Section header. Mirrors the page-level intro Cursor places above its
+   * product grid: one eyebrow, one tight display headline, one short lede. */
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    max-width: 720px;
+  }
+  .section__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .section__title {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 4.5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+  .section__lede {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 56ch;
+  }
+
+  /* Bento. 2x2 at desktop, stacking to single column below 720px. The
+   * twelve-column grid would be overkill for four tiles of equal weight;
+   * Cursor's homepage treats the cells as peers, not as a hierarchy. */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ds-space-4);
+  }
+  @media (max-width: 720px) {
+    .bento { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. From atoms/cards/bento-tile-001 calibrated to Cursor's light surface:
+   * white fill, hairline border, 16px radius, generous padding. Hover engages
+   * a soft shadow lift and a one-step accent border. */
+  .tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+    min-height: 360px;
+  }
+  .tile:hover {
+    border-color: color-mix(in oklab, var(--ds-accent) 30%, var(--ds-border));
+    box-shadow: var(--ds-shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  /* Tile head row: eyebrow on left, stroke icon on right. The icon is
+   * deliberately small and quiet; it functions as a glyph marker, not as
+   * the focal point of the tile. */
+  .tile__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+  }
+  .tile__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .tile__icon {
+    width: 20px;
+    height: 20px;
+    color: var(--ds-text-muted);
+    flex-shrink: 0;
+  }
+  .tile__icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Tile body: heading + supporting copy. Heading uses the display family
+   * at 2xl (tile-scale, not page-scale display). */
+  .tile__h3 {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    text-wrap: balance;
+  }
+  .tile__copy {
+    margin: 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 38ch;
+  }
+
+  /* Demo strip. Each tile carries a small abstracted demo area to evoke
+   * the product. These are tile-specific ornaments; the recipes live
+   * inline rather than in tokens.css. */
+  .tile__demo {
+    margin-top: auto;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4);
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-top: 1px solid var(--ds-hairline);
+    border: 1px solid var(--ds-hairline);
+  }
+
+  /* Tile 1 demo: a faux conversation bubble row. Inline ornament. */
+  .demo--chat {
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+  }
+  .demo--chat .row {
+    height: 8px;
+    border-radius: var(--ds-radius-full);
+    background: color-mix(in oklab, var(--ds-text-muted) 22%, transparent);
+  }
+  .demo--chat .row.short { width: 55%; }
+  .demo--chat .row.mid   { width: 78%; }
+  .demo--chat .row.long  { width: 92%; }
+
+  /* Tile 2 demo: a mono code strip with a caret. Inline ornament. */
+  .demo--code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+    background: #0E0E12;            /* one-off dark inset; the Tab product
+                                       is the only place the asset shows a
+                                       dark surface, mirroring an editor strip. */
+    color: #E6E6EA;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border: 0;
+    width: 100%;
+    line-height: var(--ds-leading-snug);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .demo--code .punct  { color: #6F86FF; }
+  .demo--code .ghost  { color: #5A5A66; }
+  .demo--code .caret  {
+    display: inline-block;
+    width: 7px;
+    height: 1em;
+    vertical-align: -2px;
+    background: var(--ds-accent);
+    animation: blink 1.1s steps(2, end) infinite;
+    margin-left: 1px;
+  }
+  @keyframes blink { 50% { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) {
+    .demo--code .caret { animation: none; }
+  }
+
+  /* Tile 3 demo: a parallel-task matrix of small status pills. Inline. */
+  .demo--parallel {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+  .demo--parallel .cell {
+    height: 22px;
+    border-radius: var(--ds-radius-sm);
+    background: color-mix(in oklab, var(--ds-accent) 12%, var(--ds-surface));
+    border: 1px solid color-mix(in oklab, var(--ds-accent) 24%, var(--ds-border));
+  }
+  .demo--parallel .cell.done {
+    background: color-mix(in oklab, var(--ds-accent) 70%, white);
+    border-color: var(--ds-accent);
+  }
+  .demo--parallel .cell.idle {
+    background: var(--ds-surface);
+    border-color: var(--ds-border);
+  }
+
+  /* Tile 4 demo: a row of integration glyph chips. Inline. */
+  .demo--chips {
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .demo--chips .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: 6px var(--ds-space-3);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .demo--chips .chip::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+  }
+
+  /* Arrow link CTA. From atoms/links/external-arrow-001 in the blue accent
+   * variant. The trailing arrow translates a hair on hover; that motion is
+   * the only interactive flourish in the grid. */
+  .tile__cta {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    text-decoration: none;
+  }
+  .tile__cta .arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile__cta:hover { color: var(--ds-accent-2); }
+  .tile__cta:hover .arrow { transform: translateX(3px); }
+  .tile__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+</style>
+</head>
+<body>
+  <section class="section">
+    <header class="section__head">
+      <span class="section__eyebrow">// lorem · ipsum 04</span>
+      <h2 class="section__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+      <p class="section__lede">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+    </header>
+
+    <div class="bento" role="list">
+
+      <article class="tile" role="listitem">
+        <div class="tile__head">
+          <span class="tile__eyebrow">01 / lorem</span>
+          <span class="tile__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg>
+          </span>
+        </div>
+        <h3 class="tile__h3">Lorem ipsum dolor sit amet.</h3>
+        <p class="tile__copy">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <div class="tile__demo demo--chat" aria-hidden="true">
+          <span class="row long"></span>
+          <span class="row mid"></span>
+          <span class="row short"></span>
+          <span class="row mid"></span>
+        </div>
+        <a class="tile__cta" href="#">Learn about lorem <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </article>
+
+      <article class="tile" role="listitem">
+        <div class="tile__head">
+          <span class="tile__eyebrow">02 / ipsum</span>
+          <span class="tile__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 12l4 4 14-14"/><path d="M3 19h18"/></svg>
+          </span>
+        </div>
+        <h3 class="tile__h3">Consectetur adipiscing elit, sed do.</h3>
+        <p class="tile__copy">Eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim.</p>
+        <div class="tile__demo">
+          <pre class="demo--code"><span class="ghost">const</span> <span>foo</span> <span class="punct">=</span> <span>bar</span><span class="punct">(</span><span>baz</span><span class="punct">)</span><span class="caret"></span></pre>
+        </div>
+        <a class="tile__cta" href="#">Try the lorem <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </article>
+
+      <article class="tile" role="listitem">
+        <div class="tile__head">
+          <span class="tile__eyebrow">03 / dolor</span>
+          <span class="tile__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </span>
+        </div>
+        <h3 class="tile__h3">Ut enim ad minim veniam, quis nostrud.</h3>
+        <p class="tile__copy">Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.</p>
+        <div class="tile__demo demo--parallel" aria-hidden="true">
+          <span class="cell done"></span>
+          <span class="cell done"></span>
+          <span class="cell"></span>
+          <span class="cell idle"></span>
+          <span class="cell done"></span>
+          <span class="cell"></span>
+          <span class="cell idle"></span>
+          <span class="cell idle"></span>
+        </div>
+        <a class="tile__cta" href="#">Run lorem in parallel <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </article>
+
+      <article class="tile" role="listitem">
+        <div class="tile__head">
+          <span class="tile__eyebrow">04 / amet</span>
+          <span class="tile__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+          </span>
+        </div>
+        <h3 class="tile__h3">Duis aute irure dolor in reprehenderit.</h3>
+        <p class="tile__copy">In voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat.</p>
+        <div class="tile__demo demo--chips" aria-hidden="true">
+          <span class="chip">lorem</span>
+          <span class="chip">ipsum</span>
+          <span class="chip">dolor</span>
+          <span class="chip">sit</span>
+          <span class="chip">amet</span>
+        </div>
+        <a class="tile__cta" href="#">Connect lorem everywhere <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </article>
+
+    </div>
+  </section>
+</body>
+</html>

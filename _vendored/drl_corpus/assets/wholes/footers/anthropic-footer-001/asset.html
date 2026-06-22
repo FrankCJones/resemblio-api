@@ -1,0 +1,275 @@
+<!--
+  Asset: anthropic-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, paper-and-ink, mono-utility-pair
+  Inspired by: Anthropic
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001       (warm cream field, near-black ink, no chromatic accent)
+    - type-pairings/grotesk-mono-001    (Söhne-register grotesk display/body + mono labels)
+    - wordmarks/custom-display-001      (display wordmark mark)
+    - links/footer-link-mono-001        (column link rest/hover state)
+    - kickers/mono-eyebrow-001          (uppercase mono column-label kickers)
+    - dividers/hairline-rule-001        (band-separating rule above the legal row)
+  Notes:
+    - Six-column dense sitemap on a warm cream field; the footer composes
+      patterns of constituent atoms rather than importing their files so the
+      asset renders self-contained while composition_atoms records the per-
+      site assembly manifest.
+    - Inline ornaments: the eight-up tablet collapse rule and the legal-row
+      two-line stack. Everything else maps to a documented atom pattern.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter and Inter Tight stand in for Söhne; JetBrains Mono stands in for
+     Söhne Mono. Open-licensed analogs that hold the grotesk register. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page bg matches the footer so the asset reads as the lower tail of a
+   * warm-cream page; demo framing only. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* The footer band. Wide horizontal padding holds the eight-column
+   * sitemap; vertical padding sets the breathing room. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    color: var(--ds-text);
+  }
+
+  .footer__inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Upper grid: eight link columns side by side on desktop, collapsing to
+   * 4 then 2 at narrower widths. The dense eight-up read is the Anthropic
+   * marketing-site footer signature. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 1180px) {
+    .footer__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* Column kicker: pattern from atoms/kickers/mono-eyebrow-001. Uppercase
+   * mono with wider tracking; the small mono label is the only typographic
+   * counterpoint to the grotesk body. */
+  .footer__col-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+
+  /* Footer link: pattern from atoms/links/footer-link-mono-001. Muted at
+   * rest, ink on hover. No underline; the color lift IS the affordance. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-text); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  /* Hairline: pattern from atoms/dividers/hairline-rule-001. Splits the
+   * sitemap from the legal row. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Legal row: wordmark on the left, copyright on the right. The legal
+   * line is set quietly in the same body register as the column links;
+   * the AI-frontier discipline refuses fine-print italic shame. */
+  .footer__legal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+    gap: var(--ds-space-6);
+    align-items: center;
+  }
+  @media (max-width: 640px) {
+    .footer__legal { grid-template-columns: 1fr; }
+  }
+
+  /* Wordmark: pattern from atoms/wordmarks/custom-display-001. Sits in
+   * the grotesk display register at xl, weighted to read as a brand mark
+   * rather than another link. */
+  .footer__mark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  .footer__copy {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <div class="footer__grid">
+
+        <nav aria-label="Lorem products">
+          <p class="footer__col-kicker">Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Lorem ipsum</a></li>
+            <li><a class="footer__link" href="#">Dolor sit</a></li>
+            <li><a class="footer__link" href="#">Amet consectetur</a></li>
+            <li><a class="footer__link" href="#">Adipiscing elit</a></li>
+            <li><a class="footer__link" href="#">Sed do eiusmod</a></li>
+            <li><a class="footer__link" href="#">Tempor incididunt</a></li>
+            <li><a class="footer__link" href="#">Ut labore</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Ipsum models">
+          <p class="footer__col-kicker">Ipsum</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Magna aliqua</a></li>
+            <li><a class="footer__link" href="#">Ut enim</a></li>
+            <li><a class="footer__link" href="#">Veniam quis</a></li>
+            <li><a class="footer__link" href="#">Nostrud</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Dolor solutions">
+          <p class="footer__col-kicker">Dolor</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Exercitation</a></li>
+            <li><a class="footer__link" href="#">Ullamco laboris</a></li>
+            <li><a class="footer__link" href="#">Aliquip ex ea</a></li>
+            <li><a class="footer__link" href="#">Commodo consequat</a></li>
+            <li><a class="footer__link" href="#">Duis aute irure</a></li>
+            <li><a class="footer__link" href="#">Reprehenderit</a></li>
+            <li><a class="footer__link" href="#">In voluptate</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Sit platform">
+          <p class="footer__col-kicker">Sit Amet</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Velit esse</a></li>
+            <li><a class="footer__link" href="#">Cillum dolore</a></li>
+            <li><a class="footer__link" href="#">Eu fugiat</a></li>
+            <li><a class="footer__link" href="#">Nulla pariatur</a></li>
+            <li><a class="footer__link" href="#">Excepteur sint</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Amet resources">
+          <p class="footer__col-kicker">Amet</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Occaecat cupidatat</a></li>
+            <li><a class="footer__link" href="#">Non proident</a></li>
+            <li><a class="footer__link" href="#">Sunt in culpa</a></li>
+            <li><a class="footer__link" href="#">Qui officia</a></li>
+            <li><a class="footer__link" href="#">Deserunt mollit</a></li>
+            <li><a class="footer__link" href="#">Anim id est</a></li>
+            <li><a class="footer__link" href="#">Laborum sed</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Adipiscing help">
+          <p class="footer__col-kicker">Adipiscing</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Perspiciatis</a></li>
+            <li><a class="footer__link" href="#">Unde omnis</a></li>
+            <li><a class="footer__link" href="#">Iste natus</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Elit company">
+          <p class="footer__col-kicker">Elit</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Error sit</a></li>
+            <li><a class="footer__link" href="#">Voluptatem</a></li>
+            <li><a class="footer__link" href="#">Accusantium</a></li>
+            <li><a class="footer__link" href="#">Doloremque</a></li>
+            <li><a class="footer__link" href="#">Laudantium</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Tempor policies">
+          <p class="footer__col-kicker">Tempor</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Totam rem</a></li>
+            <li><a class="footer__link" href="#">Aperiam eaque</a></li>
+            <li><a class="footer__link" href="#">Ipsa quae</a></li>
+            <li><a class="footer__link" href="#">Ab illo</a></li>
+            <li><a class="footer__link" href="#">Inventore</a></li>
+          </ul>
+        </nav>
+
+      </div>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__legal">
+        <a class="footer__mark" href="#" aria-label="Lorem ipsum home">Lorem</a>
+        <p class="footer__copy">(c) 2026 Lorem Ipsum PBC. Dolor sit amet consectetur.</p>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

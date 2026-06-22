@@ -1,0 +1,463 @@
+<!--
+  Asset: huggingface-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, accent-on-neutral, mono-utility-pair
+  Inspired by: Hugging Face blog (/blog/huggingface/agent-traces-as-memory, /blog/adalat-ai/vividh-benchmark)
+  Notes:
+    - Mechanic: community-research register on a pure-white paper canvas.
+      Source Sans 3 owns display and body; Source Code Pro carries every
+      mono moment (model ids, dataset ids, code block, file format chips).
+      The yellow #FFD21E accent is held back from prose entirely - it lives
+      only on the "Community Article" kicker pill border and the keyboard
+      focus ring. Platform blue #2563EB does inline links. Avatars stack
+      with an overflow chip ("+5") for multi-author posts, and the lead
+      author carries an inline Follow button - both HF-specific byline
+      moves that distinguish the surface from a dev-tool blog.
+    - Variable: white bg, slate-800 ink, yellow accent, blue inline link,
+      Source Sans 3 family, 16px body at 1.7 leading, 52px H1, hairline
+      card chrome on the model-card embed and code block.
+    - Inline ornament: the 32px avatar stack with -8px negative margin
+      overlap, the "+N" overflow chip on the avatar stack, the
+      bash-prompt # comment color (#7280) inside the code block.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Sans 3 and Source Code Pro load directly from Google Fonts; no
+     substitution is necessary. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure. HF posts hold the
+   * column across body and embeds; tables and model-card grids stay within
+   * the same measure rather than breaking wider.
+   */
+  .article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Breadcrumb ----------------
+   * "Back to Articles" link sitting above the kicker. Platform blue, no
+   * underline at rest, lifts on hover.
+   */
+  .article__crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-info);
+    text-decoration: none;
+    margin-bottom: var(--ds-space-5);
+  }
+  .article__crumb:hover { text-decoration: underline; }
+
+  /* ---------------- Header ----------------
+   * Kicker pill, H1, dek, multi-avatar byline strip with date and Follow
+   * button on the lead author. The byline sequence is the HF signature -
+   * it differs from the dev-tool pipe-separated authors-and-date string
+   * (Vercel) by foregrounding the people and the affiliation.
+   */
+  .article__header {
+    margin-bottom: var(--ds-space-8);
+  }
+
+  /* "Community Article" kicker pill - sans, sentence-case, hairline yellow
+   * border on a pale yellow tint. The pill is the canonical HF marker for
+   * /blog/<org>/<post> community-authored posts. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: #FFF8DB;
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    padding: 4px 12px;
+    margin-bottom: var(--ds-space-5);
+    /* Inline ornament: #FFF8DB is the pale-yellow tint specific to the
+     * Community Article pill; not a contract slot. */
+  }
+
+  /* Article headline - Source Sans 3 Semibold at the 5xl step (52px),
+   * tight leading, negative tracking. The HF H1 sits one step below the
+   * home hero. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Optional dek lead paragraph - 18px, muted, regular weight. Many HF
+   * community posts skip the dek and go straight from H1 to byline; the
+   * asset surfaces it as canonical chrome. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Byline strip - avatar stack on the left, author + org affiliation +
+   * date in the center, Follow button on the right. Stacks vertically on
+   * narrow screens. */
+  .article__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    flex-wrap: wrap;
+  }
+
+  /* Avatar stack - circular avatars overlapping with -8px negative margin.
+   * The overflow chip ("+5") matches avatar diameter and carries the same
+   * white ring. */
+  .article__avatars {
+    display: inline-flex;
+    align-items: center;
+  }
+  .article__avatars > * {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    border: 2px solid var(--ds-bg);
+    background: var(--ds-surface-2);
+    margin-left: -8px;
+    /* Inline ornament: -8px negative margin produces the overlap; not a
+     * contract slot. Each avatar carries a 2px white ring to read as a
+     * lift against neighbors. */
+    overflow: hidden;
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .article__avatars > *:first-child { margin-left: 0; }
+  .article__avatar-overflow {
+    color: var(--ds-text-muted);
+    background: var(--ds-surface-2);
+  }
+
+  /* Author block - lead author name plus org affiliation plus posted date.
+   * Three lines on small screens, inline on wide. */
+  .article__authors {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: var(--ds-leading-snug);
+  }
+  .article__authors .name {
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  .article__authors .name a {
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+  .article__authors .name a:hover { color: var(--ds-info); }
+  .article__authors .org {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .article__authors .date {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  .article__follow {
+    margin-left: auto;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__follow:hover {
+    border-color: var(--ds-text);
+    background: var(--ds-surface-2);
+  }
+
+  /* ---------------- Body ----------------
+   * Reading column. 16px / 1.7 leading; HF runs one step looser than the
+   * Vercel/Geist dev-tool register because community research posts are
+   * longer and denser.
+   */
+  .article__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - platform blue, hairline underline at rest. */
+  .article__body a {
+    color: var(--ds-info);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-text-strong);
+  }
+
+  /* Subhead inside body - Source Sans Semibold at 2xl with anchor hash
+   * affordance on hover. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* Inline code - Source Code Pro on a faint gray-100 chip. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.88em;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.08em 0.4em;
+    color: var(--ds-text);
+  }
+
+  /* ---------------- Code block callout ----------------
+   * Dark-on-light code block. HF posts use a near-black surface for shell
+   * commands and Python snippets; the prompt # is muted, the command body
+   * is the brand yellow on dark, regular code is white. Block carries a
+   * hairline at rest, no shadow.
+   */
+  .article__codeblock {
+    background: #1F2937;
+    color: #F9FAFB;
+    border: 1px solid #111827;
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    margin: var(--ds-space-6) 0;
+    overflow-x: auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article__codeblock .comment {
+    color: #9CA3AF;
+    /* Inline ornament: #9CA3AF for the shell # comment color; not a
+     * contract slot. */
+  }
+  .article__codeblock .prompt {
+    color: var(--ds-accent);
+    margin-right: 8px;
+  }
+
+  /* ---------------- Model-card embed ----------------
+   * The HF signature: a card representing a model, dataset, or Space sits
+   * inline at the article tail. Hairline chrome, no shadow, model id in
+   * mono, model type as a small uppercase chip, parameter count and
+   * update meta as a muted line.
+   */
+  .article__embed {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    background: var(--ds-surface);
+    margin: var(--ds-space-5) 0;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__embed:hover { border-color: var(--ds-text); }
+  .article__embed-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+  }
+  .article__embed-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .article__embed-id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .article__embed-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .article__embed-chip {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 1px 6px;
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__follow { margin-left: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__follow,
+    .article__embed { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <a class="article__crumb" href="#">&larr; Lorem articulorum</a>
+
+    <header class="article__header">
+      <span class="article__kicker">Community Article</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos.</p>
+      <div class="article__byline">
+        <div class="article__avatars" aria-label="Authors">
+          <span aria-hidden="true">LI</span>
+          <span aria-hidden="true">DA</span>
+          <span aria-hidden="true">SI</span>
+          <span aria-hidden="true">EL</span>
+          <span class="article__avatar-overflow" aria-hidden="true">+5</span>
+        </div>
+        <div class="article__authors">
+          <span class="name"><a href="#">lorem-ipsum</a> et al.</span>
+          <span class="org">org/dolor-amet</span>
+          <span class="date">Published May 19, 2026</span>
+        </div>
+        <button class="article__follow" type="button">Follow</button>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. The identifier <code>org/lorem-ipsum-v1</code> carries the model reference.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien.</p>
+
+      <pre class="article__codeblock"><span class="comment"># Lorem ipsum dolor sit amet</span>
+<span class="prompt">$</span>hf buckets create lorem-sessions --private
+
+<span class="comment"># Dolor amet consectetur</span>
+<span class="prompt">$</span>hf sync ~/.lorem/projects/ hf://buckets/{username}/lorem-sessions/ipsum
+
+<span class="comment"># Adipiscing elit</span>
+<span class="prompt">$</span>hf sync ~/.dolor/sessions/ hf://buckets/{username}/lorem-sessions/dolor</pre>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <a class="article__embed" href="#">
+        <span class="article__embed-icon" aria-hidden="true">M</span>
+        <span class="article__embed-body">
+          <span class="article__embed-id">org/lorem-ipsum-v1</span>
+          <span class="article__embed-meta">
+            <span class="article__embed-chip">Automatic Speech Recognition</span>
+            <span>0.8B params</span>
+            <span>Updated 6 days ago</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="article__embed" href="#">
+        <span class="article__embed-icon" aria-hidden="true">D</span>
+        <span class="article__embed-body">
+          <span class="article__embed-id">org/dolor-amet-fineweb</span>
+          <span class="article__embed-meta">
+            <span class="article__embed-chip">Dataset</span>
+            <span>parquet</span>
+            <span>Viewer</span>
+          </span>
+        </span>
+      </a>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

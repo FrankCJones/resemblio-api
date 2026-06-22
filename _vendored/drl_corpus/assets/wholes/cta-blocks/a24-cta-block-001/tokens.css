@@ -1,0 +1,142 @@
+/*
+ * a24-cta-block-001 tokens
+ *
+ * A24-inspired editorial-cinema CTA block ("Want More A24?" newsletter
+ * signup). Native context: a24films.com and a24films.com/films both render
+ * the recurring newsletter block twice (top and footer of every page),
+ * confirmed via WebFetch 2026-05-20. Headline: "Want More A24?" Supporting
+ * line: "Get our emails. Letters from our filmmakers, new trailers, podcasts,
+ * merch, and more. Not too often - just enough." Email input, privacy-policy
+ * link below.
+ *
+ * The block sits on the warm cinema-black surface that the films grid uses
+ * (paper-white type on near-black; warmer than #000 by a hair so it reads as
+ * theater wall rather than dev-tool void). Display is the title-card serif
+ * register (Tiempos / Times Now family); supporting line and input chrome
+ * sit in mono (Söhne Mono register). Button uses the 2px near-sharp radius
+ * that is the A24-system editorial signature; button fill is paper-white
+ * with cinema-black type so the slab reads as printed ink rather than UI.
+ * No chromatic accent.
+ *
+ * Provenance: WebFetch on a24films.com and a24films.com/films confirmed the
+ * recurring block, headline, and supporting line. Chrome MCP refused the
+ * domain; WebFetch strips computed styles. Specific token values borrow from
+ * the sister A24 system atoms (a24-cinematic-palette-001 colors,
+ * a24-cinematic-pair-001 type pairing, a24-cinematic-001 button) which were
+ * extracted from the same source under the same WebFetch constraints. Score
+ * B per AGENT_BRIEFING rules.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Warm cinema-black field, paper-white type. The button reverses to a
+   * paper slab with cinema-black label; the "accent" is the inverse, not a
+   * chromatic hue. A24 refuses a brand accent color so each film's still
+   * carries the color story; the newsletter block inherits the discipline. */
+  --ds-bg:           #0A0908;   /* Warm cinema-black; theater wall, not pure #000. */
+  --ds-surface:      #14110F;   /* One step up; reserved for a card on this field. */
+  --ds-surface-2:    #1E1A17;   /* Two steps; nested overlay. */
+  --ds-text:         #F5F1EA;   /* Paper-white type; reads as projected light. */
+  --ds-text-muted:   #9C968A;   /* Supporting line and privacy disclaimer. */
+  --ds-text-strong:  #FFFFFF;   /* Reserved for the title-card display headline. */
+  --ds-border:       #2A2522;   /* Hairline frame on input chrome. */
+  --ds-hairline:     #1A1714;   /* Subtle divider between bg and surface. */
+  --ds-accent:       #FFFFFF;   /* The inverse slab: paper button on the black field. The accent IS the contrast. */
+  --ds-accent-2:     #F5F1EA;   /* Hover shift; paper warms by a single step. */
+  --ds-success:      #4A8A5C;   /* Reserved; muted forest, not signage green. */
+  --ds-warning:      #C49449;   /* Reserved; editorial amber. */
+  --ds-error:        #B24A3F;   /* Reserved; editorial red family. */
+  --ds-info:         #F5F1EA;   /* Info collapses to paper-text; refuses chromatic UI. */
+  --ds-focus-ring:   #F5F1EA;   /* Focus is paper outline; reads against the black field. */
+
+  /* ---------- Type families ----------
+   * Display sits in the title-card serif register (Tiempos / Times Now);
+   * body and input chrome sit in mono (Söhne Mono analog) so the supporting
+   * line reads as titlecard credit rather than UI helper. Sans slot is the
+   * humanist grotesk A24's licensed system uses elsewhere (Inter standing in
+   * for GT America / Söhne) and stays available for fallback. */
+  --ds-font-display: "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+  --ds-font-body:    "JetBrains Mono", "Söhne Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-mono:    "JetBrains Mono", "Söhne Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Tight", "GT America", "Söhne", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Headline reaches 4xl on desktop so it reads as title-card. Supporting
+   * line sits at sm in mono; the wider letterspacing carries the editorial
+   * weight, not the size. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Display sits tight (1.04) for title-card register; supporting line at
+   * normal mono reading. */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Title-card serif gets a touch of negative track at hero scale. Mono
+   * supporting line stays normal; the mono family carries the editorial
+   * weight on its own. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid. The CTA block leans roomy: space-10 vertical between
+   * block-internal sections, space-12 above/below on the page surface. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp 2px on button and input. Not zero (brutalist), not full
+   * (dev-tool pill). The 2px is the A24 editorial-cinema register. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial-cinema refuses elevation; the field is flat. Shadow slots
+   * present for contract conformance. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.6);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.7);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.8);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

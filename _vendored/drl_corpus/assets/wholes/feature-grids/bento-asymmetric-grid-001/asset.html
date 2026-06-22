@@ -1,0 +1,315 @@
+<!--
+  Asset: bento-asymmetric-grid-001
+  Class: feature-grids (whole)
+  Pattern: bento-grid, asymmetric-grid, mono-eyebrow
+  Inspired by: Vercel (vercel.com/products/observability, vercel.com/contact/sales)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (light Geist palette context)
+    - type-pairings/sans-system-modern-001  (Geist sans + mono pairing)
+    - cards/bento-tile-001                  (white tile with hairline)
+    - cards/hairline-flat-001               (hairline-only card variant)
+    - kickers/mono-eyebrow-001              (uppercase mono kicker pattern)
+    - headings/display-tight-001            (tight tracked card heading)
+    - buttons/ghost-bordered-001            (in-card tertiary action)
+  Notes:
+    - Asymmetric 4-column x 3-row CSS grid. Each tile spans a deliberately
+      uneven count of cells to produce the bento mass-and-counterweight
+      effect: one wide hero tile on top, narrow / tall accents below.
+    - Variable in tokens.css: every color, font, size, spacing, radius.
+    - Inline in this file: the grid-template-areas map, the small chart
+      SVGs, the per-tile column / row spans. These are layout choices
+      specific to this whole, not transferable token roles.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>bento-asymmetric-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Geist is not on Google Fonts; fall back to Inter, which carries the same
+     humanist-sans posture as Geist for library demonstration purposes. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Section shell. Wide outer measure so the bento can breathe. */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  /* Section eyebrow + display heading. Same pattern as kickers/mono-eyebrow-001
+   * and headings/display-tight-001. */
+  .section__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+  .section__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8) 0;
+    max-width: 24ch;
+  }
+
+  /* The bento grid. Four columns wide on desktop, with deliberately uneven
+   * column and row spans on each tile. Below 900px, it collapses to two
+   * columns with all tiles full-width within their row. */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(180px, auto);
+    gap: var(--ds-space-4);
+  }
+
+  /* Tile base. From cards/bento-tile-001 (radius, padding, hairline)
+   * adapted to the Geist light palette. Each tile is a button-shaped
+   * raised surface with a single hairline carrying the lift. */
+  .tile {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+                transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .tile:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+
+  /* Per-tile spans. Inline ornament: these are the bento layout knobs and
+   * are intentionally not abstracted into tokens. */
+  .tile--hero      { grid-column: span 2; grid-row: span 2; } /* top-left big square */
+  .tile--wide      { grid-column: span 2; }                   /* row spanning two cols */
+  .tile--tall      { grid-row: span 2; }                      /* column spanning two rows */
+  .tile--standard  { grid-column: span 1; }                   /* single cell */
+
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .tile--hero, .tile--wide { grid-column: span 2; }
+    .tile--tall { grid-row: auto; }
+  }
+  @media (max-width: 560px) {
+    .bento { grid-template-columns: 1fr; }
+    .tile--hero, .tile--wide, .tile--tall, .tile--standard { grid-column: 1 / -1; }
+  }
+
+  /* Tile kicker. From kickers/mono-eyebrow-001 but smaller (xs not sm)
+   * so it sits as metadata above the card heading. */
+  .tile__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Tile heading. From headings/display-tight-001 at a card-fitting size.
+   * Negative tracking is the Geist signature on display moments. */
+  .tile__h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tile--hero .tile__h3 {
+    font-size: clamp(var(--ds-text-xl), 3.5vw, var(--ds-text-2xl));
+    max-width: 14ch;
+  }
+
+  .tile__body {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+    max-width: 42ch;
+  }
+
+  /* Tile chart well. A nested raised-by-recessing surface used to host the
+   * inline SVG decorations. Same role as the chart panels on Vercel's
+   * observability cards. */
+  .tile__chart {
+    margin-top: auto;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-hairline);
+    min-height: 92px;
+  }
+  .tile__chart svg { width: 100%; height: auto; display: block; }
+
+  /* Tile pill. Same chrome as the action chips on Vercel feature cards;
+   * pulled into the layout where a tile carries a label like "Pro" or
+   * "All plans". */
+  .tile__pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--ds-space-2);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    width: max-content;
+  }
+
+  /* In-card tertiary CTA. Pattern from buttons/ghost-bordered-001 -
+   * quiet, no fill, hairline edge. */
+  .tile__cta {
+    appearance: none;
+    align-self: flex-start;
+    margin-top: var(--ds-space-3);
+    padding: 6px var(--ds-space-3);
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile__cta:hover { background: var(--ds-surface-2); }
+  .tile__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Mock log row. Inline ornament for the "logs" tile - mono row with two
+   * columns of metadata and a faint hairline between rows. */
+  .log-rows {
+    display: grid;
+    gap: 6px;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-text-muted);
+  }
+  .log-rows__row {
+    display: grid;
+    grid-template-columns: 64px 1fr 48px;
+    gap: var(--ds-space-3);
+    padding: 6px 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .log-rows__row:first-child { border-top: 0; }
+  .log-rows__row code { color: var(--ds-text); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile { transition: none; }
+    .tile:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="bento-heading">
+    <span class="section__kicker">Lorem · Ipsum dolor</span>
+    <h2 class="section__h2" id="bento-heading">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
+
+    <div class="bento" role="list">
+      <!-- Hero tile: 2 cols x 2 rows. The mass-anchor of the grid. -->
+      <article class="tile tile--hero" role="listitem">
+        <span class="tile__pill">All plans</span>
+        <h3 class="tile__h3">Lorem ipsum dolor sit amet consectetur.</h3>
+        <p class="tile__body">Adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+        <div class="tile__chart" aria-hidden="true">
+          <!-- Decorative line chart. Inline path; not a token role. -->
+          <svg viewBox="0 0 280 80" preserveAspectRatio="none">
+            <path d="M0,60 L40,52 L80,58 L120,30 L160,42 L200,18 L240,28 L280,12"
+                  fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+            <circle cx="200" cy="18" r="3" fill="currentColor"/>
+          </svg>
+        </div>
+        <button type="button" class="tile__cta">Learn more</button>
+      </article>
+
+      <!-- Standard tile: 1 col x 1 row -->
+      <article class="tile tile--standard" role="listitem">
+        <span class="tile__kicker">01 · Lorem</span>
+        <h3 class="tile__h3">Ipsum dolor.</h3>
+        <p class="tile__body">Sit amet consectetur adipiscing elit nullam.</p>
+      </article>
+
+      <!-- Standard tile: 1 col x 1 row -->
+      <article class="tile tile--standard" role="listitem">
+        <span class="tile__kicker">02 · Dolor</span>
+        <h3 class="tile__h3">Sit amet.</h3>
+        <p class="tile__body">Curabitur nec libero non nisi convallis fringilla.</p>
+      </article>
+
+      <!-- Wide tile: 2 cols x 1 row -->
+      <article class="tile tile--wide" role="listitem">
+        <span class="tile__pill">Pro · Enterprise</span>
+        <h3 class="tile__h3">Lorem ipsum sit amet consectetur adipiscing.</h3>
+        <p class="tile__body">Aenean fermentum, magna at suscipit lacinia, elit nisl tristique velit.</p>
+      </article>
+
+      <!-- Tall tile: 1 col x 2 rows. Hosts the log-style mono list. -->
+      <article class="tile tile--tall" role="listitem">
+        <span class="tile__kicker">Logs</span>
+        <h3 class="tile__h3">View, inspect, query.</h3>
+        <div class="log-rows">
+          <div class="log-rows__row"><span>12:04:17</span><code>GET /lorem</code><span>38ms</span></div>
+          <div class="log-rows__row"><span>12:04:18</span><code>GET /ipsum</code><span>42ms</span></div>
+          <div class="log-rows__row"><span>12:04:18</span><code>POST /dolor</code><span>118ms</span></div>
+          <div class="log-rows__row"><span>12:04:19</span><code>GET /sit</code><span>27ms</span></div>
+          <div class="log-rows__row"><span>12:04:19</span><code>GET /amet</code><span>61ms</span></div>
+          <div class="log-rows__row"><span>12:04:20</span><code>POST /consectetur</code><span>217ms</span></div>
+        </div>
+      </article>
+
+      <!-- Standard tile: 1 col x 1 row -->
+      <article class="tile tile--standard" role="listitem">
+        <span class="tile__kicker">03 · Sit amet</span>
+        <h3 class="tile__h3">Curabitur nec.</h3>
+        <p class="tile__body">Magna at suscipit lacinia velit.</p>
+      </article>
+
+      <!-- Standard tile: 1 col x 1 row -->
+      <article class="tile tile--standard" role="listitem">
+        <span class="tile__kicker">04 · Velit</span>
+        <h3 class="tile__h3">Aenean fermentum.</h3>
+        <p class="tile__body">Tristique velit nullam vivamus.</p>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

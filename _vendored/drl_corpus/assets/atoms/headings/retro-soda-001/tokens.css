@@ -1,0 +1,135 @@
+/*
+ * retro-soda-001 tokens
+ *
+ * Native tokens for a 1970s-soda-can display heading. Inspired by Olipop's
+ * homepage hero (drinkolipop.com, 2026-05-19): WindsorEF set at 80px on a
+ * 1.0 leading, weight 800, cream-on-vintage-green. Windsor is the
+ * load-bearing decision; its bracketed serifs and chunky bowls are what
+ * carries the warmth. Without the face the same recipe reads as generic
+ * heritage branding.
+ *
+ * Variables: every color, type family, type size, spacing, radius.
+ * Inline ornament: the heading's exact 1.0 line-height locks to the cap
+ * height; documented inline in asset.html as a deliberate display choice.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Olipop palette observed via devtools 2026-05-19: cream cap stock,
+   * deep forest green primary, brighter teal-green hero bg, mustard
+   * yellow as the only secondary accent. Reads as 70s vending machine.
+   */
+  --ds-bg:           #008168;   /* Olipop hero section bg rgb(0,129,104). Vintage teal-green, the canvas this heading was tuned for. */
+  --ds-surface:      #14433D;   /* Olipop body text color rgb(20,67,61) re-cast as a deeper surface; cards and footer band. */
+  --ds-surface-2:    #034638;   /* Olipop nav-dropdown title color rgb(3,70,56); used for nested raised surfaces. */
+  --ds-text:         #FFF6EA;   /* Olipop hero heading color rgb(255,246,234). Off-cream, the can-stock white. */
+  --ds-text-muted:   #FDF9F0;   /* Lifted cream for secondary text on dark surfaces. */
+  --ds-text-strong:  #FFFBF5;   /* Brightest cream; reserved emphasis. */
+  --ds-border:       #14433D;   /* Forest green hairlines on cream surfaces. */
+  --ds-hairline:     #034638;   /* Subtle dividers on the dark teal field. */
+  --ds-accent:       #FCC100;   /* Olipop mustard yellow rgb(252,193,0); the can stripe and CTA highlight color. */
+  --ds-accent-2:     #008168;   /* Hero teal repeats as a complementary accent on cream surfaces. */
+  --ds-success:      #4CB782;   /* Conventional success green; brighter than the brand greens so it reads as state. */
+  --ds-warning:      #FCC100;   /* Reuses the mustard accent; warning and brand share one warm yellow. */
+  --ds-error:        #C0392B;   /* Brick red; chosen to sit inside the era palette rather than clash. */
+  --ds-info:         #008168;   /* Hero teal does double duty for neutral info. */
+  --ds-focus-ring:   #FCC100;   /* Mustard accent at full saturation; visible against both cream and green. */
+
+  /* ---------- Type families ----------
+   * Display: Windsor, the Victorian-revival face Olipop ships in its
+   * "WindsorEF" cut. No free Google Fonts equivalent exists; the closest
+   * open substitute is "Recoleta" or "Frank Ruhl Libre", but we keep the
+   * declared family Windsor so anyone with the license renders correctly.
+   * Body: "Ano" on Olipop (a humanist sans by Alias). Fallback is Inter.
+   */
+  --ds-font-display: "Windsor", "WindsorEF", "Recoleta", "Frank Ruhl Libre", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Ano", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Windsor", "WindsorEF", "Recoleta", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Hero heading lands at --ds-text-6xl (80px) on Olipop's observed
+   * desktop layout. The display scale climbs steeply because a chunky
+   * face needs altitude to do its job; small Windsor reads as ordinary.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  54px;
+  --ds-text-5xl:  68px;
+  --ds-text-6xl:  80px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Tight leading on display so Windsor's tall bowls stack cleanly.
+   * Olipop ships hero at line-height 80px against 80px font size = 1.0.
+   */
+  --ds-leading-tight:   1.0;
+  --ds-leading-snug:    1.15;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Windsor wants near-zero tracking; its bracketed serifs already lock
+   * the rhythm. Adding negative tracking crashes the bowls. Adding
+   * positive tracking breaks the warmth.
+   */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid; consumer-DTC sites favor generous spacing for the
+   * editorial-product feel.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Soft radii on surfaces feel right under a rounded display face; a
+   * sharp 0 radius would fight the bracketed bowls.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Warm-tinted shadows so depth reads as soft and inviting rather than
+   * clinical.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(20,67,61,0.08);
+  --ds-shadow-sm:   0 2px 4px rgba(20,67,61,0.12);
+  --ds-shadow-md:   0 6px 16px rgba(20,67,61,0.18);
+  --ds-shadow-lg:   0 16px 32px rgba(20,67,61,0.22);
+  --ds-shadow-2xl:  0 32px 64px rgba(20,67,61,0.28);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

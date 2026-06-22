@@ -1,0 +1,69 @@
+<!--
+  Asset: drop-cap-editorial-001
+  Class: body-text
+  Pattern: (none in TAXONOMY; drop-cap pattern - proposed term: drop-cap)
+  Inspired by: Maggie Appleton
+  Notes:
+    - Editorial drop-cap on the first paragraph of a long essay, set via ::first-letter on .intro-paragraph.
+    - Drop-cap size (5.2rem), line-height (2.5rem), and float come from the source rule and stay inline since they are pseudo-element-specific.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>drop-cap-editorial-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Maggie ships Canela Text and Canela Deck; the Tiempos/Georgia stack is the fallback character. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .intro-paragraph {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-loose);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  /* The drop-cap rule comes from Maggie's source styles; values are intentionally inline since they describe a pseudo-element */
+  .intro-paragraph::first-letter {
+    float: left;
+    font-size: 5.2rem;        /* inline: pulled from .intro-paragraph::first-letter rule on maggieappleton.com */
+    line-height: 2.5rem;       /* inline: tight line-height keeps cap nested in three body lines */
+    font-weight: 700;
+    margin: 1.15rem 0.5rem 0 0; /* inline: 0.5rem right gutter approximates Maggie's --space-2xs */
+    padding: 0;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+  }
+  p { margin: 0; font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+</style>
+</head>
+<body>
+  <article class="stage">
+    <h1>The lorem ipsum essay</h1>
+    <p class="intro-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,121 @@
+/*
+ * webflow-marketing-page-001 tokens
+ *
+ * Native token values for the Webflow homepage marketing-page skeleton,
+ * inspired by https://webflow.com fetched 2026-05-20 via WebFetch. Token
+ * values mirror the Webflow alphabet (systems/webflow/system.json,
+ * assets/alphabets/webflow/tokens.css) which extracted the live
+ * marketing-main shipped CSS bundle: pure-white body with near-black
+ * #080808 ink, gray-100 #F0F0F0 panel for inset cards, gray-200 #D8D8D8
+ * visible border, Webflow Blue #146EF5 as the single chromatic accent
+ * (primary CTA fill, focus ring, link). WF Visual Sans Variable is the
+ * marketing face with Arial fallback; mono reserved for the Machine Mode
+ * narrative moment.
+ *
+ * Layout-specific notes: marketing section padding lands at 64px / 96px
+ * vertical rhythm; the page container max-width sits at ~1280px with
+ * 24-48px gutters. Section card radius 8px; hero CTA radius 4px. Section
+ * dividers are gray-100 hairlines, not drop-shadows. Section sequence is
+ * captured verbatim from WebFetch: announcement bar, nav, hero ("Make
+ * your website a growth engine"), trust strip, three-card feature grid,
+ * customer metrics carousel, platform pitch, customer success rail,
+ * design-it-your-way feature grid, AEO band, getting-started teaser,
+ * tabbed feature blocks, gallery rail, final CTA, mega-footer.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Pure white body; Webflow light-mode default. */
+  --ds-surface:      #FFFFFF;   /* Card surface; flat with hairline border. */
+  --ds-surface-2:    #F0F0F0;   /* Gray-100 secondary background; inset panels. */
+  --ds-text:         #080808;   /* Near-black body ink, not pure #000. */
+  --ds-text-muted:   #5A5A5A;   /* Gray-600 text-secondary; sub-headlines, meta. */
+  --ds-text-strong:  #080808;   /* Display ink matches body; no separate emphasis. */
+  --ds-border:       #D8D8D8;   /* Gray-200 visible card edge. */
+  --ds-hairline:     #F0F0F0;   /* Gray-100 section break, subtle divider. */
+  --ds-accent:       #146EF5;   /* Webflow Blue brand; primary CTA fill. */
+  --ds-accent-2:     #0055D4;   /* Blue-600 pressed / hover. */
+  --ds-success:      #00C875;
+  --ds-warning:      #F5A623;
+  --ds-error:        #EE0000;
+  --ds-info:         #146EF5;
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full strength for :focus-visible. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-mono:    "WFVisualSans-Mono", "Inconsolata", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Fluid clamps in the live system; ceilings shown here. H1 hero
+   * ceilings at 80px (5rem); section heads at 56px (H2 ceiling).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;
+  --ds-text-xl:   32px;
+  --ds-text-2xl:  40px;    /* H3 ceiling; sub-feature heads. */
+  --ds-text-3xl:  56px;    /* H2 ceiling; section heads. */
+  --ds-text-4xl:  64px;
+  --ds-text-5xl:  80px;    /* H1 hero ceiling. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.04;   /* Hero H1 display. */
+  --ds-leading-snug:    1.2;    /* Section heads. */
+  --ds-leading-normal:  1.6;    /* Body reading. */
+  --ds-leading-relaxed: 1.5;    /* Sub-headlines / lead. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.01em;   /* H1 hero and button labels. */
+  --ds-tracking-normal: 0em;       /* Section heads, body, eyebrow. */
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;     /* Marketing section rhythm; 4rem. */
+  --ds-space-12: 96px;     /* Major section break; 6rem. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;    /* CTA button radius. */
+  --ds-radius-md:   8px;    /* Card surface. */
+  --ds-radius-lg:   16px;   /* Featured panel, gallery card. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle; cards at rest carry a 1px border
+   * rather than a shadow. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

@@ -1,0 +1,320 @@
+<!--
+  Asset: anthropic-about-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, paper-and-ink
+  Inspired by: Anthropic (anthropic.com/company)
+  Notes:
+    - About-page skeleton: nav, mission statement, values band, team grid,
+      press strip, cta, footer. Same warm-cream-and-hairline chrome as the
+      marketing page, but the rhythm hands the page to a single oversized
+      mission line rather than a hero feature block.
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, gutter, padding rhythm, and section sequence
+      are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos Headline and Styrene B are licensed faces inspected
+  on the source. Fallbacks (Source Serif Pro, Inter) are open substitutes
+  that approximate the register when the licensed faces are unavailable.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px; gutter 24px on mobile, 48px on
+   * desktop. Centered with auto margins. Inline value: 1280px; not a
+   * contract slot.
+   */
+  .page {
+    max-width: 1280px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Tinted band for the values strip; second-level surface, no rule. */
+  .section--tinted {
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Mission section gets the extra vertical breathing room.
+   * Centered, narrow column, oversized serif statement. */
+  .section--mission {
+    padding-block: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .section--mission { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Nav. Flush-top, no detached pill shell. Thinner padding-block than
+   * other sections, mirrors anthropic-marketing-page-001. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Mission statement. Display serif at 5xl on desktop; tight leading;
+   * narrow centered measure; the load-bearing moment of the page. */
+  .mission__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 20ch;
+  }
+  @media (min-width: 768px) {
+    .mission__statement { font-size: var(--ds-text-5xl); }
+  }
+  .mission__support {
+    margin: var(--ds-space-6) auto 0;
+    max-width: 52ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Values band: numbered statements stacked in a two-column grid on
+   * desktop, single column on mobile. Each row reads as a small editorial
+   * card with a number prefix. */
+  .values-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .values-grid { grid-template-columns: repeat(2, 1fr); gap: var(--ds-space-8); }
+  }
+
+  /* Team grid: four-column on desktop, two on tablet, one on mobile.
+   * Each cell is a member card placeholder. */
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .team-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Press strip: horizontal row of muted logos / mentions; small,
+   * centered, single hairline above and below. */
+  .press-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-items: center;
+  }
+  @media (min-width: 768px) {
+    .press-strip { grid-template-columns: repeat(5, 1fr); }
+  }
+  .press-strip .slot {
+    background: transparent;
+    border: 1px dashed var(--ds-hairline);
+    width: 100%;
+    text-align: center;
+  }
+
+  /* CTA section: centered call-to-action, narrow measure. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 28ch;
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+  }
+
+  /* Section heading shared style: small mono kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Footer band: full-width, sits outside .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/anthropic-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Try Lorem
+      </div>
+    </nav>
+
+    <!-- Section: mission statement. Centered oversized serif line. -->
+    <section class="section section--mission" aria-label="Mission">
+      <h1 class="mission__statement">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="mission__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </section>
+
+    <!-- Section: values band. Tinted strip, numbered two-column statements. -->
+    <section class="section section--tinted" aria-label="Values">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 — Values</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="values-grid">
+        <div class="slot"><span class="slot__label">value-statement-01</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-statement-02</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-statement-03</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-statement-04</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
+    </section>
+
+    <!-- Section: team grid. Four-up member cards. -->
+    <section class="section" aria-label="Team">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 — Team</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="team-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">team-member</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">team-member</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">team-member</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">team-member</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: press strip. Muted press logos / mentions row. -->
+    <section class="section" aria-label="Press">
+      <div class="section-heading" style="text-align: center;">
+        <span class="section-heading__kicker">03 — Press</span>
+      </div>
+      <div class="press-strip">
+        <div class="slot"><span class="slot__label">press-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">press-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">press-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">press-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">press-logo</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: cta. Centered closing call-to-action. -->
+    <section class="section section--cta" aria-label="Call to action">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h2>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">primary-cta</span>
+          Join Lorem
+        </div>
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">secondary-cta</span>
+          See Lorem
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

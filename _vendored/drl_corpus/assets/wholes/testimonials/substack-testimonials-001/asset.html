@@ -1,0 +1,181 @@
+<!--
+  Asset: substack-testimonials-001
+  Class: testimonials
+  Pattern: quote-card-grid
+  Inspired by: Substack (going-paid, about)
+  Notes:
+    - Three-up grid of writer-quote cards. Each card carries a sentence-case
+      quote, circular headshot, writer name, and linked publication with the
+      Substack orange accent reserved for the publication name.
+    - Variable: tokens (palette, type, radii, spacing). Inline: the section
+      kicker rule width and the card hairline divider above attribution; the
+      quote uses the body sans at lead-reading scale (no oversized display
+      treatment, in line with Substack's restraint on marketing surfaces).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-testimonials-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Spectral covers the editorial serif heading; Inter covers reading. Both
+     served from Google Fonts to match the Substack marketing register. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  /* Minimal reset scoped to this asset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--ds-bg); color: var(--ds-text);
+         font-family: var(--ds-font-body); font-size: var(--ds-text-base);
+         line-height: var(--ds-leading-normal); -webkit-font-smoothing: antialiased; }
+
+  .section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  .kicker {
+    /* Uppercase sans eyebrow above the serif heading; the only widely-tracked
+       text on the surface. */
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+
+  .heading {
+    /* Substack's editorial serif at section-heading scale; tight tracking,
+       sentence case. */
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8) 0;
+    max-width: 32ch;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+                transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .quote {
+    /* Quote body is sans at lead-reading scale; no oversized quote glyph,
+       no italics. Substack lets the words carry the moment. */
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  .attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    /* Inline: the 1px hairline divider above attribution; one-off ornament
+       that separates the quote from the credit lockup. */
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-4);
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    /* Placeholder gradient stands in for a real headshot; inline ornament. */
+    background-image: linear-gradient(135deg, #FFE0CC 0%, #FFB890 100%);
+    flex-shrink: 0;
+  }
+
+  .credit {
+    display: flex;
+    flex-direction: column;
+    line-height: var(--ds-leading-snug);
+  }
+  .writer {
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+  }
+  .publication {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .publication:hover { color: var(--ds-accent-2); text-decoration: underline; }
+  .publication:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-xs);
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="testi-heading">
+    <p class="kicker">Lorem ipsum</p>
+    <h2 class="heading" id="testi-heading">Dolor sit amet, consectetur adipiscing elit.</h2>
+
+    <div class="grid">
+      <article class="card">
+        <blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</blockquote>
+        <div class="attribution">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="credit">
+            <span class="writer">Aenean Vulputate</span>
+            <a class="publication" href="#">Curabitur Felis</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <blockquote class="quote">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure.</blockquote>
+        <div class="attribution">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="credit">
+            <span class="writer">Donec Pellentesque</span>
+            <a class="publication" href="#">In Faucibus Orci</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <blockquote class="quote">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</blockquote>
+        <div class="attribution">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="credit">
+            <span class="writer">Praesent Lacinia</span>
+            <a class="publication" href="#">Nullam Tempor</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!--
+  Asset: airtable-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, product-shot-hero
+  Inspired by: Airtable
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (warm off-white + near-black + muted blue accent)
+    - type-pairings/sans-system-modern-001       (humanist sans across display and body)
+    - headings/display-tight-001                 (sentence-cased multi-line H1 at 56-72px)
+    - buttons/primary-square-001                 (near-black rectangle CTA at 8px radius)
+    - buttons/ghost-bordered-001                 (hairline-outline secondary CTA)
+    - dividers/hairline-rule-001                 (top and bottom rules around the trust logo strip)
+  Notes:
+    - Native context: airtable.com homepage opening viewport, captured via
+      WebFetch 2026-05-20. Live programmatic inspection via Chrome MCP
+      was rejected for the airtable.com host (domain not on the allowed
+      navigation list), so token values are mapped to Airtable's
+      published visual register rather than read from computed styles.
+      The structural composition (headline, dek, paired CTA, embedded
+      video, trust logo strip below) is confirmed from the live DOM.
+    - The hero is sentence-cased ("All your teams, all their workflows,
+      connected in one workspace") and visibly longer than the Linear /
+      Vercel single-line display; the H1 paces to three lines and the
+      leading is set at 1.1 rather than 1.05 to keep descenders open.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the trust-strip logo SVG geometry (six neutral
+      glyphs standing in for the OpenAI / Anthropic / Netflix / NYT /
+      Google / Hilton row Airtable currently runs), and the play-button
+      glyph centered on the video frame. The hero video itself is
+      represented as a static frame with a 16px radius and a soft 32px
+      drop shadow so the asset opens cleanly without external media.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Tight stands in for Airtable Sans / Inter Tight on machines
+     without the official woff2. The marketing surface uses a single
+     humanist sans across display and body. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm off-white canvas (not pure white), near-black ink,
+   * no chromatic moment in the first viewport: the embedded product
+   * video is the visual anchor, the dual CTA is the conversion anchor,
+   * and the trust strip is the credibility anchor. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: wordmark left, sparse nav center, log in plus primary CTA
+   * right. A single warm-hairline rule separates the chrome from the
+   * canvas. */
+  .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: a generic rounded-square wordmark glyph; the live Airtable
+   * mark is a custom illustrated icon and we do not redraw it from
+   * memory. */
+  .topbar__mark svg { width: 22px; height: 22px; display: block; }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 920px so the sentence-cased H1 holds a
+   * three-line shape. Generous vertical padding so the headline lands
+   * well below the chrome. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* H1: sentence-cased multi-line display. 56-72px clamp, 1.1 leading,
+   * -0.02em tracking. text-wrap: balance holds a clean three-line
+   * shape; the H1 deliberately is not capped at one line. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.4vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading, in muted slate. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* CTA row: near-black primary on the left, hairline-outline secondary
+   * on the right. Airtable consistently runs paired CTAs (self-serve
+   * plus sales-led) in the first viewport; the asset reflects that. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 14px 22px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-normal) var(--ds-ease-standard),
+      color var(--ds-duration-normal) var(--ds-ease-standard),
+      border-color var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border: 1px solid var(--ds-text-strong);
+  }
+  .btn--primary:hover {
+    /* Inline: a near-black with a 12% lift; no contract slot for a
+     * hovered version of the strong-text token. */
+    background: #2A2D31;
+    border-color: #2A2D31;
+  }
+  .btn--primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(22, 110, 225, 0.30);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface); }
+
+  /* Hero video frame: the product video lives here in the live page;
+   * the asset uses a static stand-in with a 16px radius and a soft
+   * 32px drop shadow so it reads as app-shell-like rather than a flat
+   * image block. */
+  .hero__video {
+    width: 100%;
+    max-width: 1100px;
+    aspect-ratio: 16 / 9;
+    margin: var(--ds-space-8) auto 0;
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-2);
+    box-shadow: var(--ds-shadow-lg);
+    border: 1px solid var(--ds-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Inline: a faux dashboard grid behind the play button, so the
+   * stand-in frame reads as a product surface rather than a blank
+   * card. Linear-gradient stops are hero-specific ornament. */
+  .hero__video::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, transparent 0, transparent calc(20% - 1px), var(--ds-border) calc(20% - 1px), var(--ds-border) 20%, transparent 20%) 0 0 / 100% 100%,
+      linear-gradient(to bottom, transparent 0, transparent calc(15% - 1px), var(--ds-border) calc(15% - 1px), var(--ds-border) 15%, transparent 15%) 0 0 / 100% 100%,
+      repeating-linear-gradient(0deg, transparent 0 calc(11.66% - 1px), var(--ds-hairline) calc(11.66% - 1px), var(--ds-hairline) 11.66%) 20% 15% / 80% 85%;
+    opacity: 0.85;
+  }
+  .hero__video__play {
+    position: relative;
+    z-index: 1;
+    width: 72px;
+    height: 72px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--ds-shadow-md);
+  }
+  .hero__video__play svg { width: 24px; height: 24px; display: block; }
+
+  /* Trust logo strip: a hairline-bordered row directly below the hero,
+   * enumerating recognizable customer logos. Muted grey at a single
+   * optical height so the strip reads as one credibility cue rather
+   * than six brand moments. This pattern is the load-bearing piece of
+   * the Airtable hero: enterprise legitimacy without leaving the first
+   * viewport. */
+  .strip {
+    width: 100%;
+    max-width: 1100px;
+    margin: var(--ds-space-10) auto var(--ds-space-16);
+    padding: var(--ds-space-5) var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .strip__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .strip__logos {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-8);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  /* Inline ornament: each logo is a glyph plus wordmark pair at the
+   * same 18px optical height, all rendered in the muted slate so the
+   * strip reads as a single row of credibility cues. */
+  .strip__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .strip__logo svg { width: 18px; height: 18px; display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .strip__logos { gap: var(--ds-space-5); }
+    .hero { padding: var(--ds-space-10) var(--ds-space-5) var(--ds-space-6); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: rounded-square wordmark glyph stand-in. -->
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="6" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="17" y="9" width="6" height="6" rx="1" fill="currentColor" opacity="0.55"/><rect x="9" y="17" width="6" height="6" rx="1" fill="currentColor" opacity="0.55"/><rect x="17" y="17" width="6" height="6" rx="1" fill="currentColor"/></svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">Sed Do</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <h1 class="hero__title">Lorem ipsum dolor sit amet, consectetur adipiscing in one workspace.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,
+      ut enim ad minim veniam. No code required.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit</a>
+    </div>
+
+    <div class="hero__video" role="img" aria-label="Lorem ipsum product preview">
+      <button class="hero__video__play" aria-label="Lorem ipsum play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L20 12 L8 19 Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <aside class="strip" aria-label="Lorem ipsum customer logos">
+    <span class="strip__label">Lorem ipsum 500,000 dolor sit teams</span>
+    <div class="strip__logos">
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Lorem
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26 L16 6 L26 26 Z M11 22 L21 22" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Ipsum
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="6" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 16 L22 16 M16 10 L16 22" stroke="currentColor" stroke-width="2"/></svg>
+        Dolor
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 22 C6 12, 26 12, 26 22" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="22" r="2" fill="currentColor"/></svg>
+        Sit Amet
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 16 L22 16" stroke="currentColor" stroke-width="2"/></svg>
+        Consectetur
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 6 L26 6 L26 26 L6 26 Z M6 14 L26 14 M6 22 L26 22" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Adipiscing
+      </span>
+    </div>
+  </aside>
+</body>
+</html>

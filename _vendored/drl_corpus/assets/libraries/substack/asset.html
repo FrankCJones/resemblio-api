@@ -1,0 +1,514 @@
+<!--
+  Asset: substack
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Substack
+  Notes:
+    - Substack's marketing-surface component vocabulary on one page:
+      wordmark with orange mark, flush-top nav with sentence-case links,
+      hero serif headline plus orange CTA, writer-card with hairline
+      chrome and orange-tinted avatar, feature tiles, three-tier pricing
+      composition with the middle tier inverted, testimonial card, kicker
+      with rule, body-text lead paragraph, footer mega-grid with quiet
+      links, and a hairline divider.
+    - All chrome shares tokens.css; one-off SVG geometry on the wordmark
+      mark is inline with a comment.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Spectral and Source Sans Pro from Google Fonts; mirrors the writing-surface stack Substack ships -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-8) var(--ds-space-6);
+  }
+  .page { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+    font-weight: 600;
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Wordmark with orange S mark */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-2); color: var(--ds-text-strong); font-family: var(--ds-font-body); font-weight: 700; font-size: var(--ds-text-lg); letter-spacing: -0.01em; }
+  .wordmark .mark {
+    /* inline: Substack's signature orange S mark, recreated as a tinted square with bars */
+    width: 22px; height: 22px; display: inline-block; position: relative;
+    background: var(--ds-accent);
+    border-radius: 3px;
+  }
+  .wordmark .mark::before, .wordmark .mark::after {
+    content: ""; position: absolute; left: 4px; right: 4px; height: 3px; background: #FFFFFF;
+  }
+  .wordmark .mark::before { top: 6px; }
+  .wordmark .mark::after { top: 12px; box-shadow: 0 5px 0 #FFFFFF; }
+
+  /* Nav - flush top, sentence-case links, orange primary CTA at right */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav__links { display: inline-flex; gap: var(--ds-space-6); }
+  .nav__link {
+    color: var(--ds-text); text-decoration: none;
+    font-size: var(--ds-text-sm); font-weight: 600;
+    font-family: var(--ds-font-body);
+  }
+  .nav__link:hover { color: var(--ds-accent); }
+
+  /* Buttons */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: #FFFFFF;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 700;
+    padding: 10px var(--ds-space-4); border-radius: var(--ds-radius-sm);
+    letter-spacing: 0;
+  }
+  .btn-primary:hover { filter: brightness(0.95); }
+  .btn-ghost {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600;
+    padding: 9px var(--ds-space-4); border-radius: var(--ds-radius-sm);
+  }
+  .btn-link {
+    color: var(--ds-text); font-weight: 600; text-decoration: none;
+    font-size: var(--ds-text-sm); font-family: var(--ds-font-body);
+  }
+  .btn-link:hover { color: var(--ds-accent); }
+
+  /* Kicker with rule */
+  .kicker {
+    display: inline-flex; align-items: center; gap: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-weight: 700;
+  }
+  .kicker::after {
+    content: ""; display: inline-block; width: 64px; height: 1px;
+    background: var(--ds-border);
+  }
+
+  /* Hero */
+  .hero { display: flex; flex-direction: column; gap: var(--ds-space-5); max-width: 880px; }
+  .hero h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 500;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .hero .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Body-text lead-paragraph sample */
+  .body-text-sample { max-width: 62ch; }
+  .body-text-sample p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .body-text-sample .lead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    font-style: italic;
+    color: var(--ds-text);
+  }
+
+  /* Writer card with hairline chrome */
+  .writer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-4); }
+  .writer-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .writer-card__head { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .writer-card__avatar {
+    width: 48px; height: 48px; border-radius: var(--ds-radius-full);
+    background: var(--ds-accent-2); color: var(--ds-text-strong);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--ds-font-display);
+    font-weight: 600; font-size: var(--ds-text-lg);
+    border: 2px solid var(--ds-accent);
+  }
+  .writer-card__name { font-weight: 700; font-size: var(--ds-text-sm); margin: 0; color: var(--ds-text-strong); }
+  .writer-card__pub { font-size: var(--ds-text-xs); color: var(--ds-text-muted); margin: 2px 0 0; }
+  .writer-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    font-weight: 500;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .writer-card__meta { display: flex; justify-content: space-between; align-items: center; }
+  .writer-card__count { font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+  .writer-card__sub {
+    background: var(--ds-text-strong); color: #FFFFFF;
+    font-size: var(--ds-text-2xs); font-weight: 700;
+    padding: 4px 10px; border-radius: var(--ds-radius-sm);
+    border: 0; cursor: pointer; font-family: var(--ds-font-body);
+    letter-spacing: 0.03em; text-transform: uppercase;
+  }
+
+  /* Feature tiles */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  .feature {
+    display: flex; flex-direction: column; gap: var(--ds-space-2);
+  }
+  .feature__icon {
+    width: 36px; height: 36px; border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-accent); font-size: 18px; margin-bottom: var(--ds-space-2);
+  }
+  .feature__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    font-weight: 500;
+    margin: 0 0 var(--ds-space-1);
+    color: var(--ds-text-strong);
+  }
+  .feature__dek { color: var(--ds-text-muted); font-size: var(--ds-text-sm); line-height: var(--ds-leading-relaxed); margin: 0; }
+
+  /* Pricing tier cards */
+  .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-4); }
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .tier--rec {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border-color: var(--ds-text-strong);
+  }
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl); font-weight: 500;
+    margin: 0;
+  }
+  .tier__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl); font-weight: 500;
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .tier__price small { font-size: var(--ds-text-sm); font-weight: 400; opacity: 0.6; font-family: var(--ds-font-body); }
+  .tier__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); font-size: var(--ds-text-sm); }
+  .tier__list li { padding-left: 18px; position: relative; }
+  .tier__list li::before { content: "+"; position: absolute; left: 0; color: var(--ds-accent); font-weight: 700; }
+  .tier--rec .tier__list li::before { color: var(--ds-accent); }
+
+  /* Testimonial card */
+  .testimonial {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    max-width: 720px;
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    font-style: italic;
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-4);
+    color: var(--ds-text-strong);
+  }
+  .testimonial__byline { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .testimonial__avatar {
+    width: 40px; height: 40px; border-radius: var(--ds-radius-full);
+    background: var(--ds-accent-2); color: var(--ds-text-strong);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: var(--ds-text-sm);
+    border: 2px solid var(--ds-accent);
+  }
+  .testimonial__name { font-size: var(--ds-text-sm); font-weight: 700; color: var(--ds-text-strong); }
+  .testimonial__role { font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+
+  /* Hairline divider */
+  .hairline { height: 1px; background: var(--ds-hairline); border: 0; margin: 0; }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: var(--ds-space-8);
+    color: var(--ds-text-muted);
+  }
+  .footer__brand { display: flex; flex-direction: column; gap: var(--ds-space-3); max-width: 28ch; }
+  .footer__brand p { font-size: var(--ds-text-sm); line-height: var(--ds-leading-relaxed); margin: 0; }
+  .footer__col h4 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 0 0 var(--ds-space-3);
+    color: var(--ds-text-strong);
+  }
+  .footer__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .footer__link {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    font-size: var(--ds-text-sm);
+  }
+  .footer__link:hover { color: var(--ds-accent); text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="nav" aria-label="Primary">
+    <span class="wordmark" aria-label="Lorem ipsum">
+      <span class="mark" aria-hidden="true"></span>
+      lorem
+    </span>
+    <div class="nav__links">
+      <a class="nav__link" href="#">Home</a>
+      <a class="nav__link" href="#">Pricing</a>
+      <a class="nav__link" href="#">Writers</a>
+      <a class="nav__link" href="#">About</a>
+    </div>
+    <div class="row">
+      <a class="btn-link" href="#">Sign in</a>
+      <button class="btn-primary">Start your lorem</button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="kicker">For independent writers</span>
+    <h1>Lorem ipsum dolor sit amet, make a living doing the work you believe in.</h1>
+    <p class="lead">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="row" style="margin-top: var(--ds-space-3);">
+      <button class="btn-primary">Start your lorem</button>
+      <a class="btn-link" href="#">Learn more &rarr;</a>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Body text - lead paragraph</div>
+    <div class="body-text-sample">
+      <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus, nulla gravida orci a odio.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Writer cards - hairline chrome</div>
+    <div class="writer-grid">
+      <article class="writer-card">
+        <div class="writer-card__head">
+          <span class="writer-card__avatar" aria-hidden="true">L</span>
+          <div>
+            <p class="writer-card__name">Lorem Ipsum</p>
+            <p class="writer-card__pub">Dolor sit amet</p>
+          </div>
+        </div>
+        <h3 class="writer-card__title">Notes on dolor and the long arc of consectetur</h3>
+        <div class="writer-card__meta">
+          <span class="writer-card__count">12k subscribers</span>
+          <button class="writer-card__sub">Subscribe</button>
+        </div>
+      </article>
+      <article class="writer-card">
+        <div class="writer-card__head">
+          <span class="writer-card__avatar" aria-hidden="true">A</span>
+          <div>
+            <p class="writer-card__name">Adipiscing Elit</p>
+            <p class="writer-card__pub">Sed do eiusmod</p>
+          </div>
+        </div>
+        <h3 class="writer-card__title">Tempor incididunt: a field guide to labore et dolore</h3>
+        <div class="writer-card__meta">
+          <span class="writer-card__count">38k subscribers</span>
+          <button class="writer-card__sub">Subscribe</button>
+        </div>
+      </article>
+      <article class="writer-card">
+        <div class="writer-card__head">
+          <span class="writer-card__avatar" aria-hidden="true">M</span>
+          <div>
+            <p class="writer-card__name">Magna Aliqua</p>
+            <p class="writer-card__pub">Ut enim ad minim</p>
+          </div>
+        </div>
+        <h3 class="writer-card__title">Quis nostrud exercitation, ullamco laboris</h3>
+        <div class="writer-card__meta">
+          <span class="writer-card__count">7.1k subscribers</span>
+          <button class="writer-card__sub">Subscribe</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Feature tiles</div>
+    <div class="features">
+      <div class="feature">
+        <span class="feature__icon" aria-hidden="true">&#9998;</span>
+        <h3 class="feature__title">Own your work</h3>
+        <p class="feature__dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+      <div class="feature">
+        <span class="feature__icon" aria-hidden="true">&#9783;</span>
+        <h3 class="feature__title">Build your audience</h3>
+        <p class="feature__dek">Sed do eiusmod tempor incididunt ut labore et dolore.</p>
+      </div>
+      <div class="feature">
+        <span class="feature__icon" aria-hidden="true">&#9784;</span>
+        <h3 class="feature__title">Get paid directly</h3>
+        <p class="feature__dek">Ut enim ad minim veniam, quis nostrud exercitation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Pricing tiers</div>
+    <div class="pricing">
+      <article class="tier">
+        <h3 class="tier__name">Free</h3>
+        <p class="tier__price">$0<small> / month</small></p>
+        <ul class="tier__list">
+          <li>Lorem ipsum dolor sit</li>
+          <li>Consectetur adipiscing</li>
+          <li>Eiusmod tempor</li>
+        </ul>
+        <button class="btn-ghost">Start free</button>
+      </article>
+      <article class="tier tier--rec">
+        <h3 class="tier__name">Pro</h3>
+        <p class="tier__price">$10<small> / month</small></p>
+        <ul class="tier__list">
+          <li>Everything in free</li>
+          <li>Magna aliqua</li>
+          <li>Ut enim ad minim</li>
+          <li>Quis nostrud</li>
+        </ul>
+        <button class="btn-primary">Get pro</button>
+      </article>
+      <article class="tier">
+        <h3 class="tier__name">Founding</h3>
+        <p class="tier__price">$100<small> / year</small></p>
+        <ul class="tier__list">
+          <li>Everything in pro</li>
+          <li>Duis aute irure</li>
+          <li>Reprehenderit voluptate</li>
+        </ul>
+        <button class="btn-ghost">Become a founder</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Testimonial</div>
+    <div class="testimonial">
+      <p class="testimonial__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <div class="testimonial__byline">
+        <span class="testimonial__avatar" aria-hidden="true">L</span>
+        <div>
+          <div class="testimonial__name">Lorem Ipsum</div>
+          <div class="testimonial__role">Author, Dolor Sit Amet</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Hairline divider</div>
+    <hr class="hairline"/>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__brand">
+      <span class="wordmark" aria-label="Lorem ipsum">
+        <span class="mark" aria-hidden="true"></span>
+        lorem
+      </span>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+    </div>
+    <div class="footer__col">
+      <h4>Product</h4>
+      <ul>
+        <li><a class="footer__link" href="#">Home</a></li>
+        <li><a class="footer__link" href="#">Pricing</a></li>
+        <li><a class="footer__link" href="#">App</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Writers</h4>
+      <ul>
+        <li><a class="footer__link" href="#">For writers</a></li>
+        <li><a class="footer__link" href="#">Going paid</a></li>
+        <li><a class="footer__link" href="#">Resources</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Company</h4>
+      <ul>
+        <li><a class="footer__link" href="#">About</a></li>
+        <li><a class="footer__link" href="#">Brand</a></li>
+        <li><a class="footer__link" href="#">Jobs</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a class="footer__link" href="#">Terms</a></li>
+        <li><a class="footer__link" href="#">Privacy</a></li>
+        <li><a class="footer__link" href="#">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!--
+  Asset: serif-italic-001
+  Class: wordmarks
+  Pattern: display-italic-accent
+  Inspired by: Anthropic
+  Notes:
+    - Editorial serif wordmark with one italic word as accent; warm-paper register.
+    - Color, type family, and tracking are tokens; the italic span and the
+      decorative hairline below the large display are inline character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>serif-italic-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Tiempos is licensed; we ship a Georgia stack so the file opens standalone. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  /* Native-size wordmark: sits at the 16px header height Anthropic actually ships */
+  .wordmark--ui {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    text-decoration: none;
+  }
+  /* Display-size wordmark: shows the typographic character */
+  .wordmark--display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    text-decoration: none;
+  }
+  /* The italic span is the accent move; one word leans, the rest stays upright */
+  .wordmark__italic {
+    font-style: italic;
+    color: var(--ds-accent);
+  }
+  /* Hairline below display wordmark; inline ornament, not a token */
+  .rule {
+    width: 64px;
+    height: 1px;
+    background: var(--ds-border);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">native size (16px)</span>
+    <a class="wordmark--ui" href="#">Anthropic</a>
+  </div>
+  <div class="stage">
+    <span class="state-label">display (72px)</span>
+    <a class="wordmark--display" href="#">
+      <span>Anthropic</span>
+    </a>
+    <div class="rule" aria-hidden="true"></div>
+  </div>
+  <div class="stage">
+    <span class="state-label">italic accent variant</span>
+    <span class="wordmark--display">
+      Project <span class="wordmark__italic">Glasswing</span>
+    </span>
+  </div>
+</body>
+</html>

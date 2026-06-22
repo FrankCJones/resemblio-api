@@ -1,0 +1,731 @@
+<!--
+  Asset: airtable-marketing-page-001
+  Class: layouts
+  Pattern: dual-cta-hero, product-shot-hero, flush-top-nav, bento-grid, mega-footer
+  Inspired by: Airtable (airtable.com)
+  Notes:
+    - Marketing homepage skeleton: flush-top nav with dual auth cluster,
+      dual-CTA product-shot hero with embedded product canvas, customer
+      logo strip, numbered tab row (01-04) above a stacked feature
+      sequence (AI App Building, Agents at Scale, Omni, Enterprise
+      Capabilities), three-column enterprise-capability grid, four-up
+      use-case bento, three-up resources row, single quoted-card
+      testimonial, end CTA, five-column mega-footer.
+    - Variable: section sequence, container width, vertical rhythm.
+      Inline: container max-width (1200px), nav height, tab row spacing,
+      bento break (4-up to 2-up), hero product canvas aspect ratio.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Airtable's marketing surface runs on a humanist sans
+  (Inter-stack class). Faces are not loaded in the asset; the system
+  fallback chain in tokens.css carries the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1200px - tighter than Vercel's 1280 and
+   * Linear's 1320 - which keeps the bento and the enterprise three-up
+   * from feeling sparse. Inline value. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section { padding-block: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-bottom: 1px solid var(--ds-hairline); }
+
+  /* Hero. Dual-CTA with product canvas screenshot below. The visual
+   * weight of the hero is the product-shot, not the type, which is the
+   * Airtable register. */
+  .hero {
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-12);
+    }
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 22ch;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-4xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 58ch;
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .cta--primary {
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid var(--ds-accent);
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Hero product canvas: large screenshot well below the dual CTA. The
+   * Airtable signature move - the marketing surface foregrounds the
+   * product canvas, not abstract imagery. Inline aspect ratio. */
+  .hero__product-canvas {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    max-width: 1080px;
+    box-shadow: var(--ds-shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Customer logo strip. Hairline-framed, label centered above. */
+  .logo-strip {
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+    text-align: center;
+  }
+  .logo-strip__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-5);
+  }
+  .logo-strip__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (min-width: 640px) { .logo-strip__row { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .logo-strip__row { grid-template-columns: repeat(6, 1fr); } }
+  .logo-strip__cell {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-tight);
+    text-align: center;
+  }
+
+  /* Section heading register. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 28ch;
+  }
+  @media (min-width: 1024px) {
+    .section-heading { font-size: var(--ds-text-3xl); margin-bottom: var(--ds-space-8); }
+  }
+  .section-sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 64ch;
+  }
+
+  /* Numbered tab row. Airtable signature: 01. 02. 03. 04. prefix in mono,
+   * sentence-case label in sans, accent underline on the active tab. */
+  .tab-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: var(--ds-space-5);
+    margin-bottom: var(--ds-space-10);
+  }
+  .tab {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-3) 0;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab__num {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .tab[aria-selected="true"] {
+    color: var(--ds-text-strong);
+    border-bottom-color: var(--ds-accent);
+  }
+  .tab[aria-selected="true"] .tab__num { color: var(--ds-accent); }
+
+  /* Stacked feature row. Heading-and-body left, product-shot well right;
+   * alternates side every other row. */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .feature-row { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+    .feature-row--flip > .feature-row__visual { order: -1; }
+  }
+  .feature-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .feature-row__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .feature-row__cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-accent);
+  }
+  .feature-row__visual {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 4 / 3;
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Enterprise capability three-up. Labeled columns with bullet groups. */
+  .enterprise-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 900px) {
+    .enterprise-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .enterprise-col {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .enterprise-col__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .enterprise-col__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--ds-space-2);
+  }
+  .enterprise-col__list li {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    padding-left: var(--ds-space-4);
+    position: relative;
+  }
+  .enterprise-col__list li::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    position: absolute;
+    left: 0; top: 0.6em;
+  }
+
+  /* Use-case bento. Four cards, even 2x2 on desktop. */
+  .use-case-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .use-case-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .use-case-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .use-case-card__media {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .use-case-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .use-case-card__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+  .use-case-card__cta {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    font-weight: 600;
+  }
+
+  /* Resources three-up. */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .resources-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .resource-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .resource-card__media {
+    background: var(--ds-surface-2);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .resource-card__body {
+    padding: var(--ds-space-5);
+  }
+  .resource-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Testimonial card. Single quoted card; centered, lifted. */
+  .testimonial {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10);
+    text-align: center;
+    box-shadow: var(--ds-shadow-md);
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  @media (min-width: 768px) {
+    .testimonial__quote { font-size: var(--ds-text-2xl); }
+  }
+  .testimonial__author {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .testimonial__cta {
+    margin-top: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    font-weight: 600;
+  }
+
+  /* End CTA section. Type-led, single primary CTA. */
+  .end-cta {
+    text-align: center;
+    padding-block: var(--ds-space-16);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page container. */
+  .footer-band {
+    background: var(--ds-surface-2);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Stands in for an airtable-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 220px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Book demo / Sign in
+      </div>
+    </nav>
+
+    <!-- Section: hero. Dual-CTA + product canvas. -->
+    <header class="hero" aria-label="Hero">
+      <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Lorem ipsum</a>
+        <a href="#" class="cta--ghost">Dolor sit amet</a>
+      </div>
+      <div class="hero__product-canvas" role="img" aria-label="Product canvas">
+        Product canvas screenshot
+      </div>
+    </header>
+
+    <!-- Section: customer logo strip. -->
+    <section class="logo-strip" aria-label="Customers">
+      <span class="logo-strip__label">Lorem ipsum dolor 500,000 sit amet</span>
+      <div class="logo-strip__row" role="list">
+        <span class="logo-strip__cell" role="listitem">Lorem</span>
+        <span class="logo-strip__cell" role="listitem">Ipsum</span>
+        <span class="logo-strip__cell" role="listitem">Dolor</span>
+        <span class="logo-strip__cell" role="listitem">Sit</span>
+        <span class="logo-strip__cell" role="listitem">Amet</span>
+        <span class="logo-strip__cell" role="listitem">Adipiscing</span>
+      </div>
+    </section>
+
+    <!-- Section: numbered tab row + stacked feature sequence. -->
+    <section class="section" aria-label="Feature pillars">
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      <div class="tab-row" role="tablist">
+        <span class="tab" role="tab" aria-selected="true"><span class="tab__num">01</span> Lorem ipsum</span>
+        <span class="tab" role="tab" aria-selected="false"><span class="tab__num">02</span> Dolor sit amet</span>
+        <span class="tab" role="tab" aria-selected="false"><span class="tab__num">03</span> Consectetur</span>
+        <span class="tab" role="tab" aria-selected="false"><span class="tab__num">04</span> Adipiscing elit</span>
+      </div>
+
+      <article class="feature-row">
+        <div>
+          <h3 class="feature-row__title">Lorem ipsum dolor sit amet</h3>
+          <p class="feature-row__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+          </p>
+          <a href="#" class="feature-row__cta">Lorem ipsum -&gt;</a>
+        </div>
+        <div class="feature-row__visual">Product shot</div>
+      </article>
+
+      <article class="feature-row feature-row--flip">
+        <div>
+          <h3 class="feature-row__title">Dolor sit amet consectetur</h3>
+          <p class="feature-row__body">
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa
+            qui officia deserunt mollit anim id est laborum.
+          </p>
+          <a href="#" class="feature-row__cta">Dolor sit -&gt;</a>
+        </div>
+        <div class="feature-row__visual">Animated product GIF</div>
+      </article>
+
+      <article class="feature-row">
+        <div>
+          <h3 class="feature-row__title">Consectetur adipiscing elit</h3>
+          <p class="feature-row__body">
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur.
+          </p>
+          <a href="#" class="feature-row__cta">Consectetur -&gt;</a>
+        </div>
+        <div class="feature-row__visual">Brand SVG graphic</div>
+      </article>
+    </section>
+
+    <!-- Section: enterprise capabilities three-up grid. -->
+    <section class="section section--ruled" aria-label="Enterprise capabilities">
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h2>
+      <div class="enterprise-grid" role="list">
+        <div class="enterprise-col" role="listitem">
+          <h3 class="enterprise-col__title">Lorem ipsum</h3>
+          <ul class="enterprise-col__list">
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Incididunt ut labore</li>
+            <li>Dolore magna aliqua</li>
+          </ul>
+        </div>
+        <div class="enterprise-col" role="listitem">
+          <h3 class="enterprise-col__title">Dolor sit amet</h3>
+          <ul class="enterprise-col__list">
+            <li>Ut enim ad minim veniam</li>
+            <li>Quis nostrud exercitation</li>
+            <li>Ullamco laboris nisi</li>
+            <li>Aliquip ex ea commodo</li>
+          </ul>
+        </div>
+        <div class="enterprise-col" role="listitem">
+          <h3 class="enterprise-col__title">Consectetur adipiscing</h3>
+          <ul class="enterprise-col__list">
+            <li>Duis aute irure dolor</li>
+            <li>In reprehenderit voluptate</li>
+            <li>Velit esse cillum</li>
+            <li>Excepteur sint occaecat</li>
+            <li>Cupidatat non proident</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: use-case bento (four cards). -->
+    <section class="section section--ruled" aria-label="Use cases">
+      <h2 class="section-heading">Lorem ipsum dolor 10x sit amet consectetur.</h2>
+      <p class="section-sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt.
+      </p>
+      <div class="use-case-grid" role="list">
+        <article class="use-case-card" role="listitem">
+          <div class="use-case-card__media">Use case media</div>
+          <h3 class="use-case-card__title">Lorem ipsum dolor sit</h3>
+          <p class="use-case-card__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua.
+          </p>
+          <span class="use-case-card__cta">Lorem ipsum -&gt;</span>
+        </article>
+        <article class="use-case-card" role="listitem">
+          <div class="use-case-card__media">Use case media</div>
+          <h3 class="use-case-card__title">Dolor sit amet</h3>
+          <p class="use-case-card__body">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco.
+          </p>
+          <span class="use-case-card__cta">Dolor sit -&gt;</span>
+        </article>
+        <article class="use-case-card" role="listitem">
+          <div class="use-case-card__media">Use case media</div>
+          <h3 class="use-case-card__title">Consectetur adipiscing</h3>
+          <p class="use-case-card__body">
+            Duis aute irure dolor in reprehenderit in voluptate velit.
+          </p>
+          <span class="use-case-card__cta">Consectetur -&gt;</span>
+        </article>
+        <article class="use-case-card" role="listitem">
+          <div class="use-case-card__media">Use case media</div>
+          <h3 class="use-case-card__title">Eiusmod tempor incididunt</h3>
+          <p class="use-case-card__body">
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa.
+          </p>
+          <span class="use-case-card__cta">Eiusmod -&gt;</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: resources three-up. -->
+    <section class="section section--ruled" aria-label="Resources">
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+      <div class="resources-grid" role="list">
+        <article class="resource-card" role="listitem">
+          <div class="resource-card__media">Resource media</div>
+          <div class="resource-card__body">
+            <h3 class="resource-card__title">Lorem ipsum dolor sit</h3>
+          </div>
+        </article>
+        <article class="resource-card" role="listitem">
+          <div class="resource-card__media">Resource media</div>
+          <div class="resource-card__body">
+            <h3 class="resource-card__title">Dolor sit amet consectetur</h3>
+          </div>
+        </article>
+        <article class="resource-card" role="listitem">
+          <div class="resource-card__media">Resource media</div>
+          <div class="resource-card__body">
+            <h3 class="resource-card__title">Consectetur adipiscing elit</h3>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: single quoted-card testimonial. -->
+    <section class="section" aria-label="Testimonial">
+      <div class="testimonial">
+        <blockquote class="testimonial__quote">
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        </blockquote>
+        <div class="testimonial__author">
+          Lorem Ipsum, Director of Product Operations, Dolor
+        </div>
+        <a href="#" class="testimonial__cta">Lorem ipsum dolor -&gt;</a>
+      </div>
+    </section>
+
+    <!-- Section: end CTA. -->
+    <section class="end-cta" aria-label="Final CTA">
+      <h2 class="section-heading" style="margin-inline: auto; max-width: 24ch;">
+        Lorem ipsum dolor sit amet.
+      </h2>
+      <p class="section-sub" style="margin-inline: auto;">
+        Consectetur adipiscing elit, sed do eiusmod 500,000 tempor
+        incididunt ut labore. Sit amet.
+      </p>
+      <a href="#" class="cta--primary">Lorem ipsum</a>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for an
+       airtable-tagged footers/* whole (mega-footer with five column
+       groups + social row + legal row + app download row). -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (5 columns + social + legal + app)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

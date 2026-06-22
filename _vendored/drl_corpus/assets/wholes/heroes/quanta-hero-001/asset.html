@@ -1,0 +1,237 @@
+<!--
+  Asset: quanta-hero-001
+  Class: heroes (whole)
+  Pattern: editorial-hero, split-hero, accent-on-neutral, paper-and-ink, serif-display-sans-body
+  Inspired by: Quanta Magazine (homepage featured article, 2026-05-20)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (paper-and-ink palette context)
+    - type-pairings/quanta-science-pair-001      (three-family editorial system)
+    - kickers/quanta-section-001                 (lowercase violet topic kicker)
+    - headings/editorial-newspaper-001           (serif feature headline register)
+    - body-text/lead-paragraph-001               (dek register beneath the title)
+  Notes:
+    - Native context: the top featured-article block on the Quanta
+      Magazine homepage. A large commissioned illustration anchors the
+      left, the editorial stack (lowercase violet kicker, Tiempos
+      headline, dek, sans byline, hairline, figure credit) anchors the
+      right. The violet is the only chromatic step; it lives on the
+      kicker and the publication half of the figure credit.
+    - Variable: every color, type family, size, spacing, motion via
+      tokens.css. Inline ornament: the placeholder illustration SVG
+      geometry (a stand-in for the commissioned artwork; the asset
+      cannot ship a real Quanta illustration), the 56-percent
+      illustration column width on wide viewports, and the hairline
+      width on the figure credit rule.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 stands in for Tiempos Headline + Tiempos Text;
+     Inter stands in for GT America. The contract names the licensed
+     faces first and falls back through these open-source loads. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+  }
+
+  /* The hero shell. Editorial constrained width; the homepage centers
+   * a generous reading column. The featured block reads as a split:
+   * illustration on the left, text stack on the right. */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-12);
+    display: grid;
+    /* Inline: 56/44 split between illustration and text on wide
+     * viewports. The illustration earns the majority share because
+     * the commissioned artwork is the lead. */
+    grid-template-columns: 56% 1fr;
+    gap: var(--ds-space-8);
+    align-items: start;
+  }
+
+  /* The illustration block. On Quanta this is a commissioned piece;
+   * here a placeholder SVG occupies the same role. Sharp corners,
+   * no radius - Quanta does not round its figures. */
+  .hero__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .hero__illustration {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-none);
+    display: block;
+  }
+  /* The figure credit hairline. Quanta sets the credit beneath the
+   * illustration in small sans, separated from the illustration by a
+   * single hairline rule. The publication half of the credit takes
+   * the accent violet; the rest stays muted. */
+  .hero__credit {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    padding-top: var(--ds-space-2);
+    /* Inline: 1px hairline above the credit. The contract has no
+     * dedicated rule for figure-credit dividers. */
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+  .hero__credit-publication {
+    color: var(--ds-accent);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* The text stack. Kicker, headline, dek, byline - top-aligned with
+   * the illustration. Vertical gaps tighten upward (kicker hugs the
+   * headline) and loosen downward (dek and byline get more air). */
+  .hero__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-1);
+  }
+
+  /* Lowercase violet kicker. The Quanta signature: inverts the
+   * uppercase eyebrow convention, carries one chromatic step. */
+  .hero__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-decoration: none;
+    margin: 0;
+    /* Inline: a small affordance underline appears on hover; the
+     * resting state is clean lowercase text. */
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__kicker:hover { color: var(--ds-accent-2); }
+  .hero__kicker:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* The headline. Tiempos Headline at the 3xl-4xl boundary; serif
+   * display, tight leading, slight negative tracking. text-wrap:
+   * balance keeps the shape clean across line breaks. */
+  .hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hero__headline-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .hero__headline-link:hover { color: var(--ds-accent); }
+
+  /* The dek. Tiempos Text reading register, lifted size, generous
+   * leading. Sits between headline and byline. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 36em;
+  }
+
+  /* The byline. Humanist sans, small size, muted. The "By" word is
+   * the same color as the rest of the muted metadata; the author
+   * name carries an inline underline on hover. */
+  .hero__byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+    margin-top: var(--ds-space-2);
+  }
+  .hero__author {
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__author:hover { border-color: var(--ds-text); }
+
+  /* Narrow viewports collapse to a single column. Illustration leads,
+   * text stack follows. The split disappears below 720px. */
+  @media (max-width: 720px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-6);
+      padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-10);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__kicker, .hero__author { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="hero" aria-label="Lorem ipsum featured article">
+    <figure class="hero__figure">
+      <!-- Placeholder illustration. A commissioned piece would occupy
+           this slot on Quanta. The SVG holds the aspect ratio and
+           gives the asset something to render without bundling a
+           binary. The geometric shapes echo the editorial-science
+           register without imitating a specific Quanta artist. -->
+      <svg class="hero__illustration" viewBox="0 0 400 300" role="img" aria-label="Lorem ipsum illustration placeholder">
+        <rect x="0" y="0" width="400" height="300" fill="#F2F2F2"/>
+        <circle cx="200" cy="150" r="90" fill="#4A2D7E" opacity="0.18"/>
+        <circle cx="270" cy="120" r="48" fill="#4A2D7E" opacity="0.32"/>
+        <circle cx="140" cy="180" r="32" fill="#1A1A1A" opacity="0.55"/>
+        <line x1="40" y1="240" x2="360" y2="240" stroke="#1A1A1A" stroke-width="1" opacity="0.35"/>
+        <line x1="40" y1="60"  x2="200" y2="60"  stroke="#1A1A1A" stroke-width="1" opacity="0.25"/>
+        <rect x="50" y="80" width="40" height="40" fill="none" stroke="#4A2D7E" stroke-width="1.5"/>
+      </svg>
+      <figcaption class="hero__credit">
+        <span class="hero__credit-publication">Lorem Ipsum Studio</span>
+        &nbsp;for&nbsp;<em>Lorem Magazine</em>
+      </figcaption>
+    </figure>
+
+    <div class="hero__text">
+      <a class="hero__kicker" href="#">lorem ipsum</a>
+      <h1 class="hero__headline">
+        <a class="hero__headline-link" href="#">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do
+        </a>
+      </h1>
+      <p class="hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua, ut
+        enim ad minim veniam quis nostrud exercitation.
+      </p>
+      <p class="hero__byline">
+        By <a class="hero__author" href="#">Lorem Ipsumovich</a>
+      </p>
+    </div>
+  </section>
+</body>
+</html>

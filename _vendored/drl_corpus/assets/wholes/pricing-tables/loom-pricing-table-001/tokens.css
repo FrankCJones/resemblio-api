@@ -1,0 +1,122 @@
+/*
+ * loom-pricing-table-001 tokens
+ *
+ * Loom /pricing surface. Four-up tier card grid on a light neutral page
+ * (Starter / Business / Business + AI / Enterprise). The third tier
+ * (Business + AI) carries the "MOST POPULAR" treatment with the Loom
+ * purple-blue accent. Below the cards sits a long comparison-feature
+ * table grouped by category (Workspace Members and Videos, Loom AI,
+ * Team Workspace, Video Recording, Video Editing, Custom Branding,
+ * Content Management, Video Analytics, Admin Controls, Support,
+ * Integrations).
+ *
+ * Source: loom.com/pricing inspected via WebFetch. Tier names, price
+ * values, CTA labels, feature lists, comparison-table category list,
+ * and the billing toggle (Monthly / Annually with SAVE UP TO 17%) are
+ * verified live as of 2026-05-20. Computed style values are not
+ * exposed by WebFetch on this URL; color, type, radius, and spacing
+ * values derive from Loom's published brand signature (purple-blue
+ * accent on light neutral, Inter-class display sans, subtle rounded
+ * corners not pills, hairline card chrome) declared in
+ * systems/loom/system.json design_principles.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Loom pricing page sits on near-white; cleaner than warm paper. */
+  --ds-surface:      #FFFFFF;   /* Card body matches page; chrome is hairline, not fill. */
+  --ds-surface-2:    #F6F5FF;   /* Recommended-tier tinted surface; faintest purple wash. */
+  --ds-text:         #1B1B1F;   /* Near-black ink; cool not warm. */
+  --ds-text-muted:   #6B6B73;   /* Tagline, per-user-per-month suffix, table secondary cells. */
+  --ds-text-strong:  #0B0B10;   /* Tier price digit, section H1. */
+  --ds-border:       rgba(11, 11, 16, 0.10);   /* Card outline; cool-ink hairline at low alpha. */
+  --ds-hairline:     rgba(11, 11, 16, 0.06);   /* Comparison-table row dividers. */
+  --ds-accent:       #625DF5;   /* Loom signature purple-blue; recommended-tier border, primary CTA. */
+  --ds-accent-2:     #4F49E5;   /* Pressed/hover state for the primary CTA. */
+  --ds-success:      #2BA663;   /* Comparison-table check glyph. */
+  --ds-warning:      #C29243;
+  --ds-error:        #D44C47;
+  --ds-info:         #625DF5;
+  --ds-focus-ring:   #625DF5;   /* Accent at full saturation; keyboard focus halo. */
+
+  /* ---------- Type families ----------
+   * Loom marketing surface reads as an Inter-class humanist sans. System
+   * fallback chain renders the asset without a webfont call.
+   */
+  --ds-font-display: "Inter", "Söhne", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;   /* Comparison-table cells, feature rows. */
+  --ds-text-base: 16px;   /* Tier card body. */
+  --ds-text-lg:   18px;
+  --ds-text-xl:   22px;   /* Tier name. */
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  40px;   /* Section H1 ("Plans for any team"). */
+  --ds-text-4xl:  56px;   /* Tier price digit. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.22;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;   /* Card interior step. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Loom uses subtle rounded corners on cards (12px), full pills only on
+   * the billing toggle and the "MOST POPULAR" badge.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cards rest flat; chrome is hairline. Recommended tier optionally
+   * lifts with a soft accent-tinted shadow.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   0 1px 2px rgba(11, 11, 16, 0.04);
+  --ds-shadow-md:   0 8px 24px rgba(98, 93, 245, 0.10);
+  --ds-shadow-lg:   0 16px 40px rgba(11, 11, 16, 0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(11, 11, 16, 0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

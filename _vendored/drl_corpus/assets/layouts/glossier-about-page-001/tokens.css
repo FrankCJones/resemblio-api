@@ -1,0 +1,99 @@
+/*
+ * glossier-about-page-001 tokens
+ *
+ * Page-level layout skeleton for the Glossier /pages/about page. Tokens
+ * are pulled from a WebFetch live-page inspection of the canonical
+ * /pages/about URL on 2026-05-20 (Shopify storefront; computed styles
+ * are stripped from the WebFetch markdown, so color and type values
+ * below are calibrated to the system manifest's documented Glossier
+ * design principles: signature dusty millennial pink as the page-level
+ * brand color, refined humanist sans display, generous editorial
+ * whitespace, sentence-case all the way down, paper-white reading
+ * surface with near-black ink, no chrome). The structural tokens
+ * (spacing scale, max-widths, section padding rhythm) are read from
+ * the section sequence and copy-density signals in the live HTML.
+ */
+:root {
+  /* Colors. Paper-white reading surface, near-black ink. The signature
+   * dusty millennial pink runs the announcement bar and the closing
+   * Explore-Glossier CTA band; everything else is paper-and-ink with
+   * a softer rose-tinted secondary surface for the values block. */
+  --ds-bg:           #FFFFFF;   /* Paper-white page surface; carries the hero, founder narrative, footer. */
+  --ds-surface:      #F7E9E3;   /* Dusty pink-cream tinted surface; carries the values / philosophy block. */
+  --ds-surface-2:    #FBF1ED;   /* Lighter pink-cream wash for nested cards or alternating bands. */
+  --ds-text:         #111111;   /* Near-black body ink; the canonical Glossier reading color on paper. */
+  --ds-text-muted:   #6B6B6B;   /* Muted gray for legal, captions, footer secondary copy. */
+  --ds-text-strong:  #000000;   /* Pure black for headlines and the wordmark register. */
+  --ds-border:       #E5E5E5;   /* Hairline pencil-gray; the page rarely uses borders by default. */
+  --ds-hairline:     #EDEDED;   /* Ultra-thin divider between footer columns and section breaks. */
+  --ds-accent:       #F8C6BD;   /* Signature Glossier dusty millennial pink; the brand's one named color. */
+  --ds-accent-2:     #E8A89E;   /* Deeper rose for hover and pressed states on pink chrome. */
+  --ds-success:      #2E8B57;
+  --ds-warning:      #C68A3F;
+  --ds-error:        #B23A48;
+  --ds-info:         #6B6B6B;
+  --ds-focus-ring:   #111111;   /* Near-black focus indicator; reads as deliberate against paper. */
+
+  /* Type. Glossier ships a refined humanist sans for display and reading.
+   * Inter and Söhne sit cleanly in the same family register for the
+   * fallback chain. A serif slot is reserved for editorial accents. */
+  --ds-font-display: "Söhne", "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ds-font-body:    "Söhne", "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --ds-font-accent:  "GT Sectra", "Tiempos Headline", Georgia, serif;
+
+  /* Type scale. Hero statement ("You look good") at 5xl-6xl on desktop;
+   * the welcome subhead at 3xl; founder-narrative body at lg with
+   * relaxed leading; legal at xs. The scale is calibrated to a
+   * generous editorial measure — body lines run 18-19px and read at
+   * 1.55 leading. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 28px;   --ds-text-3xl: 36px;  --ds-text-4xl: 48px;
+  --ds-text-5xl: 64px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* Spacing. The about page runs a generous editorial rhythm: ~96px
+   * padding-block on each section on desktop, ~64px on tablet,
+   * collapsing to ~48px on mobile. Founder narrative and values
+   * blocks stretch padding-block to ~160px when copy density is low. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 160px; --ds-space-32: 240px;
+
+  /* Radii. Glossier mostly avoids large radii on chrome; pills appear
+   * only on small UI elements like the bag counter and the CTA. Card
+   * frames are square-edged or carry a soft 12px radius. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 12px;  --ds-radius-lg: 20px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Paper-on-paper layout; shadows are reserved for popovers
+   * and the bag drawer, neither of which appears on the about page.
+   * Reserved values exist for downstream override. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(0, 0, 0, 0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.06);
+  --ds-shadow-md:  0 6px 20px rgba(0, 0, 0, 0.08);
+  --ds-shadow-lg:  0 16px 40px rgba(0, 0, 0, 0.10);
+  --ds-shadow-2xl: 0 32px 64px rgba(0, 0, 0, 0.12);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

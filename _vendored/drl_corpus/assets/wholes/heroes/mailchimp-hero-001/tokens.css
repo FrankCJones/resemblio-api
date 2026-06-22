@@ -1,0 +1,133 @@
+/*
+ * mailchimp-hero-001 tokens
+ *
+ * Native token values for the Mailchimp homepage marketing hero, captured
+ * via WebFetch on https://mailchimp.com 2026-05-20 and cross-checked
+ * against https://mailchimp.com/about/brand-assets/ which names
+ * Cavendish Yellow as the "hero color" and Peppercorn as the accent.
+ *
+ * Cavendish Yellow (#FFE01B) is the canonical Mailchimp signature; it
+ * shows up as the dominant background on most hero variants and as the
+ * primary CTA fill on the white variants. Peppercorn (#241C15) is the
+ * near-black ink used for body, headlines, and secondary affordances.
+ * Cooper Light (Mailchimp's commissioned warm display serif by Sharp
+ * Type) carries the H1; Graphik handles UI body. A system fallback chain
+ * stands in for both on machines without the woff2.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cavendish Yellow is the canvas. Peppercorn is the ink. Hero variants
+   * pair the two without any third hue; the warmth comes from the yellow
+   * itself and from the hand-illustration vocabulary that sits on top. */
+  --ds-bg:           #FFE01B;   /* Cavendish Yellow; Mailchimp's hero canvas. */
+  --ds-surface:      #FFFFFF;   /* Paper white; raised cards inside the yellow canvas. */
+  --ds-surface-2:    #FFF6CC;   /* Pale yellow tint; nested chrome inside white cards. */
+  --ds-text:         #241C15;   /* Peppercorn; the brand ink color. */
+  --ds-text-muted:   #524540;   /* Warm dark gray; helper copy under the dek. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for the rare deepest emphasis. */
+  --ds-border:       #241C15;   /* Peppercorn; CTA outlines and chip borders. */
+  --ds-hairline:     #C5BC8D;   /* Cavendish darkened; subtle rule on yellow ground. */
+  --ds-accent:       #241C15;   /* Peppercorn solid; primary CTA fill on yellow ground. */
+  --ds-accent-2:     #000000;   /* Black on hover; the only color change in the system. */
+  --ds-success:      #1A8569;   /* Mailchimp green; "Sent" / operational state. */
+  --ds-warning:      #F7A823;   /* Warm amber; caution. */
+  --ds-error:        #D8423B;   /* Mailchimp red; destructive. */
+  --ds-info:         #2B6CB0;   /* Quiet blue; informational. */
+  --ds-focus-ring:   #241C15;   /* Peppercorn ring on yellow; brand-loyal focus state. */
+
+  /* ---------- Type families ----------
+   * Cooper Light (Sharp Type, commissioned for Mailchimp) carries the
+   * display headline; its warm humanist curves are the typographic
+   * counterpart to the hand-illustration vocabulary. Graphik handles
+   * body and UI. The fallback chain mirrors what Mailchimp serves on
+   * browsers that fail the woff2 load. */
+  --ds-font-display: "Cooper Light", "Cooper", "Cooper Std", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Graphik", "Graphik Web", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Graphik Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Cooper Light", "Cooper", "Cooper Std", Georgia, "Times New Roman", serif;
+
+  /* ---------- Type sizes ----------
+   * Mailchimp marketing H1 sets at roughly 64-80px on desktop, scaling
+   * down through clamp on mobile. Dek paragraph sits at 18-20px. The
+   * eyebrow is uppercase 12-13px tracked wide. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;   /* Uppercase eyebrow / "#1 AI-Powered" claim row. */
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek paragraph below the H1. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   /* Hero H1 baseline at desktop. */
+  --ds-text-6xl:  96px;   /* Wide-viewport ceiling for the H1. */
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* H1 tight; Cooper Light holds well at 1.05. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;    /* Dek paragraph and body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Cooper Light pulls -0.01em at display sizes; just enough to settle
+   * the humanist serifs without compressing the warmth. The eyebrow gets
+   * a wider step to read as a label. */
+  --ds-tracking-tight:  -0.015em;   /* Display H1; soft pull, not a Geist-style -0.04em. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;     /* Uppercase eyebrow over the H1. */
+
+  /* ---------- Spacing ----------
+   * Mailchimp marketing rhythm: 24px between hero column elements, 96px
+   * vertical padding above the headline, 32px between dek and CTA row. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;    /* Inter-element gap inside the hero column. */
+  --ds-space-6:  32px;    /* Dek to CTA row. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;    /* Top padding above the H1. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Mailchimp uses subtle rounded corners, not pills. 4px on inputs,
+   * 6px on buttons. The CTA is a rectangle with a soft corner, not a
+   * fully-rounded capsule. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Input chrome. */
+  --ds-radius-md:   6px;     /* Primary CTA rectangle. */
+  --ds-radius-lg:   12px;    /* Card chrome. */
+  --ds-radius-full: 9999px;  /* Avatar circles only. */
+
+  /* ---------- Shadows ----------
+   * Mailchimp on yellow ground uses almost no shadow; the brand reads
+   * as flat warmth, not elevated material. Reserved for nested cards. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(36,28,21,0.08);
+  --ds-shadow-sm:   0 1px 2px rgba(36,28,21,0.06);
+  --ds-shadow-md:   0 2px 6px rgba(36,28,21,0.08);
+  --ds-shadow-lg:   0 8px 24px rgba(36,28,21,0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(36,28,21,0.14);
+
+  /* ---------- Motion ----------
+   * Mailchimp transitions are gentle; the brand's warmth extends into a
+   * standard-ease 200ms default. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

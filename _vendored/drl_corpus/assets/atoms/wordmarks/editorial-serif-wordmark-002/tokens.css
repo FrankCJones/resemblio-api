@@ -1,0 +1,135 @@
+/*
+ * editorial-serif-wordmark-002 tokens
+ *
+ * Editorial serif wordmark inspired by A24 Films. A24's production wordmark
+ * is the sans "A24" monogram, but the brand's editorial register reserves a
+ * Tiempos / Times Now class serif for the rare title-card moment (festival
+ * callouts, film-credit display, "An A24 Release" tag). This asset captures
+ * that register as a wordmark proper: paper-white serif on a cinema-black
+ * field, with a single italicized word as accent in the strongest variant.
+ *
+ * The asset is the editorial-cinema counterpart to wordmarks/serif-italic-001
+ * (Anthropic, warm paper). Same italic-as-accent move, inverted register:
+ * dark theater wall instead of warm paper, near-pure paper text instead of
+ * ink, no chromatic accent because the contrast IS the accent.
+ *
+ * Provenance: a24films.com was reached via WebFetch (Chrome MCP and Wayback
+ * are blocked for the a24films.com domain family; precedent established by
+ * type-pairings/a24-cinematic-pair-001 and color-groups/a24-cinematic-palette-001).
+ * WebFetch confirms the homepage wordmark text "A24", sans-serif header
+ * register, paper-light background on the films grid, mixed-case film titles
+ * (Backrooms, The Death of Robin Hood, The Invite, Tony, Marty Supreme),
+ * uppercase tracked section labels (Films, Television, Docs, Shop), and the
+ * editorial-cinema voice. The serif title-card moment is the canonical A24
+ * pre-roll register (white A24 logo on black screen before films); this asset
+ * extends that register into a hypothetical serif wordmark. Score B.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cinema black field with paper-white type, matching the A24 pre-roll
+   * register. The black carries a hint of warm brown so it reads as a
+   * theater wall rather than a dev-tool void. No chromatic accent; the
+   * inverse slab moment IS the accent. */
+  --ds-bg:           #0A0908;   /* Cinema black; warm-tinted near-black. */
+  --ds-surface:      #14110F;   /* One step up; card on the cinema field. */
+  --ds-surface-2:    #1E1A17;   /* Two steps; nested overlay. */
+  --ds-text:         #F5F1EA;   /* Paper-white type; reads as projected light. */
+  --ds-text-muted:   #9C968A;   /* Secondary metadata; release credits, dates. */
+  --ds-text-strong:  #FFFFFF;   /* Reserved for the title-card display moment. */
+  --ds-border:       #2A2522;   /* Hairline frame in the same warm-black family. */
+  --ds-hairline:     #1A1714;   /* Subtle divider between bg and surface. */
+  --ds-accent:       #FFFFFF;   /* The accent IS the lift to pure paper. No hue. */
+  --ds-accent-2:     #C7BFAE;   /* Warm paper tone for the rare secondary moment (italics, footer mark). */
+  --ds-success:      #4A8A5C;   /* Reserved; muted forest, not dev-tool green. */
+  --ds-warning:      #C49449;   /* Reserved; editorial amber. */
+  --ds-error:        #B24A3F;   /* Reserved; editorial red family. */
+  --ds-info:         #F5F1EA;   /* Info collapses to paper text. */
+  --ds-focus-ring:   #F5F1EA;   /* Paper outline; reads cleanly against the slab. */
+
+  /* ---------- Type families ----------
+   * Display sits in a Tiempos / Times Now class serif (the A24 title-card
+   * register). Body and accent share the same family at smaller scale; mono
+   * carries the uppercase-tracked section labels that A24 uses across films
+   * and shop. The licensed originals are named first; open-licensed fallbacks
+   * (Newsreader, Source Serif) carry the file when opened standalone. */
+  --ds-font-display: "Times Now", "Tiempos Headline", "Newsreader", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Tiempos Text", "Newsreader", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --ds-font-mono:    "JetBrains Mono", "Söhne Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Wordmark in header sits at 16-18px; demo at 72-96px for the title-card
+   * display register where the serif character is legible. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;         /* Native header wordmark target. */
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;         /* Title-card display target. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Display sits tight so the wordmark reads as a single object; body sits
+   * editorial-normal. */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.18;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Negative tight on display serif at title-card scale. Mono labels lean
+   * wider (titlecard register, not technical eyebrow). */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;
+
+  /* ---------- Spacing (4px base) ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Wordmarks live unrounded; container chrome only. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cinema register refuses drop shadows on the field. Slots present for
+   * contract conformance. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.6);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.7);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.8);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,139 @@
+<!--
+  Asset: switch-toggle-001
+  Class: inputs
+  Pattern: (none in TAXONOMY; pill switch / segmented toggle pattern)
+  Inspired by: Resend
+  Notes:
+    - Two-segment toggle in dark mode; rounded-rect container with hairline cool-tinted border, segments swap a faint fill on selection.
+    - Settings-row layout: label on the left, toggle on the right.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>switch-toggle-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Resend uses Inter; system fallback chain handles the gap. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-3) 0;
+  }
+  .settings-label {
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .switch {
+    display: inline-flex;
+    width: 66px;
+    height: 34px;
+    padding: 0;
+    border: 0.8px solid var(--ds-border); /* inline: matches Resend's sub-pixel container hairline */
+    border-radius: var(--ds-radius-md);
+    background: transparent;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .switch > button {
+    flex: 1;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    color: var(--ds-text-muted);
+    border: 0;
+    font: inherit;
+    font-size: var(--ds-text-xs);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .switch > button[aria-pressed="true"] {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+  }
+  .switch > button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: -2px;
+  }
+  .switch > button svg { width: 14px; height: 14px; }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block { padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-hairline); }
+  .block:first-child { border-top: 0; padding-top: 0; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="block">
+      <div class="state-label">rest (left selected)</div>
+      <div class="settings-row">
+        <span class="settings-label">Lorem ipsum mode</span>
+        <div class="switch" role="group" aria-label="Mode toggle">
+          <button type="button" aria-pressed="true" aria-label="Code">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M5 4L1 8L5 12M11 4L15 8L11 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" aria-pressed="false" aria-label="Preview">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">selected (right)</div>
+      <div class="settings-row">
+        <span class="settings-label">Consectetur view</span>
+        <div class="switch" role="group" aria-label="Mode toggle">
+          <button type="button" aria-pressed="false" aria-label="Code">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M5 4L1 8L5 12M11 4L15 8L11 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" aria-pressed="true" aria-label="Preview">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">label-only row</div>
+      <div class="settings-row">
+        <span class="settings-label">Sed do eiusmod toggle</span>
+        <div class="switch" role="group" aria-label="Mode toggle">
+          <button type="button" aria-pressed="true" aria-label="Option A">A</button>
+          <button type="button" aria-pressed="false" aria-label="Option B">B</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

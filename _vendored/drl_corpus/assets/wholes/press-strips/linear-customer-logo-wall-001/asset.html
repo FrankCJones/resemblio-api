@@ -1,0 +1,185 @@
+<!--
+  Asset: linear-customer-logo-wall-001
+  Class: press-strips
+  Pattern: (none)
+  Inspired by: Linear
+  Notes:
+    - Customer logo wall on dark surface; logos rendered as muted off-white wordmarks so the row reads as a single grayscale tone rather than competing brand colors.
+    - Variables carry every color, type, spacing decision. Inline values cover the logo opacity (0.55), the row's mask-image fade at the edges, and the wordmark letter-spacing (0.08em) - ornament specific to this asset.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-customer-logo-wall-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Inter Variable is Linear's brand face. Loading from Google Fonts as the
+  closest free proxy; system fallback chain handles offline cases.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  /* Asset-local reset; minimal. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper - hairline top and bottom mark the strip as its own band. */
+  .press-strip {
+    padding: var(--ds-space-12) var(--ds-space-6);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+
+  .press-strip__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Heading group sits centered above the row. Linear's own page uses a left-aligned heading, but the canonical press-strip pattern centers; this asset captures the pattern, not the exact page. */
+  .press-strip__head {
+    text-align: center;
+    margin-bottom: var(--ds-space-10);
+  }
+
+  .press-strip__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-4);
+  }
+
+  .press-strip__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    color: var(--ds-text);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  .press-strip__heading em {
+    font-style: normal;
+    color: var(--ds-text-muted);
+  }
+
+  /* Logo row. Flex with wrap so the asset behaves at narrow widths; the canonical render is a single row at desktop. The mask-image fade is an inline ornament: it softens the edges so the row reads as a continuous strip rather than a fixed-width banner. */
+  .press-strip__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-10);
+    /* Edge fade; specific to this asset's character. */
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+
+  /* Logo placeholder. In production this would be an inline SVG wordmark; the asset uses lorem ipsum wordmarks rendered as letter-spaced uppercase text so the design pattern reads without depending on any specific brand mark. The 0.55 opacity is the muted-row treatment; one-off character, kept inline. */
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text);
+    letter-spacing: 0.08em; /* Wordmark-specific tracking; tighter than --ds-tracking-wider, looser than --ds-tracking-wide. Kept inline as one-off. */
+    text-transform: uppercase;
+    opacity: 0.55;
+    transition: opacity var(--ds-duration-normal) var(--ds-ease-standard);
+    user-select: none;
+  }
+
+  .logo-mark:hover,
+  .logo-mark:focus-visible {
+    opacity: 1;
+  }
+
+  /* Trailing link below the row; the single point of accent color. */
+  .press-strip__cta {
+    text-align: center;
+    margin-top: var(--ds-space-10);
+  }
+
+  .press-strip__cta a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent-2);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-normal);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .press-strip__cta a:hover { color: var(--ds-text); }
+  .press-strip__cta a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .press-strip__cta svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .press-strip__row { gap: var(--ds-space-6); }
+    .logo-mark { font-size: var(--ds-text-base); }
+  }
+</style>
+</head>
+<body>
+  <section class="press-strip" aria-labelledby="press-strip-heading">
+    <div class="press-strip__inner">
+      <div class="press-strip__head">
+        <span class="press-strip__kicker">Lorem ipsum dolor</span>
+        <h2 id="press-strip-heading" class="press-strip__heading">
+          Sit amet consectetur adipiscing elit <em>sed do eiusmod tempor incididunt ut labore.</em>
+        </h2>
+      </div>
+
+      <div class="press-strip__row" role="list" aria-label="Customer logos">
+        <span class="logo-mark" role="listitem" tabindex="0">Loremco</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Ipsum&amp;Co</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Dolora</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Consect</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Adipisci</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Eiusmod</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Tempora</span>
+        <span class="logo-mark" role="listitem" tabindex="0">Incidi</span>
+      </div>
+
+      <p class="press-strip__cta">
+        <a href="#">
+          Lorem ipsum customer stories
+          <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </p>
+    </div>
+  </section>
+</body>
+</html>

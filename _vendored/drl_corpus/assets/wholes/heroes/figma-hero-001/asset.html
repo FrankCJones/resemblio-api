@@ -1,0 +1,381 @@
+<!--
+  Asset: figma-hero-001
+  Class: heroes (whole)
+  Pattern: single-cta-hero, product-shot-hero, oversized-statement
+  Inspired by: Figma
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (white surface + near-black ink)
+    - type-pairings/sans-system-modern-001    (bold marketing sans across display + body)
+    - headings/display-tight-001              (80-96px display-tight H1)
+    - buttons/primary-square-001              (rounded-rectangle black CTA)
+    - dividers/hairline-rule-001              (faint hairlines around the customer logo strip)
+  Notes:
+    - Native context: figma.com homepage opening viewport, captured via
+      WebFetch 2026-05-20. White canvas, no kicker eyebrow, a single
+      oversized H1 ("Make anything possible, all in Figma"), one short
+      dek sentence, a single black "Get started" CTA, a product-canvas
+      moment shown as a tabbed carousel ("Prompt, Design, Draw, Build,
+      Publish, Promote, Jam, Present"), and a customer logo strip below
+      enumerating Airbnb, Atlassian, Dropbox, Duolingo, GitHub, Microsoft,
+      Netflix, The New York Times, Pentagram, Slack, Stripe, Zoom. The
+      brief described the live design as "sentence-case headline +
+      product canvas screenshot + dual CTA"; the page as visited on
+      2026-05-20 ships a single black CTA, so this asset reflects what
+      ships rather than the brief.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the product-canvas card placeholder (a soft
+      gradient rectangle standing in for the rotating Figma canvas
+      screenshot); the customer logo geometries (12 monochrome SVG
+      glyphs standing in for the named partners). The plum/coral
+      Figma brand color is preserved in tokens.css as --ds-accent-2
+      and applied inline on one canvas card label so the asset records
+      the brand's secondary accent even though the homepage 2026 CTA is
+      black.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>figma-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the Figma marketing display face on machines
+     without the Figma woff2. Bold weights carry the oversized H1. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White canvas. The first viewport has exactly one
+   * chromatic moment: the black primary CTA. The product canvas card
+   * carries the Figma plum/coral as a small inline accent on its label
+   * row, preserving the brand color even though it is not the CTA. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: wordmark left, sparse nav center, sign-in plus primary CTA
+   * right. No hairline rule beneath the chrome on figma.com; the bar
+   * floats on the white canvas. */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-5) var(--ds-space-8);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 800;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: a four-circle Figma-style glyph standing in for the
+   * official wordmark mark. */
+  .topbar__mark svg { width: 22px; height: 22px; display: block; }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text-muted); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, generous vertical padding. The H1 is the
+   * dominant element; the dek and CTA sit quietly beneath. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* H1: oversized statement at 80-96px on widest viewports, scaling
+   * down to 48px on mobile via clamp. text-wrap: balance holds the
+   * one- or two-line shape the Figma headline writers pace toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 8vw, var(--ds-text-6xl));
+    font-weight: 800;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading, in muted gray. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 52ch;
+    font-weight: 400;
+  }
+
+  /* CTA row: a single black "Get started" button. Figma's homepage
+   * 2026 ships only the primary; the topbar carries "Get started for
+   * free" as the standing affordance. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 14px 22px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: #2A2A2A; border-color: #2A2A2A; }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: black focus halo; the geometry has no contract slot. */
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--ghost:hover { background: var(--ds-surface); }
+
+  /* Product canvas: a tabbed card moment standing in for the rotating
+   * Figma file ("Prompt, Design, Draw, Build, Publish, Promote, Jam,
+   * Present"). The card has soft elevation and a hairline border; its
+   * label row carries the Figma plum/coral inline so the brand
+   * accent is recorded even though the CTA above is black. */
+  .canvas {
+    margin: var(--ds-space-8) auto var(--ds-space-12);
+    width: 100%;
+    max-width: 1100px;
+    padding: 0 var(--ds-space-8);
+  }
+  .canvas__card {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-md);
+    overflow: hidden;
+  }
+  .canvas__tabs {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+    overflow-x: auto;
+  }
+  .canvas__tab {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    padding: 8px 14px;
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .canvas__tab--active {
+    color: var(--ds-text);
+    background: var(--ds-surface);
+    /* Inline: the active-tab label takes the Figma plum/coral as a
+     * 2px underline. This is the brand color preserved on the canvas
+     * moment even though the page CTA is black. */
+    box-shadow: inset 0 -2px 0 var(--ds-accent-2);
+  }
+  .canvas__stage {
+    aspect-ratio: 16 / 9;
+    /* Inline ornament: soft gradient placeholder standing in for the
+     * rotating Figma canvas screenshot. The four-color sweep is the
+     * Figma palette (coral / yellow / green / blue / plum) on a soft
+     * wash; the gradient geometry has no contract slot. */
+    background:
+      radial-gradient(ellipse at 15% 25%, rgba(242, 78, 30, 0.18), transparent 55%),
+      radial-gradient(ellipse at 85% 30%, rgba(255, 199, 0, 0.16), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(10, 207, 131, 0.16), transparent 55%),
+      radial-gradient(ellipse at 20% 80%, rgba(26, 188, 254, 0.16), transparent 55%),
+      var(--ds-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .canvas__placeholder {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Customer logo strip. A faint hairline-bordered row beneath the
+   * canvas, enumerating the canonical Figma partners. */
+  .strip {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto var(--ds-space-16);
+    padding: var(--ds-space-5) var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--ds-space-6);
+  }
+  .strip__logo {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-tight);
+    opacity: 0.78;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .canvas { padding: 0 var(--ds-space-4); }
+    .strip { gap: var(--ds-space-4); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: four-circle glyph stand-in for the wordmark mark. -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="8" cy="6" r="3" fill="#F24E1E"/>
+        <circle cx="16" cy="6" r="3" fill="#FFC700"/>
+        <circle cx="8" cy="12" r="3" fill="#A259FF"/>
+        <circle cx="16" cy="12" r="3" fill="#1ABCFE"/>
+        <circle cx="8" cy="18" r="3" fill="#0ACF83"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">Sed Do</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <h1 class="hero__title">Lorem ipsum dolor sit amet, all in lorem.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,
+      ut enim ad minim veniam quis nostrud exercitation.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+    </div>
+  </section>
+
+  <section class="canvas" aria-label="Lorem ipsum product canvas">
+    <div class="canvas__card">
+      <div class="canvas__tabs" role="tablist">
+        <span class="canvas__tab canvas__tab--active" role="tab" aria-selected="true">Lorem</span>
+        <span class="canvas__tab" role="tab">Ipsum</span>
+        <span class="canvas__tab" role="tab">Dolor</span>
+        <span class="canvas__tab" role="tab">Sit</span>
+        <span class="canvas__tab" role="tab">Amet</span>
+        <span class="canvas__tab" role="tab">Consectetur</span>
+        <span class="canvas__tab" role="tab">Adipiscing</span>
+        <span class="canvas__tab" role="tab">Elit</span>
+      </div>
+      <div class="canvas__stage" role="img" aria-label="Lorem ipsum canvas placeholder">
+        <span class="canvas__placeholder">Lorem ipsum canvas</span>
+      </div>
+    </div>
+  </section>
+
+  <aside class="strip" aria-label="Lorem ipsum customers">
+    <span class="strip__logo">Lorem</span>
+    <span class="strip__logo">Ipsum</span>
+    <span class="strip__logo">Dolor</span>
+    <span class="strip__logo">Sit</span>
+    <span class="strip__logo">Amet</span>
+    <span class="strip__logo">Consectetur</span>
+    <span class="strip__logo">Adipiscing</span>
+    <span class="strip__logo">Elit</span>
+    <span class="strip__logo">Sed Do</span>
+    <span class="strip__logo">Eiusmod</span>
+    <span class="strip__logo">Tempor</span>
+    <span class="strip__logo">Incididunt</span>
+  </aside>
+</body>
+</html>

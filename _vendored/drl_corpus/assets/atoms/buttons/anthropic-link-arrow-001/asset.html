@@ -1,0 +1,86 @@
+<!--
+  Asset: anthropic-link-arrow-001
+  Class: buttons
+  Pattern: link-button
+  Inspired by: Anthropic
+  Notes:
+    - Text-and-arrow link affordance; no fill, no border, arrow slides right on hover.
+    - The link IS the CTA on news cards; geometry stays in the type, not in chrome.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-link-arrow-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-8);
+    flex-wrap: wrap;
+    padding: var(--ds-space-10);
+  }
+  .group { display: flex; flex-direction: column; align-items: flex-start; gap: var(--ds-space-2); }
+  .state-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .lnk {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: gap var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .lnk svg { width: 14px; height: 14px; transition: transform var(--ds-duration-fast) var(--ds-ease-standard); }
+  .lnk:hover { color: var(--ds-accent); border-bottom-color: var(--ds-accent); }
+  .lnk:hover svg { transform: translateX(3px); }
+</style>
+</head>
+<body>
+  <div class="group">
+    <span class="state-label">rest</span>
+    <a class="lnk" href="#">Lorem ipsum
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+  <div class="group">
+    <span class="state-label">hover</span>
+    <a class="lnk" href="#" style="color:var(--ds-accent); border-bottom-color:var(--ds-accent);">Lorem ipsum
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" style="transform:translateX(3px);">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+  <div class="group">
+    <span class="state-label">focus</span>
+    <a class="lnk" href="#" style="outline:2px solid var(--ds-focus-ring); outline-offset:4px;">Lorem ipsum
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</body>
+</html>

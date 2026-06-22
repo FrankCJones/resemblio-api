@@ -1,0 +1,95 @@
+<!--
+  Asset: gradient-border-001
+  Class: cards
+  Pattern: (none)
+  Inspired by: Resend
+  Notes:
+    - Dark card with a top-anchored radial-gradient that reads as backlight.
+    - The gradient stops and the radial geometry are inline character; the
+      contract slots cover the surface, hairline, and accent color. An
+      asset that wants a different glow position swaps the inline rule.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>gradient-border-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    /* Inline ornament: the radial-gradient is the asset's character.
+       It sits on the surface color via background-image; the surface
+       color shows through where the gradient is transparent. */
+    background-color: var(--ds-surface);
+    background-image: radial-gradient(
+      100% 50% at 50% 0%,
+      rgba(0, 163, 255, 0.13) 0%,
+      rgba(0, 163, 255, 0) 50%,
+      rgba(0, 163, 255, 0) 100%
+    );
+    box-shadow: var(--ds-shadow-sm);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    max-width: 480px;
+    width: 100%;
+    color: var(--ds-text);
+  }
+  .card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .card__title {
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .card__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .card__cta {
+    display: inline-block;
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+  <article class="card">
+    <p class="card__kicker">Lorem ipsum</p>
+    <h2 class="card__title">Dolor sit amet consectetur</h2>
+    <p class="card__body">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+    <a class="card__cta" href="#">Lorem ipsum</a>
+  </article>
+</body>
+</html>

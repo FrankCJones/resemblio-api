@@ -1,0 +1,570 @@
+<!--
+  Asset: github-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid + comparison-feature-table
+  Inspired by: GitHub /pricing
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (light surface, near-black text)
+    - type-pairings/grotesk-mono-001        (Mona Sans + Mona Mono surrogate)
+    - cards/hairline-flat-001               (tier cards with hairline borders)
+    - buttons/primary-square-001            (recommended-tier primary CTA in GitHub green)
+    - buttons/ghost-bordered-001            (secondary tier CTAs)
+    - badges/status-pill-001                ("Most popular" / "Recommended" pills)
+    - tables/docs-comparison-table-001      (the dense comparison table layout)
+    - headings/display-tight-001            (tier name + price)
+    - kickers/mono-eyebrow-001              (mono category kickers in the table)
+    - icons/stroke-line-uniform-001         (check / dash glyphs in rows)
+    - dividers/hairline-rule-001            (category-group separators)
+  Notes:
+    - GitHub's two-badge variant: the middle Team tier carries "Most
+      popular," the Enterprise tier carries "Recommended" and inverts to
+      a near-black surface. Two recommended treatments side by side is the
+      distinguishing GitHub move; competitors usually pick one. The eight
+      category bands in the comparison table reflect the real product
+      surface area (code mgmt, workflow, collab, secret protection, code
+      security, platform compliance, marketplace, support).
+    - Variable: every named role (tier card frame, CTA chrome, price
+      size, table row layout, category kicker) lives in a token. Inline:
+      the badge offset above the featured cards, the "Starting at" price
+      prefix sizing, and the green-on-near-black check color shift on the
+      inverted Enterprise card.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .pricing {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Section header. Display-tight pattern. */
+  .pricing__header {
+    text-align: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .pricing__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .pricing__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: var(--ds-space-3) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Tier-card row. Three cards; both right cards carry a badge above. */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-5);
+    margin-bottom: var(--ds-space-12);
+    margin-top: var(--ds-space-10);
+  }
+  @media (max-width: 920px) {
+    .tiers { grid-template-columns: 1fr; }
+  }
+
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+
+  .tier--popular {
+    border-color: var(--ds-accent);
+    border-width: 2px;
+  }
+
+  .tier--recommended {
+    background: var(--ds-accent-2);    /* near-black inversion */
+    color: #F0F6FC;
+    border-color: var(--ds-accent-2);
+  }
+
+  /* Inline ornament: badge pill offset above the card. The translate is
+   * calibrated to badge height; asset-specific tuning. */
+  .tier__badge {
+    position: absolute;
+    top: 0;
+    left: var(--ds-space-5);
+    transform: translateY(-50%);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+  .tier__badge--popular {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+  }
+  .tier__badge--recommended {
+    background: #F0F6FC;
+    color: var(--ds-accent-2);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .tier__pitch {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    min-height: 2.4em;
+  }
+  .tier--recommended .tier__pitch { color: rgba(240,246,252,0.7); }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  /* Inline ornament: "Starting at" prefix sits smaller and muted ahead of
+   * the amount on the Enterprise tier. */
+  .tier__starting {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    width: 100%;
+    margin-bottom: -4px;
+  }
+  .tier--recommended .tier__starting { color: rgba(240,246,252,0.7); }
+  .tier__amount {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .tier__period {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier--recommended .tier__period { color: rgba(240,246,252,0.6); }
+  .tier__fineprint {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-1) 0 0;
+    width: 100%;
+  }
+  .tier--recommended .tier__fineprint { color: rgba(240,246,252,0.6); }
+
+  /* CTAs. The GitHub-green primary on Team and Enterprise; bordered ghost on Free. */
+  .tier__ctas {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .tier__cta {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover { background: var(--ds-surface-2); }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .tier__cta--primary:hover { background: #1A7F37; border-color: #1A7F37; }
+  .tier__cta--ghost-inverse {
+    background: transparent;
+    color: #F0F6FC;
+    border: 1px solid rgba(240,246,252,0.3);
+  }
+  .tier__cta--ghost-inverse:hover { background: rgba(240,246,252,0.08); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Highlights list inside each tier card. */
+  .tier__highlights {
+    list-style: none;
+    padding: 0;
+    margin: var(--ds-space-3) 0 var(--ds-space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier__highlights li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+  }
+  .check {
+    width: 16px; height: 16px;
+    color: var(--ds-success);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  /* Inline ornament: lifted green for the dark surface so check stays legible. */
+  .tier--recommended .check { color: #3FB950; }
+
+  /* Comparison table. Bordered grid; mono category band headers above
+   * each group; rows are sans label + three columns of values. */
+  .compare-header {
+    text-align: center;
+    margin-bottom: var(--ds-space-6);
+  }
+  .compare-header h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    text-align: left;
+    border-top: 1px solid var(--ds-border);
+  }
+  .compare thead th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    padding: var(--ds-space-4) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    position: sticky;
+    top: 0;
+    background: var(--ds-bg);
+    text-align: center;
+    width: 18%;
+  }
+  .compare thead th:first-child {
+    color: var(--ds-text-muted);
+    font-weight: 500;
+    text-align: left;
+    width: 46%;
+  }
+  .compare tbody td,
+  .compare tbody th {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+    text-align: left;
+  }
+  .compare tbody td {
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .compare tbody tr:hover td,
+  .compare tbody tr:hover th { background: var(--ds-surface-2); }
+
+  /* Category-group row. Mono kicker styling; spans all columns and sits
+   * as a visual band separate from data rows. */
+  .compare .group td {
+    background: var(--ds-surface);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+    text-align: left;
+  }
+
+  .compare .check-cell { color: var(--ds-success); font-weight: 500; }
+  .compare .dash-cell  { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="pricing">
+    <header class="pricing__header">
+      <div class="pricing__eyebrow">Lorem ipsum dolor</div>
+      <h1 class="pricing__h1">Get the lorem ipsum platform that scales sit amet consectetur.</h1>
+      <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+    </header>
+
+    <div class="tiers">
+      <!-- Tier 1: free -->
+      <article class="tier">
+        <h2 class="tier__name">Lorem</h2>
+        <p class="tier__pitch">The basics for solo lorem and small ipsum dolor teams getting started.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$0</span>
+          <span class="tier__period">USD per month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem ipsum dolor sit amet</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Consectetur adipiscing elit</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Eiusmod tempor incididunt</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ut labore et dolore magna</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Veniam quis nostrud exercitation</span></li>
+        </ul>
+        <div class="tier__ctas">
+          <button type="button" class="tier__cta tier__cta--ghost">Join for free</button>
+        </div>
+      </article>
+
+      <!-- Tier 2: team / most-popular (green-bordered) -->
+      <article class="tier tier--popular">
+        <span class="tier__badge tier__badge--popular">Most popular</span>
+        <h2 class="tier__name">Ipsum</h2>
+        <p class="tier__pitch">Advanced collaboration for lorem teams and growing ipsum dolor organizations.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$4</span>
+          <span class="tier__period">USD per user/month</span>
+          <p class="tier__fineprint">for the first 12 months*</p>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Lorem, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Laboris nisi ut aliquip ex ea</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Commodo consequat duis aute</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Irure dolor in reprehenderit</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Voluptate velit esse cillum</span></li>
+        </ul>
+        <div class="tier__ctas">
+          <button type="button" class="tier__cta tier__cta--primary">Continue with Ipsum</button>
+        </div>
+      </article>
+
+      <!-- Tier 3: enterprise / recommended (inverted near-black) -->
+      <article class="tier tier--recommended">
+        <span class="tier__badge tier__badge--recommended">Recommended</span>
+        <h2 class="tier__name">Dolor</h2>
+        <p class="tier__pitch">Security, compliance, and flexible deployment for lorem at enterprise scale.</p>
+        <div class="tier__price">
+          <span class="tier__starting">Starting at</span>
+          <span class="tier__amount">$21</span>
+          <span class="tier__period">USD per user/month</span>
+          <p class="tier__fineprint">for the first 12 months*</p>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Ipsum, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Officia deserunt mollit anim</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Id est laborum sed perspiciatis</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unde omnis iste natus error</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sit voluptatem accusantium doloremque</span></li>
+        </ul>
+        <div class="tier__ctas">
+          <button type="button" class="tier__cta tier__cta--primary">Start a free trial</button>
+          <button type="button" class="tier__cta tier__cta--ghost-inverse">Contact sales</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Comparison table. Eight category bands; dense per-tier value columns. -->
+    <div class="compare-header">
+      <h2>Compare lorem plans</h2>
+    </div>
+    <table class="compare" aria-label="Detailed feature comparison">
+      <thead>
+        <tr>
+          <th scope="col">Features</th>
+          <th scope="col">Lorem</th>
+          <th scope="col">Ipsum</th>
+          <th scope="col">Dolor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="4">Lorem code management</td></tr>
+        <tr>
+          <th scope="row">Public repositories</th>
+          <td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td>
+        </tr>
+        <tr>
+          <th scope="row">Private repositories</th>
+          <td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td>
+        </tr>
+        <tr>
+          <th scope="row">Storage included</th>
+          <td>500 MB</td><td>2 GB</td><td>50 GB</td>
+        </tr>
+        <tr>
+          <th scope="row">LFS storage</th>
+          <td>1 GB</td><td>1 GB</td><td>1 GB</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Ipsum code workflow</td></tr>
+        <tr>
+          <th scope="row">Actions minutes / month</th>
+          <td>2,000</td><td>3,000</td><td>50,000</td>
+        </tr>
+        <tr>
+          <th scope="row">Packages storage</th>
+          <td>500 MB</td><td>2 GB</td><td>50 GB</td>
+        </tr>
+        <tr>
+          <th scope="row">Self-hosted runners</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Environments and approvals</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Dolor collaboration</td></tr>
+        <tr>
+          <th scope="row">Issues and projects</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Required reviewers</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Code owners</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Draft pull requests</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Sit secret protection</td></tr>
+        <tr>
+          <th scope="row">Push protection</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Secret scanning</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Custom patterns</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Amet code security</td></tr>
+        <tr>
+          <th scope="row">Dependency review</th>
+          <td class="check-cell">Public only</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Code scanning</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">SAST analysis</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Consectetur platform compliance</td></tr>
+        <tr>
+          <th scope="row">SOC 2 Type II</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Audit log API</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">SSO / SAML</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">SCIM provisioning</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Adipiscing marketplace and integrations</td></tr>
+        <tr>
+          <th scope="row">Public apps</th>
+          <td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td><td class="check-cell">Unlimited</td>
+        </tr>
+        <tr>
+          <th scope="row">Marketplace billing</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Elit support and deployment</td></tr>
+        <tr>
+          <th scope="row">Community support</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Web support</th>
+          <td class="dash-cell">—</td><td class="check-cell">Standard</td><td class="check-cell">Priority</td>
+        </tr>
+        <tr>
+          <th scope="row">Premium support add-on</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Available</td>
+        </tr>
+        <tr>
+          <th scope="row">SLA</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td>99.9%</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

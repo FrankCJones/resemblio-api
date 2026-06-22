@@ -1,0 +1,112 @@
+/*
+ * robin-sloan-hero-001 tokens
+ *
+ * Inspired by robinsloan.com homepage in its 2026 terracotta era. The hero
+ * is the opening block of a personal-writer homepage: a wordmark / name, a
+ * one-line tagline ("a writer, printer, & manufacturer"), and a short intro
+ * paragraph that names the principal works. No CTAs, no screenshots, no
+ * framework strip. The terracotta field carries the entire register;
+ * Filosofia at body size and Kyrios at display size do the rest.
+ *
+ * Source extraction: WebFetch on https://www.robinsloan.com 2026-05-20.
+ * The fetched homepage exposes the structural signature (name + tagline +
+ * intro paragraph + featured-essay anchor list + asterism dividers). The
+ * /colophon page documents the type stack (Kyrios display, Filosofia body,
+ * Trade Gothic Next accent, Vollkorn for fiction). WebFetch returns
+ * processed markdown without computed-style hex values; the terracotta
+ * palette is cross-checked against the existing robin-sloan-essay-layout-001
+ * tokens.css and the system manifest's documented era. Chrome MCP is blocked
+ * on the domain per SOURCES.md.
+ */
+:root {
+  /* Colors - terracotta paper system, identical baseline to the essay
+   * layout token set so a per-site Sloan library reads as one vocabulary. */
+  --ds-bg:           #DD7041;   /* Sloan terracotta body bg; oklch(0.7 0.195 37) approximated. */
+  --ds-surface:      #E58460;   /* One step lifted; used for inline asides on the field. */
+  --ds-surface-2:    #EE9A7E;   /* Two steps; nested asides. */
+  --ds-text:         #0D0D0D;   /* Body ink; reads as black on terracotta without going pure. */
+  --ds-text-muted:   #4A2A18;   /* Tagline, dateline, byline; warm reduced contrast. */
+  --ds-text-strong:  #000000;   /* Wordmark and display emphasis. */
+  --ds-border:       #B85A2E;   /* Warm borders; never gray on this field. */
+  --ds-hairline:     #C66A3C;   /* Asterism color and faint rules; one step warmer than border. */
+  --ds-accent:       #2A1410;   /* Deep cocoa; the only chromatic accent (link underlines, arrow). */
+  --ds-accent-2:     #6B3A20;   /* Lifted cocoa; hover state for arrow links. */
+  --ds-success:      #4A6B2E;   /* Olive against terracotta. */
+  --ds-warning:      #B0801F;   /* Mustard. */
+  --ds-error:        #7A1F12;   /* Deep brick. */
+  --ds-info:         #2A1410;   /* Reuses cocoa. */
+  --ds-focus-ring:   #0D0D0D;   /* Ink ring on warm paper. */
+
+  /* Type - Sloan's documented stack from the colophon */
+  --ds-font-display: "Kyrios", "Filosofia", Georgia, serif;
+  --ds-font-body:    "Filosofia", "Vollkorn", "Times New Roman", Georgia, serif;
+  --ds-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Trade Gothic Next", -apple-system, system-ui, sans-serif;
+
+  /* Type sizes - body at 21px reading; name wordmark at 84px Kyrios display */
+  --ds-text-2xs: 11px;
+  --ds-text-xs:  13px;
+  --ds-text-sm:  15px;
+  --ds-text-base: 21px;          /* Sloan body reading size. */
+  --ds-text-lg:  24px;           /* Tagline step-up. */
+  --ds-text-xl:  28px;
+  --ds-text-2xl: 36px;
+  --ds-text-3xl: 48px;
+  --ds-text-4xl: 60px;
+  --ds-text-5xl: 84px;           /* Name display step. */
+  --ds-text-6xl: 104px;
+  --ds-text-7xl: 128px;
+
+  /* Line heights - 28/21 = 1.33 body rhythm */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.33;    /* Sloan body rhythm. */
+  --ds-leading-relaxed: 1.55;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;  /* Small-caps lead-in and Trade Gothic accents. */
+
+  /* Spacing - 4px base, generous editorial breathing */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii - paper register prefers minimal rounding */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* Shadows - warm field tints shadows brown */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60, 30, 12, 0.10);
+  --ds-shadow-sm:   0 2px 4px rgba(60, 30, 12, 0.14);
+  --ds-shadow-md:   0 6px 14px rgba(60, 30, 12, 0.18);
+  --ds-shadow-lg:   0 14px 30px rgba(60, 30, 12, 0.22);
+  --ds-shadow-2xl:  0 24px 56px rgba(60, 30, 12, 0.28);
+
+  /* Motion */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

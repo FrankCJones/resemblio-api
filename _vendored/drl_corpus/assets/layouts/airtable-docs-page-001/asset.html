@@ -1,0 +1,590 @@
+<!--
+  Asset: airtable-docs-page-001
+  Class: layouts
+  Pattern: side-rail-nav, centered-narrow-column, search-with-kbd-hint, breadcrumb-trail
+  Inspired by: Airtable Support (support.airtable.com/docs/<article>)
+  Notes:
+    - Support/docs page skeleton: flush-top nav with wordmark, large
+      search input carrying a Ctrl+K kbd hint, and a Contact Sales CTA.
+      Below the nav, a two-column grid (260px left sidebar carrying
+      grouped category lists / 1fr main reading column). Main column
+      sequence: mono breadcrumb, page title, lead, body with H2/H3,
+      inline code, tinted code block, a left-accented callout, a syntax
+      reference table, and a two-card prev/next pagination at the close.
+      A multi-column mega footer sits full-width below the grid. No
+      right TOC rail (Airtable's support pages run two-column).
+    - Variable: two-column grid widths, sidebar group order, main
+      section sequence. Inline: column gutters, sidebar width (260px),
+      main column cap (~76ch), search-input max-width.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-docs-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter is Airtable's support-surface face. Faces are not
+  loaded in the asset; the system fallback in tokens.css carries the
+  register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so the two-column grid breathes
+   * without stretching at ultrawide. Inline page-grid character.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Nav: flush-top, sits in the page container, hairline rule below.
+   * Layout: wordmark left, large search input center, CTA pill right.
+   * The search dominates the nav rather than the usual nav-link cluster;
+   * a docs/support surface leads with find, not browse.
+   */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__search {
+    flex: 1;
+    max-width: 560px;
+    margin-inline: auto;
+    position: relative;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 10px var(--ds-space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .nav__search-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; }
+  .nav__kbd {
+    margin-left: auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: 2px 6px;
+    color: var(--ds-text-muted);
+  }
+  .nav__cta {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-bg);
+    background: var(--ds-accent-2);
+    border-radius: var(--ds-radius-md);
+    padding: 10px var(--ds-space-4);
+    /* Inline: amber CTA pill, the secondary brand accent that supports
+       the dominant blue on Airtable surfaces. */
+  }
+
+  /*
+   * Two-column docs grid. Inline column widths because they are page-grid
+   * character, not contract slots. Sidebar 260px, content 1fr. On mobile
+   * the sidebar drops to a top toggle (slot in this skeleton).
+   */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    padding-bottom: var(--ds-space-12);
+  }
+  @media (min-width: 900px) {
+    .docs-grid {
+      grid-template-columns: 260px 1fr;
+      gap: var(--ds-space-10);
+    }
+  }
+
+  /*
+   * Left sidebar. Sticky in the viewport. Category groups stack with a
+   * small mono group label and a vertical list of links beneath. The
+   * single active link picks up Airtable blue with a 2px left rule.
+   */
+  .sidebar {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: var(--ds-space-4);
+    border-right: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 900px) { .sidebar { display: block; } }
+  .sidebar__group { margin-bottom: var(--ds-space-6); }
+  .sidebar__group-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .sidebar__link {
+    display: block;
+    padding: 6px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    border-left: 2px solid transparent;
+  }
+  .sidebar__link:hover { color: var(--ds-text-strong); background: var(--ds-surface); }
+  .sidebar__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+    font-weight: 500;
+    background: var(--ds-surface);
+  }
+
+  /*
+   * Main content column. Max-width capped at ~76ch so prose and tables
+   * both render comfortably. Inline measure character.
+   */
+  .main {
+    min-width: 0;
+    max-width: 76ch;
+  }
+  .breadcrumb {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .breadcrumb__sep { padding: 0 var(--ds-space-2); color: var(--ds-text-muted); }
+  .breadcrumb a:hover { color: var(--ds-accent); }
+  .doc-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .doc-meta {
+    display: flex;
+    gap: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .doc-lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  .doc-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .doc-body > * + * { margin-top: var(--ds-space-5); }
+  .doc-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    scroll-margin-top: var(--ds-space-8);
+  }
+  .doc-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .doc-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .doc-body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+
+  /* Code block: tinted surface with hairline border, sm radius, mono. */
+  .codeblock {
+    position: relative;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-5);
+    overflow-x: auto;
+  }
+  .codeblock__tag {
+    position: absolute;
+    top: var(--ds-space-3);
+    right: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .codeblock pre {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    white-space: pre;
+  }
+
+  /*
+   * Callout / admonition. Tinted surface, hairline border, accent rule
+   * on the left edge. Airtable's support pages use this for "Note" and
+   * "Tip" boxes around plan-restriction notes.
+   */
+  .callout {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  .callout__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .callout__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Syntax-reference table. Airtable's markdown article ships a dense
+   * support-matrix table; this is the shape: mono header row, zebra
+   * body rows, hairline rules between rows.
+   */
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+  }
+  .ref-table th, .ref-table td {
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .ref-table th {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    font-weight: 500;
+  }
+  .ref-table tr:nth-child(even) td { background: var(--ds-surface); }
+
+  /*
+   * Prev/next pagination footer. Two cards at the foot of the main
+   * column. Each card carries a mono label (Previous / Next) and a
+   * body-sans title for the destination.
+   */
+  .pagination {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+  }
+  .pagination__cell {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .pagination__cell--next { text-align: right; align-items: flex-end; }
+  .pagination__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .pagination__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+
+  /* Footer band: full-width, outside the page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-bg);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for an airtable-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem</span>
+      <label class="nav__search" aria-label="Search support">
+        <span class="nav__search-icon" aria-hidden="true"></span>
+        <span>Search lorem ipsum dolor sit</span>
+        <span class="nav__kbd">Ctrl K</span>
+      </label>
+      <a class="nav__cta" href="#">Contact lorem</a>
+    </nav>
+
+    <!-- Section: two-column docs grid. -->
+    <div class="docs-grid">
+
+      <!-- Left sidebar: grouped category lists, one active link. -->
+      <aside class="sidebar" aria-label="Support categories">
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Getting started</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem onboarding</a></li>
+            <li><a class="sidebar__link" href="#">Lorem basics</a></li>
+            <li><a class="sidebar__link" href="#">Lorem first base</a></li>
+            <li><a class="sidebar__link" href="#">Lorem views</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Designing your base</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem field types</a></li>
+            <li><a class="sidebar__link sidebar__link--active" href="#">Lorem markdown reference</a></li>
+            <li><a class="sidebar__link" href="#">Lorem formulas</a></li>
+            <li><a class="sidebar__link" href="#">Lorem linked records</a></li>
+            <li><a class="sidebar__link" href="#">Lorem rollups</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Automations</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem triggers</a></li>
+            <li><a class="sidebar__link" href="#">Lorem actions</a></li>
+            <li><a class="sidebar__link" href="#">Lorem scripting</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Billing</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem plans</a></li>
+            <li><a class="sidebar__link" href="#">Lorem invoices</a></li>
+            <li><a class="sidebar__link" href="#">Lorem seats</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Troubleshooting</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem common errors</a></li>
+            <li><a class="sidebar__link" href="#">Lorem contact support</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main content column. -->
+      <main class="main">
+
+        <!-- Breadcrumb above the title. -->
+        <p class="breadcrumb">
+          <a href="#">Home</a>
+          <span class="breadcrumb__sep">/</span>
+          <a href="#">Designing your base</a>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem ipsum reference</span>
+        </p>
+
+        <!-- Page title. -->
+        <h1 class="doc-title">Lorem ipsum reference in dolor sit amet</h1>
+
+        <!-- Article metadata: updated date and reading time. -->
+        <p class="doc-meta">
+          <span>Updated lorem 4, 2026</span>
+          <span>6 min read</span>
+        </p>
+
+        <!-- Lead paragraph. -->
+        <p class="doc-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. This
+          article covers where lorem syntax is supported and how to use
+          it consistently across ipsum surfaces.
+        </p>
+
+        <!-- Body with H2/H3, code blocks, callouts, reference table. -->
+        <div class="doc-body">
+
+          <h2 id="what">What is lorem ipsum</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            See <a href="#">the syntax overview</a> for a full primer.
+          </p>
+
+          <h2 id="where">Where you can use it</h2>
+          <p>
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip. Lorem syntax is recognized in base
+            descriptions, long text fields, automations, and the API.
+          </p>
+
+          <div class="codeblock">
+            <span class="codeblock__tag">markdown</span>
+<pre>**lorem ipsum** dolor sit amet
+*consectetur* adipiscing elit
+[lorem link](https://example.com)
+- list item one
+- list item two</pre>
+          </div>
+
+          <h3 id="long-text">Inside long text fields</h3>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit
+            esse cillum dolore. Open <code>Field options</code> and
+            enable rich formatting to render the syntax.
+          </p>
+
+          <aside class="callout" aria-label="Note">
+            <p class="callout__title">Good to know</p>
+            <p class="callout__body">
+              Lorem ipsum rendering varies by surface. Tables and nested
+              lists may render differently in <a href="#">automations</a>
+              than in long text fields.
+            </p>
+          </aside>
+
+          <h2 id="reference">Lorem syntax reference</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit. The
+            table below records where each syntax form is supported.
+          </p>
+
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th>Syntax</th>
+                <th>Base description</th>
+                <th>Long text</th>
+                <th>Automations</th>
+                <th>API</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Headings</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+              <tr><td>Bold and italic</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+              <tr><td>Inline code</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+              <tr><td>Lists</td><td>Yes</td><td>Yes</td><td>Partial</td><td>Yes</td></tr>
+              <tr><td>Tables</td><td>No</td><td>No</td><td>No</td><td>Yes</td></tr>
+              <tr><td>Links</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            </tbody>
+          </table>
+
+        </div>
+
+        <!-- Prev/next pagination at the column close. -->
+        <nav class="pagination" aria-label="Pagination">
+          <a class="pagination__cell" href="#">
+            <span class="pagination__label">Previous</span>
+            <span class="pagination__title">Lorem desktop and mobile</span>
+          </a>
+          <a class="pagination__cell pagination__cell--next" href="#">
+            <span class="pagination__label">Next</span>
+            <span class="pagination__title">Finding lorem IDs</span>
+          </a>
+        </nav>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 220px;">
+        <span class="slot__label">mega-footer (platform / templates / extensions / solutions / company)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

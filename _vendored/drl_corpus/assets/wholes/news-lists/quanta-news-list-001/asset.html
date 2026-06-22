@@ -1,0 +1,273 @@
+<!--
+  Asset: quanta-news-list-001
+  Class: news-lists (whole)
+  Pattern: story-card-grid, mono-eyebrow, paper-and-ink
+  Inspired by: Quanta Magazine (quantamagazine.org home + /physics/)
+  Composition (declared in meta.json > composition_atoms):
+    - kickers/quanta-section-001                  (lowercase violet kicker)
+    - type-pairings/quanta-science-pair-001       (Tiempos serif + humanist sans)
+    - spacing-scales/modular-quarter-spacing-001  (editorial rhythm)
+  Notes:
+    - The defining gesture is the lowercase violet topic kicker
+      sitting above a serif title. The violet is the only chromatic
+      moment on the card; everything else is paper and ink.
+    - Two variants live in this asset: the home-page "Latest Articles"
+      stack carries a landscape thumb on the left; the compact sidebar
+      "Most Read" variant drops the thumb and tightens the byline row.
+    - Variable: every color, type, spacing, and radius slot is bound
+      to the contract. Inline: the home-card thumb aspect-ratio (16/9
+      framing rule) and the sidebar-rule color which mirrors hairline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-news-list-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Charter and Inter stand in for Quanta's licensed Tiempos / GT America
+     register so the file renders standalone. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent); /* sans for chrome; serif scoped to titles */
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Two-column page: main stack on the left, compact sidebar on the right.
+   * Mirrors Quanta's topic pages where a "Latest Articles" feed sits beside
+   * a "Most Read" rail. */
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-12);
+  }
+  @media (min-width: 960px) {
+    .page { grid-template-columns: minmax(0, 1fr) 320px; gap: var(--ds-space-10); }
+  }
+
+  /* Section heading. Quanta uses a small sans label, not a serif. */
+  .section__head {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* ---------- Main feed (home variant) ---------- */
+  .feed { display: flex; flex-direction: column; }
+  .feed__item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-6) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    color: inherit;
+    text-decoration: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .feed__item:first-of-type { padding-top: 0; }
+  .feed__item:last-of-type  { border-bottom: 0; }
+  @media (min-width: 640px) {
+    /* Thumb left, text right. Landscape framing reads as still rather
+     * than portrait card; matches Quanta's home stack. */
+    .feed__item { grid-template-columns: 240px 1fr; gap: var(--ds-space-6); align-items: start; }
+  }
+
+  /* Thumb. Inline aspect-ratio 16/9 is a one-off framing rule for the
+   * home variant; bordered by a hairline rather than carrying a shadow. */
+  .feed__thumb {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    overflow: hidden;
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 12px,
+        rgba(74, 45, 126, 0.05) 12px,
+        rgba(74, 45, 126, 0.05) 13px);
+  }
+
+  .feed__body { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+
+  /* Lowercase violet kicker. The single colored moment on the card. */
+  .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    text-decoration: none;
+  }
+  .kicker:hover { color: var(--ds-accent-2); }
+
+  /* Serif title. The reading face carries the headline. */
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .feed__item:hover .title { color: var(--ds-accent); }
+
+  /* Byline row. Sans, muted, single line on most cards. */
+  .byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-1);
+  }
+  .byline__sep { margin: 0 var(--ds-space-2); color: var(--ds-border); }
+
+  /* ---------- Sidebar (compact variant, no thumb) ---------- */
+  .rail { display: flex; flex-direction: column; }
+  .rail__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-5) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    color: inherit;
+    text-decoration: none;
+  }
+  .rail__item:first-of-type { padding-top: 0; }
+  .rail__item:last-of-type  { border-bottom: 0; }
+  .rail .title {
+    /* Compact variant drops one step on the scale; line wraps stay
+     * disciplined at two-to-three lines. */
+    font-size: var(--ds-text-lg);
+  }
+
+  /* Show More foot. Quanta uses a small sans link, no slab. */
+  .more {
+    margin-top: var(--ds-space-6);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .more__link {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-accent);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .more__link:hover { color: var(--ds-accent-2); text-decoration: underline; }
+
+  *:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .feed__item, .kicker, .title, .more__link { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <!-- Home-page variant: Latest Articles. Thumb on left, body on right. -->
+    <section aria-labelledby="feed-head">
+      <h2 class="section__head" id="feed-head">latest articles</h2>
+
+      <div class="feed">
+        <a class="feed__item" href="#a">
+          <div class="feed__thumb" aria-hidden="true"></div>
+          <div class="feed__body">
+            <a class="kicker" href="#topic-a">qualia</a>
+            <h3 class="title">Lorem ipsum dolor sit amet, what do the consectetur theorems truly mean?</h3>
+            <p class="byline">By Lorem Wolchover<span class="byline__sep">|</span>May 18, 2026</p>
+          </div>
+        </a>
+
+        <a class="feed__item" href="#b">
+          <div class="feed__thumb" aria-hidden="true"></div>
+          <div class="feed__body">
+            <a class="kicker" href="#topic-b">astronomy</a>
+            <h3 class="title">Sed do eiusmod tracks skyscraper-size asteroids and interstellar visitors.</h3>
+            <p class="byline">By Ipsum O'Callaghan<span class="byline__sep">|</span>May 15, 2026</p>
+          </div>
+        </a>
+
+        <a class="feed__item" href="#c">
+          <div class="feed__thumb" aria-hidden="true"></div>
+          <div class="feed__body">
+            <a class="kicker" href="#topic-c">physiology</a>
+            <h3 class="title">Ut enim ad minim veniam: how the bird eye was pushed to an evolutionary extreme.</h3>
+            <p class="byline">By Dolor Saplakoglu<span class="byline__sep">|</span>May 12, 2026</p>
+          </div>
+        </a>
+
+        <a class="feed__item" href="#d">
+          <div class="feed__thumb" aria-hidden="true"></div>
+          <div class="feed__body">
+            <a class="kicker" href="#topic-d">mathematics</a>
+            <h3 class="title">Duis aute irure: a new proof closes a long-open conjecture on lorem manifolds.</h3>
+            <p class="byline">By Consectetur Klarreich<span class="byline__sep">|</span>May 09, 2026</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="more">
+        <a class="more__link" href="#more">See all articles</a>
+      </div>
+    </section>
+
+    <!-- Topic-page variant: Most Read sidebar. Compact, no thumb. -->
+    <aside aria-labelledby="rail-head">
+      <h2 class="section__head" id="rail-head">most read in physics</h2>
+      <div class="rail">
+        <a class="rail__item" href="#r1">
+          <span class="kicker">atmospheric science</span>
+          <h3 class="title">Lorem ipsum: what causes lightning, and why the answer keeps getting more interesting.</h3>
+          <p class="byline">By Lorem Wood<span class="byline__sep">|</span>May 06, 2026</p>
+        </a>
+
+        <a class="rail__item" href="#r2">
+          <span class="kicker">materials science</span>
+          <h3 class="title">Excepteur sint occaecat: physicists discover the most complex forms of ice yet.</h3>
+          <p class="byline">By Ipsum Wegsman<span class="byline__sep">|</span>Apr 27, 2026</p>
+        </a>
+
+        <a class="rail__item" href="#r3">
+          <span class="kicker">quantum</span>
+          <h3 class="title">Quantum jamming explores the truly fundamental principles of nature.</h3>
+          <p class="byline">By Dolor von Hippel<span class="byline__sep">|</span>Apr 17, 2026</p>
+        </a>
+
+        <a class="rail__item" href="#r4">
+          <span class="kicker">earth science</span>
+          <h3 class="title">Will we ever be able to forecast volcanic eruptions like weather?</h3>
+          <p class="byline">By Sit Andrews<span class="byline__sep">|</span>Apr 08, 2026</p>
+        </a>
+      </div>
+    </aside>
+
+  </main>
+</body>
+</html>

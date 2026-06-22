@@ -1,0 +1,241 @@
+<!--
+  Asset: quanta-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses paper-and-ink + display-editorial + serif-display-sans-body + primary-square + mono-utility-pair)
+  Inspired by: Quanta Magazine (quantamagazine.org homepage, quantamagazine.org/tag/the-joy-of-why)
+  Composition (declared in meta.json > composition_atoms):
+    - type-pairings/quanta-science-pair-001          (serif headline + sans dek)
+    - headings/display-editorial-serif-001           (Tiempos-register editorial headline)
+    - kickers/quanta-section-001                     (lowercase violet eyebrow; here inverted to paper on violet)
+    - buttons/primary-square-001                     (2px near-sharp platform button)
+    - dividers/hairline-rule-001                     (subtle inner divider above the platform row)
+  Notes:
+    - The block sits as an inverted card on a paper page surface. The
+      surface is Quanta's signature deep violet; the type goes paper-white
+      on violet. This is the audio counterpart of the publication's
+      newsletter band: same brand, different register.
+    - Serif Tiempos-register headline names the episode, a short sans dek
+      summarizes the subject, a mono duration stamp sits as metadata, and
+      a row of uppercase 2px-radius platform buttons (APPLE, SPOTIFY, RSS)
+      anchors the action.
+    - Inline ornament: platform buttons are uppercase paper-on-violet
+      slabs with positive 0.14em tracking. The lowercase kicker inverts to
+      paper on violet (a deliberate flip of the live site's lowercase
+      violet-on-paper kicker rule); the eyebrow says "podcast" the same
+      way an article kicker says "physics."
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Open-license substitutes for the proprietary Quanta faces:
+     Newsreader stands in for Tiempos Headline / Text (the editorial serif
+     register Quanta uses across articles); Inter Tight stands in for GT
+     America (the humanist sans used on Quanta's UI chrome and dek lines);
+     JetBrains Mono stands in for the mono register used on metadata. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: paper. The CTA card sits as an inverted violet slab on
+   * the article surface; one hairline-violet edge separates it from the
+   * river of cards above and below. */
+  body {
+    background: #FFFFFF;
+    color: #1A1A1A;
+    font-family: var(--ds-font-body);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* The card itself: the inverted violet field. Sits at the same column
+   * width an article card would; the violet is what separates it from
+   * the article rhythm, not size or shadow. */
+  .cta {
+    width: 100%;
+    max-width: 720px;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    padding: var(--ds-space-8) var(--ds-space-8);
+    border-radius: var(--ds-radius-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+
+  /* Kicker: lowercase sans inverts to paper on violet. The live-site
+   * convention is lowercase violet on paper; this card flips both because
+   * the surface flipped. */
+  .cta__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    text-transform: lowercase;
+    margin: 0;
+  }
+
+  /* Display headline: Tiempos-register serif at section-heading step,
+   * tight leading, slight negative tracking. The headline names the
+   * episode; on the live site this slot carries the episode title. */
+  .cta__h2 {
+    font-family: "Newsreader", var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 4vw, var(--ds-text-2xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: humanist sans at base. The short paragraph that summarizes the
+   * episode subject. Sits on a violet-tinted off-white so it reads as
+   * supporting, not primary. */
+  .cta__lead {
+    font-family: "Inter Tight", var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Meta row: mono duration stamp + hairline-divider before the platform
+   * button row. */
+  .cta__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    line-height: 1;
+    color: var(--ds-text-muted);
+    margin: 0;
+    padding-top: var(--ds-space-3);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .cta__meta-dot {
+    /* Inline ornament: a 2px-square violet-tinted bullet that separates
+     * the duration stamp from the platform-row label. The dot is a
+     * one-off character mark, not a system element. */
+    display: inline-block;
+    width: 2px;
+    height: 2px;
+    background: var(--ds-text-muted);
+  }
+
+  /* Platform button row: uppercase sans labels, 2px near-sharp radius,
+   * paper-on-violet inverse. Each button is a slab; together they read
+   * as the audio platform row. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+  }
+
+  .cta__btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: "Inter Tight", var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Secondary button: outline-only variant. The live site sometimes shows
+   * a third platform (RSS, Amazon Music) as a quieter outline button so
+   * the row stays balanced. */
+  .cta__btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border-color: var(--ds-border);
+  }
+  .cta__btn--ghost:hover {
+    background: transparent;
+    color: var(--ds-text);
+    border-color: var(--ds-text-muted);
+  }
+
+  /* "More episodes" link sits below the platform row in mono, paper
+   * underline. */
+  .cta__more {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-border);
+    align-self: flex-start;
+    padding-bottom: 2px;
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__more:hover { border-bottom-color: var(--ds-text); }
+  .cta__more:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn, .cta__more {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <p class="cta__kicker">lorem ipsum</p>
+    <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet, consectetur adipiscing elit?</h2>
+    <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla, non saepe sed satis.</p>
+    <p class="cta__meta">
+      <span>00:00</span>
+      <span class="cta__meta-dot" aria-hidden="true"></span>
+      <span>Lorem ipsum</span>
+    </p>
+    <div class="cta__actions" role="group" aria-label="Lorem ipsum">
+      <a class="cta__btn" href="#">Lorem</a>
+      <a class="cta__btn" href="#">Ipsum</a>
+      <a class="cta__btn cta__btn--ghost" href="#">Dolor</a>
+    </div>
+    <a class="cta__more" href="#">Lorem ipsum &rarr;</a>
+  </section>
+</body>
+</html>

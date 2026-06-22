@@ -1,0 +1,140 @@
+<!--
+  Asset: field-label-floating-001
+  Class: labels
+  Pattern: label-above
+  Inspired by: Notion
+  Notes:
+    - Label starts inside the field at the input value position, then translates up and shrinks on focus or filled state.
+    - Label color and size come from tokens; the transform values are inline because the exact translate-y is a one-off motion ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>field-label-floating-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Notion ships NotionInter; system Inter is the closest free substitute. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 420px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block {
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .block:first-child { border-top: 0; padding-top: 0; }
+
+  .float-field {
+    position: relative;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    /* inline: 8px top padding plus 24px bottom padding makes room for the label to live above the value once floated */
+    padding: 22px 14px 8px 14px;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .float-field:focus-within {
+    border-color: var(--ds-text);
+  }
+  .float-label {
+    position: absolute;
+    left: 14px;
+    /* inline: 50% origin lets the resting label sit visually centered in the row; the JS-free :placeholder-shown trick toggles state */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    pointer-events: none;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard),
+                font-size var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .float-input {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: 1.3;
+    padding: 0;
+  }
+  /* When the input is focused or filled, lift the label and shrink it */
+  .float-input:focus ~ .float-label,
+  .float-input:not(:placeholder-shown) ~ .float-label {
+    /* inline: -130% translate plus 12px font-size lands the label above the value with a 4px breath */
+    transform: translateY(-130%);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .float-input:focus ~ .float-label {
+    color: var(--ds-text);
+  }
+  /* The placeholder-shown trick requires a placeholder that is invisible until the field is empty */
+  .float-input::placeholder { color: transparent; }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <div class="block">
+      <div class="state-label">empty</div>
+      <div class="float-field">
+        <input class="float-input" id="f1" type="text" placeholder=" "/>
+        <label class="float-label" for="f1">Lorem ipsum name</label>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="state-label">filled</div>
+      <div class="float-field">
+        <input class="float-input" id="f2" type="email" value="lorem@ipsum.dolor" placeholder=" "/>
+        <label class="float-label" for="f2">Work email</label>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="state-label">focus (empty)</div>
+      <div class="float-field" style="border-color: var(--ds-text);">
+        <input class="float-input" id="f3" type="text" placeholder=" " autofocus/>
+        <label class="float-label" for="f3" style="transform: translateY(-130%); font-size: var(--ds-text-xs); color: var(--ds-text);">Company</label>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="state-label">filled long value</div>
+      <div class="float-field">
+        <input class="float-input" id="f4" type="text" value="Lorem Ipsum Industries LLC" placeholder=" "/>
+        <label class="float-label" for="f4">Organisation</label>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

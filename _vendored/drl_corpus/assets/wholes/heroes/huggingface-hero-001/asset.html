@@ -1,0 +1,498 @@
+<!--
+  Asset: huggingface-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, oversized-statement, accent-on-neutral, display-tight
+  Inspired by: Hugging Face (huggingface.co home + /enterprise)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (white surface, near-black ink, one warm accent)
+    - type-pairings/sans-system-modern-001   (Source Sans display + body, Source Code Pro mono)
+    - headings/display-tight-001             (56-64px display-tight H1)
+    - buttons/primary-square-001             (yellow-on-black square primary CTA, 8px radius)
+    - buttons/ghost-bordered-001             (hairline ghost secondary)
+    - cards/hairline-flat-001                (trending row card frame)
+  Notes:
+    - Native context: huggingface.co home (hero, "Browse 2M+ models" /
+      "Explore AI Apps" CTA pair, trending Models / Datasets / Spaces
+      three-column strip beneath the hero) and /enterprise (dual-CTA
+      pair, dek paragraph layout, "Subscribe to Team / Contact sales"
+      shape). Both captured 2026-05-20 via WebFetch.
+    - Centered hero column with the literal hugging-face emoji glyph as
+      a kicker rather than a mono-uppercase eyebrow. The yellow does
+      not appear behind the H1 itself; it lives in the emoji kicker, the
+      focus rings, and as the trending-strip section accent rule. The
+      dual CTA pair is a yellow-on-black primary plus a hairline ghost
+      secondary, sitting one row below the dek.
+    - Inline ornament: the hug-face emoji glyph is a single character
+      (no contract slot for arbitrary emoji), the trending-strip three
+      column layout uses an inline 1fr-1fr-1fr grid (no contract slot
+      for arbitrary grid templates), and the model-id / dataset-id /
+      Space-id rows render as lorem mono strings with a yellow accent
+      rule beside each section title.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Sans 3 + Source Code Pro: both Adobe open-source families,
+     the literal HF type pair (community / academic register, not the
+     Inter + JetBrains Mono dev-tool register). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Pure-white paper canvas with near-black ink. The single
+   * chromatic moment in the hero is the yellow CTA and the emoji
+   * kicker; the trending strip below picks up the yellow as a section
+   * accent rule beside each header. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: emoji-wordmark left, quiet nav center, sign-in plus a
+   * primary action right. A single hairline separates chrome from
+   * canvas. */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: the hug-face emoji glyph is the brand mark; the wordmark
+   * just labels it. No contract slot for arbitrary emoji rendering. */
+  .topbar__mark__emoji {
+    font-size: 22px;
+    line-height: 1;
+    display: inline-block;
+    transform: translateY(-1px);
+  }
+
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, generous vertical padding. The emoji kicker
+   * sits above the H1 (not a mono-uppercase eyebrow); the dek follows;
+   * the dual CTA row sits one space-5 below. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-10);
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .hero__kicker {
+    /* Inline: oversized emoji as a kicker rather than uppercase mono.
+     * The character is the brand; the yellow glow under it is the
+     * design accent. No contract slot for emoji-as-kicker rendering. */
+    font-size: 56px;
+    line-height: 1;
+    display: inline-block;
+    filter: drop-shadow(0 4px 18px rgba(255, 210, 30, 0.45));
+    margin-bottom: var(--ds-space-2);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-6xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 12px 18px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  /* Primary: yellow-on-ink. HF's signature is the warm yellow on a
+   * near-black surface (the emoji-on-black pose). The button reverses
+   * the page surface to make the primary unmistakable. */
+  .btn--primary {
+    background: var(--ds-text-strong);
+    color: var(--ds-accent);
+    border: 1px solid var(--ds-text-strong);
+  }
+  .btn--primary:hover { background: #000000; border-color: #000000; }
+  .btn--primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 210, 30, 0.45);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--ghost:hover { background: var(--ds-surface-2); }
+  .btn--ghost:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 210, 30, 0.45);
+  }
+  .btn__glyph {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    transform: translateY(0.5px);
+  }
+
+  /* Trending strip. Three columns: Models / Datasets / Spaces. Each
+   * column carries a section title with a 3-wide yellow accent rule to
+   * its left, followed by a stack of model-id rows. Model id sits in
+   * Source Code Pro; metadata (updated time, download count) sits in
+   * Source Sans muted. */
+  .trending {
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-8) var(--ds-space-12);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--ds-space-6);
+  }
+  .trending__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .trending__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+    margin-bottom: var(--ds-space-2);
+  }
+  /* Inline: 3px-wide yellow accent rule to the left of each section
+   * title. No contract slot for accent-bar dimensions. */
+  .trending__head::before {
+    content: "";
+    display: inline-block;
+    width: 3px;
+    height: 18px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-xs);
+  }
+  .trending__head__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .trending__head__count {
+    margin-left: auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .trending__row {
+    display: block;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .trending__row:hover {
+    border-color: var(--ds-text);
+    background: var(--ds-surface-2);
+  }
+  .trending__row__id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+    display: block;
+    margin-bottom: var(--ds-space-1);
+    word-break: break-all;
+  }
+  .trending__row__meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    display: flex;
+    gap: var(--ds-space-3);
+    align-items: center;
+  }
+  .trending__row__meta__sep {
+    width: 3px;
+    height: 3px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-border);
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a, .trending__row { transition: none; }
+  }
+
+  @media (max-width: 860px) {
+    .topbar__nav { display: none; }
+    .trending { grid-template-columns: 1fr; }
+    .hero { padding-top: var(--ds-space-10); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <span class="topbar__mark__emoji" aria-hidden="true">&#x1F917;</span>
+      <span>Lorem Ipsum</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+      <a href="#">Elit</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Sed Do</a>
+      <a href="#" class="btn btn--primary">Eiusmod</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__kicker" aria-hidden="true">&#x1F917;</span>
+    <h1 class="hero__title">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, where the lorem community collaborates on ipsum, dolor, and amet.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">
+        Lorem Ipsum
+        <svg class="btn__glyph" viewBox="0 0 12 12" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6 H10 M7 3 L10 6 L7 9"/>
+        </svg>
+      </a>
+      <a href="#" class="btn btn--ghost">
+        Browse 2M+ Dolor
+        <svg class="btn__glyph" viewBox="0 0 12 12" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M2 6 H10 M7 3 L10 6 L7 9"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <section class="trending" aria-label="Lorem trending strip">
+    <div class="trending__col">
+      <div class="trending__head">
+        <span class="trending__head__title">Models</span>
+        <span class="trending__head__count">Browse 2M+</span>
+      </div>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">lorem-research/Ipsum-Dolor</span>
+        <span class="trending__row__meta">
+          <span>Updated 11 hours ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>438</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>462</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">consecteturAI/Adipiscing-2-base</span>
+        <span class="trending__row__meta">
+          <span>Updated 3 days ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>1.16M</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>1.2k</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">elit/Sed-Do-Eiusmod-4.6</span>
+        <span class="trending__row__meta">
+          <span>Updated 1 day ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>166k</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>826</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">tempor/Incididunt-3</span>
+        <span class="trending__row__meta">
+          <span>Updated 3 days ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>31.9k</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>498</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="trending__col">
+      <div class="trending__head">
+        <span class="trending__head__title">Datasets</span>
+        <span class="trending__head__count">Browse 500k+</span>
+      </div>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">utLabore/Et-Dolore-Magna</span>
+        <span class="trending__row__meta">
+          <span>Updated 2 days ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>41.5k</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>152</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">aliqua/Enim-Ad-Minim-12M</span>
+        <span class="trending__row__meta">
+          <span>Updated 6 days ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>8.67k</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>93</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">veniamEnterprises/Quis-Nostrud-RL</span>
+        <span class="trending__row__meta">
+          <span>Updated 8 days ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>9.34k</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>189</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">exercitation/Ullamco-Edu</span>
+        <span class="trending__row__meta">
+          <span>Updated 4 days ago</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>22.1k</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>271</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="trending__col">
+      <div class="trending__head">
+        <span class="trending__head__title">Spaces</span>
+        <span class="trending__head__count">Browse 400k+</span>
+      </div>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">laboris/Pixal3D</span>
+        <span class="trending__row__meta">
+          <span>197 views</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>Running on Zero</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">nisi/Wan2.2-14B-Fast-Preview</span>
+        <span class="trending__row__meta">
+          <span>1.27k views</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>Running on T4</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">aliquip/Supertonic-3-TTS</span>
+        <span class="trending__row__meta">
+          <span>156 views</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>Running on CPU Upgrade</span>
+        </span>
+      </a>
+      <a href="#" class="trending__row">
+        <span class="trending__row__id">exCommodo/Consequat-Vision</span>
+        <span class="trending__row__meta">
+          <span>843 views</span>
+          <span class="trending__row__meta__sep" aria-hidden="true"></span>
+          <span>Running on Zero</span>
+        </span>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

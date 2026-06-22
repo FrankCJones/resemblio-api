@@ -1,0 +1,133 @@
+/*
+ * studio-case-studies-grid-001 tokens
+ *
+ * Native token values for a Locomotive-style studio case-studies "grid": a
+ * vertical stack of project rows, each separated by a 1.6px solid black
+ * hairline on warm cream paper, with kinetic display titles that lift on hover.
+ *
+ * The case-studies surface inherits Locomotive's cream paper palette
+ * (locomotive-mono-001). Inversion (black surface) is available but not used
+ * here; this asset shows the cream-side composition.
+ *
+ * Observed via Chrome devtools 2026-05-19 on https://locomotive.ca/en
+ * (.c-featured-links section).
+ */
+:root {
+  /* ---------- Colors ----------
+   * Locomotive runs cream paper as the editorial surface for featured work;
+   * black is the rule, the ink, and the only accent.
+   */
+  --ds-bg:           #FAF9F5;   /* Cream paper; observed body bg rgb(250,249,245) 2026-05-19. */
+  --ds-surface:      #FFFFFF;   /* Pure white; observed as raised tile fill within the cream sections. */
+  --ds-surface-2:    #000000;   /* Black inversion surface; observed on hero and footer. Available to this asset for hover image overlay. */
+  --ds-text:         #000000;   /* Pure black ink; observed as title and body color across the cream surface. */
+  --ds-text-muted:   #30302E;   /* Warm dark grey; observed rgb(48,48,46) on secondary copy (project subtitles, kickers). */
+  --ds-text-strong:  #141413;   /* Near-black warm ink; observed rgb(20,20,19) as the SVG-fill variant where a slight warmth differentiates from pure black. */
+  --ds-border:       #000000;   /* The 1.6px solid rgb(0,0,0) section rule observed between case-study rows. Border is a statement, not chrome. */
+  --ds-hairline:     rgba(31, 30, 29, 0.15);  /* Quiet divider; warm ink at 15% opacity for nested separators inside a row. */
+  --ds-accent:       #000000;   /* No saturated accent. Black against cream IS the accent; inversion replaces a color hit. */
+  --ds-accent-2:     #FAF9F5;   /* Cream as inverse accent; used when a row's hover-state overlay paints black over the cream surface. */
+  --ds-success:      #1F8A4B;   /* Reserved utility green; not observed in source but required by contract. Tuned warm to fit. */
+  --ds-warning:      #C77A1F;   /* Reserved utility amber; warm to match cream-and-ink. */
+  --ds-error:        #B83A2E;   /* Reserved utility red; brick rather than vivid. */
+  --ds-info:         #312DFB;   /* Electric blue rgb(49,45,251); observed as a single saturated selection/focus hit. */
+  --ds-focus-ring:   #312DFB;   /* Matches info; the one electric punctuation the palette permits. */
+
+  /* ---------- Type families ----------
+   * LocomotiveNew display for project titles (oversized kinetic), HelveticaNowDisplay
+   * for metadata, kickers, and read-more affordance.
+   */
+  --ds-font-display: "LocomotiveNew", "Inter Tight", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", "JetBrains Mono", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Inter Tight", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Body 15px observed; row title 117.333px observed; section overline 15px.
+   * Scale anchors at body and case-study title.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;   /* Observed item font-size 2026-05-19. */
+  --ds-text-lg:   19px;
+  --ds-text-xl:   26px;   /* Observed H2 ("Featured work") 2026-05-19. */
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  46px;
+  --ds-text-4xl:  58px;
+  --ds-text-5xl:  70px;   /* Observed hero H1 size. */
+  --ds-text-6xl:  117px;  /* Observed .c-featured-links_title font-size 117.333px 2026-05-19. The case-study row title size. */
+  --ds-text-7xl:  160px;
+
+  /* ---------- Line heights ----------
+   * Titles run at 1.0 (observed 117.333px / 117.333px); body at 1.3
+   * (observed 15px / 19.5px). The tight title leading is what lets rows
+   * stack at 20px vertical padding without feeling crowded.
+   */
+  --ds-leading-tight:   1.0;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.3;   /* Observed body line-height 19.5px against 15px. */
+  --ds-leading-relaxed: 1.55;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Locomotive titles use normal tracking; mono labels are the only place
+   * tracking opens up.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base. Item padding observed 20px 0 (between the 5-step and 6-step on
+   * the scale); the additive scale covers it with 5+1 or used inline.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Every observed interactive element renders at 0 radius. Hard edges are
+   * a deliberate part of the studio register.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;   /* Available for an unusual pill; not used here. */
+
+  /* ---------- Shadows ----------
+   * Locomotive avoids shadow elevation entirely; the inversion overlay does
+   * the work elevation would do. Steps kept conservative for downstream use.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.10);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.14);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ----------
+   * Source ships Lenis-driven smooth scroll and a slow lift-and-reveal on
+   * hover for the row titles. Slow + emphasize curve mirrors that lingering feel.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    600ms;   /* The kinetic-title lift sits on this curve; slow is the studio's signature. */
+}

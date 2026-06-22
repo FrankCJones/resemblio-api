@@ -1,0 +1,526 @@
+<!--
+  Asset: loom-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid, comparison-feature-table, segmented-switch, primary-square, ghost-button
+  Inspired by: Loom (loom.com/pricing)
+  Notes:
+    - Loom pricing surface composes a four-up tier card grid (Starter /
+      Business / Business + AI / Enterprise) on a near-white page. The
+      third tier (Business + AI) carries the "MOST POPULAR" treatment
+      via a purple-blue 1px stroke and a faint tinted surface. Below
+      the cards sits a category-banded comparison-feature table.
+    - Loom's signature move: hairline card chrome (no shadow lift on
+      rest), subtle 12px corner radius (not pills), one saturated
+      purple-blue accent doing all chromatic work. Billing toggle is
+      a Monthly / Annually segmented pill above the grid.
+    - Variable: tier names, prices, feature lists, CTA targets, toggle
+      state, comparison-table contents. Inline ornament: the recommended
+      tier's purple-blue 1px stroke and tinted surface; the "MOST
+      POPULAR" pill badge floated above the card; the inline SVG check
+      glyph used in feature rows; the comparison-table category-band
+      pill rule.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter is the open substitute for Loom's marketing humanist sans. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .pricing {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Section head. Sentence-case H1 in display sans, muted dek, billing
+   * toggle to the right on wide screens (stacks under on narrow). */
+  .pricing__head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--ds-space-5);
+    align-items: end;
+  }
+  @media (max-width: 720px) {
+    .pricing__head { grid-template-columns: 1fr; }
+  }
+  .pricing__title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    max-width: 640px;
+  }
+  .pricing__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4.5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* Billing toggle. Segmented pill on hairline border, selected segment
+   * fills with near-black ink. */
+  .pricing__toggle {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .pricing__toggle-label {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .pricing__toggle-group {
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+  }
+  .pricing__toggle-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    padding: 6px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .pricing__toggle-btn[aria-pressed="true"] {
+    background: var(--ds-text);
+    color: #FFFFFF;
+  }
+  .pricing__toggle-save {
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-accent);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Tier grid. Four cards collapse via auto-fit + minmax. */
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+    gap: var(--ds-space-4);
+    align-items: stretch;
+  }
+
+  /* Tier card. Hairline border, 12px radius, flat at rest. */
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+
+  /* Inline ornament: recommended tier carries a 1px purple-blue stroke,
+   * a tinted surface wash, and a "MOST POPULAR" pill badge floated above
+   * the card. Lift is brand-chromatic, not elevation-based. */
+  .tier--recommended {
+    border-color: var(--ds-accent);
+    box-shadow: inset 0 0 0 1px var(--ds-accent), var(--ds-shadow-md);
+    background: var(--ds-surface-2);
+  }
+  .tier__popular {
+    position: absolute;
+    top: -14px;
+    left: var(--ds-space-6);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-size: var(--ds-text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: 6px var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier__tagline {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    min-height: 3em;
+  }
+
+  /* Price block. Big digit, baseline-aligned suffix in muted text. */
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .tier__price-digit {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-cadence {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTA. Square-radius primary fill on the recommended tier; ghost-bordered
+   * on the others. Loom's CTA register is square 12px corners, not pills. */
+  .tier__cta {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                border-color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+  }
+  .tier__cta--primary:hover { background: var(--ds-accent-2); }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover { border-color: var(--ds-text); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .tier__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: 0;
+    border: 0;
+  }
+
+  /* Feature list. Check glyph + body row. The glyph is a stroke SVG; the
+   * recommended tier carries the same glyph (chromatic restraint). */
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    flex: 1;
+  }
+  .tier__features li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .tier__features li::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    /* Inline ornament: stroke SVG check glyph tinted with Loom purple-blue
+     * on the recommended tier and muted ink elsewhere. Not a shared icon
+     * atom; this compact 16px scale is pricing-row specific. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23625DF5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 3px;
+  }
+
+  /* Comparison table beneath the cards. Category-band rows in a tinted
+   * pill rule, body rows in plain hairline-separated sans. */
+  .compare {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .compare__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .compare__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare__table thead th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    position: sticky;
+    top: 0;
+  }
+  .compare__table thead th + th { text-align: center; }
+  .compare__cat td {
+    background: var(--ds-surface-2);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-normal);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare__table tbody td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    color: var(--ds-text);
+    vertical-align: top;
+  }
+  .compare__table tbody td + td { text-align: center; color: var(--ds-text-muted); }
+  .compare__check {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    /* Inline ornament: filled check tinted Loom purple-blue for "included"
+     * cells. Same geometry as feature-row glyph. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23625DF5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tier__cta, .pricing__toggle-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="pricing" aria-label="Lorem ipsum pricing tiers">
+    <header class="pricing__head">
+      <div class="pricing__title">
+        <h2 class="pricing__h2">Lorem ipsum dolor sit amet, plans for any team.</h2>
+        <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla a tortor consequat.</p>
+      </div>
+      <div class="pricing__toggle" role="group" aria-label="Billing period">
+        <span class="pricing__toggle-label">Bill me</span>
+        <div class="pricing__toggle-group">
+          <button type="button" class="pricing__toggle-btn" aria-pressed="false">Monthly</button>
+          <button type="button" class="pricing__toggle-btn" aria-pressed="true">Annually</button>
+        </div>
+        <span class="pricing__toggle-save">Save up to 17%</span>
+      </div>
+    </header>
+
+    <div class="pricing__grid" role="list">
+
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Lorem</h3>
+        <p class="tier__tagline">For dolor sit amet starting with async ipsum.</p>
+        <div class="tier__price">
+          <span class="tier__price-digit">$0</span>
+          <span class="tier__price-cadence">free for everyone</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--ghost">Sign up</button>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Twenty-five lorem videos.</li>
+          <li>Five-minute screen recordings.</li>
+          <li>Unlimited meeting length.</li>
+          <li>Transcriptions in fifty plus languages.</li>
+          <li>Comments and emoji reactions.</li>
+        </ul>
+      </article>
+
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Ipsum</h3>
+        <p class="tier__tagline">For teams that need consectetur recording and editing.</p>
+        <div class="tier__price">
+          <span class="tier__price-digit">$15</span>
+          <span class="tier__price-cadence">/ creator / month, billed annually</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--ghost">Try for free</button>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Unlimited videos.</li>
+          <li>Unlimited recording time.</li>
+          <li>Basic waveform editing.</li>
+          <li>Remove brand mark from videos.</li>
+          <li>Upload and download videos.</li>
+        </ul>
+      </article>
+
+      <article class="tier tier--recommended" role="listitem" aria-label="Most popular tier">
+        <span class="tier__popular">Most popular</span>
+        <h3 class="tier__name">Dolor + AI</h3>
+        <p class="tier__tagline">All ipsum features, plus consectetur AI assistance.</p>
+        <div class="tier__price">
+          <span class="tier__price-digit">$20</span>
+          <span class="tier__price-cadence">/ creator / month, billed annually</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--primary">Try for free</button>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Auto-video enhancement.</li>
+          <li>Advanced waveform editing.</li>
+          <li>Video-to-text automation.</li>
+          <li>Auto-meeting recap emails.</li>
+          <li>Auto-meeting notes.</li>
+          <li>Voice and silence trimming.</li>
+        </ul>
+      </article>
+
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Consectetur</h3>
+        <p class="tier__tagline">For large organizations with adipiscing security and support needs.</p>
+        <div class="tier__price">
+          <span class="tier__price-digit">Custom</span>
+          <span class="tier__price-cadence">contact for pricing</span>
+        </div>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Advanced security (SSO, SCIM).</li>
+          <li>Salesforce integration.</li>
+          <li>Ninety-nine point ninety-five uptime SLA.</li>
+          <li>Compliance program (EBA).</li>
+          <li>Downloadable user insights.</li>
+          <li>Dedicated success manager.</li>
+        </ul>
+      </article>
+
+    </div>
+
+    <section class="compare" aria-label="Lorem ipsum feature comparison">
+      <h3 class="compare__title">Compare features across plans.</h3>
+      <table class="compare__table">
+        <thead>
+          <tr>
+            <th scope="col">Lorem feature</th>
+            <th scope="col">Lorem</th>
+            <th scope="col">Ipsum</th>
+            <th scope="col">Dolor + AI</th>
+            <th scope="col">Consectetur</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="compare__cat"><td colspan="5">Workspace members and videos</td></tr>
+          <tr>
+            <td>Members</td>
+            <td>Up to fifty</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+          </tr>
+          <tr>
+            <td>Videos per creator</td>
+            <td>Twenty-five</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+          </tr>
+
+          <tr class="compare__cat"><td colspan="5">Lorem AI</td></tr>
+          <tr>
+            <td>Auto-titles and summaries</td>
+            <td></td>
+            <td></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+          </tr>
+          <tr>
+            <td>Auto-meeting notes</td>
+            <td></td>
+            <td></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+          </tr>
+
+          <tr class="compare__cat"><td colspan="5">Video recording and editing</td></tr>
+          <tr>
+            <td>Recording length</td>
+            <td>Five minutes</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+          </tr>
+          <tr>
+            <td>Basic waveform editing</td>
+            <td></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+          </tr>
+
+          <tr class="compare__cat"><td colspan="5">Admin and support</td></tr>
+          <tr>
+            <td>Single sign-on (SSO)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+          </tr>
+          <tr>
+            <td>Dedicated success manager</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><span class="compare__check" aria-label="Included"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+</body>
+</html>

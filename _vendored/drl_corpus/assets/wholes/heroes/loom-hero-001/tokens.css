@@ -1,0 +1,130 @@
+/*
+ * loom-hero-001 tokens
+ *
+ * Native token values for the Loom marketing-page hero, captured via
+ * WebFetch on https://www.loom.com and https://www.loom.com/enterprise
+ * on 2026-05-20. Light canvas, near-black ink, the signature Loom
+ * purple-blue accent (#625df5) reserved for the primary CTA pill and
+ * recorder overlay glyph. The recorder-overlay screenshot pattern is
+ * what separates a Loom hero from a generic SaaS hero: a soft-cornered
+ * product canvas with a circular pulsing record control composited
+ * over the screenshot.
+ *
+ * Loom's typography reads as a humanist sans variable (Inter or a
+ * licensed sibling); the marketing surface does not expose a Geist
+ * Mono equivalent on the kicker register. Fallback chain leans on
+ * Inter, which the corporate page actually serves.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Loom's light surface system. White canvas, near-black ink, purple
+   * brand accent that earns a single chromatic moment in the first
+   * viewport. Hairlines (Gray 200) carry the card chrome; shadows are
+   * reserved for the product canvas screenshot, not the surrounding UI. */
+  --ds-bg:           #FFFFFF;   /* Page canvas; Loom homepage background. */
+  --ds-surface:      #F8F8FB;   /* Faint cool-paper wash for the screenshot panel. */
+  --ds-surface-2:    #EFEFF5;   /* Nested card chrome. */
+  --ds-text:         #1A1A2E;   /* Near-black with a cool tilt; headline ink. */
+  --ds-text-muted:   #595872;   /* Dek paragraph; cool-gray muted register. */
+  --ds-text-strong:  #0B0B19;   /* Deepest ink moment; reserved. */
+  --ds-border:       #E6E6EE;   /* Default component border / card edge. */
+  --ds-hairline:     #ECECF2;   /* Hairline under topbar and around panels. */
+  --ds-accent:       #625DF5;   /* Loom signature purple-blue; primary CTA fill. */
+  --ds-accent-2:     #4F49E6;   /* Hover shift on the primary CTA. */
+  --ds-success:      #00B37E;   /* Green status; recorder-ready dot. */
+  --ds-warning:      #F5A524;
+  --ds-error:        #E5484D;   /* Active-record dot on the recorder overlay. */
+  --ds-info:         #625DF5;   /* Matches accent. */
+  --ds-focus-ring:   #625DF5;   /* Brand purple at full saturation for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Loom marketing serves a humanist sans across display and body.
+   * Inter is the closest open fallback; the site itself wires up a
+   * licensed sibling. No mono register appears in the hero copy. */
+  --ds-font-display: "Inter", "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Loom homepage H1 sets around 56-72px on wide viewports, dek at
+   * 18-20px. Smaller than Vercel's 80px ceiling; Loom is a consumer
+   * SaaS register, not editorial display. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek paragraph. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;   /* Hero H1 mobile / midsize. */
+  --ds-text-5xl:  72px;   /* Hero H1 wide ceiling. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.08;   /* H1 tight, slightly looser than Vercel. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.025em;   /* Display H1; Loom uses a softer negative track than Vercel. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * Loom marketing rhythm: 24px between hero column elements, 96px
+   * vertical padding above the H1, the product canvas screenshot sits
+   * below the CTA pair with 64px of breathing room. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Loom signature: subtle rounded corners. CTA pill uses a larger
+   * radius than Vercel (8px) but stops short of fully-round. The
+   * product canvas screenshot uses 16px corners. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;     /* Primary CTA. */
+  --ds-radius-lg:   16px;    /* Product canvas screenshot. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Loom uses a soft lifted shadow on the product canvas screenshot
+   * to separate it from the canvas. UI chrome itself relies on
+   * hairlines. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(20,20,40,0.04);
+  --ds-shadow-md:   0 4px 12px rgba(20,20,40,0.06);
+  --ds-shadow-lg:   0 24px 60px rgba(20,20,40,0.10);   /* Product canvas lift. */
+  --ds-shadow-2xl:  0 40px 80px rgba(20,20,40,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

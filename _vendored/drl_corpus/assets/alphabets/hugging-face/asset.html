@@ -1,0 +1,518 @@
+<!--
+  Asset: hugging-face
+  Class: alphabets
+  Pattern: mono-utility-pair, mono-eyebrow, display-tight, hairline-as-chrome, code-editor-inline
+  Inspired by: Hugging Face (huggingface.co, /pricing, /datasets, /spaces)
+  Notes:
+    - The full Hugging Face typography vocabulary on one specimen: display
+      and body Source Sans 3, mono Source Code Pro. The mono carries every
+      model id (bytedance-research/Lance, openbmb/MiniCPM-V-4.6), dataset id
+      (HuggingFaceFW/fineweb-edu, cais/mmlu), Space id (multimodalart/
+      scenema-audio), and format chip (json, csv, parquet, arrow). The
+      community-academic register comes from the Source-family pair plus
+      the warm-yellow #FFD21E accent borrowed straight from the
+      hugging-face emoji.
+    - Editorial moves: hero H1 stays short and editorial ("The AI community
+      building the future." / "Leveling up AI collaboration and compute.")
+      at Source Sans 3 600 with tight tracking; pricing tier cards put the
+      tier name in 22px Semibold above a 44px Semibold price numeral with a
+      14px /month suffix; status chips on Spaces ("Running on Zero",
+      "Running on T4", "Running on CPU Upgrade") render in 12px sans with
+      the yellow accent or muted grey, not the dev-tool monospace register.
+    - Inline ornament: the yellow #FFD21E used in the PRO badge fill, the
+      :focus-visible halo, and the chip background on "Featured" and "MCP"
+      eyebrows; the #2563EB link blue used inside body copy and
+      breadcrumbs. Character moments, not tokens.
+    - Web-font substitutes: Source Sans 3 and Source Code Pro are both
+      Adobe open-source families loaded here via Google Fonts. The pair
+      itself is the open-source-as-the-thesis flag.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>hugging-face alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Wordmark row ---------- */
+  .wordmark {
+    display: flex; align-items: center; gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  /* The hug emoji glyph IS the brand; the wordmark just labels it. */
+  .wordmark .glyph { font-size: 22px; line-height: 1; }
+
+  /* ---------- Marketing hero block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  /* The yellow square swatch matches the hugging-face emoji yellow chip
+     used inline in HF marketing eyebrows next to "FEATURED" / "MCP". */
+  .kicker .dot {
+    width: 8px; height: 8px; border-radius: 2px;
+    background: var(--ds-accent);
+    display: inline-block;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);            /* 64px hero ceiling. */
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);     /* 1.1 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.02em */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .lede {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);             /* 18px lede. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; flex-wrap: wrap; }
+  .cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: var(--ds-text);               /* Dark-on-light primary; HF's "Sign Up" pattern. */
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-md);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .cta-yellow {
+    background: var(--ds-accent);             /* The PRO/Get-Pro yellow fill. */
+    color: var(--ds-text-strong);
+  }
+  .cta-ghost {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+
+  /* ---------- Mono-id list (model / dataset / Space) ---------- */
+  .modlist {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .modlist .label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .modrow {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+  }
+  .modrow .id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+  .modrow .meta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------- Format chip row ---------- */
+  .chiprow {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .chiprow .label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .chips { display: flex; gap: var(--ds-space-2); flex-wrap: wrap; }
+  .chip {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    padding: 4px 8px;
+    line-height: 1.4;
+  }
+  .chip.featured {
+    font-family: var(--ds-font-body);
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 700;
+    font-size: var(--ds-text-2xs);
+  }
+
+  /* ---------- Pricing tier card ---------- */
+  .tier {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-5);
+  }
+  .tier-card {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    background: var(--ds-surface);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .tier-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);             /* 22px tier name. */
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier-price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);            /* 44px price numeral. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    line-height: 1.05;
+    margin: 0;
+  }
+  .tier-price .suffix {
+    font-size: var(--ds-text-sm);             /* 14px /month per user. */
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+  .tier-features {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+
+  /* ---------- Inline code in body copy ---------- */
+  .prose {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .prose p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 64ch;
+  }
+  code.inline {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
+    padding: 1px 6px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* ---------- Code sample block ---------- */
+  .editor {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ds-text);
+    overflow-x: auto;
+  }
+  .editor .ln { color: var(--ds-text-muted); display: inline-block; width: 1.6em; user-select: none; }
+  .editor .kw { color: var(--ds-info); }
+  .editor .str { color: var(--ds-accent-2); }
+  .editor .cm { color: var(--ds-text-muted); font-style: italic; }
+
+  /* ---------- Footnote strip ---------- */
+  .footnote {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 112px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* ---------- Family strip ---------- */
+  .family-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .family-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <div class="wordmark" aria-label="Wordmark">
+      <span class="glyph" aria-hidden="true">&#x1F917;</span>
+      <span>Lorem Ipsum</span>
+    </div>
+
+    <header class="head">
+      <p class="kicker"><span class="dot" aria-hidden="true"></span>Lorem ipsum kicker</p>
+      <h1 class="title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="lede">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla. The platform where the community collaborates on models, datasets, and applications.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta cta-yellow" type="button">Get Lorem</button>
+        <button class="cta-ghost" type="button">Browse 2M+ lorem</button>
+      </div>
+    </header>
+
+    <section class="modlist" aria-label="Mono id list">
+      <p class="label">Lorem ipsum mono model and dataset ids:</p>
+      <div class="modrow">
+        <span class="id">loremorg/Lorem-Ipsum-12B-base</span>
+        <span class="meta">Updated 2 hours ago &middot; 14.2k &middot; 1.1k</span>
+      </div>
+      <div class="modrow">
+        <span class="id">ipsumlab/Dolor-Sit-Amet-Diffusion-v3</span>
+        <span class="meta">Updated 5 days ago &middot; 38.7k &middot; 612</span>
+      </div>
+      <div class="modrow">
+        <span class="id">consecteturAI/Adipiscing-Elit-OCR-2.0</span>
+        <span class="meta">Updated 1 week ago &middot; 9.4k &middot; 304</span>
+      </div>
+    </section>
+
+    <section class="chiprow" aria-label="Format and category chips">
+      <p class="label">Lorem ipsum format and category chips:</p>
+      <div class="chips">
+        <span class="chip">json</span>
+        <span class="chip">csv</span>
+        <span class="chip">parquet</span>
+        <span class="chip">optimized-parquet</span>
+        <span class="chip">imagefolder</span>
+        <span class="chip">soundfolder</span>
+        <span class="chip">webdataset</span>
+        <span class="chip">arrow</span>
+        <span class="chip featured">Featured</span>
+        <span class="chip featured">MCP</span>
+      </div>
+    </section>
+
+    <section class="tier" aria-label="Pricing tier cards">
+      <div class="tier-card">
+        <h3 class="tier-name">Lorem Account</h3>
+        <p class="tier-price">$9<span class="suffix">/month</span></p>
+        <ul class="tier-features">
+          <li>10x lorem ipsum capacity</li>
+          <li>2x dolor sit amet capacity</li>
+          <li>20x adipiscing credits</li>
+        </ul>
+      </div>
+      <div class="tier-card">
+        <h3 class="tier-name">Ipsum</h3>
+        <p class="tier-price">$20<span class="suffix">/month per user</span></p>
+        <ul class="tier-features">
+          <li>SSO lorem (SAML &amp; OIDC)</li>
+          <li>Data location ipsum control</li>
+          <li>Detailed action dolor sit logs</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="prose" aria-label="Inline code in body">
+      <p>Lorem ipsum dolor sit amet consectetur adipiscing. Load the model with <code class="inline">from transformers import AutoModel</code> then <code class="inline">AutoModel.from_pretrained("loremorg/Lorem-Ipsum-12B")</code>. The dataset id <code class="inline">ipsumlab/dolor-sit-amet</code> resolves at <code class="inline">datasets/ipsumlab/dolor-sit-amet</code>.</p>
+    </section>
+
+    <section class="editor" aria-label="Code sample">
+      <div><span class="ln">1</span><span class="cm"># Lorem ipsum dolor sit amet</span></div>
+      <div><span class="ln">2</span><span class="kw">from</span> transformers <span class="kw">import</span> AutoModel, AutoTokenizer</div>
+      <div><span class="ln">3</span>&nbsp;</div>
+      <div><span class="ln">4</span>model = AutoModel.from_pretrained(<span class="str">"loremorg/Lorem-Ipsum-12B"</span>)</div>
+      <div><span class="ln">5</span>tokenizer = AutoTokenizer.from_pretrained(<span class="str">"loremorg/Lorem-Ipsum-12B"</span>)</div>
+    </section>
+
+    <p class="footnote">Starting at $20/lorem/month &middot; Starting at $0.60/hour for ipsum &middot; non-profit &middot; 948 lorem &middot; 5.94k consectetur</p>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">6xl hero</span>
+        <span class="step-size">64 / 1.1 / 600</span>
+        <span class="step-sample" style="font-size:64px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl hero</span>
+        <span class="step-size">56 / 1.1 / 600</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl price</span>
+        <span class="step-size">44 / 1.05 / 600</span>
+        <span class="step-sample" style="font-size:44px;">$20 dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl section</span>
+        <span class="step-size">36 / 1.2 / 700</span>
+        <span class="step-sample" style="font-size:36px; font-weight:700;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl section</span>
+        <span class="step-size">28 / 1.25 / 600</span>
+        <span class="step-sample" style="font-size:28px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl tier</span>
+        <span class="step-size">22 / 1.3 / 700</span>
+        <span class="step-sample" style="font-size:22px; font-weight:700;">Lorem ipsum tier name</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg lede</span>
+        <span class="step-size">18 / 1.55 / 400</span>
+        <span class="step-sample body" style="font-size:18px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">16 / 1.55 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm row</span>
+        <span class="step-size">14 / 1.5 / 500</span>
+        <span class="step-sample mono" style="font-size:14px;">loremorg/Lorem-Ipsum-12B-base</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs chip</span>
+        <span class="step-size">12 / 1.4 / 500</span>
+        <span class="step-sample mono" style="font-size:12px;">parquet &middot; optimized-parquet &middot; arrow</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs kicker</span>
+        <span class="step-size">12 / 1.4 / 700</span>
+        <span class="step-sample body" style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:var(--ds-text-muted);">Lorem ipsum kicker</span>
+      </div>
+    </section>
+
+    <section class="family-strip" aria-label="Type families">
+      <span>display &middot; <b>Source Sans 3, wght 600 / 700</b></span>
+      <span>body &middot; <b>Source Sans 3, wght 400 / 500 / 600</b></span>
+      <span>mono &middot; <b>Source Code Pro, wght 400 / 500</b></span>
+      <span>base &middot; <b>16px / 24.8px (1.55)</b></span>
+      <span>H1 &middot; <b>56-64px / 1.1 / -0.02em / wght 600</b></span>
+      <span>tier price &middot; <b>44px Semibold + 14px /month suffix</b></span>
+      <span>model id row &middot; <b>14px Source Code Pro 500 / hairline card</b></span>
+      <span>chip &middot; <b>12px Source Code Pro 500 / 6px radius / #F3F4F6 fill</b></span>
+      <span>accent &middot; <b>#FFD21E (the emoji yellow)</b></span>
+      <span>chrome &middot; <b>1px hairline #E5E7EB; no drop shadow at rest</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

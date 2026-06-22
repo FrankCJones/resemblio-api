@@ -1,0 +1,320 @@
+<!--
+  Asset: glossier-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet
+  Inspired by: Glossier
+  Notes:
+    - The footer mechanic is restrained continuity: same paper-white
+      surface as the body, the wordmark steps up to statement display
+      and pink shows up only as a hover lift and a single privacy toggle.
+      Sentence-case end-to-end (the kicker labels too).
+    - Variable: palette, type, spacing, chrome all in tokens.css. Inline:
+      the Your Privacy Choices toggle uses a custom pink pill geometry
+      with comments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>glossier-footer-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* Footer band. Paper-white continues from the body. Wide horizontal
+   * padding holds the four-column sitemap. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    background: var(--ds-bg);
+    color: var(--ds-text);
+  }
+  .footer__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Wordmark anchors the top of the band at statement display. Same
+   * humanist sans as everything else; the size is the gesture. */
+  .footer__mark {
+    font-family: var(--ds-font-accent);
+    font-weight: 400;
+    font-size: var(--ds-text-6xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    margin: 0;
+    display: inline-block;
+  }
+
+  /* Sitemap: four columns on desktop (Help, About, Stores, Social).
+   * Index links collapse into a wide alphabetical row below. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-8);
+  }
+  @media (max-width: 880px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 540px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Column kicker. Sentence-case, near-black, sm step with wider
+   * tracking. Glossier substitutes a sentence-case label for the more
+   * common mono-eyebrow register. */
+  .footer__col-kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  /* Footer link. Sentence-case, ink at rest, pink lift on hover.
+   * The pink is the only second color in the entire footer. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-accent); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Alphabetical Index row. Wide horizontal grid of every product slug
+   * A-Z. Glossier uses this as a long-tail SEO surface and a brand
+   * inventory in one move. */
+  .footer__index {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .footer__index-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--ds-space-2) var(--ds-space-4);
+  }
+  @media (max-width: 880px) {
+    .footer__index-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 540px) {
+    .footer__index-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  .footer__index-link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__index-link:hover { color: var(--ds-text); }
+
+  /* Hairline before the legal row. One rule weight, gray. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Legal row. Sentence-case, gray, small step. Copyright sits at the
+   * right; privacy toggle takes its own pink pill. */
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer__legal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  .footer__legal-link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__legal-link:hover { color: var(--ds-text); }
+  .footer__copy {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* Privacy toggle. Inline ornament: the one place pink earns full
+   * surface tint rather than just a hover lift. Tiny pill, sentence-
+   * case label, square-stacked checkmark glyph in front. */
+  .privacy-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: var(--ds-surface-2);
+    color: var(--ds-text-strong);
+    padding: 4px 10px;
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-xs);
+    font-family: var(--ds-font-body);
+    text-decoration: none;
+    border: 0;
+  }
+  .privacy-toggle::before {
+    content: "";
+    width: 14px; height: 10px;
+    /* Inline: two-stack toggle glyph; the pink pill is the affordance. */
+    background: linear-gradient(var(--ds-text-strong) 0 0) 0 0/100% 3px no-repeat,
+                linear-gradient(var(--ds-text-strong) 0 0) 0 7px/100% 3px no-repeat;
+  }
+  .privacy-toggle:hover { background: var(--ds-accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link, .footer__legal-link, .footer__index-link, .privacy-toggle { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <a class="footer__mark" href="#" aria-label="Lorem ipsum home">lorem ipsum</a>
+
+      <div class="footer__grid">
+        <nav aria-label="Lorem help">
+          <p class="footer__col-kicker">How can we help?</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Lorem ipsum</a></li>
+            <li><a class="footer__link" href="#">Dolor sit amet</a></li>
+            <li><a class="footer__link" href="#">Consectetur</a></li>
+            <li><a class="footer__link" href="#">Adipiscing elit</a></li>
+            <li><a class="footer__link" href="#">Sed do eiusmod</a></li>
+            <li><a class="footer__link" href="#">Tempor incididunt</a></li>
+            <li><a class="footer__link" href="#">Ut labore</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="About lorem">
+          <p class="footer__col-kicker">About Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Et dolore magna</a></li>
+            <li><a class="footer__link" href="#">Aliqua ut enim</a></li>
+            <li><a class="footer__link" href="#">Ad minim veniam</a></li>
+            <li><a class="footer__link" href="#">Quis nostrud</a></li>
+            <li><a class="footer__link" href="#">Exercitation</a></li>
+            <li><a class="footer__link" href="#">Ullamco laboris</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Stores">
+          <p class="footer__col-kicker">Stores</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Find your store</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Social">
+          <p class="footer__col-kicker">Social</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Instagram</a></li>
+            <li><a class="footer__link" href="#">Pinterest</a></li>
+            <li><a class="footer__link" href="#">Facebook</a></li>
+            <li><a class="footer__link" href="#">YouTube</a></li>
+            <li><a class="footer__link" href="#">TikTok</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <section class="footer__index" aria-label="Lorem ipsum product index">
+        <p class="footer__col-kicker">Index</p>
+        <ul class="footer__index-list">
+          <li><a class="footer__index-link" href="#">After baume</a></li>
+          <li><a class="footer__index-link" href="#">Balm dotcom</a></li>
+          <li><a class="footer__index-link" href="#">Boy brow</a></li>
+          <li><a class="footer__index-link" href="#">Cloud paint</a></li>
+          <li><a class="footer__index-link" href="#">Dewy duo</a></li>
+          <li><a class="footer__index-link" href="#">Eyeliner pen</a></li>
+          <li><a class="footer__index-link" href="#">Futuredew</a></li>
+          <li><a class="footer__index-link" href="#">Generation g</a></li>
+          <li><a class="footer__index-link" href="#">Haloscope</a></li>
+          <li><a class="footer__index-link" href="#">Invisible shield</a></li>
+          <li><a class="footer__index-link" href="#">Jelly mask</a></li>
+          <li><a class="footer__index-link" href="#">Lash slick</a></li>
+          <li><a class="footer__index-link" href="#">Milky jelly</a></li>
+          <li><a class="footer__index-link" href="#">Niteshine</a></li>
+          <li><a class="footer__index-link" href="#">Olivia mist</a></li>
+          <li><a class="footer__index-link" href="#">Priming moisturizer</a></li>
+          <li><a class="footer__index-link" href="#">Quaint blush</a></li>
+          <li><a class="footer__index-link" href="#">Rose balm</a></li>
+          <li><a class="footer__index-link" href="#">Stretch concealer</a></li>
+          <li><a class="footer__index-link" href="#">Tinted moon</a></li>
+          <li><a class="footer__index-link" href="#">Ultralip</a></li>
+          <li><a class="footer__index-link" href="#">Velvet lash</a></li>
+          <li><a class="footer__index-link" href="#">Wowder brush</a></li>
+          <li><a class="footer__index-link" href="#">Yarrow tint</a></li>
+        </ul>
+      </section>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__legal">
+        <ul class="footer__legal-list">
+          <li><a class="footer__legal-link" href="#">Privacy policy</a></li>
+          <li><a class="footer__legal-link" href="#">US state privacy notice</a></li>
+          <li><a class="footer__legal-link" href="#">Terms of use</a></li>
+          <li><a class="footer__legal-link" href="#">Accessibility</a></li>
+          <li><a class="footer__legal-link" href="#">Supply chain transparency</a></li>
+          <li><a class="privacy-toggle" href="#" aria-label="Your privacy choices">Your privacy choices</a></li>
+        </ul>
+        <p class="footer__copy">(c) 2026 Lorem Ipsum, Inc. All rights reserved.</p>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

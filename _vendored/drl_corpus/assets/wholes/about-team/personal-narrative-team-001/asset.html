@@ -1,0 +1,276 @@
+<!--
+  Asset: personal-narrative-team-001
+  Class: about-team (whole)
+  Pattern: centered-narrow-column, paper-and-ink, lead-paragraph, inline-text-link
+  Inspired by: Craig Mod (craigmod.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001          (palette discipline)
+    - type-pairings/serif-mono-editorial-001   (serif body, mono metadata)
+    - headings/display-editorial-serif-001     (display serif headline)
+    - body-text/lead-paragraph-001             (lead paragraph)
+    - avatars/circle-photo-001                 (portrait treatment)
+    - links/inline-link-accent-001             (accent-colored in-body links)
+    - kickers/mono-eyebrow-001                 (mono dateline label)
+  Notes:
+    - The narrative IS the about page. There is no team grid, no role
+      cards, no "meet the founders" mosaic. The voice and prose are the
+      whole proof of expertise; the portrait is incidental rather than
+      featured.
+    - Variable parts: every --ds-* token. Inline ornament: the portrait
+      sits inline with the prose at a specific size; the dateline glyph
+      separator is a hairline middle-dot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>personal-narrative-team-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Charter is the body face; we load a close web-available substitute
+     (Newsreader) only as a visual fallback if Charter is not installed.
+     Most macOS / iOS readers will see real Charter. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  /* The page is a single narrow column. Measure ~ 36em (about 64 characters)
+   * which is the long-read sweet spot for serif body type. */
+  .narrative {
+    max-width: 36em;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+
+  /* Mono dateline: from atoms/kickers/mono-eyebrow-001. Uppercase mono,
+   * wide tracking, muted color. Sits above the headline as a publication
+   * marker. */
+  .narrative__dateline {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .narrative__dateline::after {
+    content: "";
+    display: block;
+    width: var(--ds-space-6);
+    height: 1px;
+    background: var(--ds-hairline);
+    margin-top: var(--ds-space-3);
+    /* Inline ornament: the trailing rule echoes the kicker-with-rule
+     * pattern but is not a separate atom; the rule is page chrome
+     * specific to this composition. */
+  }
+
+  /* Display headline: from atoms/headings/display-editorial-serif-001.
+   * Editorial serif, tight tracking, italic accent word in the brick
+   * red --ds-accent. */
+  .narrative__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .narrative__h1 em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ds-accent);
+  }
+
+  /* Lead paragraph: from atoms/body-text/lead-paragraph-001. One size up
+   * from body, lifted weight, sets the voice. */
+  .narrative__lead {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* Portrait row: the circle photo (from atoms/avatars/circle-photo-001)
+   * sits inline beneath the lead, paired with a caption-style byline in
+   * mono. The portrait is small - the writer is not the product. */
+  .narrative__portrait {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin: var(--ds-space-2) 0;
+  }
+  .narrative__portrait-img {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    background:
+      /* Inline ornament: a paper-toned placeholder gradient. In a real
+       * deployment this becomes an <img>; the gradient stands in here
+       * because the library uses no bundled photography. */
+      radial-gradient(circle at 35% 30%, #C9B89A, #6E5B3F 70%);
+    border: 1px solid var(--ds-border);
+    flex-shrink: 0;
+  }
+  .narrative__portrait-byline {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin: 0;
+  }
+  .narrative__portrait-byline strong {
+    color: var(--ds-text);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Body prose: serif body, normal leading, the in-body link uses the
+   * accent color with persistent underline (from atoms/links/inline-link-accent-001). */
+  .narrative__body p {
+    margin: 0 0 var(--ds-space-5) 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .narrative__body p:last-child { margin-bottom: 0; }
+
+  .narrative__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .narrative__body a:hover { color: var(--ds-accent-2); }
+  .narrative__body a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Section break hairline between the narrative and the credits list. */
+  .narrative__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-5) 0 0 0;
+  }
+
+  /* Credits / publications: a quiet mono-labeled list of where the
+   * writer has appeared. Two-column on wide viewports, single column
+   * on narrow. */
+  .narrative__credits {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: var(--ds-space-6);
+    row-gap: var(--ds-space-3);
+    margin: 0;
+    padding: 0;
+  }
+  .narrative__credits dt {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+  }
+  .narrative__credits dd {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+
+  @media (max-width: 480px) {
+    .narrative__credits {
+      grid-template-columns: 1fr;
+      row-gap: var(--ds-space-1);
+    }
+    .narrative__credits dd { margin-bottom: var(--ds-space-3); }
+  }
+</style>
+</head>
+<body>
+  <article class="narrative">
+    <p class="narrative__dateline">Lorem ipsum &middot; MMXXVI</p>
+
+    <h1 class="narrative__h1">
+      Lorem ipsum dolor sit amet, <em>consectetur</em> adipiscing elit.
+    </h1>
+
+    <p class="narrative__lead">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+      enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+      ut aliquip ex ea commodo consequat.
+    </p>
+
+    <div class="narrative__portrait">
+      <div class="narrative__portrait-img" role="img" aria-label="Lorem ipsum portrait placeholder"></div>
+      <p class="narrative__portrait-byline">
+        <strong>Lorem Ipsum</strong><br/>
+        writer &middot; photographer &middot; dolor
+      </p>
+    </div>
+
+    <div class="narrative__body">
+      <p>
+        Duis aute irure dolor in reprehenderit in voluptate velit esse
+        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia
+        <a href="#">deserunt mollit anim</a> id est laborum. Sed ut
+        perspiciatis unde omnis iste natus error sit voluptatem.
+      </p>
+      <p>
+        Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+        quae ab illo inventore veritatis et quasi architecto beatae vitae
+        dicta sunt explicabo. Just to prove the prose carries the page, I
+        also write for <a href="#">lorem ipsum</a>, <a href="#">dolor sit</a>,
+        and other big, fancy lorem publications.
+      </p>
+      <p>
+        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+        aut fugit, sed quia consequuntur magni dolores eos qui ratione
+        voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
+        ipsum quia dolor sit amet.
+      </p>
+    </div>
+
+    <hr class="narrative__rule" aria-hidden="true"/>
+
+    <dl class="narrative__credits">
+      <dt>Books</dt>
+      <dd>Lorem Atlas (MMXXIV), Ipsum Notebook (MMXXII)</dd>
+
+      <dt>Essays</dt>
+      <dd>Dolor sit amet, consectetur adipiscing elit</dd>
+
+      <dt>Photos</dt>
+      <dd>Quis nostrud exercitation ullamco laboris</dd>
+
+      <dt>Letters</dt>
+      <dd>Roden &middot; Ridgeline &middot; lorem ipsum</dd>
+    </dl>
+  </article>
+</body>
+</html>

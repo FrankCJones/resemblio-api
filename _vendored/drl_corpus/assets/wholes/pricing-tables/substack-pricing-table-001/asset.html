@@ -1,0 +1,315 @@
+<!--
+  Asset: substack-pricing-table-001
+  Class: pricing-tables
+  Pattern: callout-aside, primary-pill, paper-and-ink, serif-display-sans-body
+  Inspired by: Substack
+  Notes:
+    - Captures Substack's platform-fee callout pattern in lieu of a tiered grid:
+      one oversized statistic statement, a revenue calculator, one primary CTA.
+    - Variable: palette, type pair, spacing, radii. Inline: the calculator slider
+      thumb geometry, the percent-sign baseline shift, the calculated-result
+      monetary-digit treatment.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Spectral (editorial serif) and Inter (humanist sans) are the closest
+     open-source proxies for Substack's licensed serif and sans pair. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  /* Minimal reset scoped to the asset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .section {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  .eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .section-head {
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 18ch;
+  }
+
+  /* The composition: a two-column band on desktop. Left column is the
+     fee-statistic callout; right column is the calculator card. Collapses
+     to stacked at narrow widths. */
+  .composition {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-8);
+    align-items: stretch;
+  }
+  @media (max-width: 880px) {
+    .composition { grid-template-columns: 1fr; }
+  }
+
+  /* --- Fee callout card. Warm cream surface, oversized serif statistic. --- */
+  .callout {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .statistic {
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    /* Oversized statement; serif digit treats the platform-fee number
+       as an editorial fact, not a marketing claim. */
+    font-size: clamp(80px, 12vw, 144px);
+    line-height: 0.95;
+    letter-spacing: -0.04em; /* one-off tighter tracking specific to the statistic. */
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  .statistic .pct {
+    /* Inline character tweak: the % glyph reads heavier than the digits
+       at this size; a baseline shift and slight scale balance it. */
+    display: inline-block;
+    transform: translateY(-0.08em) scale(0.78);
+    transform-origin: bottom left;
+    font-weight: 400;
+    margin-left: -0.04em;
+  }
+
+  .callout-body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+    max-width: 28ch;
+  }
+
+  .callout-foot {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* --- Calculator card. Hairline border, no shadow at rest. --- */
+  .calculator {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+
+  .calc-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+
+  /* Pill toggle for price points. Mirrors Substack's segmented-switch
+     register: rounded full-radius pill row, hairline chrome at rest. */
+  .pill-row {
+    display: flex;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .pill {
+    border: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .pill:hover { background: var(--ds-surface); }
+  .pill[aria-pressed="true"] {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    border-color: var(--ds-text);
+  }
+
+  /* Slider for subscriber-count. Substack uses a static native range
+     with a warm-cream track; rebuilt here without the licensed widget. */
+  .slider {
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-full);
+    outline: none;
+  }
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    /* Inline geometry: 22px thumb sized to read against the 6px track. */
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+    cursor: pointer;
+    border: 2px solid var(--ds-bg);
+    box-shadow: 0 1px 3px rgba(26,26,26,0.18);
+  }
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+    cursor: pointer;
+    border: 2px solid var(--ds-bg);
+  }
+  .slider:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  .slider-scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-2);
+  }
+
+  .calc-result {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    margin-top: var(--ds-space-2);
+  }
+  .calc-result-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .calc-result-value {
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .calc-result-value .per {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    margin-left: var(--ds-space-2);
+  }
+
+  /* --- CTA row beneath the composition. --- */
+  .cta-row {
+    margin-top: var(--ds-space-8);
+    display: flex;
+    justify-content: center;
+  }
+  .btn-primary {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: var(--ds-accent-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    text-decoration: none;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-radius: var(--ds-radius-full);
+    border: none;
+    cursor: pointer;
+    transition: filter var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-primary:hover { filter: brightness(0.94); }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-labelledby="pricing-head">
+    <p class="eyebrow">Lorem ipsum dolor</p>
+    <h2 id="pricing-head" class="section-head">Aestimate quod facere potes in lorem.</h2>
+
+    <div class="composition">
+      <!-- Fee callout: the platform-fee statement as an editorial statistic. -->
+      <aside class="callout" aria-label="Lorem fee callout">
+        <p class="statistic" aria-label="ninety percent">90<span class="pct">%</span></p>
+        <p class="callout-body">Scriptores retinent nonaginta pro centum reditus sui, minus expensae card crediti.</p>
+        <p class="callout-foot">Nullum subscriptionis vectigal. Nullum praescriptum mensile.</p>
+      </aside>
+
+      <!-- Revenue calculator: pill row for price, slider for audience size,
+           computed result at the bottom. -->
+      <div class="calculator" role="group" aria-label="Lorem reditus aestimator">
+        <div>
+          <p class="calc-label">Pretium per mensem</p>
+          <div class="pill-row" role="radiogroup" aria-label="Lorem pretium">
+            <button class="pill" type="button" role="radio" aria-pressed="false">$5</button>
+            <button class="pill" type="button" role="radio" aria-pressed="false">$7</button>
+            <button class="pill" type="button" role="radio" aria-pressed="true">$10</button>
+            <button class="pill" type="button" role="radio" aria-pressed="false">$15</button>
+            <button class="pill" type="button" role="radio" aria-pressed="false">$30</button>
+            <button class="pill" type="button" role="radio" aria-pressed="false">$75</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="calc-label" for="subs">Subscriptiones pagantes</label>
+          <input id="subs" class="slider" type="range" min="50" max="50000" step="50" value="800"/>
+          <div class="slider-scale" aria-hidden="true">
+            <span>50</span><span>800</span><span>10k</span><span>50k</span>
+          </div>
+        </div>
+
+        <div class="calc-result">
+          <p class="calc-result-label">Reditus aestimatus</p>
+          <p class="calc-result-value">$7,200<span class="per">per mensem</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn-primary" href="#lorem">Incipe gratis</a>
+    </div>
+  </section>
+</body>
+</html>

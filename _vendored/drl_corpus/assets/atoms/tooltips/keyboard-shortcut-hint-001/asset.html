@@ -1,0 +1,175 @@
+<!--
+  Asset: keyboard-shortcut-hint-001
+  Class: tooltips
+  Pattern: mono-utility-pair
+  Inspired by: Raycast
+  Notes:
+    - Dark tooltip with a short description and one or more kbd-styled chips on the right; the shortcut is the load-bearing element.
+    - kbd chip bg, text color, and 4px radius are token-driven; the modifier glyphs and chip gap are inline because they are typographic detail specific to keyboard shortcuts.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>keyboard-shortcut-hint-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Raycast ships Inter; system sans fallback chain in tokens.css. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+    align-items: center;
+  }
+  .label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  /* Trigger pill: stand-in for a Raycast action row or icon button. */
+  .trigger {
+    background: var(--ds-surface);
+    border: 0.8px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-text);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    position: relative;
+    cursor: default;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .trigger-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ds-text-muted); }
+  /* Tooltip body: dark, with description + kbd chips */
+  .tooltip {
+    position: absolute;
+    /* inline: 10px gap above the trigger, room for the arrow */
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border: 0.8px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-2xl);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .tooltip-label {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  /* kbd chips: small flat pill, 10 percent white bg, 60 percent white text. */
+  .tooltip-kbds {
+    display: inline-flex;
+    /* inline: 4px gap between modifier chips; the visual rhythm of a key combo */
+    gap: 4px;
+  }
+  .kbd {
+    background: var(--ds-accent-2);
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+  }
+  /* Arrow */
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: var(--ds-surface);
+    border-right: 0.8px solid var(--ds-border);
+    border-bottom: 0.8px solid var(--ds-border);
+  }
+  .row { display: flex; gap: var(--ds-space-5); align-items: center; flex-wrap: wrap; justify-content: center; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="label">Lorem shortcut ipsum</div>
+
+    <div class="row">
+      <div class="trigger" aria-describedby="tip-a">
+        <span class="trigger-dot"></span>
+        Lorem ipsum action
+        <span class="tooltip" id="tip-a" role="tooltip">
+          <span class="tooltip-label">Open command</span>
+          <span class="tooltip-kbds">
+            <span class="kbd">&#8984;</span>
+            <span class="kbd">K</span>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="trigger" aria-describedby="tip-b">
+        <span class="trigger-dot"></span>
+        Dolor sit
+        <span class="tooltip" id="tip-b" role="tooltip">
+          <span class="tooltip-label">Confirm</span>
+          <span class="tooltip-kbds">
+            <span class="kbd">&#8629;</span>
+          </span>
+        </span>
+      </div>
+      <div class="trigger" aria-describedby="tip-c">
+        <span class="trigger-dot"></span>
+        Amet consectetur
+        <span class="tooltip" id="tip-c" role="tooltip">
+          <span class="tooltip-label">Dismiss</span>
+          <span class="tooltip-kbds">
+            <span class="kbd">Esc</span>
+          </span>
+        </span>
+      </div>
+      <div class="trigger" aria-describedby="tip-d">
+        <span class="trigger-dot"></span>
+        Adipiscing elit
+        <span class="tooltip" id="tip-d" role="tooltip">
+          <span class="tooltip-label">Settings</span>
+          <span class="tooltip-kbds">
+            <span class="kbd">&#8984;</span>
+            <span class="kbd">&#8679;</span>
+            <span class="kbd">,</span>
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

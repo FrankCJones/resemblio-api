@@ -1,0 +1,480 @@
+<!--
+  Asset: airtable-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid + comparison-feature-table
+  Inspired by: Airtable /pricing
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001     (warm off-white surface, near-black text)
+    - type-pairings/sans-system-modern-001 (single-family humanist sans)
+    - cards/hairline-flat-001             (hairline-bordered tier card, no rest shadow)
+    - buttons/primary-square-001          (coral primary CTA on featured tier)
+    - buttons/ghost-bordered-001          (secondary CTAs on Free, Team, Enterprise)
+    - badges/status-pill-001              ("Most popular" coral pill on featured card)
+    - tables/docs-comparison-table-001    (dense feature-comparison table layout)
+    - headings/display-tight-001          (tier name and price display)
+    - kickers/mono-eyebrow-001            (mono category band kickers in the table)
+    - icons/stroke-line-uniform-001       (check / dash glyphs in comparison rows)
+    - dividers/hairline-rule-001          (category-group separator inside the table)
+  Notes:
+    - Pattern is two layers: four equal tier cards (Free, Team, Business,
+      Enterprise Scale) above a long comparison table grouped by category.
+      The four-up grid is the Airtable-specific structural choice; most
+      SaaS pricing surfaces run three. Business is the visually featured
+      tier via a coral pill and a soft coral halo.
+    - Variable: every named role (card frame, CTA chrome, price size,
+      table row layout, category band) lives in a token. Inline: the
+      pill's offset above the featured card and the soft halo behind the
+      featured tier are asset-specific tuning that does not earn a slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Tight + Inter approximates Airtable's marketing sans; JetBrains
+     Mono carries the comparison-table category kickers. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .pricing {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  /* Section header. Display-tight pattern; balanced wrap; conversational
+   * sentence-case copy register matches Airtable's marketing voice. */
+  .pricing__header {
+    text-align: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .pricing__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .pricing__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    text-wrap: balance;
+    color: var(--ds-text-strong);
+  }
+  .pricing__sub {
+    margin: var(--ds-space-4) auto 0;
+    max-width: 62ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Tier-card row. Four equal cards. The Business card is featured via
+   * a soft coral halo and a "Most popular" pill that overlaps the top. */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-12);
+    align-items: stretch;
+  }
+  @media (max-width: 1080px) {
+    .tiers { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .tiers { grid-template-columns: 1fr; }
+  }
+
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+
+  /* Featured tier: coral halo + accent border. Inline ornament: the
+   * box-shadow recipe is calibrated to feel "lit from inside" without
+   * lifting off the surface. Not a contract slot because the recipe is
+   * asset-specific tuning. */
+  .tier--featured {
+    border-color: var(--ds-accent);
+    box-shadow: 0 0 0 4px var(--ds-accent-2);
+  }
+
+  /* Inline ornament: pill offset above the featured card. The translate
+   * value is calibrated to the pill height and is asset-specific. */
+  .tier__popular {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    white-space: nowrap;
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier__pitch {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .tier__amount {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+    color: var(--ds-text-strong);
+  }
+  .tier__period {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTAs. Primary on the featured tier is coral square-radius; ghosts
+   * on the other three carry hairline borders only. */
+  .tier__cta {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+    margin-top: auto;
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover { background: var(--ds-surface-2); }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .tier__cta--primary:hover { box-shadow: var(--ds-shadow-md); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Highlights list inside each tier card. Small text, check glyph. */
+  .tier__highlights {
+    list-style: none;
+    padding: 0;
+    margin: var(--ds-space-3) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier__highlights li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+  }
+  .check {
+    width: 16px; height: 16px;
+    color: var(--ds-success);
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  /* Comparison table. Bordered grid; mono category kickers above each
+   * group; rows are sans label + four columns of values. */
+  .compare-wrap { overflow-x: auto; }
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    text-align: left;
+  }
+  .compare thead th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    position: sticky;
+    top: 0;
+    background: var(--ds-bg);
+  }
+  .compare thead th:first-child {
+    color: var(--ds-text-muted);
+    font-weight: 500;
+  }
+  .compare tbody td,
+  .compare tbody th {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+    text-align: left;
+  }
+  .compare tbody td {
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .compare tbody tr:hover td,
+  .compare tbody tr:hover th { background: var(--ds-surface-2); }
+
+  /* Category-group row. Mono kicker styling; spans all five columns. */
+  .compare .group td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+
+  .compare .check-cell { color: var(--ds-success); }
+  .compare .dash-cell  { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="pricing">
+    <header class="pricing__header">
+      <div class="pricing__eyebrow">Lorem ipsum pricing</div>
+      <h1 class="pricing__h1">A plan for every organization's lorem ipsum needs.</h1>
+      <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, aenean fermentum magna at suscipit lacinia.</p>
+    </header>
+
+    <div class="tiers">
+      <!-- Tier 1: Free -->
+      <article class="tier">
+        <h2 class="tier__name">Lorem</h2>
+        <p class="tier__pitch">Curabitur nec libero non nisi convallis fringilla, for solo lorem and very small ipsum teams.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$0</span>
+          <span class="tier__period">free forever</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited lorem ipsum dolor</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>1,000 records per consectetur</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>1 GB adipiscing per workspace</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sed do eiusmod views</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Sign up free</button>
+      </article>
+
+      <!-- Tier 2: Team -->
+      <article class="tier">
+        <h2 class="tier__name">Ipsum</h2>
+        <p class="tier__pitch">Tempor incididunt ut labore for collaborative dolore magna teams.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$20</span>
+          <span class="tier__period">per user / month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Lorem, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>50,000 records per ipsum</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>20 GB workspace storage</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Standard sync ut enim</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Extensions and apps</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Try Ipsum free</button>
+      </article>
+
+      <!-- Tier 3: Business - featured -->
+      <article class="tier tier--featured">
+        <span class="tier__popular">Most popular</span>
+        <h2 class="tier__name">Dolor</h2>
+        <p class="tier__pitch">Aliqua ut enim ad minim veniam for departments and growing duis aute organizations.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$45</span>
+          <span class="tier__period">per user / month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Ipsum, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>125,000 records per consequat</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>100 GB workspace storage</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Premium sync irure dolor</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Verified data and admin panel</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--primary">Try Dolor free</button>
+      </article>
+
+      <!-- Tier 4: Enterprise Scale -->
+      <article class="tier">
+        <h2 class="tier__name">Sit</h2>
+        <p class="tier__pitch">Excepteur sint occaecat for enterprise cupidatat with custom proident requirements.</p>
+        <div class="tier__price">
+          <span class="tier__amount">Custom</span>
+          <span class="tier__period">contact sales</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Dolor, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited records per culpa</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>1,000 GB workspace storage</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Enterprise-grade controls</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>HyperDB and audit logs</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+      </article>
+    </div>
+
+    <!-- Comparison table. Dense, grouped by category. -->
+    <div class="compare-wrap">
+      <table class="compare" aria-label="Detailed feature comparison">
+        <thead>
+          <tr>
+            <th scope="col">Compare plans</th>
+            <th scope="col">Lorem</th>
+            <th scope="col">Ipsum</th>
+            <th scope="col">Dolor</th>
+            <th scope="col">Sit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="5">Bases and apps</td></tr>
+          <tr>
+            <th scope="row">Records per base</th>
+            <td>1,000</td><td>50,000</td><td>125,000</td><td>Unlimited</td>
+          </tr>
+          <tr>
+            <th scope="row">Attachment storage</th>
+            <td>1 GB</td><td>20 GB</td><td>100 GB</td><td>1,000 GB</td>
+          </tr>
+          <tr>
+            <th scope="row">Revision history</th>
+            <td>2 weeks</td><td>1 year</td><td>2 years</td><td>3 years</td>
+          </tr>
+          <tr>
+            <th scope="row">Interfaces and views</th>
+            <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Collaboration</td></tr>
+          <tr>
+            <th scope="row">Commenter and read-only</th>
+            <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">Sync from external sources</th>
+            <td class="dash-cell">—</td><td>Standard</td><td>Premium</td><td>Unlimited</td>
+          </tr>
+          <tr>
+            <th scope="row">Personal and locked views</th>
+            <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Automation and AI</td></tr>
+          <tr>
+            <th scope="row">Runs per month</th>
+            <td>100</td><td>25,000</td><td>100,000</td><td>500,000</td>
+          </tr>
+          <tr>
+            <th scope="row">Cobuilder app generation</th>
+            <td>Trial</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">AI agents</th>
+            <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Security and admin</td></tr>
+          <tr>
+            <th scope="row">Two-factor authentication</th>
+            <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">SAML single sign-on</th>
+            <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">Admin panel and audit logs</th>
+            <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">HyperDB and enterprise key management</th>
+            <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Support</td></tr>
+          <tr>
+            <th scope="row">Help center and community</th>
+            <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">Email support</th>
+            <td class="dash-cell">—</td><td>Standard</td><td>Priority</td><td>Priority</td>
+          </tr>
+          <tr>
+            <th scope="row">Dedicated customer success</th>
+            <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+          </tr>
+          <tr>
+            <th scope="row">Uptime SLA</th>
+            <td class="dash-cell">—</td><td class="dash-cell">—</td><td>99.9%</td><td>99.99%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</body>
+</html>

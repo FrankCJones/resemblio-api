@@ -1,0 +1,222 @@
+<!--
+  Asset: linear-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, mono-eyebrow, monochrome-palette, electric-accent
+  Inspired by: Linear (homepage testimonial section and /customers customer-story chrome)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001    (near-black surface, cool off-white text, indigo accent)
+    - type-pairings/sans-system-modern-001  (Inter Variable across display and body)
+    - cards/soft-elevation-001          (hairline ring shadow, no drop shadow at rest)
+    - avatars/circle-photo-001          (round photo attribution)
+    - kickers/mono-eyebrow-001          (uppercase mono pre-quote label)
+  Notes:
+    - One quote, one face. The mono kicker, sans quote at display scale, and
+      muted attribution row carry the rhythm. The indigo accent is reserved
+      for the trailing "read the story" link arrow; the card itself is
+      neutral. Hairline ring stands in for a border to keep corners crisp.
+    - Variable: every color, every type size, every spacing step. Inline
+      ornament: the opening glyph color-mix (off-white at reduced opacity)
+      and the trailing arrow rotation; both are one-off character moments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-testimonials-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Variable matches Linear's shipped font (devtools 2026-05-19). JetBrains Mono is the closest open-source proxy for the mono kicker register. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Near-black bg lets the hairline ring on the card carry the
+   * chrome without competing with anything in the viewport. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  /* The card. Hairline ring shadow stands in for a border so the corner
+   * radius stays crisp. No drop shadow at rest; Linear's chrome principle. */
+  .quote-card {
+    width: 100%;
+    max-width: 760px;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-8) var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+
+  /* Kicker: uppercase mono, tracked wider, muted color. Reads as a label.
+   * Mono is the only place mono appears on the card. */
+  .quote-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Quote body: Inter Variable at display scale, weight 510 (between 500 and
+   * 600) matching Linear's canonical body/h1 weight. Tight tracking, snug
+   * leading. No left rule; restraint over ornament. */
+  .quote-card__quote {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 3vw, var(--ds-text-2xl));
+    font-weight: 510;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Inline ornament: opening glyph at off-white with reduced opacity. Lifts
+   * the quote mark visually without adding a different family or color.
+   * One-off character choice; not a variable. */
+  .quote-card__glyph {
+    color: color-mix(in oklab, var(--ds-text) 60%, transparent);
+    font-family: var(--ds-font-display);
+    margin-right: 0.05em;
+    font-weight: 500;
+  }
+
+  /* Divider before attribution; the only hairline inside the card. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-1) 0 0 0;
+  }
+
+  /* Attribution row: avatar plus stacked name/role+company plus trailing link.
+   * Logo/face on the left mirrors Linear's customer-story chrome. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+
+  /* Avatar: round photo with hairline ring to anchor against the surface.
+   * Placeholder gradient stands in for a real headshot. */
+  .quote-card__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ds-radius-full);
+    background:
+      radial-gradient(circle at 30% 30%,
+        color-mix(in oklab, var(--ds-text-muted) 50%, var(--ds-surface-2)),
+        var(--ds-surface-2));
+    box-shadow: inset 0 0 0 1px var(--ds-hairline);
+    flex-shrink: 0;
+  }
+
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Name: brighter than the quote body; the load-bearing attribution line. */
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Role and company on one line; muted to keep the name dominant. */
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Trailing link: the only indigo on the card. Inline arrow rotates on
+   * hover; the rotation is the affordance. */
+  .quote-card__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+    white-space: nowrap;
+  }
+
+  .quote-card__link:hover { color: var(--ds-accent-2); }
+
+  .quote-card__link-arrow {
+    /* Inline ornament: a -45deg rotation turns a right-arrow glyph into the
+     * external-link diagonal Linear uses for case-study links. Specific to
+     * this asset; not a contract slot. */
+    display: inline-block;
+    transform: rotate(-45deg);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:hover .quote-card__link-arrow {
+    transform: rotate(-45deg) translateX(2px);
+  }
+
+  .quote-card__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card__link,
+    .quote-card__link-arrow { transition: none; }
+  }
+
+  @media (max-width: 520px) {
+    .quote-card { padding: var(--ds-space-6) var(--ds-space-5); }
+    .quote-card__attribution { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+  <figure class="quote-card" aria-label="Customer testimonial">
+    <p class="quote-card__kicker">Customer story / lorem ipsum</p>
+    <blockquote class="quote-card__quote">
+      <span class="quote-card__glyph" aria-hidden="true">&ldquo;</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla, a fermentum lacinia magna at suscipit eros.&rdquo;
+    </blockquote>
+    <hr class="quote-card__rule" aria-hidden="true"/>
+    <figcaption class="quote-card__attribution">
+      <span class="quote-card__avatar" role="img" aria-label="Portrait placeholder"></span>
+      <span class="quote-card__person">
+        <span class="quote-card__name">Lorem Ipsum</span>
+        <span class="quote-card__role">Head of Engineering at Dolor Sit Amet</span>
+      </span>
+      <a class="quote-card__link" href="#">
+        Read the story
+        <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </figcaption>
+  </figure>
+</body>
+</html>

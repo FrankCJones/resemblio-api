@@ -1,0 +1,144 @@
+<!--
+  Asset: squircle-avatar-001
+  Class: avatars
+  Pattern: (none)
+  Inspired by: Pitch
+  Notes:
+    - Rounded-square avatar tile at roughly 13% radius (8px on a 60px tile) - reads as squircle, not circle, not pill.
+    - Pattern works equally for photos, initials, and brand marks; the geometry is the consistent signal.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>squircle-avatar-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Eina01 is Pitch's proprietary sans; system Inter fallback via tokens. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .panel-title {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-4);
+  }
+  .row {
+    display: flex;
+    gap: var(--ds-space-5);
+    align-items: center;
+    margin-bottom: var(--ds-space-8);
+    flex-wrap: wrap;
+  }
+  /* Squircle base - rounded square at ~13% of the side */
+  .sq {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--ds-surface-2);
+    color: #FFFFFF; /* inline: initials sit white on the saturated tile */
+    font-weight: 600;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  /* Size variants - radius scales with side so the squircle look holds */
+  .sq-32 { width: 32px; height: 32px; border-radius: 5px; /* inline: 5/32 = 15.6% */ font-size: var(--ds-text-sm); }
+  .sq-40 { width: 40px; height: 40px; border-radius: 6px; /* inline: 6/40 = 15% */ font-size: var(--ds-text-base); }
+  .sq-60 { width: 60px; height: 60px; border-radius: var(--ds-radius-md); font-size: var(--ds-text-xl); }
+  .sq-80 { width: 80px; height: 80px; border-radius: 11px; /* inline: 11/80 = 13.75% */ font-size: var(--ds-text-2xl); }
+
+  /* Color variants - the squircle works equally with saturated tiles or photos */
+  .c-indigo { background: var(--ds-surface-2); }
+  .c-yellow { background: var(--ds-accent); color: var(--ds-surface-2); }
+  .c-violet { background: var(--ds-info); }
+  .c-photo {
+    background-image: linear-gradient(135deg, #5C5BE5 0%, #B59AFF 100%);
+  }
+  .c-photo-2 {
+    background-image: linear-gradient(135deg, #FFEC03 0%, #FFB347 100%);
+  }
+  .c-photo-3 {
+    background-image: linear-gradient(135deg, #2B2A35 0%, #6E6D7A 100%);
+  }
+
+  /* Inline byline use */
+  .byline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .byline .name {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .byline .meta {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <div class="panel-title">Size scale</div>
+    <div class="row">
+      <span class="sq sq-32 c-indigo">L</span>
+      <span class="sq sq-40 c-indigo">I</span>
+      <span class="sq sq-60 c-indigo">D</span>
+      <span class="sq sq-80 c-indigo">S</span>
+    </div>
+
+    <div class="panel-title">Photo variants</div>
+    <div class="row">
+      <span class="sq sq-60 c-photo"></span>
+      <span class="sq sq-60 c-photo-2"></span>
+      <span class="sq sq-60 c-photo-3"></span>
+    </div>
+
+    <div class="panel-title">Color variants</div>
+    <div class="row">
+      <span class="sq sq-40 c-indigo">A</span>
+      <span class="sq sq-40 c-yellow">B</span>
+      <span class="sq sq-40 c-violet">C</span>
+    </div>
+
+    <div class="panel-title">Inline byline</div>
+    <div class="row">
+      <span class="byline">
+        <span class="sq sq-40 c-photo"></span>
+        <span>
+          <div class="name">Lorem Ipsum</div>
+          <div class="meta">Lorem deck owner</div>
+        </span>
+      </span>
+    </div>
+    <div class="row">
+      <span class="byline">
+        <span class="sq sq-40 c-yellow">D</span>
+        <span>
+          <div class="name">Dolor Sit</div>
+          <div class="meta">Editor</div>
+        </span>
+      </span>
+    </div>
+
+  </div>
+</body>
+</html>

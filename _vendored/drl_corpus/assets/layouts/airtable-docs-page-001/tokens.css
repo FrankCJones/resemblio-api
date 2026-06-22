@@ -1,0 +1,117 @@
+/*
+ * airtable-docs-page-001 tokens
+ *
+ * Native token values for the Airtable support/docs page skeleton,
+ * inspired by support.airtable.com/docs/using-markdown-in-airtable.
+ * The docs surface is paper-white with near-black reading text and an
+ * Airtable-blue accent reserved for inline links, the active sidebar
+ * item, and search-affordance chrome. Two-column docs grid (left
+ * sidebar carrying grouped category lists, main reading column); no
+ * right TOC rail. WebFetch returned structural roles and section order
+ * (header search with Ctrl+K hint, grouped sidebar categories, H1 plus
+ * lead plus H2 sections with code blocks and a syntax-reference table,
+ * prev/next pagination, multi-column mega footer) but stripped inline
+ * computed styles. Numeric values follow Airtable's productivity-app
+ * register documented in systems/airtable/system.json design_principles
+ * (subtle-rounded-corners-not-pills, hairline-card-chrome-no-shadows-
+ * at-rest, sans display conversational tone) and the support-site
+ * material design Airtable has shipped on its help surface for years.
+ *
+ * Layout-specific notes: the two-column grid (260px sidebar / 1fr
+ * content) is inline page-grid character, not a contract slot. The
+ * reading column inside the content cell caps at ~76ch for legibility.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body surface. */
+  --ds-surface:      #FAFAFA;   /* Code-block / sidebar hover surface. */
+  --ds-surface-2:    #F2F4F7;   /* Callout tint, table zebra row, search input fill. */
+  --ds-text:         #1F2937;   /* Near-black body reading. */
+  --ds-text-muted:   #6B7280;   /* Sidebar inactive item, metadata, captions. */
+  --ds-text-strong:  #0F172A;   /* Doc title, H2 heads, active sidebar item. */
+  --ds-border:       #E5E7EB;   /* Card edges, code-block chrome, table rules. */
+  --ds-hairline:     rgba(15,23,42,0.08);  /* Column dividers, section rule. */
+  --ds-accent:       #2D7FF9;   /* Airtable-blue; inline links, active nav indicator. */
+  --ds-accent-2:     #FCB400;   /* Airtable amber; secondary brand accent (status, kicker). */
+  --ds-success:      #20C997;
+  --ds-warning:      #FCB400;
+  --ds-error:        #F82B60;
+  --ds-info:         #2D7FF9;
+  --ds-focus-ring:   #2D7FF9;   /* Airtable-blue at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Airtable's marketing/support face is Inter on the help surface;
+   * monospace carries inline-code and the Ctrl+K kbd hint. Open
+   * fallbacks so the asset renders standalone.
+   */
+  --ds-font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono breadcrumb, kbd hint, table header. */
+  --ds-text-sm:   14px;   /* Sidebar links, metadata, code-block content. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   18px;   /* Lead paragraph. */
+  --ds-text-xl:   22px;   /* Body H3. */
+  --ds-text-2xl:  28px;   /* Body H2 section heads. */
+  --ds-text-3xl:  36px;
+  --ds-text-4xl:  40px;   /* Doc title. */
+  --ds-text-5xl:  56px;
+  --ds-text-6xl:  72px;
+  --ds-text-7xl:  96px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;    /* Body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Inter display tightening. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.14em;   /* Mono breadcrumb / sidebar group label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Airtable's productivity-app register: small rounded corners on
+   * cards and inputs (6-8px), pills only for status dots and avatars.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;   /* Code-block, sidebar item hover, table cell. */
+  --ds-radius-md:   8px;   /* Callout surface, prev/next nav cards, search input. */
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadows suppressed at rest across
+   * docs. Cards lift via 1px border on tinted surface. Values declared
+   * for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(15,23,42,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(15,23,42,0.06);
+  --ds-shadow-md:   0 4px 14px rgba(15,23,42,0.08);
+  --ds-shadow-lg:   0 12px 28px rgba(15,23,42,0.12);
+  --ds-shadow-2xl:  0 28px 56px rgba(15,23,42,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

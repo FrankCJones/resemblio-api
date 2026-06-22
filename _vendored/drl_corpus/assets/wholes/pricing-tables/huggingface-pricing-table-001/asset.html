@@ -1,0 +1,554 @@
+<!--
+  Asset: huggingface-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid, accent-on-neutral, paper-and-ink, primary-pill, ghost-button, property-value-row, sku-mono-row
+  Inspired by: Hugging Face (https://huggingface.co/pricing)
+  Notes:
+    - Three-tier card row (PRO $9 / Team $20 recommended / Enterprise $50)
+      with the recommended card lifted by a yellow ring (#FFD21E, the
+      hugging-face emoji color), not a drop shadow. A small "MOST POPULAR"
+      pill sits absolute top-right.
+    - Beneath the tier row, a compute-pricing sub-table demonstrates the
+      Spaces hardware list: 18+ rows of mono SKU + spec + hourly price.
+      Mono register is the HF signature for instance ids and $/hour values.
+    - Variable: tier count (1-4 columns via auto-fit). Inline ornament:
+      the recommended-card 2px yellow ring, the green-check feature glyph,
+      and the sub-table row-zebra background, which all stay specific to
+      this asset rather than promoting to shared atoms.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Sans 3 + Source Code Pro: the HF face pair. Both Adobe-released
+     open-source families; the choice is itself a small open-source flag. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Pure-white canvas with a centered column. The whitespace
+   * is the chrome; HF has no drop shadows on the pricing surface. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .pricing {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Section head: tight display H1 + lede. HF's pricing hero copy reads
+   * "Leveling up AI collaboration and compute." in Source Sans Semibold. */
+  .pricing__head {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .pricing__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 4vw, 48px);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+    color: var(--ds-text-strong);
+  }
+  .pricing__sub {
+    margin: 0;
+    max-width: 56ch;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* Tier-card grid. Three cards collapse to one column under 720px. */
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--ds-space-5);
+    align-items: stretch;
+  }
+
+  /* Tier card: flat white, hairline border, generous padding, vertical
+   * rhythm via gap. Same shell as the cards/hairline-flat-001 atom. */
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+
+  /* Inline ornament: HF marks the Team tier with a 2px yellow ring,
+   * not a shadow. The ring inherits the wordmark-emoji color (#FFD21E),
+   * making the recommendation feel brand-native rather than borrowed
+   * from a generic "most popular" template. */
+  .tier--recommended {
+    border-color: var(--ds-accent);
+    box-shadow: inset 0 0 0 1px var(--ds-accent);
+  }
+
+  /* "Most popular" pill: sits absolute top-right on the recommended tier.
+   * Yellow fill, near-black text (yellow on white forces dark text for
+   * contrast). Uppercase, tracked, pill radius. */
+  .tier__badge {
+    position: absolute;
+    top: -12px;
+    right: var(--ds-space-5);
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: 4px var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+
+  /* Price block. Display digits at 44px, cadence suffix at 14px muted. */
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .tier__price-digit {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-cadence {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__tagline {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+
+  /* Feature list. Each row: green check glyph + body text in muted ink.
+   * The check is the only chromatic glyph besides the yellow ring/CTA. */
+  .tier__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: 0;
+    border: 0;
+  }
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    flex-grow: 1;
+  }
+  .tier__features li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .tier__features li::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    /* Inline ornament: small green check, hand-tuned stroke geometry.
+     * Specific to the compact 16px row scale; not a shared icon atom. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2310B981' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 3px;
+  }
+
+  /* CTA row. Yellow-on-black primary on the recommended tier; ghost-bordered
+   * on PRO; "Talk to sales" ghost on Enterprise. HF's actual /pricing uses
+   * a dark CTA on PRO and the yellow on Team; replicated here. */
+  .tier__cta {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      border-color var(--ds-duration-instant) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tier__cta--dark {
+    background: var(--ds-text-strong);
+    color: #FFFFFF;
+  }
+  .tier__cta--dark:hover {
+    background: #000000;
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+  }
+  .tier__cta--primary:hover {
+    background: var(--ds-accent-2);
+    color: #FFFFFF;
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover {
+    border-color: var(--ds-text);
+  }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Compute-pricing sub-table. The HF signature beneath the tier cards:
+   * a dense, mono-typed table of Spaces hardware SKUs (CPU/GPU configs
+   * with vCPU, memory, accelerator, hourly $). 18+ rows scan on a single
+   * viewport because the row padding tightens and mono ids align. */
+  .compute {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .compute__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .compute__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .compute__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .compute__table-wrap {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+  }
+  .compute__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+  }
+  .compute__table thead th {
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compute__table tbody td {
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    color: var(--ds-text);
+    vertical-align: middle;
+  }
+  .compute__table tbody tr:last-child td { border-bottom: 0; }
+  .compute__table td.compute__name {
+    font-family: var(--ds-font-body);
+    font-weight: 500;
+  }
+  .compute__table td.compute__price {
+    text-align: right;
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    white-space: nowrap;
+  }
+  .compute__free {
+    color: var(--ds-success);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tier__cta { transition: none; }
+  }
+  @media (max-width: 640px) {
+    .compute__table { font-size: var(--ds-text-xs); }
+    .compute__table thead th,
+    .compute__table tbody td { padding: var(--ds-space-2) var(--ds-space-3); }
+  }
+</style>
+</head>
+<body>
+  <section class="pricing" aria-label="Lorem ipsum pricing tiers">
+    <header class="pricing__head">
+      <h2 class="pricing__h2">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      <p class="pricing__sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ac libero non nisi convallis fringilla in et purus.</p>
+    </header>
+
+    <div class="pricing__grid" role="list">
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Lorem Account</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$9</span>
+          <span class="tier__price-cadence">/ month</span>
+        </div>
+        <p class="tier__tagline">For individuals dolor sit amet exploring ipsum collaboration daily.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>10x private storage capacity for lorem ipsum.</li>
+          <li>2x public storage capacity for dolor sit amet.</li>
+          <li>20x included inference credits per consectetur.</li>
+          <li>8x ZeroGPU quota and highest queue priority.</li>
+          <li>Dev mode and dedicated hosting for adipiscing.</li>
+          <li>Personal blog publishing and dataset viewer.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--dark">Get Lorem</button>
+      </article>
+
+      <article class="tier tier--recommended" role="listitem" aria-label="Most popular tier">
+        <span class="tier__badge">Most popular</span>
+        <h3 class="tier__name">Ipsum</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$20</span>
+          <span class="tier__price-cadence">/ month per user</span>
+        </div>
+        <p class="tier__tagline">For consectetur teams collaborating across adipiscing workspaces.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>SSO support via SAML and OIDC.</li>
+          <li>Data location control with storage regions.</li>
+          <li>Detailed action reviews with audit logs.</li>
+          <li>Granular access control via resource groups.</li>
+          <li>Repository usage analytics and visibility controls.</li>
+          <li>Centralized token control and member approvals.</li>
+          <li>All members receive PRO benefits, included.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--primary">Get Ipsum</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <h3 class="tier__name">Dolor</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$50</span>
+          <span class="tier__price-cadence">/ month per user</span>
+        </div>
+        <p class="tier__tagline">For organizations at scale, consectetur compliance, dedicated support.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Everything in Ipsum, plus the items below.</li>
+          <li>Highest storage, bandwidth, and API limits.</li>
+          <li>Automated user management with SCIM provisioning.</li>
+          <li>Advanced security and access controls.</li>
+          <li>Managed billing with annual commitments.</li>
+          <li>Legal and compliance processes and review.</li>
+          <li>Dedicated support and onboarding partner.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Talk to sales</button>
+      </article>
+    </div>
+
+    <section class="compute" aria-label="Compute pricing sub-table">
+      <header class="compute__head">
+        <span class="compute__kicker">Lorem hardware &middot; per hour</span>
+        <h3 class="compute__title">Lorem ipsum compute pricing.</h3>
+      </header>
+      <div class="compute__table-wrap">
+        <table class="compute__table">
+          <thead>
+            <tr>
+              <th scope="col">Instance</th>
+              <th scope="col">vCPU</th>
+              <th scope="col">Memory</th>
+              <th scope="col">Accelerator</th>
+              <th scope="col">VRAM</th>
+              <th scope="col" style="text-align:right;">Hourly</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="compute__name">cpu_basic</td>
+              <td>2 vCPU</td>
+              <td>16 GB</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td class="compute__price compute__free">FREE</td>
+            </tr>
+            <tr>
+              <td class="compute__name">cpu_upgrade</td>
+              <td>8 vCPU</td>
+              <td>32 GB</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td class="compute__price">$0.03</td>
+            </tr>
+            <tr>
+              <td class="compute__name">zero_gpu</td>
+              <td>dynamic</td>
+              <td>dynamic</td>
+              <td>nvidia_h200</td>
+              <td>70 GB</td>
+              <td class="compute__price compute__free">FREE</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_t4_small</td>
+              <td>4 vCPU</td>
+              <td>15 GB</td>
+              <td>nvidia_t4</td>
+              <td>16 GB</td>
+              <td class="compute__price">$0.40</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_t4_medium</td>
+              <td>8 vCPU</td>
+              <td>30 GB</td>
+              <td>nvidia_t4</td>
+              <td>16 GB</td>
+              <td class="compute__price">$0.60</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_l4_x1</td>
+              <td>8 vCPU</td>
+              <td>30 GB</td>
+              <td>nvidia_l4</td>
+              <td>24 GB</td>
+              <td class="compute__price">$0.80</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_l4_x4</td>
+              <td>48 vCPU</td>
+              <td>186 GB</td>
+              <td>nvidia_l4</td>
+              <td>96 GB</td>
+              <td class="compute__price">$3.80</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_l40s_x1</td>
+              <td>8 vCPU</td>
+              <td>62 GB</td>
+              <td>nvidia_l40s</td>
+              <td>48 GB</td>
+              <td class="compute__price">$1.80</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_l40s_x4</td>
+              <td>48 vCPU</td>
+              <td>382 GB</td>
+              <td>nvidia_l40s</td>
+              <td>192 GB</td>
+              <td class="compute__price">$8.30</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_l40s_x8</td>
+              <td>192 vCPU</td>
+              <td>1534 GB</td>
+              <td>nvidia_l40s</td>
+              <td>384 GB</td>
+              <td class="compute__price">$23.50</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_a10g_small</td>
+              <td>4 vCPU</td>
+              <td>15 GB</td>
+              <td>nvidia_a10g</td>
+              <td>24 GB</td>
+              <td class="compute__price">$1.00</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_a10g_large</td>
+              <td>12 vCPU</td>
+              <td>46 GB</td>
+              <td>nvidia_a10g</td>
+              <td>24 GB</td>
+              <td class="compute__price">$1.50</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_a100_large</td>
+              <td>12 vCPU</td>
+              <td>142 GB</td>
+              <td>nvidia_a100</td>
+              <td>80 GB</td>
+              <td class="compute__price">$2.50</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_a100_x4</td>
+              <td>48 vCPU</td>
+              <td>568 GB</td>
+              <td>nvidia_a100</td>
+              <td>320 GB</td>
+              <td class="compute__price">$10.00</td>
+            </tr>
+            <tr>
+              <td class="compute__name">nvidia_a100_x8</td>
+              <td>96 vCPU</td>
+              <td>1136 GB</td>
+              <td>nvidia_a100</td>
+              <td>640 GB</td>
+              <td class="compute__price">$20.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</body>
+</html>

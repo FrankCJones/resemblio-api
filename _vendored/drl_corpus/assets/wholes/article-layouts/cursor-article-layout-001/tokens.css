@@ -1,0 +1,143 @@
+/*
+ * cursor-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Cursor's /blog surface (the research
+ * and changelog hub of cursor.com). Inherits the Cursor system tokens
+ * already verified by precedent assets in the library: warm-leaning
+ * off-white page #FBFBFA, pure-white tile surfaces, near-black ink
+ * #111113, hairline neutral borders, and a single blue accent #2667FF
+ * reserved for inline links and the breadcrumb kicker. Inter for
+ * display and body; JetBrains Mono held for the eyebrow / metadata
+ * register, the Cursor-canonical technical-eyebrow convention.
+ *
+ * Source inspected via WebFetch 2026-05-20 on
+ * https://cursor.com/blog and https://cursor.com/blog/composer-2-5.
+ * The live HTML header sequence (breadcrumb 'Blog / research', H1
+ * 'Introducing Composer 2.5', dot-separated date + category + read-time
+ * metadata strip, single-column body with H3 subheads + paired
+ * light/dark image figures, related-posts rail of three cards, full-
+ * site footer) was confirmed via WebFetch prose extraction. Token
+ * values follow the Cursor system already captured in
+ * cursor-products-grid-001 (2026-05-19) and remain unchanged on the
+ * article chrome.
+ *
+ * Free-font analog in `asset.html`:
+ *   - Inter (Google Fonts) substitutes for Inter Variable shipped by
+ *     Cursor; weight axis behaves identically across the steps used.
+ *   - JetBrains Mono (Google Fonts) substitutes for the mono register
+ *     used in the eyebrow and read-time chip.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Light Cursor surface; near-black ink; one quiet blue accent. The
+   * article inherits the grid asset's palette without modification; the
+   * surface is canonical across cursor.com's marketing register.
+   */
+  --ds-bg:           #FBFBFA;   /* Page background. Warm-leaning off-white reads as paper. */
+  --ds-surface:      #FFFFFF;   /* Pull-quote inset, figure frame, related-card surface. */
+  --ds-surface-2:    #F5F5F4;   /* Quiet recess; code block bg, inline-callout fill. */
+  --ds-text:         #111113;   /* Body reading ink; near-black. */
+  --ds-text-muted:   #6B6B70;   /* Byline, date, breadcrumb second segment, caption. */
+  --ds-text-strong:  #000000;   /* Display H1 only; reserved emphasis. */
+  --ds-border:       #E5E5E2;   /* Card outline, figure frame edge, related-card border. */
+  --ds-hairline:     #EDEDEA;   /* Section break, metadata-strip rule, related-rail top. */
+  --ds-accent:       #2667FF;   /* Cursor blue; inline links, breadcrumb first segment, focus ring. */
+  --ds-accent-2:     #6F86FF;   /* Lifted blue; link hover and visited tone. */
+  --ds-success:      #2F8F5C;
+  --ds-warning:      #C68B12;
+  --ds-error:        #C13C3C;
+  --ds-info:         #2667FF;
+  --ds-focus-ring:   #6F86FF;   /* Lifted blue; visible against the off-white surface. */
+
+  /* ---------- Type families ----------
+   * Inter across display and body, the Cursor marketing baseline. The
+   * eyebrow / read-time chip / breadcrumb use Inter Tight as the accent
+   * face; JetBrains Mono is reserved for code blocks inside research
+   * posts and for the read-time numeric chip when the post is technical.
+   */
+  --ds-font-display: "Inter Tight", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter Tight", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Cursor's article H1 sits at the 3xl step (~40px on desktop), one
+   * step below editorial publications. Body at 18px with 1.65 leading;
+   * the register is dev-tool reading, not print editorial.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Breadcrumb, byline, date, read-time chip. */
+  --ds-text-sm:   14px;
+  --ds-text-base: 18px;   /* Body reading register. */
+  --ds-text-lg:   21px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   26px;   /* Subheads (H3 inside body). */
+  --ds-text-2xl:  32px;   /* Pull-quote display. */
+  --ds-text-3xl:  40px;   /* Article H1. */
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * 1.65 body sits one step above the SaaS 1.5 default; tells the eye
+   * to settle in without crossing into print's 1.75 editorial register.
+   * Display tight at 1.08 keeps the H1 compact at the 40px step.
+   */
+  --ds-leading-tight:   1.08;
+  --ds-leading-snug:    1.22;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Cursor display tracking is negative across the H1 step; uppercase
+   * mono eyebrow and read-time chip sit at +0.16em.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Article column hits its measure at ~720px; vertical
+   * rhythm between paragraphs is space-5 (24px) per the Cursor reading
+   * register.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cursor card chrome sits at lg (16px); the article figure frame and
+   * the related-post cards carry it. Section rules and the body itself
+   * carry none.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Bento on light surface stays flat; hairline border carries the
+   * lift. Cursor uses shadows sparingly; figure frame engages xs only.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(17,17,19,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(17,17,19,0.05), 0 2px 8px rgba(17,17,19,0.04);
+  --ds-shadow-md:   0 4px 12px rgba(17,17,19,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(17,17,19,0.1);
+  --ds-shadow-2xl:  0 32px 64px rgba(17,17,19,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

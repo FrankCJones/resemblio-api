@@ -1,0 +1,264 @@
+<!--
+  Asset: olipop-product-hero-001
+  Class: heroes (whole)
+  Pattern: split-hero, single-cta-hero, no-imagery
+  Inspired by: Olipop
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups (peach/forest palette baked into tokens.css)
+    - headings/retro-soda-001         (WindsorEF chunky display)
+    - buttons/soft-pill-pink-001      (forest-green primary pill)
+    - type-pairings (Ano body + WindsorEF display)
+    - backgrounds (flat peach field; no gradient, no texture)
+    - kickers (small-caps editorial label above the headline)
+  Notes:
+    - Product hero in the consumer-DTC register; left column holds the
+      Windsor display headline, mono kicker, body lede, and primary CTA.
+      Right column holds a soda-can mock built from pure CSS (radial
+      cream cap + accent band) so the asset opens standalone without
+      external assets.
+    - Variable: every color and type slot maps to the contract; the can
+      mock is inline ornament (specific to this asset's product character).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-product-hero-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- WindsorEF is licensed; we load Cooper-flavoured Google fallback (Yeseva)
+     for the display moment so the asset renders in the right register
+     even without the licensed face. Body uses DM Sans as a humanist-sans
+     stand-in for Ano. Both fallbacks are documented in tokens.css. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=DM+Sans:wght@400;500;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Flat peach field; the Olipop product page rejects
+   * gradients in favor of a single warm surface, letting the can do the
+   * visual work. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  /* Two-column hero. On wide screens the can sits right; on mobile it
+   * stacks beneath the type column. */
+  .hero {
+    width: 100%;
+    max-width: 1120px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--ds-space-10);
+    align-items: center;
+  }
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; gap: var(--ds-space-8); }
+  }
+
+  /* Left column: type stack. Generous vertical rhythm, narrow measure on
+   * the headline so the Windsor face has room to breathe. */
+  .hero__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 520px;
+  }
+
+  /* Kicker: small-caps body label above the headline. Olipop product
+   * pages use Ano upper at extended tracking; we match the register. */
+  .hero__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Display headline: WindsorEF (Yeseva fallback). Olipop hero H2 measured
+   * at 80px/80px line-height; we sit at clamp(56px, 8vw, 88px). */
+  .hero__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 8vw, var(--ds-text-6xl));
+    font-weight: 800;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Subhead: warm reading body. Wider measure than the headline. */
+  .hero__sub {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    max-width: 48ch;
+  }
+
+  /* CTA cluster: primary forest-green pill + secondary mint pill with
+   * the 1.5px green ring Olipop uses on its "Shop" buttons. */
+  .hero__cta-row {
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    margin-top: var(--ds-space-2);
+  }
+  .hero__cta {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__cta:hover {
+    background: color-mix(in oklab, var(--ds-accent) 88%, white 12%);
+  }
+  .hero__cta:active { transform: translateY(1px); }
+  .hero__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  .hero__cta--ghost {
+    background: var(--ds-accent-2);
+    color: var(--ds-accent);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .hero__cta--ghost:hover {
+    background: color-mix(in oklab, var(--ds-accent-2) 92%, var(--ds-accent) 8%);
+  }
+
+  /* Stat strip beneath the buttons; small Ano caps. Olipop uses this band
+   * for "9g fiber · prebiotic · 35 calories." */
+  .hero__stats {
+    display: flex;
+    gap: var(--ds-space-4);
+    flex-wrap: wrap;
+    margin-top: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .hero__stats span {
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Right column: the soda-can mock. Built from a stacked column of
+   * radial gradients (cream cap + accent middle band + cream base) on a
+   * pill-shaped element. This is inline ornament; not contract tokens. */
+  .can-stage {
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-6);
+  }
+  .can {
+    --can-w: 220px;
+    --can-h: 420px;
+    width: var(--can-w);
+    height: var(--can-h);
+    border-radius: 28px / 18px; /* gentle vertical pill */
+    position: relative;
+    background:
+      /* top lid hairline */
+      linear-gradient(var(--ds-text-strong), var(--ds-text-strong)) top/100% 6px no-repeat,
+      /* bottom lid hairline */
+      linear-gradient(var(--ds-text-strong), var(--ds-text-strong)) bottom/100% 6px no-repeat,
+      /* color field: cream top, accent band middle, cream bottom */
+      linear-gradient(
+        var(--ds-surface) 0 28%,
+        var(--ds-accent) 28% 72%,
+        var(--ds-surface) 72% 100%
+      );
+    box-shadow:
+      inset 0 6px 0 rgba(0,0,0,0.08),       /* lid darkening */
+      inset 0 -6px 0 rgba(0,0,0,0.08),
+      var(--ds-shadow-lg);
+    transform: rotate(-4deg);
+  }
+  .can__label {
+    position: absolute;
+    inset: 30% 12% 36% 12%;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--ds-surface);
+    font-family: var(--ds-font-display);
+    line-height: 0.95;
+  }
+  .can__label .flavor {
+    font-size: 28px;
+    letter-spacing: -0.01em;
+  }
+  .can__label .brand {
+    font-size: 18px;
+    font-family: var(--ds-font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-bottom: var(--ds-space-2);
+    color: var(--ds-accent-2);
+  }
+  /* A small yellow burst behind the can for visual rhythm; pure CSS,
+   * positioned behind the can-stage. */
+  .can-stage { position: relative; }
+  .can-stage::before {
+    content: "";
+    position: absolute;
+    inset: 12% 18%;
+    background: radial-gradient(closest-side, var(--ds-warning), transparent 70%);
+    opacity: 0.55;
+    z-index: 0;
+  }
+  .can { position: relative; z-index: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="hero" aria-label="Lorem ipsum product hero">
+    <div class="hero__col">
+      <p class="hero__kicker">Lorem · Ipsum dolor sit</p>
+      <h1 class="hero__h1">Consectetur adipiscing elit dolor.</h1>
+      <p class="hero__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, lorem dolor.</p>
+      <div class="hero__cta-row">
+        <button type="button" class="hero__cta">Shop the lorem</button>
+        <button type="button" class="hero__cta hero__cta--ghost">Find a store</button>
+      </div>
+      <p class="hero__stats"><span>9g fiber</span><span>Prebiotic</span><span>35 cal</span></p>
+    </div>
+    <div class="can-stage" aria-hidden="true">
+      <div class="can">
+        <div class="can__label">
+          <div>
+            <div class="brand">Lorem Soda</div>
+            <div class="flavor">Strawberry<br/>Ipsum</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

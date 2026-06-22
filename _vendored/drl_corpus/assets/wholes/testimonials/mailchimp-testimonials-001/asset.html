@@ -1,0 +1,270 @@
+<!--
+  Asset: mailchimp-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, accent-on-neutral, paper-and-ink
+  Inspired by: Mailchimp (/case-studies/earl-of-east and /case-studies/chani)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001          (paper-and-ink palette baseline)
+    - type-pairings/sans-system-modern-001 (Helvetica system body)
+    - cards/warm-paper-rule-001            (hairline-edge card, 12px radius, restrained shadow)
+    - avatars/circle-photo-001             (round headshot)
+  Notes:
+    - The mechanic is a Cavendish Yellow band that carries the section,
+      with paper-white quote cards defeating the yellow so the quote
+      reads on calm. The yellow does the brand work; the card does the
+      reading work. Hairline edge holds the card corner; no left rule,
+      no display-scale quote glyph at rest.
+    - Variable: every color, type size, spacing step, radius. Inline
+      ornament: the small "" mark in Cavendish Yellow that sits above
+      each quote (a single decorative reference to Mailchimp's hand
+      illustration vocabulary without bundling an SVG), and the logo
+      chip gradient that stands in for a real customer wordmark.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-testimonials-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- System Helvetica fallback chain handles body; Cooper Light is reserved
+     for the section heading per Mailchimp's typographic hierarchy. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Section band. Cavendish Yellow fills the band; cards sit on top in
+   * paper white so the quote reads on calm rather than on saturation. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .testimonials-band {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Section heading. Cooper Light at display weight; sentence case to
+   * match Mailchimp's conversational register. */
+  .testimonials-band__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 300;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 720px;
+  }
+
+  /* Two-up grid of cards at desktop, single column on narrow viewports. */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  /* Quote card. Paper-white surface defeats the yellow band. Hairline
+   * border carries the corner at rest; shadow is reserved for hover. */
+  .quote-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    box-shadow: var(--ds-shadow-sm);
+    transition: box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+
+  /* Inline ornament: a small Cavendish Yellow open-quote mark sitting at
+   * the top of the card. One decorative gesture; reads as continuous
+   * with Mailchimp's hand-illustration register without bundling an SVG. */
+  .quote-card__mark {
+    font-family: var(--ds-font-display);
+    font-size: 44px;             /* Inline: ornament-scale; sized for the open-quote glyph specifically, not part of the modular scale. */
+    line-height: 0.8;
+    color: var(--ds-bg);         /* Cavendish Yellow against paper surface. */
+    -webkit-text-stroke: 1px var(--ds-border);  /* Inline: thin Peppercorn outline so the yellow glyph remains visible on white. */
+    height: 28px;
+    margin-bottom: var(--ds-space-2);
+    user-select: none;
+  }
+
+  /* Quote body. Sentence case verbatim from Mailchimp's source pages.
+   * Helvetica at lead-paragraph scale, not display; the restraint is
+   * the point. */
+  .quote-card__quote {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Internal hairline between quote body and attribution row. The only
+   * divider inside the card. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-2) 0 0 0;
+  }
+
+  /* Attribution row: round headshot left, name plus role stacked. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Round headshot. Placeholder warm gradient stands in for a real
+   * portrait; Mailchimp ships actual photographs of the named person. */
+  .quote-card__headshot {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ds-radius-full);
+    background:
+      radial-gradient(circle at 30% 30%, #E4C97A, #B58A3A);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    flex-shrink: 0;
+  }
+
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Role plus company on one muted line. Mailchimp joins the two with a
+   * comma ("Co-founder, Earl of East" / "Director of Marketing, CHANI"). */
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Trailing link. Teal accent is the only color on the card body besides
+   * the yellow open-quote glyph. */
+  .quote-card__link {
+    align-self: flex-start;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:hover { color: var(--ds-accent-2); }
+
+  .quote-card__link:hover .quote-card__link-arrow {
+    transform: translateX(2px);
+  }
+
+  .quote-card__link-arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-card__link,
+    .quote-card__link-arrow { transition: none; }
+    .quote-card:hover { transform: none; }
+  }
+
+  @media (max-width: 520px) {
+    body { padding: var(--ds-space-8) var(--ds-space-4); }
+    .quote-card { padding: var(--ds-space-4); }
+  }
+</style>
+</head>
+<body>
+  <section class="testimonials-band" aria-label="Customer testimonials">
+
+    <h2 class="testimonials-band__heading">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+
+    <div class="quote-grid">
+
+      <figure class="quote-card">
+        <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+        <blockquote class="quote-card__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Aenean Tortor</span>
+            <span class="quote-card__role">Co-founder, Lorem Ipsum</span>
+          </span>
+        </figcaption>
+        <a class="quote-card__link" href="#">
+          Read the full story
+          <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </figure>
+
+      <figure class="quote-card">
+        <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+        <blockquote class="quote-card__quote">
+          Curabitur eros nulla, eleifend nec consectetur a, hendrerit ac arcu. Pellentesque habitant morbi tristique senectus et netus.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Vivamus Nullam</span>
+            <span class="quote-card__role">Director of Marketing, Dolor Sit Amet</span>
+          </span>
+        </figcaption>
+        <a class="quote-card__link" href="#">
+          Read the full story
+          <span class="quote-card__link-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </figure>
+
+    </div>
+
+  </section>
+</body>
+</html>

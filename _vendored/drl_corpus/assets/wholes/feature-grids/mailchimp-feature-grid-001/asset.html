@@ -1,0 +1,293 @@
+<!--
+  Asset: mailchimp-feature-grid-001
+  Class: feature-grids
+  Pattern: story-card-grid
+  Inspired by: Mailchimp (mailchimp.com homepage; mailchimp.com/features/)
+  Notes:
+    - Tile composition: hand-illustration anchor at top (envelope, mailbox,
+      postcard motif), bold display headline in Cooper-ish serif, single
+      sentence-case dek, optional in-tile teal link with arrow. Yellow
+      Cavendish surface holds the grid; paper-white tiles defeat the
+      yellow and host the artwork plus copy. Subtle 12px corner radius,
+      hairline Peppercorn-tinted border, restrained shadow.
+    - Variable: every color, font, spacing, radius, shadow from the
+      contract. Inline: the placeholder illustration SVGs (each one a
+      hand-drawn-style envelope / mailbox / postcard / mail-on-screen
+      moment specific to this asset's character) and the section frame
+      yellow band that establishes the Mailchimp register.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-feature-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Mailchimp ships Cooper Light for display and Helvetica Neue for body.
+  Cooper Light is a licensed face; the fallback chain in tokens.css drops
+  to Georgia so the soft display character survives, and Helvetica Neue
+  is in the OS stack on most systems.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. Cavendish Yellow extends edge-to-edge; the grid sits
+     in a centered measure inside that band. */
+  .fg {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  /* Section head. Sentence-case throughout; conversational register. */
+  .fg__head {
+    margin-bottom: var(--ds-space-8);
+    max-width: 44ch;
+  }
+
+  .fg__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .fg__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 300;        /* Cooper Light rides light weight. */
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .fg__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* Grid: 3 columns desktop, 2 mid, 1 narrow. */
+  .fg__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  @media (max-width: 960px) {
+    .fg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .fg__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. Paper-white defeats the yellow surface; hairline plus a
+     whisper of shadow do the chrome work. */
+  .fg__tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+                transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* Illustration slot. The artwork is the personality of the brand; the
+     frame is restrained on purpose so the illustration carries the eye. */
+  .fg__art {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-hairline);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  .fg__art svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fg__tile-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 300;        /* Cooper Light. */
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  .fg__tile-dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 40ch;
+  }
+
+  /* In-tile link. Teal is the one chromatic note inside the tile body. */
+  .fg__link {
+    margin-top: auto;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__link:hover { color: var(--ds-accent-2); }
+
+  .fg__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  .fg__link::after {
+    content: "→";
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__link:hover::after { transform: translateX(2px); }
+</style>
+</head>
+<body>
+  <section class="fg" aria-labelledby="fg-title">
+    <header class="fg__head">
+      <p class="fg__kicker">Lorem ipsum</p>
+      <h2 id="fg-title" class="fg__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      <p class="fg__dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </header>
+
+    <div class="fg__grid">
+
+      <!-- Tile 1: envelope illustration; lead tile with link -->
+      <article class="fg__tile">
+        <div class="fg__art" aria-hidden="true">
+          <!-- Hand-drawn envelope; the canonical Mailchimp motif. -->
+          <svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <rect width="240" height="180" fill="#F6F6F4"/>
+            <rect x="40" y="56" width="160" height="88" rx="4" fill="#FFFFFF" stroke="#241C15" stroke-width="2"/>
+            <path d="M40 60 L120 116 L200 60" fill="none" stroke="#241C15" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="200" cy="56" r="10" fill="#FFE01B" stroke="#241C15" stroke-width="2"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Lorem ipsum dolor</h3>
+        <p class="fg__tile-dek">Consectetur adipiscing elit sed do eiusmod tempor incididunt.</p>
+        <a class="fg__link" href="#">Lorem more</a>
+      </article>
+
+      <!-- Tile 2: mailbox illustration -->
+      <article class="fg__tile">
+        <div class="fg__art" aria-hidden="true">
+          <svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <rect width="240" height="180" fill="#F6F6F4"/>
+            <rect x="60" y="60" width="120" height="70" rx="34" fill="#FFFFFF" stroke="#241C15" stroke-width="2"/>
+            <rect x="60" y="95" width="120" height="35" fill="#FFFFFF" stroke="#241C15" stroke-width="2"/>
+            <rect x="116" y="130" width="8" height="30" fill="#241C15"/>
+            <path d="M170 80 L196 70 L196 92 Z" fill="#FFE01B" stroke="#241C15" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Sit amet consectetur</h3>
+        <p class="fg__tile-dek">Sed do eiusmod tempor incididunt ut labore.</p>
+      </article>
+
+      <!-- Tile 3: postcard illustration -->
+      <article class="fg__tile">
+        <div class="fg__art" aria-hidden="true">
+          <svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <rect width="240" height="180" fill="#F6F6F4"/>
+            <rect x="40" y="50" width="160" height="100" rx="4" fill="#FFFFFF" stroke="#241C15" stroke-width="2"/>
+            <line x1="120" y1="50" x2="120" y2="150" stroke="#241C15" stroke-width="2"/>
+            <rect x="160" y="60" width="30" height="22" fill="#FFE01B" stroke="#241C15" stroke-width="2"/>
+            <line x1="50" y1="70" x2="110" y2="70" stroke="#241C15" stroke-width="1.5"/>
+            <line x1="50" y1="86" x2="110" y2="86" stroke="#241C15" stroke-width="1.5"/>
+            <line x1="50" y1="102" x2="100" y2="102" stroke="#241C15" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Eiusmod tempor</h3>
+        <p class="fg__tile-dek">Ut labore et dolore magna aliqua ut enim.</p>
+      </article>
+
+      <!-- Tile 4: stamp / sparkle illustration -->
+      <article class="fg__tile">
+        <div class="fg__art" aria-hidden="true">
+          <svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <rect width="240" height="180" fill="#F6F6F4"/>
+            <rect x="70" y="40" width="100" height="110" rx="4" fill="#FFE01B" stroke="#241C15" stroke-width="2" stroke-dasharray="4 4"/>
+            <path d="M120 70 L128 90 L150 92 L132 106 L138 128 L120 116 L102 128 L108 106 L90 92 L112 90 Z" fill="#FFFFFF" stroke="#241C15" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Incididunt ut labore</h3>
+        <p class="fg__tile-dek">Et dolore magna aliqua ut enim ad minim veniam.</p>
+      </article>
+
+      <!-- Tile 5: chart illustration -->
+      <article class="fg__tile">
+        <div class="fg__art" aria-hidden="true">
+          <svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <rect width="240" height="180" fill="#F6F6F4"/>
+            <rect x="40" y="40" width="160" height="100" rx="4" fill="#FFFFFF" stroke="#241C15" stroke-width="2"/>
+            <line x1="56" y1="124" x2="184" y2="124" stroke="#241C15" stroke-width="1.5"/>
+            <rect x="64" y="92" width="20" height="32" fill="#FFE01B" stroke="#241C15" stroke-width="2"/>
+            <rect x="96" y="70" width="20" height="54" fill="#FFE01B" stroke="#241C15" stroke-width="2"/>
+            <rect x="128" y="84" width="20" height="40" fill="#FFE01B" stroke="#241C15" stroke-width="2"/>
+            <rect x="160" y="58" width="20" height="66" fill="#FFE01B" stroke="#241C15" stroke-width="2"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Magna aliqua</h3>
+        <p class="fg__tile-dek">Ut enim ad minim veniam quis nostrud exercitation.</p>
+      </article>
+
+      <!-- Tile 6: cursor / interaction illustration -->
+      <article class="fg__tile">
+        <div class="fg__art" aria-hidden="true">
+          <svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <rect width="240" height="180" fill="#F6F6F4"/>
+            <rect x="40" y="50" width="160" height="80" rx="40" fill="#FFFFFF" stroke="#241C15" stroke-width="2"/>
+            <text x="120" y="98" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#241C15">Lorem</text>
+            <path d="M170 110 L186 130 L178 132 L184 144 L178 146 L172 134 L164 138 Z" fill="#241C15"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Quis nostrud</h3>
+        <p class="fg__tile-dek">Exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+      </article>
+
+    </div>
+  </section>
+</body>
+</html>

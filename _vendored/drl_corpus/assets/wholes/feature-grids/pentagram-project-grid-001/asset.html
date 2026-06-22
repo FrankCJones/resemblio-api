@@ -1,0 +1,270 @@
+<!--
+  Asset: pentagram-project-grid-001
+  Class: feature-grids (whole)
+  Pattern: asymmetric-grid, image-bleed, paper-and-ink
+  Inspired by: Pentagram (pentagram.com home + /work)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/swiss-red-rule-001         (cream paper, ink black, Pentagram red)
+    - type-pairings/sans-system-modern-001    (Neue Haas Grotesk family stack)
+    - dividers/hairline-rule-001              (the 1px ink rule above each caption)
+    - swatches/swiss-red-pentagram-001        (the red dot accent)
+    - links/external-arrow-001                (title arrow on hover)
+  Notes:
+    - Pentagram's project-grid is the primary surface of the studio site -
+      no hero precedes it. Tiles vary in aspect ratio (portrait, landscape,
+      square) to give the column rhythm; a tray of identical thumbnails
+      would betray the editorial register.
+    - The caption strip beneath each tile is the named pattern: hairline
+      rule above, then client name (bold ink), project title (regular ink),
+      discipline tag (muted gray), and on a subset of tiles a saturated
+      red dot anchors the row. The dot is the only chromatic event.
+    - Tokens carry the cream palette, the Neue Haas stack, and the red.
+      The variable masonry column heights are layout character (inline
+      grid-row-end spans), not a contract role.
+    - Lorem ipsum throughout.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-project-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter stands in for Neue Haas Grotesk - the closest grotesque proportions
+     available without commercial licensing. The cascade resolves to Helvetica
+     Neue on most systems, which is closer still. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-4);
+  }
+
+  /* The grid. Pentagram's homepage opens directly into this surface; no
+   * hero sits above it. Two columns at desktop, dense packing to honor
+   * varied tile heights. */
+  .pg-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-4);
+    grid-auto-flow: dense;
+    /* Auto-rows is the masonry mechanic; spans live on each tile inline. */
+    grid-auto-rows: 80px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 720px) {
+    .pg-grid { grid-template-columns: 1fr; grid-auto-rows: 60px; }
+  }
+
+  .pg-tile {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: var(--ds-surface);
+  }
+
+  /* The hero image fills the tile and bleeds to its edges. Aspect ratios
+   * vary by tile to give the grid editorial rhythm. The image is the
+   * majority of the tile's visual weight. */
+  .pg-tile__media {
+    width: 100%;
+    background: var(--ds-surface);
+    /* Aspect set inline per tile so the grid can choose its rhythm; the
+     * default ratio here is 4:3, but each tile may declare its own via
+     * style="aspect-ratio: ...". */
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Stand-in for the hero image. In production this is an <img>; here a
+   * tinted block carries the role so the asset opens standalone. The
+   * gradient is inline ornament - a single muted wash per tile rather
+   * than a contract role - and varies tile to tile. */
+  .pg-tile__media-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #D9D5C7 0%, #B5B0A0 100%);
+  }
+  .pg-tile--ochre  .pg-tile__media-fill { background: linear-gradient(135deg, #D9C597 0%, #A88E4F 100%); }
+  .pg-tile--slate  .pg-tile__media-fill { background: linear-gradient(135deg, #C9CFD4 0%, #6E7780 100%); }
+  .pg-tile--rose   .pg-tile__media-fill { background: linear-gradient(135deg, #E9CFC7 0%, #B47867 100%); }
+  .pg-tile--green  .pg-tile__media-fill { background: linear-gradient(135deg, #C7D4C0 0%, #5E7256 100%); }
+  .pg-tile--ink    .pg-tile__media-fill { background: linear-gradient(135deg, #2A2A29 0%, #111111 100%); }
+  .pg-tile--paper  .pg-tile__media-fill { background: linear-gradient(135deg, #F1ECDC 0%, #D6CFB6 100%); }
+
+  /* The caption strip. Hairline rule above, three rows of text, optional
+   * red dot. Sits flush against the image with minimal breathing. */
+  .pg-tile__caption {
+    border-top: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-3) 0 var(--ds-space-2) 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "client dot"
+      "title  dot"
+      "tag    dot";
+    column-gap: var(--ds-space-3);
+    row-gap: 2px;
+    /* 2px row gap is inline because it is a typographic micro-rhythm tuned
+     * to Neue Haas at 16px, not a reusable spacing role. */
+  }
+
+  .pg-tile__client {
+    grid-area: client;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  .pg-tile__title {
+    grid-area: title;
+    font-family: var(--ds-font-body);
+    font-weight: 400;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  .pg-tile__tag {
+    grid-area: tag;
+    font-family: var(--ds-font-body);
+    font-weight: 400;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* The red dot. Only present on featured or new tiles. Sized to match
+   * caps height of the client name so it reads as a punctuation mark on
+   * the row rather than a button. */
+  .pg-tile__dot {
+    grid-area: dot;
+    align-self: start;
+    width: 10px;
+    height: 10px;
+    margin-top: 6px;
+    /* 10px and 6px top margin are inline: the dot's pixel scale is tuned
+     * to the 16px caption type and is character, not a contract role. */
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    flex-shrink: 0;
+  }
+
+  /* Hover. The title gains a trailing arrow and the client name shifts
+   * to absolute black; restrained, in keeping with the studio's print
+   * register. */
+  .pg-tile__title::after {
+    content: " →";
+    opacity: 0;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .pg-tile:hover .pg-tile__title::after,
+  .pg-tile:focus-visible .pg-tile__title::after {
+    opacity: 1;
+  }
+  .pg-tile:hover .pg-tile__client,
+  .pg-tile:focus-visible .pg-tile__client {
+    color: var(--ds-text-strong);
+  }
+
+  .pg-tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion: opacity flip becomes instant. */
+  @media (prefers-reduced-motion: reduce) {
+    .pg-tile__title::after { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="pg-grid" aria-label="Lorem ipsum projects">
+
+    <!-- Tile 1: portrait, spans 6 rows. Standard caption, no dot. -->
+    <a class="pg-tile pg-tile--ochre" href="#" style="grid-row: span 6;">
+      <div class="pg-tile__media" style="aspect-ratio: 3 / 4;"><div class="pg-tile__media-fill"></div></div>
+      <div class="pg-tile__caption">
+        <h3 class="pg-tile__client">Lorem Ipsum</h3>
+        <p class="pg-tile__title">Dolor sit amet consectetur</p>
+        <p class="pg-tile__tag">Brand identity</p>
+      </div>
+    </a>
+
+    <!-- Tile 2: landscape, spans 4 rows. Featured - red dot. -->
+    <a class="pg-tile pg-tile--slate" href="#" style="grid-row: span 4;">
+      <div class="pg-tile__media" style="aspect-ratio: 16 / 9;"><div class="pg-tile__media-fill"></div></div>
+      <div class="pg-tile__caption">
+        <h3 class="pg-tile__client">Adipiscing Elit</h3>
+        <p class="pg-tile__title">Sed do eiusmod tempor incididunt</p>
+        <p class="pg-tile__tag">Editorial, Digital</p>
+        <span class="pg-tile__dot" aria-label="Featured"></span>
+      </div>
+    </a>
+
+    <!-- Tile 3: square, spans 5 rows. -->
+    <a class="pg-tile pg-tile--rose" href="#" style="grid-row: span 5;">
+      <div class="pg-tile__media" style="aspect-ratio: 1 / 1;"><div class="pg-tile__media-fill"></div></div>
+      <div class="pg-tile__caption">
+        <h3 class="pg-tile__client">Ut Labore</h3>
+        <p class="pg-tile__title">Magna aliqua ut enim ad minim</p>
+        <p class="pg-tile__tag">Packaging</p>
+      </div>
+    </a>
+
+    <!-- Tile 4: landscape wider, spans 4 rows. Featured - red dot. -->
+    <a class="pg-tile pg-tile--green" href="#" style="grid-row: span 4;">
+      <div class="pg-tile__media" style="aspect-ratio: 16 / 10;"><div class="pg-tile__media-fill"></div></div>
+      <div class="pg-tile__caption">
+        <h3 class="pg-tile__client">Veniam Quis</h3>
+        <p class="pg-tile__title">Nostrud exercitation ullamco</p>
+        <p class="pg-tile__tag">Environmental graphics</p>
+        <span class="pg-tile__dot" aria-label="Featured"></span>
+      </div>
+    </a>
+
+    <!-- Tile 5: portrait tall, spans 7 rows. -->
+    <a class="pg-tile pg-tile--ink" href="#" style="grid-row: span 7;">
+      <div class="pg-tile__media" style="aspect-ratio: 3 / 5;"><div class="pg-tile__media-fill"></div></div>
+      <div class="pg-tile__caption">
+        <h3 class="pg-tile__client">Laboris Nisi</h3>
+        <p class="pg-tile__title">Aliquip ex ea commodo consequat</p>
+        <p class="pg-tile__tag">Book design</p>
+      </div>
+    </a>
+
+    <!-- Tile 6: square, spans 5 rows. -->
+    <a class="pg-tile pg-tile--paper" href="#" style="grid-row: span 5;">
+      <div class="pg-tile__media" style="aspect-ratio: 1 / 1;"><div class="pg-tile__media-fill"></div></div>
+      <div class="pg-tile__caption">
+        <h3 class="pg-tile__client">Duis Aute</h3>
+        <p class="pg-tile__title">Irure dolor in reprehenderit</p>
+        <p class="pg-tile__tag">Industrial design</p>
+      </div>
+    </a>
+
+  </section>
+</body>
+</html>

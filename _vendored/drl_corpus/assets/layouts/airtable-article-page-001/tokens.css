@@ -1,0 +1,119 @@
+/*
+ * airtable-article-page-001 tokens
+ *
+ * Native token values for the Airtable newsroom article skeleton, inspired
+ * by www.airtable.com/newsroom/introducing-superagent. Airtable's marketing
+ * surface rides a paper-white body with near-black text, sentence-case
+ * conversational sans display, hairline-card chrome (no shadow at rest),
+ * subtle rounded corners (md never pill on cards), and a single saturated
+ * blue accent reserved for primary CTA fills and inline links. The system
+ * manifest at systems/airtable/system.json declares this vocabulary; values
+ * here mirror it. Color mapping follows Airtable's marketing register:
+ * the brand blue used on the primary "Sign up for free" pill, plus the
+ * yellow/orange/red gradient accent the manifest names as a band recipe
+ * (kept inline in asset.html, not promoted to a contract slot).
+ *
+ * WebFetch returned section order, content roles, link structure, and
+ * confirmed the paper-white + sentence-case-sans + Next.js Image marketing
+ * register; it stripped inline computed styles. Numeric values follow the
+ * Airtable system convention and mirror gold-standard layout assets in
+ * this library (vercel-blog-page-001) for the modern-SaaS article register.
+ *
+ * Layout-specific notes: the article reading column sits at ~64ch (inline
+ * rule in asset.html); page container max-width and gutters are inline
+ * because they are page-grid character, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body; Airtable marketing default. */
+  --ds-surface:      #FAF9F7;   /* Warm off-white card lift; author bio + callout. */
+  --ds-surface-2:    #F4F2EE;   /* Second surface tint; related-post cards at rest. */
+  --ds-text:         #1D1F21;   /* Near-black body reading; Airtable marketing register. */
+  --ds-text-muted:   #6B6B70;   /* Date, read time, filed-under meta; figure captions. */
+  --ds-text-strong:  #0B0C0E;   /* Article H1 display; one step heavier than body. */
+  --ds-border:       #E6E4DF;   /* Hairline-as-chrome card edge; warmer than cool gray. */
+  --ds-hairline:     rgba(0,0,0,0.08); /* Section rule alpha; matches modern marketing default. */
+  --ds-accent:       #2D7FF9;   /* Airtable Blue; primary CTA pill and inline link. */
+  --ds-accent-2:     #FF6F61;   /* Coral accent from Airtable's three-stop band gradient. */
+  --ds-success:      #20A776;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E54B4B;
+  --ds-info:         #2D7FF9;
+  --ds-focus-ring:   #2D7FF9;   /* Airtable Blue at saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Airtable's marketing site reads as a humanist sans across display and
+   * body; mono carries only utility metadata (read time, filed-under tag).
+   * Open fallbacks so the asset renders without licensed faces; the site's
+   * Next.js bundle loads Inter-class humanist sans.
+   */
+  --ds-font-display: "Inter", "Söhne", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", "Söhne", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Read time, filed-under tag, breadcrumb. */
+  --ds-text-sm:   14px;   /* Author byline, related-card meta, figcaption. */
+  --ds-text-base: 17px;   /* Body reading; Airtable runs a hair larger than 16. */
+  --ds-text-lg:   20px;   /* Lead paragraph. */
+  --ds-text-xl:   26px;   /* Body H3. */
+  --ds-text-2xl:  34px;   /* Body H2 section heads. */
+  --ds-text-3xl:  44px;   /* Related-section heading; pre-footer CTA headline. */
+  --ds-text-4xl:  56px;   /* Article H1 display. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.08;   /* Article H1. */
+  --ds-leading-snug:    1.2;    /* Body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Display sans squeeze on H1. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono read-time, filed-under tag. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Airtable's "subtle rounded corners, not pills" principle: cards at md;
+   * pills reserved for CTA buttons and avatar circles.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   10px;   /* Author-bio + callout + related cards. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadow suppressed at rest; cards lift via
+   * 1px border on tinted surface. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

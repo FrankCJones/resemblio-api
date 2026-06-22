@@ -1,0 +1,113 @@
+<!--
+  Asset: single-letter-001
+  Class: monograms
+  Pattern: wordmark-with-mark
+  Inspired by: Notion
+  Notes:
+    - Single uppercase letter set inside a sticker / cut-corner container.
+    - Letter, color, and surround are tokens; the sticker outline geometry is inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>single-letter-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .mark {
+    color: var(--ds-text-strong);
+    display: inline-block;
+  }
+  .mark svg {
+    display: block;
+    overflow: visible;
+  }
+  .mark svg .sticker { fill: currentColor; }
+  .mark svg .letter {
+    fill: var(--ds-bg);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    /* Inline letter-spacing: the letter is centered in the sticker by hand; SVG text alignment
+       varies between renderers and a hand-tuned dy keeps the cap optically centered. */
+    font-size: 22px;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .mark--favicon svg { width: 16px; height: 16px; }
+  .mark--display svg { width: 64px; height: 64px; }
+  .lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    text-transform: lowercase;
+  }
+  .lockup svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">favicon (16px)</span>
+    <span class="mark mark--favicon">
+      <!-- Sticker silhouette: rounded rectangle with one bottom-left corner cut, recreating the
+           source's page-sticker geometry; viewBox 0 0 33 34 matches the source's native units. -->
+      <svg viewBox="0 0 33 34" aria-label="Lorem">
+        <path class="sticker" d="M3.8 3.3 L20.5 2.0 C22.6 1.9 23.1 2.0 24.4 2.9 L29.7 6.6 C30.6 7.3 30.9 7.5 30.9 8.2 V28.6 C30.9 29.9 30.4 30.7 28.8 30.8 L9.4 31.9 C8.1 32.0 7.6 31.8 6.9 31.0 L3.0 25.9 C2.3 25.0 2.0 24.3 2.0 23.5 V5.3 C2.0 4.3 2.5 3.4 3.8 3.3 Z"/>
+        <text class="letter" x="16.5" y="17.5">N</text>
+      </svg>
+    </span>
+  </div>
+  <div class="stage">
+    <span class="state-label">marketing (64px)</span>
+    <span class="mark mark--display">
+      <svg viewBox="0 0 33 34" aria-label="Lorem">
+        <path class="sticker" d="M3.8 3.3 L20.5 2.0 C22.6 1.9 23.1 2.0 24.4 2.9 L29.7 6.6 C30.6 7.3 30.9 7.5 30.9 8.2 V28.6 C30.9 29.9 30.4 30.7 28.8 30.8 L9.4 31.9 C8.1 32.0 7.6 31.8 6.9 31.0 L3.0 25.9 C2.3 25.0 2.0 24.3 2.0 23.5 V5.3 C2.0 4.3 2.5 3.4 3.8 3.3 Z"/>
+        <text class="letter" x="16.5" y="17.5">N</text>
+      </svg>
+    </span>
+  </div>
+  <div class="stage">
+    <span class="state-label">lockup with wordmark</span>
+    <span class="lockup">
+      <svg viewBox="0 0 33 34" aria-hidden="true">
+        <path class="sticker" d="M3.8 3.3 L20.5 2.0 C22.6 1.9 23.1 2.0 24.4 2.9 L29.7 6.6 C30.6 7.3 30.9 7.5 30.9 8.2 V28.6 C30.9 29.9 30.4 30.7 28.8 30.8 L9.4 31.9 C8.1 32.0 7.6 31.8 6.9 31.0 L3.0 25.9 C2.3 25.0 2.0 24.3 2.0 23.5 V5.3 C2.0 4.3 2.5 3.4 3.8 3.3 Z"/>
+        <text class="letter" x="16.5" y="17.5">N</text>
+      </svg>
+      lorem
+    </span>
+  </div>
+</body>
+</html>

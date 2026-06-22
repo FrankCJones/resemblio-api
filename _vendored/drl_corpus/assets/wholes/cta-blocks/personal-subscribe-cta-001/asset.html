@@ -1,0 +1,256 @@
+<!--
+  Asset: personal-subscribe-cta-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses centered-narrow-column + paper-and-ink + underline-input + link-button + lead-paragraph + editorial-label-italic)
+  Inspired by: Robin Sloan (robinsloan.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001              (warm paper bg, near-black text, sage accent)
+    - type-pairings/serif-mono-editorial-001   (serif body, mono colophon, sans reserved)
+    - headings/display-light-001               (light-weight serif headline, relaxed leading)
+    - body-text/lead-paragraph-001             (serif lead sentence at lg)
+    - inputs/text-underline-001                (borderless input; underline is the chrome)
+    - buttons/link-arrow-001                   (text-arrow submit, no fill, no border)
+    - labels/label-serif-italic-001            (italic-serif label above the field)
+    - dividers/hairline-rule-001               (the warm hairline above the colophon line)
+  Notes:
+    - The block sits directly on the page background; no card, no surface
+      shift, no border. The CTA does its asking through voice and measure,
+      not through a container. That is the transferable mechanic.
+    - Variables: every contract slot is declared in tokens.css. Inline:
+      the underline-input's specific bottom-border resting state (1px
+      warm border, lifts to 1px sage on focus); the link-arrow's right-
+      arrow glyph and translate-on-hover; the italic-serif label's small
+      italic step. These are this asset's character, not portable roles.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>personal-subscribe-cta-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Newsreader stands in for a warm editorial serif (the writer's-page
+     reading face); Söhne is approximated via Inter; Söhne Mono via JetBrains
+     Mono. The fallback chain matches the type-pairing atom. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: warm paper. The CTA sits inline on this surface,
+   * with no box or card around it. The paper IS the container. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-5);
+    display: grid;
+    place-items: center;
+  }
+
+  /* The CTA block: a narrow reading column, left-aligned text (a writer's
+   * page is left-aligned, not centered marketing copy), generous vertical
+   * rhythm between elements. */
+  .cta {
+    width: 100%;
+    max-width: 560px;          /* Narrow reading measure; the paper-register signature. */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--ds-space-5);
+  }
+
+  /* Heading: from atoms/headings/display-light-001. Light-weight serif at
+   * 2xl, relaxed tracking, near-black. The headline does not shout; it
+   * names what the reader is being asked to do, in the same voice the
+   * essays use. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 4vw, var(--ds-text-2xl));
+    font-weight: 300;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+
+  /* Asking sentence: from atoms/body-text/lead-paragraph-001. Serif lead
+   * at lg, relaxed leading, near-black. This is the prompt that does the
+   * actual asking; the headline only names the action. The italic word
+   * inside is the writer's tell. */
+  .cta__ask {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 52ch;
+  }
+  .cta__ask em {
+    font-style: italic;
+    /* Inline ornament: a single italic emphasized word inside the prompt;
+     * the writer's-voice signal, not a UI role. */
+  }
+
+  /* Form row: label, input, submit. The form is a horizontal flex line
+   * at desktop width with the label sitting above. At narrow widths the
+   * input wraps below the submit. */
+  .cta__form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 440px;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Label: from atoms/labels/label-serif-italic-001. Italic serif at sm,
+   * muted color, sits above the field. The italic is the affordance: it
+   * signals "field name" without resorting to uppercase tracking. */
+  .cta__label {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+    /* Inline ornament: italic-step is character-level; the tracking stays
+     * at normal so the label reads as a writer's annotation, not a tag. */
+  }
+
+  /* Field-and-submit row: input on the left, link-arrow submit on the
+   * right. They share a bottom rule (the input's underline); the submit
+   * sits directly inside that rule visually. */
+  .cta__row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+    width: 100%;
+  }
+
+  /* Input: from atoms/inputs/text-underline-001. Borderless; the bottom
+   * 1px rule is the only chrome. Serif body face so the typed email
+   * reads in the page's voice. */
+  .cta__input {
+    flex: 1 1 auto;
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    border: 0;
+    border-bottom: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-none);
+    padding: var(--ds-space-2) 0;
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: the resting underline is the warm border value
+     * (-D8D2C5), lifts to sage on focus. The underline is the chrome. */
+  }
+  .cta__input::placeholder {
+    color: var(--ds-text-muted);
+    font-style: italic;
+    /* Inline ornament: italic placeholder reads as marginal note rather
+     * than UI hint; matches the italic-serif label register. */
+  }
+  .cta__input:focus-visible {
+    outline: none;
+    border-bottom-color: var(--ds-accent);
+  }
+
+  /* Submit: from atoms/buttons/link-arrow-001. Text-only link styled as
+   * a button. No fill, no border, no pill. The right-arrow translates a
+   * couple of pixels on hover. */
+  .cta__submit {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-accent);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-1);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--ds-accent) 30%, transparent);
+    transition:
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: a 30% sage hairline under the submit reads as a
+     * quiet underline against paper, matches the inline-text-link style
+     * used throughout the writer's pages. */
+  }
+  .cta__submit::after {
+    content: " \2192";          /* Right arrow glyph; the link-arrow signature. */
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: a small 2px translate on hover is the affordance;
+     * not large enough to be motion, large enough to feel responsive. */
+  }
+  .cta__submit:hover {
+    color: var(--ds-accent-2);
+    border-bottom-color: var(--ds-accent-2);
+  }
+  .cta__submit:hover::after { transform: translateX(2px); }
+  .cta__submit:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Colophon line: from atoms/dividers/hairline-rule-001 plus mono caption.
+   * A hairline rule, then a sentence in mono at xs, muted color. The line
+   * is the printer's colophon: when it started, what it is, who runs it. */
+  .cta__colophon {
+    width: 100%;
+    max-width: 440px;
+    margin-top: var(--ds-space-5);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+  .cta__colophon a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-border);
+    /* Inline ornament: warm-border underline matches inline-text-link
+     * register throughout the writer's pages. */
+  }
+  .cta__colophon a:hover {
+    color: var(--ds-accent);
+    border-bottom-color: var(--ds-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__input, .cta__submit, .cta__submit::after { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur.</h2>
+    <p class="cta__ask">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi <em>convallis fringilla</em>, aenean fermentum magna at suscipit lacinia.</p>
+    <form class="cta__form" onsubmit="event.preventDefault()">
+      <label class="cta__label" for="cta-email">Lorem email address</label>
+      <div class="cta__row">
+        <input class="cta__input" id="cta-email" type="email" placeholder="lorem@ipsum.dolor" autocomplete="email"/>
+        <button class="cta__submit" type="submit">Subscribe</button>
+      </div>
+    </form>
+    <p class="cta__colophon">Lorem ipsum since MMII. <a href="#">No tracking, no analytics, no ads</a>.</p>
+  </section>
+</body>
+</html>

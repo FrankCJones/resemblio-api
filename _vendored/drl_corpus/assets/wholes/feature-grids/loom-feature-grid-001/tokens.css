@@ -1,0 +1,137 @@
+/*
+ * loom-feature-grid-001 tokens
+ *
+ * Loom's use-case tile grid vocabulary on the marketing surface. Pure
+ * white canvas, white tiles with a warm-cool hairline ring, subtle 10px
+ * radius, GT Walsheim sans throughout, sentence-case headlines, and the
+ * Loom purple-blue #625DF5 reserved for the trailing arrow link on each
+ * tile. Captured 2026-05-20 via WebFetch against www.loom.com (homepage
+ * 'Video messaging for all use cases' grid) and www.loom.com/use-cases
+ * (8-tile category grid: Team Alignment, Sales, Engineering, Design,
+ * Marketing, Product Management, Support, Education).
+ *
+ * Token values mirror the Loom alphabet captured at assets/alphabets/loom
+ * the same day (Loom brand purple #625DF5 confirmed via theme-color
+ * inspection; type family GT Walsheim per Loom's published brand identity;
+ * pixel sizes inferred from productivity-app category scale conventions
+ * observed across the corpus). Tile chrome is hairline-only at rest with
+ * a soft lift on hover; no resting drop-shadow on the tile body. The
+ * arrow link is the single chromatic moment on the tile.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure white surface. The grid sits inside a section that may itself
+   * have a subtle warm tint on /use-cases, but the tiles themselves are
+   * white. Loom purple is the only chromatic accent; it lives on the
+   * trailing arrow and the focus ring. Greys carry secondary text and
+   * the hairline ring around each tile.
+   */
+  --ds-bg:           #FFFFFF;   /* Section background; pure white. */
+  --ds-surface:      #FFFFFF;   /* Tile body; matches canvas, chrome is the ring. */
+  --ds-surface-2:    #F6F6F8;   /* Hover lift / screenshot frame fill on lead tiles. */
+  --ds-text:         #0B0B0F;   /* Tile headline; near-black, warmer than #000. */
+  --ds-text-muted:   #6B6B76;   /* Tile dek copy; cool grey. */
+  --ds-text-strong:  #0B0B0F;   /* Section H2 above the grid. */
+  --ds-border:       #E6E6EA;   /* Tile hairline ring; subtle warm grey. */
+  --ds-hairline:     #EFEFF3;   /* Inner divider for screenshot frame. */
+  --ds-accent:       #625DF5;   /* Loom purple-blue; arrow link and focus ring. */
+  --ds-accent-2:     #4F49E0;   /* Pressed / hover variant of the accent. */
+  --ds-success:      #15B981;   /* Reserved for in-product status (not used here). */
+  --ds-warning:      #F59E0B;   /* Reserved. */
+  --ds-error:        #EF4444;   /* Reserved. */
+  --ds-info:         #625DF5;   /* Matches accent. */
+  --ds-focus-ring:   #625DF5;   /* Loom purple at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * GT Walsheim across display and body. Inter is the metric-adjacent
+   * fallback so the asset renders standalone without the licensed face.
+   * No mono on the marketing surface; reserved for in-product timestamps.
+   */
+  --ds-font-display: "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT Walsheim", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Base 18px (productivity-app warm convention). Tile H3 lands at xl
+   * (24px); tile dek at base (18px). Section H2 at 2xl (32px). Arrow
+   * link label at sm (14px) for the quiet trailing affordance.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;   /* Arrow link label, kicker. */
+  --ds-text-base: 18px;   /* Tile dek; body reading default. */
+  --ds-text-lg:   20px;   /* Section dek above the grid. */
+  --ds-text-xl:   24px;   /* Tile H3. */
+  --ds-text-2xl:  32px;   /* Section H2. */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.08;
+  --ds-leading-snug:    1.2;    /* Tile H3, section H2. */
+  --ds-leading-normal:  1.55;   /* Tile dek, body. */
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em; /* Section H2 and tile H3 get mild negative tracking. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.08em;
+
+  /* ---------- Spacing ----------
+   * 4px base. Tile interior padding at space-6 (32px). Grid gap at
+   * space-4 (16px) for the tight productivity-app rhythm. Section
+   * vertical padding at space-12 (96px).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;   /* Grid gap between tiles. */
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;   /* Tile interior padding. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;   /* Section vertical rhythm. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Loom sits at 8-10px on tiles; the productivity-app middle ground
+   * between Linear's 4px and Notion's 12px. The recorder dot and
+   * kicker pills are the only full-radius elements.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   10px;    /* Tile corner; the Loom default. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome at rest. Hover adds a soft lift. The 2xl shadow
+   * uses Loom purple tint and is reserved for theatrical moments
+   * (featured pricing tier), not the feature grid tiles.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(11, 11, 15, 0.04);
+  --ds-shadow-sm:   0 1px 3px rgba(11, 11, 15, 0.06);
+  --ds-shadow-md:   0 6px 18px rgba(11, 11, 15, 0.08);  /* Tile on hover. */
+  --ds-shadow-lg:   0 16px 40px rgba(11, 11, 15, 0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(98, 93, 245, 0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

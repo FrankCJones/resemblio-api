@@ -1,0 +1,94 @@
+<!--
+  Asset: anthropic-news-listing-001
+  Class: cards
+  Pattern: (none)
+  Inspired by: Anthropic
+  Notes:
+    - Image-less listing card. Hairline rules separate rows; metadata, title, dek stack on warm paper.
+    - The 'card' is the row; no border or background container. The rule above is the only chrome.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-news-listing-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10);
+    display: flex;
+    justify-content: center;
+  }
+  .list { max-width: 720px; width: 100%; }
+  .row {
+    padding: var(--ds-space-6) 0;
+    border-top: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+  }
+  .row:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .row__meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .row__meta .cat { color: var(--ds-text); }
+  .row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .row__title a { color: inherit; text-decoration: none; }
+  .row__title a:hover { color: var(--ds-accent); }
+  .row__dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="list">
+    <article class="row">
+      <div class="row__meta"><span class="cat">Lorem</span><time>Apr 16, 2026</time></div>
+      <div>
+        <h2 class="row__title"><a href="#">Lorem ipsum dolor sit amet consectetur</a></h2>
+        <p class="row__dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </div>
+    </article>
+    <article class="row">
+      <div class="row__meta"><span class="cat">Ipsum</span><time>Feb 4, 2026</time></div>
+      <div>
+        <h2 class="row__title"><a href="#">Ut enim ad minim veniam quis nostrud</a></h2>
+        <p class="row__dek">Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.</p>
+      </div>
+    </article>
+    <article class="row">
+      <div class="row__meta"><span class="cat">Dolor</span><time>Jan 30, 2026</time></div>
+      <div>
+        <h2 class="row__title"><a href="#">Excepteur sint occaecat cupidatat non proident</a></h2>
+        <p class="row__dek">Sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

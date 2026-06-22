@@ -1,0 +1,140 @@
+/*
+ * vercel-cta-block-001 tokens
+ *
+ * Tokens for Vercel's closing CTA pattern at the bottom of marketing pages
+ * (verified via WebFetch of /home and /products/observability on 2026-05-20:
+ * headline "Ready to deploy?", subhead "Start building with a free account.
+ * Speak to an expert for your Pro or Enterprise needs.", paired CTAs
+ * "Start Deploying" + "Talk to an Expert"). Light-mode Geist canvas, near-
+ * black ink, Geist Blue 9 reserved as focus halo only. The primary action
+ * is a black-fill rectangle at the Geist 6px radius signature; the
+ * secondary is a hairline-bordered ghost at identical dimensions.
+ *
+ * Values cross-checked against the Geist published color and type scale
+ * (vercel.com/geist/colors and vercel.com/geist/typography) and the
+ * sibling vercel-hero-001 / vercel-deploy-form-001 tokens.css already in
+ * the system.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Geist light surface system. background-1 light is white; the CTA
+   * block sits flush on the canvas. Gray 12 is body ink; Gray 9 is the
+   * muted subhead. The primary CTA fill is pure black (the closing-CTA
+   * convention on vercel.com), not Blue 9. Blue 9 is reserved for the
+   * focus ring and any inline link inside the block.
+   */
+  --ds-bg:           #FFFFFF;   /* Geist background-1 light; the canvas. */
+  --ds-surface:      #FAFAFA;   /* Geist background-2 light; unused here. */
+  --ds-surface-2:    #F2F2F2;   /* Geist Gray 2 light; unused here. */
+  --ds-text:         #171717;   /* Geist Gray 12 light; headline and ghost label. */
+  --ds-text-muted:   #666666;   /* Geist Gray 9 light; subhead paragraph. */
+  --ds-text-strong:  #000000;   /* Pure black; primary CTA fill. */
+  --ds-border:       #EAEAEA;   /* Geist Gray 4 light; ghost button border at rest. */
+  --ds-hairline:     #EAEAEA;   /* Same Gray 4; rule above the block. */
+  --ds-accent:       #0070F3;   /* Geist Blue 9; held in reserve for focus only. */
+  --ds-accent-2:     #3291FF;   /* Geist Blue 10; focus halo lift. */
+  --ds-success:      #0070F3;   /* Geist convention. */
+  --ds-warning:      #F5A623;   /* Geist Amber 9. */
+  --ds-error:        #E5484D;   /* Geist Red 9. */
+  --ds-info:         #0070F3;
+  --ds-focus-ring:   #0070F3;   /* Blue 9; the one chromatic moment, on focus. */
+
+  /* ---------- Type families ----------
+   * Geist Sans is the single variable type system across vercel.com.
+   * Geist Mono is reserved for technical metadata and does not appear in
+   * this block. Fallback chain mirrors what Geist serves browsers that
+   * lack the woff2.
+   */
+  --ds-font-display: "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Geist Mono", "Geist Mono Variable", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Closing-CTA headline sits one step below the hero H1: 48-56px on
+   * desktop (3xl-4xl), 32-40px on narrow viewports. Subhead reads at
+   * 18-20px. Button label at 14-16px in Geist's marketing rhythm.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;   /* Button label baseline. */
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Subhead paragraph. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  48px;   /* CTA headline target on narrow viewports. */
+  --ds-text-4xl:  56px;   /* CTA headline target on desktop. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Display headline. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;    /* Subhead and body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Geist Sans pulls -0.03em on the closing-CTA display step (one notch
+   * looser than the hero -0.04em because the display size is smaller).
+   * Buttons use a near-zero tracking; Geist's chrome reads on shape.
+   */
+  --ds-tracking-tight:  -0.03em;   /* Closing-CTA display headline. */
+  --ds-tracking-normal: -0.01em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Closing CTA uses space-12 (96px) padding above and below
+   * the block on desktop, space-5 (24px) between headline and subhead,
+   * space-8 (48px) between subhead and the button row, space-3 (12px)
+   * between the two buttons.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;    /* Button-to-button gap. */
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;    /* Headline to subhead. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;    /* Subhead to button row. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;    /* Vertical padding around the block. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Geist signature: 6px on buttons and inputs. Both primary and ghost
+   * sit at the same 6px so the pair reads as a matched set.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;     /* Primary and ghost both. */
+  --ds-radius-lg:   8px;     /* Card chrome; unused here. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Closing CTA uses none at rest; the primary takes a Blue 9 focus
+   * halo via shadow-lg on :focus-visible. Most chrome uses hairlines.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 4px rgba(0,112,243,0.20);   /* Focus halo on primary. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Geist transitions are fast and standard; 150ms ease for hover.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

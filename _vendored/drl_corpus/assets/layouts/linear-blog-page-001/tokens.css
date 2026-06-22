@@ -1,0 +1,109 @@
+/*
+ * linear-blog-page-001 tokens
+ *
+ * Native token values for the Linear single-article skeleton, inspired by
+ * linear.app/now/<post>. Linear's blog runs the same dark-native chrome as
+ * the marketing surface: near-black page bg, off-white text, indigo accent
+ * reserved for inline links and focus, mono used for date stamp and any
+ * metadata. The system manifest (systems/linear/system.json) declares this
+ * vocabulary; values here mirror that and the system-tagged atoms in this
+ * wave. WebFetch on this session returned content roles but stripped
+ * computed styles; numeric values follow the Linear system convention
+ * documented in the manifest design_principles rather than devtools reads.
+ *
+ * Layout-specific notes: the article column sits at ~64ch (inline rule in
+ * asset.html); the page container max-width and gutters are inline because
+ * they are page-grid character, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #08090A;   /* Near-black; the dominant Linear surface. */
+  --ds-surface:      #111213;   /* Raised surface; author-bio card sits one level up. */
+  --ds-surface-2:    #18191B;   /* Tinted surface; related-post cards, slot placeholders. */
+  --ds-text:         #E6E6E6;   /* Cool off-white body reading color. */
+  --ds-text-muted:   #8A8F98;   /* Byline, date, related-post metadata. */
+  --ds-text-strong:  #F7F8F8;   /* Article title display. */
+  --ds-border:       #232428;   /* Card edges, author-bio chrome. */
+  --ds-hairline:     #1A1B1E;   /* Section breaks between hero / body / bio / related / footer. */
+  --ds-accent:       #5E6AD2;   /* Linear indigo; inline links, focus ring. */
+  --ds-accent-2:     #8A91E8;   /* Lighter indigo for hover and secondary emphasis. */
+  --ds-success:      #4CB782;
+  --ds-warning:      #F2C94C;
+  --ds-error:        #EB5757;
+  --ds-info:         #5E6AD2;
+  --ds-focus-ring:   #B5BDFB;   /* Indigo at higher contrast, per Linear focus convention. */
+
+  /* ---------- Type families ----------
+   * Linear uses Inter Display for headings and Inter for body. Mono is
+   * Berkeley Mono on the marketing surface; JetBrains Mono is the open
+   * fallback. The accent slot mirrors the body face for the eyebrow /
+   * breadcrumb / byline so the chrome stays in one family register.
+   */
+  --ds-font-display: "Inter Display", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Berkeley Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono date, breadcrumb kicker. */
+  --ds-text-sm:   14px;   /* Author byline, related-card meta. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   24px;   /* Body H3. */
+  --ds-text-2xl:  30px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* Related-posts section heading. */
+  --ds-text-4xl:  56px;   /* Article H1 display. */
+  --ds-text-5xl:  68px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Article title. */
+  --ds-leading-snug:    1.2;    /* Body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.022em; /* Display heading squeeze. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;   /* Mono breadcrumb / kicker. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;    /* Author-bio card, related-post cards. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Linear suppresses shadow on dark surfaces; hairline borders carry
+   * elevation instead. Values here are kept minimal and only used by the
+   * author-bio card as the single raised moment.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(255,255,255,0.02);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.45);
+  --ds-shadow-lg:   0 12px 28px rgba(0,0,0,0.55);
+  --ds-shadow-2xl:  0 24px 56px rgba(0,0,0,0.65);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

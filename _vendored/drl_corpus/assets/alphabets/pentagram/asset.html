@@ -1,0 +1,372 @@
+<!--
+  Asset: pentagram
+  Class: alphabets
+  Pattern: single-typeface-system, oversized-statement, mono-eyebrow, kicker-with-rule, paper-and-ink
+  Inspired by: Pentagram (pentagram.com home + /work/mastercard project page)
+  Notes:
+    - The full Pentagram typography vocabulary as one specimen: one face
+      (F37 Plain) at three weights handles statement display, project
+      headings, captions, byline metadata, and body — no serif, no mono,
+      no display-only cut.
+    - Editorial moves: oversized statement display at 131px (display-1);
+      swiss-rule kicker (hairline + uppercase Plain); project caption /
+      number row at 13px in the same face; project credit metadata in
+      muted ink; the single red note as link-hover underline.
+    - Inline ornament: the swiss-rule hairline, the project-credit
+      label-value grid, the red link underline geometry are specific to
+      this specimen, not tokens.
+    - Web-font substitute: F37 Plain is a licensed face; Helvetica Neue is
+      the structural stand-in. The single-typeface-system transfers via
+      the fallback chain; the specimen will read correctly even if Plain
+      never loads.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font is loaded here. F37 Plain is licensed; Helvetica Neue /
+  Helvetica / Arial in the fallback chain carry the neo-grotesque
+  structure and the specimen reads correctly. The viewer can substitute
+  Plain locally if they have it.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    /* Pentagram ships font-feature-settings: "case" on across the system. */
+    font-feature-settings: "case" on;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+  }
+
+  /* ---------- Swiss-rule kicker ----------
+   * Pentagram's section eyebrow: a hairline rule above, then uppercase
+   * Plain at small size with positive tracking. The rule + caps is the
+   * Swiss editorial gesture; spacing is tighter than the modern SaaS
+   * eyebrow because the type is the same family as everything else.
+   */
+  .kicker-row {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Statement display ----------
+   * 131px Plain Thin (350) with -0.04em tracking and 1.05 leading. This
+   * is the largest cut Pentagram uses on the project page hero. Single
+   * line where the viewport allows; wraps tight when it must.
+   */
+  .statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-7xl);
+    font-weight: 350;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: -0.04em;
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Project H1 ----------
+   * 52px Plain Regular for project article H1 (the size used on case-study
+   * pages). Tighter tracking than body; no italic accent — Pentagram
+   * resists the italic move entirely.
+   */
+  .project-h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Project H2 ----------
+   * 65px Plain Light (375) — the project-page section heading at the
+   * largest breakpoint. Light weight at large size is the Pentagram move;
+   * it keeps the air on the page even at scale.
+   */
+  .project-h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 375;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Subhead H3 ---------- */
+  .subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Lead paragraph ----------
+   * The project-page "About the project" dek runs at body size, no
+   * special treatment; Pentagram resists the SaaS lead-paragraph move.
+   * This sample is included for completeness only and uses the same
+   * 16px / 1.25 body register as everything else.
+   */
+  .lead, .body p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  /* Inline link: ink color at rest, red underline on hover. The hover
+   * underline is the asset's single chromatic moment.
+   */
+  .body p a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .body p a:hover { color: var(--ds-accent); text-decoration-color: var(--ds-accent); }
+
+  /* ---------- Project credits grid ----------
+   * Pentagram's project page sidebar: a label-value grid where both
+   * columns sit in the same face (Plain Regular 13px), the label muted
+   * grey, the value ink black, aligned top. This replaces the typical
+   * SaaS / editorial mono-eyebrow row.
+   */
+  .credits {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    column-gap: var(--ds-space-6);
+    row-gap: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-normal);
+  }
+  .credits dt { color: var(--ds-text-muted); margin: 0; }
+  .credits dd { color: var(--ds-text); margin: 0; }
+
+  /* ---------- Project caption ---------- */
+  .caption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Numbered list (project metadata) ----------
+   * Pentagram uses numbered project-image captions: digit-then-dot in the
+   * muted grey, then the caption text in the same face at the same size.
+   */
+  .figure-num {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 400;
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: var(--ds-space-3);
+    max-width: 56ch;
+  }
+  .figure-num .n { color: var(--ds-text); }
+
+  /* ---------- Type-scale specimen row ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 140px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    line-height: var(--ds-leading-normal);
+    letter-spacing: 0;
+  }
+
+  /* ---------- Footer family strip ---------- */
+  .family-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .family-strip b { color: var(--ds-text); font-weight: 400; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <!-- Statement display block -->
+    <section>
+      <p class="kicker-row">Work · Brand Identity</p>
+      <h1 class="statement">Lorem ipsum dolor sit amet</h1>
+    </section>
+
+    <!-- Project H1 + lead body -->
+    <section class="body" style="display:flex; flex-direction:column; gap:var(--ds-space-5);">
+      <p class="kicker-row">About the project</p>
+      <h2 class="project-h1">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad <a href="#">minim veniam quis nostrud</a> exercitation ullamco laboris.</p>
+    </section>
+
+    <!-- Project section heading + body -->
+    <section class="body" style="display:flex; flex-direction:column; gap:var(--ds-space-6);">
+      <h2 class="project-h2">A new system for a familiar mark.</h2>
+      <p>Aenean fermentum magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh.</p>
+      <h3 class="subhead">Lorem ipsum dolor sit amet consectetur</h3>
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus.</p>
+    </section>
+
+    <!-- Project credits grid -->
+    <section>
+      <dl class="credits">
+        <dt>Client</dt>          <dd>Lorem Ipsum Holdings</dd>
+        <dt>Sector</dt>          <dd>Consectetur adipiscing</dd>
+        <dt>Discipline</dt>      <dd>Brand identity, digital, packaging</dd>
+        <dt>Office</dt>          <dd>New York</dd>
+        <dt>Partners</dt>        <dd>Lorem Ipsum, Dolor Sit-Amet</dd>
+        <dt>Project team</dt>    <dd>Aenean Fermentum, Donec Tortor, Vivamus Sapien, Quisque Eu</dd>
+      </dl>
+    </section>
+
+    <!-- Numbered figure captions -->
+    <section style="display:flex; flex-direction:column; gap:var(--ds-space-3);">
+      <div class="figure-num"><span class="n">1.</span><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</span></div>
+      <div class="figure-num"><span class="n">2.</span><span>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.</span></div>
+      <div class="figure-num"><span class="n">3.</span><span>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.</span></div>
+    </section>
+
+    <!-- Type scale specimen -->
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">display-1 · 350</span>
+        <span class="step-size">131 / 1.05</span>
+        <span class="step-sample" style="font-size:131px; font-weight:350; letter-spacing:-0.04em;">Aa Bb Cc</span>
+      </div>
+      <div class="row">
+        <span class="step-label">display-1 · 350</span>
+        <span class="step-size">92 / 1.05</span>
+        <span class="step-sample" style="font-size:92px; font-weight:350; letter-spacing:-0.04em;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">heading-2 · 375</span>
+        <span class="step-size">65 / 1.05</span>
+        <span class="step-sample" style="font-size:65px; font-weight:375;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">heading-1 · 400</span>
+        <span class="step-size">52 / 1.05</span>
+        <span class="step-sample" style="font-size:52px; font-weight:400;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">heading-3 · 400</span>
+        <span class="step-size">41 / 1.20</span>
+        <span class="step-sample" style="font-size:41px; font-weight:400;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">heading-4 · 400</span>
+        <span class="step-size">32 / 1.20</span>
+        <span class="step-sample" style="font-size:32px; font-weight:400; letter-spacing:-0.01em;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">heading-5 · 400</span>
+        <span class="step-size">24 / 1.20</span>
+        <span class="step-sample" style="font-size:24px; font-weight:400;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">body-1 · 400</span>
+        <span class="step-size">16 / 1.25</span>
+        <span class="step-sample body" style="font-size:16px; font-weight:400;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">caption · 400</span>
+        <span class="step-size">13 / 1.25</span>
+        <span class="step-sample body" style="font-size:13px; font-weight:400; color:var(--ds-text-muted);">Lorem ipsum dolor sit amet consectetur adipiscing elit project caption.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">kicker · u · 400</span>
+        <span class="step-size">13 / 1.25</span>
+        <span class="step-sample body" style="font-size:13px; font-weight:400; text-transform:uppercase; letter-spacing:0.06em;">Lorem ipsum dolor swiss rule kicker</span>
+      </div>
+    </section>
+
+    <!-- Family strip -->
+    <section class="family-strip" aria-label="Type families">
+      <span>display · <b>F37 Plain Thin 350</b> · letter-spacing -0.04em at hero scale</span>
+      <span>heading · <b>F37 Plain Light 375 / Regular 400</b> · letter-spacing -0.02em</span>
+      <span>body · <b>F37 Plain Regular 400</b> · 16 / 20 line-height 1.25</span>
+      <span>caption · <b>F37 Plain Regular 400</b> · 13px muted ink #767676</span>
+      <span>kicker · <b>F37 Plain Regular 400</b> · uppercase, +0.06em, paired with 1px hairline rule</span>
+      <span>accent · <b>Pentagram red #E61428</b> · link-hover underline only; never a fill</span>
+    </section>
+
+  </article>
+</body>
+</html>

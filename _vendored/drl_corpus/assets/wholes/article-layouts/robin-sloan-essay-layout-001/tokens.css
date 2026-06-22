@@ -1,0 +1,110 @@
+/*
+ * robin-sloan-essay-layout-001 tokens
+ *
+ * Inspired by robinsloan.com in its 2026 terracotta era. A newsletter-style
+ * essay layout that sits on a saturated warm field rather than the paper
+ * register most longform sites default to. Filosofia carries the body at
+ * 21px / 28px (line-height ~1.33); Kyrios appears at display sizes for the
+ * title; Trade Gothic Next handles small accent moments. The accent is not
+ * a chromatic step away from the field; it is dark ink, the way a printer
+ * would set type on a colored stock.
+ *
+ * Source extraction: WebFetch on https://www.robinsloan.com and the
+ * /colophon page surfaces the type stack as prose (Kyrios + Filosofia +
+ * Trade Gothic Next + Vollkorn) but not computed-style hex values. Color
+ * values approximated from the published terracotta era palette and
+ * cross-checked against the existing Robin Sloan atoms in this library
+ * (lead-paragraph-001, editorial-arrow-002, paper-ink-zero-001 as the
+ * paper-era counterpart). Chrome MCP is blocked on the domain.
+ */
+:root {
+  /* Colors - terracotta paper system */
+  --ds-bg:           #DD7041;   /* Sloan terracotta body bg; oklch(0.7 0.195 37) approximated. */
+  --ds-surface:      #E58460;   /* One step lifted; used for inline callout fills against the field. */
+  --ds-surface-2:    #EE9A7E;   /* Two steps; reserved for nested asides. */
+  --ds-text:         #0D0D0D;   /* Body ink; reads as black against terracotta without going pure. */
+  --ds-text-muted:   #4A2A18;   /* Captions, datelines, bylines; warm reduced contrast. */
+  --ds-text-strong:  #000000;   /* Display headlines and emphasis. */
+  --ds-border:       #B85A2E;   /* Borders that read warm against the field, not gray. */
+  --ds-hairline:     #C66A3C;   /* Section separators; one step warmer than border. */
+  --ds-accent:       #2A1410;   /* Deep cocoa for arrow buttons and link underlines. */
+  --ds-accent-2:     #6B3A20;   /* Lifted accent; hover state for arrow buttons. */
+  --ds-success:      #4A6B2E;   /* Olive against terracotta. */
+  --ds-warning:      #B0801F;   /* Mustard. */
+  --ds-error:        #7A1F12;   /* Deep brick. */
+  --ds-info:         #2A1410;   /* Reuses cocoa. */
+  --ds-focus-ring:   #0D0D0D;   /* Ink ring on warm paper. */
+
+  /* Type - Sloan's documented stack from the colophon */
+  --ds-font-display: "Kyrios", "Filosofia", Georgia, serif;
+  --ds-font-body:    "Filosofia", "Vollkorn", "Times New Roman", Georgia, serif;
+  --ds-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Trade Gothic Next", -apple-system, system-ui, sans-serif;
+
+  /* Type sizes - body at 21px reading; h1 at 84px Kyrios display */
+  --ds-text-2xs: 11px;
+  --ds-text-xs:  13px;
+  --ds-text-sm:  15px;
+  --ds-text-base: 21px;          /* Sloan body reading size. */
+  --ds-text-lg:  24px;           /* Lead paragraph step-up. */
+  --ds-text-xl:  28px;
+  --ds-text-2xl: 36px;
+  --ds-text-3xl: 48px;
+  --ds-text-4xl: 60px;
+  --ds-text-5xl: 84px;           /* Title display step. */
+  --ds-text-6xl: 104px;
+  --ds-text-7xl: 128px;
+
+  /* Line heights - 28/21 = 1.33 body rhythm */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.33;    /* Sloan body rhythm. */
+  --ds-leading-relaxed: 1.55;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;  /* Used on small-caps lead-in and Trade Gothic accents. */
+
+  /* Spacing - 4px base, generous for editorial breathing */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii - paper register prefers small */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* Shadows - warm paper tints shadows brown */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60, 30, 12, 0.10);
+  --ds-shadow-sm:   0 2px 4px rgba(60, 30, 12, 0.14);
+  --ds-shadow-md:   0 6px 14px rgba(60, 30, 12, 0.18);
+  --ds-shadow-lg:   0 14px 30px rgba(60, 30, 12, 0.22);
+  --ds-shadow-2xl:  0 24px 56px rgba(60, 30, 12, 0.28);
+
+  /* Motion */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

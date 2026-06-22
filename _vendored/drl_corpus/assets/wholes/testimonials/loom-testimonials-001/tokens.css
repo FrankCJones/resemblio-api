@@ -1,0 +1,122 @@
+/*
+ * loom-testimonials-001 tokens
+ *
+ * Loom-native testimonial block. Light canvas, signature purple-blue accent,
+ * sentence-case quotes, multi-up quote cards with circular avatar + name +
+ * role + company, plus a customer logo strip running below. Captured from
+ * Loom's marketing surface across two pages.
+ *
+ * Source extraction:
+ *   - loom.com/customers (2026-05-20, webfetch): "What Customers are Saying"
+ *     kicker, repeating quote card pattern (img avatar + strong name + role
+ *     + company + p quote), 12 cards displayed, generous gap between cards,
+ *     light background. Attribution shape is name + role + company.
+ *   - loom.com (2026-05-20, webfetch): six named quote cards with circular
+ *     avatars (Andrew Reynolds, Design Lead, MetaLab; Alexis Ohanian,
+ *     Founder, SevenSevenSix; Katie Burke, Chief People Officer, HubSpot;
+ *     Erica Goodell, Customer Success, Pearson; David Okuinev, Co-CEO,
+ *     Typeform; Kieran Flanagan, VP of Marketing, HubSpot) plus a strip
+ *     of 24+ enterprise customer logos (HubSpot, Tesla, Disney, Goldman
+ *     Sachs etc.). Cards carry minimal borders, whitespace-heavy spacing.
+ *
+ * Token values reflect Loom's documented design_principles per
+ * systems/loom/system.json: purple-blue signature accent, subtle rounded
+ * corners (not pills), hairline card chrome with no shadows at rest,
+ * sentence-case conversational copy.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Loom marketing canvas; near-pure white. */
+  --ds-surface:      #FFFFFF;   /* Quote card body; sits flush with the canvas, edge does the lifting. */
+  --ds-surface-2:    #F7F7FA;   /* Logo-strip band; the smallest tonal step from the page. */
+  --ds-text:         #1B1B26;   /* Loom near-black ink; quote body color. */
+  --ds-text-muted:   #62626C;   /* Role + company line; secondary attribution. */
+  --ds-text-strong:  #0B0B14;   /* Name line; the load-bearing attribution. */
+  --ds-border:       rgba(11, 11, 20, 0.1);   /* Card hairline edge; the only border. */
+  --ds-hairline:     rgba(11, 11, 20, 0.06);  /* Logo-strip top divider. */
+  --ds-accent:       #625DF5;   /* Loom signature purple-blue; kicker accent, focus, link. */
+  --ds-accent-2:     #4F46E5;   /* Hover-state accent shift; deeper indigo. */
+  --ds-success:      #1A9F62;
+  --ds-warning:      #C77B1B;
+  --ds-error:        #D14343;
+  --ds-info:         #625DF5;
+  --ds-focus-ring:   #625DF5;   /* Accent doubles as focus ring. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Inter", system-ui, sans-serif;   /* Loom marketing surface ships Inter-class humanist sans across display and body. */
+  --ds-font-body:    "Inter", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;   /* Single-family system; reserved slot held to contract. */
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;         /* Role line. */
+  --ds-text-base: 16px;         /* Quote body floor. */
+  --ds-text-lg:   18px;         /* Quote body sits here on Loom; lead-paragraph scale. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;         /* Section kicker / "What Customers are Saying" H2. */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.55;   /* Quote body. */
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;          /* Card padding. */
+  --ds-space-6:  32px;          /* Grid gap between cards. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;          /* Section vertical rhythm. */
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Loom uses subtle rounded corners, not pills. Cards sit around 12px;
+   * the logo-strip band stays squared.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;       /* Quote card corner. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;     /* Avatar circle. */
+
+  /* ---------- Shadows ----------
+   * Hairline carries the card at rest; a soft lift appears on hover.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;       /* Card at rest. */
+  --ds-shadow-md:   0 4px 12px rgba(11, 11, 20, 0.06);
+  --ds-shadow-lg:   0 12px 28px rgba(11, 11, 20, 0.1);
+  --ds-shadow-2xl:  0 24px 56px rgba(11, 11, 20, 0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

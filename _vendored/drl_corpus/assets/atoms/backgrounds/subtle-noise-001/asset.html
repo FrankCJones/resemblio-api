@@ -1,0 +1,90 @@
+<!--
+  Asset: subtle-noise-001
+  Class: backgrounds
+  Pattern: paper-and-ink
+  Inspired by: Anthropic
+  Notes:
+    - Warm-paper solid (--ds-bg) overlaid with an inline SVG feTurbulence
+      noise layer at ~4% opacity. The result reads as printed-paper texture
+      rather than digital flat fill.
+    - Inline ornament: the feTurbulence baseFrequency (0.9), numOctaves (2),
+      and the overlay opacity (0.04) are tuned for this exact palette. They
+      are commented in place and intentionally not contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>subtle-noise-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  /* The noise layer.
+   * Implemented as an inline SVG data URI with feTurbulence + feColorMatrix
+   * (the color matrix flattens the noise to monochrome so it does not tint
+   * the warm base toward green). baseFrequency 0.9 yields fine grain; lower
+   * values yield coarser cloud-like texture. Opacity is the load-bearing
+   * decision: above ~0.08 the noise reads as "broken pixels"; below ~0.02
+   * it disappears entirely on most monitors.
+   */
+  .noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.045;                 /* Inline ornament: tuned for this warm base. */
+    mix-blend-mode: multiply;       /* Multiply keeps the noise dark on light bg. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+  }
+
+  .label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  .lorem {
+    position: relative;
+    z-index: 1;
+    max-width: 32ch;
+    margin-top: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <span class="label">subtle-noise-001 . background atom</span>
+  <p class="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+</body>
+</html>

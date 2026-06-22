@@ -1,0 +1,72 @@
+<!--
+  Asset: retro-soda-001
+  Class: headings
+  Pattern: display-editorial
+  Inspired by: Olipop
+  Notes:
+    - Chunky Windsor-style display heading: bracketed serifs, rounded bowls,
+      cream on vintage teal. The 70s-soda-can voice carried by the face itself.
+    - Variable: face, size, leading, weight, color, spacing. Inline: the
+      exact 1.0 line-height pinned to cap height as a deliberate display
+      lock-up; the optical hang-off on the right margin via text-wrap.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>retro-soda-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Windsor is the load-bearing face but is not on a free CDN. We import
+     a near-equivalent fallback from Google Fonts (Frank Ruhl Libre) so the
+     asset still renders with a high-contrast bracketed character when the
+     reader does not have Windsor licensed. Anyone composing a per-site
+     library against this token contract should swap in their licensed
+     Windsor or a paid Recoleta cut. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;800;900&family=Inter:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+
+  /* The display heading itself.
+   *
+   * Native size: 80px (--ds-text-6xl), the size at which Olipop's hero
+   * is set on desktop. Below 56px the Windsor character thins and the
+   * retro-soda voice falls off.
+   *
+   * Weight 800 is the heaviest available; the bowls need mass.
+   *
+   * line-height: var(--ds-leading-tight) resolves to 1.0. Pinning the
+   * leading exactly to cap height is the lock-up choice that makes the
+   * two lines read as a stamped logo rather than flowing prose. Inline
+   * tuning would be needed for any other size; we keep it inside the
+   * tight slot so changing scale changes leading proportionally.
+   */
+  h1.display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);
+    font-weight: 800;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 9ch;        /* Bound to force a two- or three-line stack; the stack is the composition. */
+    text-wrap: balance;     /* Distribute line breaks so no widow lands alone on the last line. */
+  }
+</style>
+</head>
+<body>
+  <h1 class="display">Lorem ipsum dolor sit</h1>
+</body>
+</html>

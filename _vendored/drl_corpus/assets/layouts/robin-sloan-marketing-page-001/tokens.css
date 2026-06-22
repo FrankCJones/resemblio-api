@@ -1,0 +1,117 @@
+/*
+ * robin-sloan-marketing-page-001 tokens
+ *
+ * Native token values for Robin Sloan's homepage / index marketing-page
+ * skeleton, inspired by https://www.robinsloan.com (terracotta era, 2024+).
+ * The site runs a saturated rust-orange field as page background, near-black
+ * ink for body, deep-cocoa accent for link affordances. Type stack documented
+ * verbatim on /colophon: Filosofia (Zuzana Licko / Emigre, 1996) for body
+ * reading, Kyrios (Stephen Nixon, "curious slightly psychedelic blackletter")
+ * for display moments, Trade Gothic Next for utility / eyebrow text, Vollkorn
+ * reserved for fiction presentations. Body sits around 21px on 28px (1.33)
+ * leading, narrow ~32em measure, the whole page lives inside the same column
+ * so terracotta carries edge to edge.
+ *
+ * Source extraction: WebFetch on the live homepage and /colophon page on
+ * 2026-05-20. Chrome MCP unavailable for this domain in current session.
+ * WebFetch returned section sequence, header / nav structure, intro voice,
+ * directory / writings-index organization, asterism dividers between blocks,
+ * newsletter callout pattern (no inline form; a text line with link to
+ * /newsletters/ archive), and "speed and privacy of the printed page"
+ * design philosophy from /colophon. WebFetch strips inline computed styles;
+ * numeric token values are cross-checked against the system-tagged Robin
+ * Sloan atoms already in this library (essay-page, essay-layout,
+ * article-layout, hero, nav) which share the terracotta-era palette and
+ * type stack.
+ */
+:root {
+  /* ---------- Colors - terracotta paper system ---------- */
+  --ds-bg:           #DD7041;   /* Sloan terracotta page field; oklch(0.7 0.195 37) approximated. */
+  --ds-surface:      #E58460;   /* One step lifted; quoted intro tint and newsletter block. */
+  --ds-surface-2:    #EE9A7E;   /* Two steps; reserved subscribe-block background. */
+  --ds-text:         #0D0D0D;   /* Body ink; reads as black against terracotta without going pure. */
+  --ds-text-muted:   #4A2A18;   /* Eyebrow / metadata / footer privacy line; warm reduced contrast. */
+  --ds-text-strong:  #000000;   /* Title and emphasis. */
+  --ds-border:       #B85A2E;   /* Borders that read warm against the field. */
+  --ds-hairline:     #C66A3C;   /* Section divider; warmer than border for asterism-row context. */
+  --ds-accent:       #2A1410;   /* Deep cocoa for link underlines and arrow affordances. */
+  --ds-accent-2:     #6B3A20;   /* Lifted accent for hover and the star featured-marker. */
+  --ds-success:      #4A6B2E;   /* Olive against terracotta. */
+  --ds-warning:      #B0801F;   /* Mustard. */
+  --ds-error:        #7A1F12;   /* Deep brick. */
+  --ds-info:         #2A1410;   /* Reuses cocoa. */
+  --ds-focus-ring:   #0D0D0D;   /* Ink ring on warm paper. */
+
+  /* ---------- Type families - Sloan's documented stack (per /colophon) ---------- */
+  --ds-font-display: "Kyrios", "Filosofia", Georgia, serif;
+  --ds-font-body:    "Filosofia", "Vollkorn", "Times New Roman", Georgia, serif;
+  --ds-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Trade Gothic Next", -apple-system, system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs: 11px;
+  --ds-text-xs:  13px;   /* Footer privacy line. */
+  --ds-text-sm:  15px;   /* Trade Gothic eyebrow, nav links, subscribe disclaimer. */
+  --ds-text-base: 21px;  /* Body reading. */
+  --ds-text-lg:  24px;   /* Intro lead step-up. */
+  --ds-text-xl:  28px;
+  --ds-text-2xl: 36px;   /* Block heading "Newsletter" / "Writings" / "Notes". */
+  --ds-text-3xl: 48px;
+  --ds-text-4xl: 60px;   /* Name "Robin Sloan" wordmark in the header. */
+  --ds-text-5xl: 84px;
+  --ds-text-6xl: 104px;
+  --ds-text-7xl: 128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.33;    /* Sloan body rhythm: 28/21. */
+  --ds-leading-relaxed: 1.55;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;  /* Small-caps lead-in and Trade Gothic eyebrow. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows - warm field tints shadows brown ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60, 30, 12, 0.10);
+  --ds-shadow-sm:   0 2px 4px rgba(60, 30, 12, 0.14);
+  --ds-shadow-md:   0 6px 14px rgba(60, 30, 12, 0.18);
+  --ds-shadow-lg:   0 14px 30px rgba(60, 30, 12, 0.22);
+  --ds-shadow-2xl:  0 24px 56px rgba(60, 30, 12, 0.28);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

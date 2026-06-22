@@ -1,0 +1,350 @@
+<!--
+  Asset: cloudflare-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, oversized-statement, mono-eyebrow, display-tight
+  Inspired by: Cloudflare
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (white surface + ink + signature orange accent)
+    - type-pairings/sans-system-modern-001       (humanist sans across display + body)
+    - headings/display-tight-001                 (72-88px display-tight H1)
+    - kickers/mono-eyebrow-001                   (mono uppercase product-name eyebrow)
+    - buttons/primary-square-001                 (orange rectangle CTA, 6px radius)
+    - dividers/hairline-rule-001                 (hairlines under chrome and around globe footer)
+  Notes:
+    - Native context: Cloudflare runs the same hero pattern across the
+      marketing surface. WebFetch on cloudflare.com/network 2026-05-20
+      returned H1 "Cloudflare Global Network" with dek "One of the
+      world's largest networks running every service in every data
+      center for unmatched performance, security, and reliability." and
+      dual CTAs "Test your latency" + "Start building for free". A
+      "Background Pattern" asset sits behind the hero (the canonical
+      Cloudflare network-globe motif). WebFetch on
+      workers.cloudflare.com (301 to /developer-platform) returned dek
+      "Deploy serverless code instantly across the globe with zero cold
+      starts, infinite scalability, and integrated storage, AI, and
+      network services." with the Sign-up CTA at
+      dash.cloudflare.com/sign-up.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the orbiting-points network globe SVG below the
+      headline column (Cloudflare's signature visual motif for edge /
+      PoP coverage). The kicker underline-on-hover uses an inline
+      background-image gradient because there is no contract slot for
+      one-off underline geometry. The Cloudflare cloud-mark in the
+      topbar is a one-off SVG path.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter / Inter Tight stand in for the Cloudflare marketing humanist
+     sans; JetBrains Mono carries the mono kicker. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White marketing canvas. The hero block has exactly one
+   * chromatic moment: the signature orange primary CTA (echoed by the
+   * kicker underline and the small dot in the kicker chip). The
+   * network-globe motif below is rendered in muted gray strokes so the
+   * orange CTA stays the visual anchor. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: cloud-mark wordmark left, sparse nav center, contact +
+   * primary-CTA right. Hairline separator below the chrome. */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: cloud-mark SVG geometry stand-in. */
+  .topbar__mark svg { width: 28px; height: 22px; display: block; color: var(--ds-accent); }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 960px so the oversized H1 holds a two-
+   * or three-line shape. Generous vertical padding above so the
+   * headline lands well below the chrome. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Mono kicker: product-name eyebrow with a small orange dot. */
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: 6px 12px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface);
+  }
+  .hero__kicker__dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+  }
+
+  /* H1: oversized statement. Cloudflare positioning headlines pace to
+   * two short lines at 72-88px ("Connect, protect, and build /
+   * everywhere"); clamp scales between 44px and 88px. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 7vw, var(--ds-text-6xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  /* CTA row: orange primary on the left, hairline-outline ghost on the
+   * right. Cloudflare consistently pairs a self-serve / sign-up CTA
+   * with a sales-led / contact CTA on marketing surfaces. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 12px 18px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: orange focus glow; rgba stop is hero-specific. */
+    box-shadow: 0 0 0 4px rgba(246, 130, 31, 0.22);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface); }
+
+  /* Globe motif. The Cloudflare hero almost always anchors below the
+   * headline column with a network-globe / PoP-map visual. Rendered
+   * here as an SVG with orbiting points; the rotation is the
+   * "animated visual" the brief asks for. */
+  .globe {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-12);
+    aspect-ratio: 2 / 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .globe__svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    color: var(--ds-text-muted);
+  }
+  /* Inline ornament: latitude rings rotate slowly to read as a living
+   * planet; one accent dot pulses to draw the eye to a PoP. */
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.4); }
+  }
+  .globe__rings {
+    transform-origin: center;
+    animation: spin 60s linear infinite;
+  }
+  .globe__pop {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: pulse 2.8s var(--ds-ease-standard) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+    .globe__rings, .globe__pop { animation: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .hero { padding-top: var(--ds-space-10); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: cloud-mark SVG stand-in. -->
+      <svg viewBox="0 0 64 40" aria-hidden="true">
+        <path fill="currentColor" d="M50 22c0-8-6-14-14-14-6 0-11 3-13 9-1 0-2-1-4-1-4 0-8 4-8 8s4 8 8 8h30c5 0 9-4 9-9 0-1 0-1-1-1Z"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit Amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">Sed Do</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__kicker">
+      <span class="hero__kicker__dot" aria-hidden="true"></span>
+      Lorem / Ipsum Dolor
+    </span>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam quis nostrud exercitation ullamco laboris
+      nisi ut aliquip ex ea commodo consequat.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit Amet</a>
+    </div>
+  </section>
+
+  <figure class="globe" aria-label="Lorem ipsum network globe">
+    <!-- Inline ornament: orbiting-points globe motif. Latitude and
+         longitude rings + scattered PoP dots; one pulsing dot draws
+         the eye. The geometry is one-off; no contract slot. -->
+    <svg class="globe__svg" viewBox="-200 -100 400 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="cf-glow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stop-color="#F6821F" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#F6821F" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="0" cy="0" rx="180" ry="60" fill="url(#cf-glow)"/>
+      <g class="globe__rings" stroke="currentColor" stroke-width="0.6" fill="none" opacity="0.55">
+        <ellipse cx="0" cy="0" rx="90" ry="90"/>
+        <ellipse cx="0" cy="0" rx="90" ry="40"/>
+        <ellipse cx="0" cy="0" rx="90" ry="20"/>
+        <ellipse cx="0" cy="0" rx="40" ry="90"/>
+        <ellipse cx="0" cy="0" rx="20" ry="90"/>
+        <line x1="-90" y1="0" x2="90" y2="0"/>
+        <line x1="0" y1="-90" x2="0" y2="90"/>
+      </g>
+      <g fill="currentColor">
+        <circle cx="-60" cy="-30" r="1.6"/>
+        <circle cx="-30" cy="20" r="1.6"/>
+        <circle cx="10" cy="-15" r="1.6"/>
+        <circle cx="40" cy="35" r="1.6"/>
+        <circle cx="70" cy="-10" r="1.6"/>
+        <circle cx="-80" cy="40" r="1.6"/>
+        <circle cx="55" cy="-50" r="1.6"/>
+        <circle cx="-15" cy="-55" r="1.6"/>
+      </g>
+      <circle class="globe__pop" cx="20" cy="0" r="3" fill="#F6821F"/>
+    </svg>
+  </figure>
+</body>
+</html>

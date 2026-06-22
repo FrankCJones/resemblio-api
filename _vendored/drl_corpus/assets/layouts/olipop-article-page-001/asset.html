@@ -1,0 +1,592 @@
+<!--
+  Asset: olipop-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, story-card-grid
+  Inspired by: Olipop (drinkolipop.com/blogs/digest/<post>)
+  Notes:
+    - Olipop single-post page skeleton: announcement bar (cream chrome
+      with forest-green Ano 16 microcopy) -> nav band (cream #FFF6EA at
+      70px tall, wordmark + link cluster + cream CTA pill) -> article
+      hero (category eyebrow in Ano caps, WindsorEF chunky title at the
+      4xl/7xl step, byline + posted date row in Ano 16) -> article body
+      in candy-soft column with inline images, ingredient %DV-style
+      mini-table, and a forest-ringed cream cheat-sheet callout ->
+      related-posts grid (three-up cream cards with rounded thumbnail
+      pucks) -> newsletter CTA band on Olipop section-pink with a
+      forest-pill submit -> deep-teal footer band.
+    - Variable: section sequence, page max-width, vertical rhythm,
+      typographic role per slot. Inline: article-column measure (~68ch),
+      page max-width (1280px), avatar/puck diameters, table cell padding.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: WindsorEF (Olipop display) and Ano (Olipop body, Schick
+  Toikka) are licensed; they are not loaded here. The fallback chains
+  in tokens.css (Cooper Std / Georgia for display, Inter for body)
+  carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so nav, related grid, and footer
+   * breathe; the article reading column inside is narrower. Inline.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. Reading rhythm at ~68ch; Olipop's column is a hair
+   * wider than typical editorial because Ano sits at 16px not 18. The
+   * measure is article-specific character, not a contract slot, so it
+   * lives inline.
+   */
+  .column {
+    max-width: 68ch;
+    margin: 0 auto;
+  }
+
+  /* Announcement bar. Cream chrome, Ano 16, forest ink, 40px tall. */
+  .announcement {
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    text-align: center;
+    padding-block: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Nav band. Cream surface, 70px tall, wordmark + link cluster + CTA. */
+  .nav {
+    background: var(--ds-surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    height: 70px;
+    padding-inline: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .nav { padding-inline: var(--ds-space-8); }
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    /* Display step tuned to the 28px nav-wordmark band Olipop uses
+       between the masthead chrome and the type scale. Inline. */
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-transform: lowercase;
+  }
+  .nav__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Article hero. Category eyebrow on top, WindsorEF chunky title,
+   * then a single-line byline + date row. Surface stays peach. */
+  .article-hero {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .article-hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-10);
+    }
+  }
+  .eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);            /* Olipop title at 52px (Tailwind 4xl/none). */
+    font-weight: 900;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 18ch;
+  }
+  @media (min-width: 1024px) {
+    .article-title {
+      font-size: var(--ds-text-6xl);          /* lg:tw-text-7xl scales the title to ~80px+. */
+    }
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text);
+  }
+  .byline-author {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+  }
+  /* Author avatar puck: 36px circle on cream surface. Inline ornament. */
+  .byline-author__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .byline-date {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+  }
+
+  /*
+   * Article body. Recurring sections sit inside .column. Body H2s use
+   * Ano weight 700 at the 28px step; lead paragraph one register above
+   * body; body paragraphs Ano 16/24.
+   */
+  .section { padding-block: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-10); }
+  }
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+  .article-body figure { margin: var(--ds-space-8) 0; }
+  .article-body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+    text-align: center;
+  }
+  .article-body figure .slot {
+    /* Inline-image puck radius is the lg step; Olipop crops imagery
+       into chunky rounded rectangles on every article. */
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 4 / 3;
+  }
+
+  /*
+   * Cheat-sheet callout. Cream surface ringed in 1.5px forest green,
+   * lg radius, WindsorEF mini-title. Sits inside the article column.
+   */
+  .cheat-sheet {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    padding: var(--ds-space-6);
+    margin-top: var(--ds-space-10);
+  }
+  .cheat-sheet__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 900;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cheat-sheet__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /*
+   * Ingredient %DV-style mini-table. Cream surface, forest ring, two
+   * columns: name + %DV. Rows separated by hairline; right column
+   * right-aligned. Echoes the "Raspberry Sherbet Nutrition" block on
+   * the live post.
+   */
+  .nutri-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    overflow: hidden;
+    margin-top: var(--ds-space-8);
+  }
+  .nutri-table caption {
+    text-align: left;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 900;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-tight);
+    margin-bottom: var(--ds-space-3);
+    caption-side: top;
+  }
+  .nutri-table th, .nutri-table td {
+    /* Cell padding tuned to Olipop's roomy table rhythm. Inline. */
+    padding: 14px var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+  }
+  .nutri-table th {
+    text-align: left;
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    background: var(--ds-surface);
+  }
+  .nutri-table td.value {
+    text-align: right;
+    font-weight: 700;
+    color: var(--ds-text-strong);
+  }
+  .nutri-table tr:last-child td,
+  .nutri-table tr:last-child th { border-bottom: 0; }
+
+  /*
+   * Related posts. Section heading in WindsorEF, three-up grid of cream
+   * cards with rounded thumbnail pucks above an Ano 700 card title.
+   */
+  .related {
+    background: var(--ds-bg);
+    padding-block: var(--ds-space-10);
+  }
+  .related__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 900;
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .related__heading { font-size: var(--ds-text-4xl); }
+  }
+  .related__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related__grid { grid-template-columns: repeat(3, 1fr); } }
+  .related-card {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .related-card__thumb {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    aspect-ratio: 4 / 3;
+  }
+  .related-card__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin: 0;
+  }
+  .related-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 900;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /*
+   * Newsletter CTA. Section-pink ground with a forest-ringed cream
+   * input + forest pill submit. Lives outside the page container so
+   * the pink reaches edge-to-edge.
+   */
+  .newsletter {
+    background: var(--ds-surface-2);
+    padding-block: var(--ds-space-12);
+    text-align: center;
+  }
+  .newsletter__inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 900;
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  @media (min-width: 768px) {
+    .newsletter__title { font-size: var(--ds-text-4xl); }
+  }
+  .newsletter__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .newsletter__input {
+    flex: 1 1 280px;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border: 0;
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    border-radius: var(--ds-radius-full);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .newsletter__submit {
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border: 0;
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    border-radius: var(--ds-radius-full);
+  }
+
+  /*
+   * Footer band. Deep-teal ground (rgb(0,129,104) measured live), cream
+   * type on top. Stand-in slot for the olipop-footer-001 whole.
+   */
+  .footer-band {
+    /* Deep-teal footer; one-off character outside the contract palette
+       because no slot encodes the brand's secondary green. Inline. */
+    background: #008168;
+    color: var(--ds-surface);
+    padding-block: var(--ds-space-12);
+  }
+  .footer-band .slot { background: rgba(255,246,234,0.08); color: var(--ds-surface); border-color: rgba(255,246,234,0.18); }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text-strong); margin-bottom: var(--ds-space-2); font-weight: 700; }
+</style>
+</head>
+<body>
+
+  <!-- Section: announcement-bar. Stand-in for an olipop-tagged announcement whole. -->
+  <div class="announcement" role="status" aria-label="Announcement">
+    Lorem ipsum dolor sit amet 25% off sitewide . Lorem ipsum flat rate shipping
+  </div>
+
+  <!-- Section: nav. Stand-in for olipop-tagged navigation whole. -->
+  <nav class="nav" aria-label="Primary">
+    <span class="nav__wordmark">lorem</span>
+    <div class="slot" style="flex: 1; max-width: 480px;">
+      <span class="slot__label">nav-link-cluster</span>
+      Lorem ipsum dolor sit amet
+    </div>
+    <a class="nav__cta" href="#">Shop Lorem</a>
+  </nav>
+
+  <div class="page">
+
+    <!-- Section: article-hero. Category eyebrow + chunky title + byline/date row. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="eyebrow">Lorem Category</p>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur</h1>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            By Lorem Ipsum
+          </span>
+          <span class="byline-date">Posted Apr 30, 2026</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Candy-soft reading column with lead, H2s, image, callout, and %DV mini-table. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">Ut enim ad minim veniam</a>, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <h2>Lorem ipsum flavor inspiration</h2>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.
+        </p>
+        <figure>
+          <div class="slot">
+            <span class="slot__label">inline-image</span>
+            Lorem ipsum product photography
+          </div>
+          <figcaption>
+            Lorem ipsum caption explaining the imagery above.
+          </figcaption>
+        </figure>
+        <h2>Lorem ipsum nutrition</h2>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium,
+          totam rem aperiam, eaque ipsa quae ab illo inventore.
+        </p>
+        <table class="nutri-table">
+          <caption>Per 12oz can</caption>
+          <thead>
+            <tr><th scope="col">Ingredient</th><th scope="col" class="value">%DV</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Lorem fiber</th><td class="value">32%</td></tr>
+            <tr><th scope="row">Lorem prebiotic</th><td class="value">18%</td></tr>
+            <tr><th scope="row">Lorem botanical</th><td class="value">12%</td></tr>
+            <tr><th scope="row">Lorem mineral</th><td class="value">6%</td></tr>
+          </tbody>
+        </table>
+        <aside class="cheat-sheet" aria-label="Cheat sheet">
+          <p class="cheat-sheet__title">Lorem cheat sheet</p>
+          <p class="cheat-sheet__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua,
+            ut enim ad minim veniam.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Three-up cream cards. -->
+    <section class="related" aria-label="Related posts">
+      <h2 class="related__heading">More lorem ipsum reading</h2>
+      <div class="related__grid">
+        <a class="related-card" href="#">
+          <div class="related-card__thumb" aria-hidden="true"></div>
+          <p class="related-card__eyebrow">Lorem category</p>
+          <p class="related-card__title">Lorem ipsum dolor sit amet consectetur</p>
+        </a>
+        <a class="related-card" href="#">
+          <div class="related-card__thumb" aria-hidden="true"></div>
+          <p class="related-card__eyebrow">Lorem category</p>
+          <p class="related-card__title">Lorem ipsum dolor sit amet consectetur</p>
+        </a>
+        <a class="related-card" href="#">
+          <div class="related-card__thumb" aria-hidden="true"></div>
+          <p class="related-card__eyebrow">Lorem category</p>
+          <p class="related-card__title">Lorem ipsum dolor sit amet consectetur</p>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Section: newsletter. Pink band with cream input + forest pill. -->
+  <section class="newsletter" aria-label="Newsletter signup">
+    <div class="newsletter__inner">
+      <h2 class="newsletter__title">Lorem ipsum dolor sit</h2>
+      <p class="newsletter__body">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt.
+      </p>
+      <form class="newsletter__form" onsubmit="return false;">
+        <input class="newsletter__input" type="email" placeholder="lorem@ipsum.dolor" aria-label="Email"/>
+        <button class="newsletter__submit" type="submit">Sign me up</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Section: footer. Stand-in for olipop-footer-001 whole. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">olipop-footer-001</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

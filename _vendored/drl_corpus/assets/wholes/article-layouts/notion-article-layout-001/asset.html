@@ -1,0 +1,364 @@
+<!--
+  Asset: notion-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, paper-and-ink, callout-aside
+  Inspired by: Notion blog (/blog/introducing-developer-platform, /blog/enabling-multi-region-data-systems-at-notion)
+  Notes:
+    - Mechanic: warm-paper long-form reading shell. Cream canvas, near-black
+      ink, GT Walsheim across display and body, a topic kicker linked to
+      the category index, 96px circular author photo above a two-line
+      byline (name + role), a TL;DR callout box that opens the body, and
+      full-bleed image frames that anchor each section. One muted-green
+      chromatic role does inline links, focus rings, and the topic kicker.
+    - Variable: warm cream bg, near-black ink, muted Notion green accent,
+      GT Walsheim family, 19px body at 1.7 leading, 48-56px H1.
+    - Inline ornament: the 720px body measure, the 96px circular author
+      photo, the 12px-radius image frame, the TL;DR illustration slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Tight (Google Fonts) substitutes for GT Walsheim shipped by
+     Notion. Both are humanist sans with similar x-height and counters. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure throughout. Notion
+   * blog posts hold the same measure for figures and prose; image frames
+   * span the column but do not break out to a wider grid.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Topic kicker (linked back to /blog/topic/<slug>) and date on one line,
+   * then H1, then a 96px circular author photo above a two-line byline
+   * (name + role + org). Order follows the live Notion /blog/<slug> chrome.
+   */
+  .article__header {
+    max-width: 720px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Topic kicker - sans, regular weight, muted; the topic name links to
+   * the category index. The "Published <date> in <topic>" phrasing is the
+   * Notion convention; the topic name itself is the link. */
+  .article__topline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article__topline a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .article__topline a:hover { color: var(--ds-accent-2); }
+
+  /* Article headline - sans at 3xl-4xl, tight leading, gentle negative
+   * tracking. GT Walsheim at this step is what reads as Notion. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  /* Byline block - 96px circular author photo to the left of a two-line
+   * "By <name>" + "<role>, <org>" composition. Notion uses this shape on
+   * the live blog; when there are two authors the photos stack or sit
+   * adjacent depending on the post (the asset shows the single-author
+   * shape; multi-author is a recoloring of the same composition). */
+  .article__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin: 0;
+  }
+  .article__byline-photo {
+    /* Inline ornament: 96px is the observed photo diameter on the live
+     * Notion blog header. A specific size on a specific component, not a
+     * contract-slot decision. */
+    width: 96px;
+    height: 96px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    flex: 0 0 96px;
+    background-image: linear-gradient(135deg, #DDD 0%, #BBB 100%);
+    /* Placeholder fill; in production a real photo replaces this. */
+  }
+  .article__byline-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .article__byline-name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .article__byline-role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px. Reading register at 19px / 1.7 sits
+   * in the editorial-shaded register; the warm canvas earns the extra
+   * leading. One step above the SaaS 16/1.5 default.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - muted green at rest, lifted green on
+   * hover, underline always present. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* H2 subhead inside body - sans at xl, generous gap above. GT Walsheim
+   * at this step keeps the family voice from display to subhead to body.
+   */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+
+  /* H3 sub-subhead - one step down from H2, same family. */
+  .article__body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-3);
+  }
+
+  /* Inline code - mono on the cream surface, hairline-bordered chip. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.88em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.06em 0.36em;
+  }
+
+  /* ---------------- TL;DR callout ----------------
+   * Notion's signature opening callout. A surface-2 box at the top of the
+   * body, often paired with a small illustration in the upper-left. The
+   * list inside leads with bold key phrases followed by a sentence of
+   * explanation. The box is bordered with a 12px-radius frame, no shadow.
+   */
+  .article__tldr {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: var(--ds-space-5);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    margin: 0 0 var(--ds-space-10);
+  }
+  .article__tldr-glyph {
+    /* Inline ornament: a 64px illustrated glyph slot in the upper-left of
+     * the callout. Notion ships a hand-drawn tip illustration; the asset
+     * shows a placeholder circle that brands would swap. */
+    width: 64px;
+    height: 64px;
+    border-radius: var(--ds-radius-md);
+    background: linear-gradient(135deg, #F5E6C8 0%, #E8C99B 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  .article__tldr ul {
+    margin: 0;
+    padding: 0 0 0 var(--ds-space-4);
+    list-style: disc;
+  }
+  .article__tldr li {
+    margin: 0 0 var(--ds-space-3);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article__tldr li:last-child { margin-bottom: 0; }
+  .article__tldr strong {
+    color: var(--ds-text-strong);
+    font-weight: 600;
+  }
+
+  /* ---------------- Image figure ----------------
+   * Section-anchor image frames. 12px-radius rounded corners on a faint
+   * surface, light shadow lift, optional caption beneath. Notion blog
+   * figures span the column measure, not full-bleed.
+   */
+  .article__figure {
+    margin: var(--ds-space-10) 0;
+  }
+  .article__figure-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-border);
+    box-shadow: var(--ds-shadow-md);
+    background-image:
+      linear-gradient(135deg, #F8F4EA 0%, #E8E0CC 100%);
+    /* Inline ornament: gradient placeholder; in production a screenshot
+     * or diagram replaces this. The frame chrome (radius + hairline +
+     * soft shadow) is the transferable pattern. */
+  }
+  .article__figure-caption {
+    margin: var(--ds-space-3) 0 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    text-align: left;
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-2xl); }
+    .article__byline-photo { width: 64px; height: 64px; flex-basis: 64px; }
+    .article__tldr { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <p class="article__topline">
+        Published <time datetime="2026-05-13">May 13, 2026</time> in <a href="#">Lorem Topic</a>
+      </p>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <div class="article__byline">
+        <div class="article__byline-photo" aria-hidden="true"></div>
+        <div class="article__byline-text">
+          <p class="article__byline-name">By Lorem Ipsum</p>
+          <p class="article__byline-role">Head of Product, Lorem Corp</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <aside class="article__tldr" aria-label="TL;DR summary">
+        <div class="article__tldr-glyph" aria-hidden="true">TL;DR</div>
+        <ul>
+          <li><strong>Lorem ipsum is here.</strong> Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus.</li>
+          <li><strong>Dolor sit amet, consectetur.</strong> Aenean fermentum magna at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis.</li>
+          <li><strong>Adipiscing elit per saecula.</strong> Donec euismod sapien id ante porta, eget rhoncus tortor varius. Pellentesque habitant morbi tristique senectus.</li>
+        </ul>
+      </aside>
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. The token <code>--ds-accent</code> carries the single chromatic role.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <figure class="article__figure">
+        <div class="article__figure-frame" role="img" aria-label="Lorem ipsum diagram placeholder"></div>
+        <figcaption class="article__figure-caption">Lorem ipsum dolor sit amet consectetur. A diagram of the multi-region orchestration shape.</figcaption>
+      </figure>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. <a href="#">Nemo enim ipsam voluptatem</a> quia voluptas sit aspernatur aut odit aut fugit.</p>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <h3>Pellentesque habitant morbi</h3>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <figure class="article__figure">
+        <div class="article__figure-frame" role="img" aria-label="Lorem ipsum diagram placeholder"></div>
+        <figcaption class="article__figure-caption">Lorem ipsum dolor sit amet. A second diagram anchoring the section.</figcaption>
+      </figure>
+
+      <h2>Pellentesque habitant morbi tristique</h2>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit nullam id dolor.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum dolorem.</p>
+
+    </div>
+
+  </article>
+</body>
+</html>

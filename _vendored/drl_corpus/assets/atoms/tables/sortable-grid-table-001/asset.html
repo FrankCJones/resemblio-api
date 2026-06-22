@@ -1,0 +1,255 @@
+<!--
+  Asset: sortable-grid-table-001
+  Class: tables
+  Pattern: (none)
+  Inspired by: Vercel
+  Notes:
+    - Sortable comparison grid: header row carries a button per sortable column with an arrow glyph; clicking cycles ascending / descending / off.
+    - The active sort column lifts to text-strong with the accent arrow; inactive columns keep a muted dual-chevron glyph as affordance. Numeric cells use tabular-nums so digits column-align without monospacing the visible cell text.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>sortable-grid-table-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist Sans via Vercel font CDN; falls back to Inter then system. -->
+<link rel="preconnect" href="https://vercel.com">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage { max-width: 960px; margin: 0 auto; }
+
+  .kicker {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Outer card frame: 8px radius, hairline border, optional micro shadow. */
+  .table-wrap {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-bg);
+    box-shadow: var(--ds-shadow-xs);
+    overflow: hidden; /* keep inner rows clipped to outer radius */
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-base);
+  }
+
+  /* Header row: fills with surface, hairline border bottom, header cells are buttons. */
+  thead th {
+    background: var(--ds-surface);
+    color: var(--ds-text-muted);
+    text-align: left;
+    font-weight: 500;
+    font-size: var(--ds-text-sm);
+    letter-spacing: 0.02em; /* inline: small positive tracking reads header chrome as separate from cell text */
+    padding: 0; /* button inside owns padding so the entire header cell is clickable */
+    border-bottom: 1px solid var(--ds-border);
+    white-space: nowrap;
+  }
+
+  /* Sort button fills its header cell so the click target is the whole cell. */
+  .sort-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .sort-btn:hover { background: var(--ds-hairline); color: var(--ds-text); }
+  .sort-btn:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ds-bg), inset 0 0 0 4px var(--ds-focus-ring);
+  }
+  /* Active sort column: header label promotes to text-strong, glyph turns accent. */
+  th[aria-sort="ascending"] .sort-btn,
+  th[aria-sort="descending"] .sort-btn { color: var(--ds-text-strong); }
+  th[aria-sort="ascending"] .glyph,
+  th[aria-sort="descending"] .glyph { color: var(--ds-accent); }
+
+  /* Sort glyph: a stacked up/down chevron pair that swaps to a single direction on active. */
+  .glyph {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--ds-text-muted);
+    font-size: 8px; /* inline: glyph is intentionally tiny; the column data does the talking */
+    line-height: 1;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .glyph svg { width: 10px; height: 6px; display: block; }
+  .glyph .up   { opacity: 0.4; }
+  .glyph .down { opacity: 0.4; }
+  th[aria-sort="ascending"]  .glyph .up   { opacity: 1; }
+  th[aria-sort="ascending"]  .glyph .down { opacity: 0; }
+  th[aria-sort="descending"] .glyph .up   { opacity: 0; }
+  th[aria-sort="descending"] .glyph .down { opacity: 1; }
+
+  /* Body cells: hairline row dividers, generous horizontal padding, tabular nums for numeric columns. */
+  tbody td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    color: var(--ds-text);
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: var(--ds-surface-2); }
+  /* Numeric column treatment: right-align and tabular-nums so digits line up. */
+  td.num, th.num .sort-btn { text-align: right; justify-content: flex-end; }
+  td.num { font-variant-numeric: tabular-nums; }
+
+  /* Secondary info chips inside cells (lorem badges) */
+  .chip {
+    display: inline-block;
+    padding: 2px var(--ds-space-2); /* inline: 2px vertical is a one-off; chip is decorative */
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Subdued helper line below the table */
+  .helper {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    margin-top: var(--ds-space-3);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="kicker">Lorem ipsum table</div>
+
+    <div class="table-wrap">
+      <table role="grid" aria-label="Lorem ipsum sortable comparison">
+        <thead>
+          <tr>
+            <th aria-sort="ascending">
+              <button class="sort-btn" type="button" aria-label="Sort by name">
+                <span>Lorem</span>
+                <span class="glyph" aria-hidden="true">
+                  <svg class="up"   viewBox="0 0 10 6"><path d="M1 5 L5 1 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="down" viewBox="0 0 10 6"><path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </button>
+            </th>
+            <th aria-sort="none">
+              <button class="sort-btn" type="button" aria-label="Sort by category">
+                <span>Ipsum</span>
+                <span class="glyph" aria-hidden="true">
+                  <svg class="up"   viewBox="0 0 10 6"><path d="M1 5 L5 1 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="down" viewBox="0 0 10 6"><path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </button>
+            </th>
+            <th class="num" aria-sort="none">
+              <button class="sort-btn" type="button" aria-label="Sort by amount">
+                <span>Dolor</span>
+                <span class="glyph" aria-hidden="true">
+                  <svg class="up"   viewBox="0 0 10 6"><path d="M1 5 L5 1 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="down" viewBox="0 0 10 6"><path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </button>
+            </th>
+            <th class="num" aria-sort="none">
+              <button class="sort-btn" type="button" aria-label="Sort by count">
+                <span>Sit</span>
+                <span class="glyph" aria-hidden="true">
+                  <svg class="up"   viewBox="0 0 10 6"><path d="M1 5 L5 1 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="down" viewBox="0 0 10 6"><path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </button>
+            </th>
+            <th aria-sort="none">
+              <button class="sort-btn" type="button" aria-label="Sort by status">
+                <span>Amet</span>
+                <span class="glyph" aria-hidden="true">
+                  <svg class="up"   viewBox="0 0 10 6"><path d="M1 5 L5 1 L9 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="down" viewBox="0 0 10 6"><path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Aliquam</td>
+            <td>Consectetur</td>
+            <td class="num">12,480</td>
+            <td class="num">17</td>
+            <td><span class="chip">Adipiscing</span></td>
+          </tr>
+          <tr>
+            <td>Curabitur</td>
+            <td>Tempor</td>
+            <td class="num">9,302</td>
+            <td class="num">128</td>
+            <td><span class="chip">Eiusmod</span></td>
+          </tr>
+          <tr>
+            <td>Etiam</td>
+            <td>Incididunt</td>
+            <td class="num">44,019</td>
+            <td class="num">3</td>
+            <td><span class="chip">Labore</span></td>
+          </tr>
+          <tr>
+            <td>Fusce</td>
+            <td>Magna</td>
+            <td class="num">812</td>
+            <td class="num">46</td>
+            <td><span class="chip">Ut enim</span></td>
+          </tr>
+          <tr>
+            <td>Maecenas</td>
+            <td>Veniam</td>
+            <td class="num">7,651</td>
+            <td class="num">9</td>
+            <td><span class="chip">Quis nostrud</span></td>
+          </tr>
+          <tr>
+            <td>Pellentesque</td>
+            <td>Exercitation</td>
+            <td class="num">204,116</td>
+            <td class="num">71</td>
+            <td><span class="chip">Ullamco</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="helper">Lorem ipsum dolor sit amet, consectetur adipiscing. Sort by Lorem ascending; click any header to change.</div>
+  </div>
+</body>
+</html>

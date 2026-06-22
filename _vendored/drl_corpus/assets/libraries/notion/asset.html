@@ -1,0 +1,443 @@
+<!--
+  Asset: notion
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Notion
+  Notes:
+    - Notion's full marketing-surface component vocabulary on one page:
+      wordmark plus sticker mark, sentence-case nav and buttons, search
+      with kbd hint, warm-paper card with rounded corner, product-shot
+      frame with soft drop shadow, emoji-led feature card, pricing tier
+      card with recommended state, customer-quote card, page-tree sidebar
+      mini, illustration block, callout, blue-accent CTA, initials chip.
+    - All components share tokens.css; rare inline values are flagged with
+      comments (product-shot gradient placeholder, sticker silhouette).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  /* Header */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 60ch;
+  }
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Wordmark with sticker mark */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-2); color: var(--ds-text-strong); font-family: var(--ds-font-display); font-weight: 600; font-size: var(--ds-text-lg); letter-spacing: var(--ds-tracking-tight); }
+  .wordmark .sticker {
+    /* inline: page-sticker silhouette; geometry recreated from Notion mark */
+    width: 22px; height: 23px; display: inline-block;
+    background: var(--ds-text-strong);
+    clip-path: polygon(8% 8%, 70% 4%, 92% 22%, 92% 92%, 14% 96%, 4% 84%);
+  }
+
+  /* Nav */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding-bottom: var(--ds-space-4); border-bottom: 1px solid var(--ds-hairline); }
+  .nav__links { display: inline-flex; gap: var(--ds-space-5); }
+  .nav__link { color: var(--ds-text); text-decoration: none; font-size: var(--ds-text-sm); font-weight: 500; }
+  .nav__link:hover { color: var(--ds-text-strong); }
+
+  /* Buttons - sentence-case labels */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-text-strong); color: var(--ds-bg);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 8px var(--ds-space-4); border-radius: var(--ds-radius-md);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .btn-accent {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: #FFFFFF;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 8px var(--ds-space-4); border-radius: var(--ds-radius-md);
+  }
+  .btn-ghost {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 7px var(--ds-space-4); border-radius: var(--ds-radius-md);
+  }
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: var(--ds-text); font-weight: 500; text-decoration: none;
+    font-size: var(--ds-text-sm);
+  }
+  .btn-link svg { width: 14px; height: 14px; }
+
+  /* Search input with kbd hint */
+  .search {
+    display: flex; align-items: center; gap: var(--ds-space-2);
+    background: var(--ds-surface-2); border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md); padding: 0 var(--ds-space-3);
+    height: 36px; max-width: 420px; width: 100%;
+  }
+  .search svg.icon { width: 14px; height: 14px; color: var(--ds-text-muted); }
+  .search input {
+    flex: 1; background: transparent; border: 0; outline: none;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text);
+    height: 100%;
+  }
+  .search input::placeholder { color: var(--ds-text-muted); }
+  .kbd { display: inline-flex; gap: 2px; color: var(--ds-text-muted); font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); }
+  .kbd kbd { background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-sm); padding: 1px 4px; min-width: 16px; text-align: center; font: inherit; }
+
+  /* Product-screenshot frame with soft drop shadow */
+  .product-frame {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-lg);
+    overflow: hidden;
+    max-width: 720px;
+    border: 1px solid var(--ds-border);
+  }
+  .product-frame__bar {
+    height: 28px;
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex; align-items: center; gap: 6px; padding: 0 var(--ds-space-3);
+  }
+  .product-frame__dot { width: 10px; height: 10px; border-radius: var(--ds-radius-full); background: var(--ds-border); }
+  .product-frame__body {
+    /* inline: placeholder gradient for screenshot stand-in */
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #F4F1EB, #E8E2D4);
+  }
+
+  /* Warm-paper card with rounded corners */
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+  }
+  .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--ds-space-5); }
+  .card__emoji { font-size: 24px; line-height: 1; margin-bottom: var(--ds-space-3); }
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    font-weight: 600;
+    margin: 0 0 var(--ds-space-2);
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .card__dek { color: var(--ds-text-muted); font-size: var(--ds-text-sm); line-height: var(--ds-leading-relaxed); margin: 0; }
+
+  /* Pricing tier cards */
+  .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-4); }
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .tier--rec { background: var(--ds-text-strong); color: var(--ds-bg); border-color: var(--ds-text-strong); }
+  .tier__name { font-size: var(--ds-text-sm); font-weight: 500; opacity: 0.8; margin: 0; }
+  .tier__price { font-family: var(--ds-font-display); font-size: var(--ds-text-2xl); font-weight: 600; margin: 0; letter-spacing: var(--ds-tracking-tight); }
+  .tier__price small { font-size: var(--ds-text-sm); font-weight: 400; opacity: 0.7; }
+  .tier__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); font-size: var(--ds-text-sm); }
+  .tier__list li::before { content: "·"; margin-right: 6px; opacity: 0.5; }
+  .tier__cta { margin-top: var(--ds-space-3); }
+  .badge-rec { display: inline-flex; align-self: flex-start; font-size: var(--ds-text-2xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; padding: 2px 8px; border-radius: var(--ds-radius-full); background: var(--ds-bg); color: var(--ds-text-strong); }
+
+  /* Customer-quote card */
+  .quote {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    max-width: 720px;
+  }
+  .quote__text { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); line-height: var(--ds-leading-snug); font-weight: 500; margin: 0 0 var(--ds-space-4); letter-spacing: var(--ds-tracking-tight); color: var(--ds-text-strong); }
+  .quote__byline { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .avatar-init {
+    width: 36px; height: 36px; border-radius: var(--ds-radius-sm);
+    background: var(--ds-accent); color: #FFFFFF;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: var(--ds-text-sm);
+  }
+  .quote__name { font-size: var(--ds-text-sm); font-weight: 500; color: var(--ds-text); }
+  .quote__role { font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+
+  /* Sidebar mini (page tree + workspace switcher) */
+  .sidebar {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-4);
+    width: 280px;
+    border: 1px solid var(--ds-border);
+  }
+  .ws { display: flex; align-items: center; gap: var(--ds-space-2); padding: var(--ds-space-2); border-radius: var(--ds-radius-sm); cursor: pointer; }
+  .ws:hover { background: var(--ds-surface); }
+  .ws__avatar { width: 22px; height: 22px; border-radius: var(--ds-radius-sm); background: var(--ds-accent-2); color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: var(--ds-text-xs); font-weight: 600; }
+  .ws__name { font-size: var(--ds-text-sm); font-weight: 500; color: var(--ds-text); }
+  .ws__chev { margin-left: auto; color: var(--ds-text-muted); font-size: var(--ds-text-xs); }
+  .tree { list-style: none; padding: 0; margin: var(--ds-space-3) 0 0; display: flex; flex-direction: column; gap: 1px; }
+  .tree li { display: flex; align-items: center; gap: 6px; padding: 4px var(--ds-space-2); border-radius: var(--ds-radius-sm); font-size: var(--ds-text-sm); color: var(--ds-text); cursor: pointer; }
+  .tree li:hover { background: var(--ds-surface); }
+  .tree li .ico { width: 16px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.7; }
+  .tree .nested { padding-left: var(--ds-space-4); }
+  .tree .nested li { font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+
+  /* Illustration block */
+  .illo {
+    /* inline: placeholder illustration field; warm-paper composition */
+    height: 200px;
+    border-radius: var(--ds-radius-lg);
+    background:
+      radial-gradient(circle at 25% 40%, var(--ds-accent-2) 0 14px, transparent 15px),
+      radial-gradient(circle at 65% 60%, var(--ds-accent) 0 10px, transparent 11px),
+      radial-gradient(circle at 80% 30%, var(--ds-success) 0 8px, transparent 9px),
+      var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Callout */
+  .callout {
+    background: var(--ds-surface-2);
+    border-left: 2px solid var(--ds-text);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-radius: 0 var(--ds-radius-sm) var(--ds-radius-sm) 0;
+  }
+  .callout__label { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); margin: 0 0 var(--ds-space-1); }
+  .callout p { margin: 0; font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .quote-variant { /* alt callout: pull-quote */
+    background: transparent;
+    border-left: 2px solid var(--ds-accent);
+    padding: var(--ds-space-2) var(--ds-space-5);
+  }
+  .quote-variant p { font-family: var(--ds-font-display); font-style: italic; font-size: var(--ds-text-lg); color: var(--ds-text); }
+
+  /* CTA block with blue accent */
+  .cta {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+    text-align: center;
+    display: flex; flex-direction: column; gap: var(--ds-space-4); align-items: center;
+  }
+  .cta h2 { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); margin: 0; letter-spacing: var(--ds-tracking-tight); font-weight: 600; color: var(--ds-text-strong); }
+  .cta p { margin: 0; color: var(--ds-text-muted); max-width: 50ch; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="nav">
+    <span class="wordmark" aria-label="Lorem">
+      <span class="sticker" aria-hidden="true"></span>
+      lorem
+    </span>
+    <div class="nav__links">
+      <a class="nav__link" href="#">Product</a>
+      <a class="nav__link" href="#">Pricing</a>
+      <a class="nav__link" href="#">Customers</a>
+      <a class="nav__link" href="#">Help</a>
+    </div>
+    <div class="row">
+      <a class="btn-link" href="#">Log in</a>
+      <button class="btn-primary">Get lorem free</button>
+    </div>
+  </nav>
+
+  <header class="head">
+    <h1>Lorem ipsum dolor sit amet, the workspace that works for you</h1>
+    <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="row" style="margin-top: var(--ds-space-3);">
+      <button class="btn-primary">Get lorem free</button>
+      <button class="btn-ghost">Request a demo</button>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Product screenshot frame</div>
+    <div class="product-frame">
+      <div class="product-frame__bar" aria-hidden="true">
+        <span class="product-frame__dot"></span>
+        <span class="product-frame__dot"></span>
+        <span class="product-frame__dot"></span>
+      </div>
+      <div class="product-frame__body" role="img" aria-label="Lorem ipsum product surface"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Emoji-led feature cards</div>
+    <div class="cards">
+      <article class="card">
+        <div class="card__emoji" aria-hidden="true">&#128221;</div>
+        <h3 class="card__title">Docs that write themselves</h3>
+        <p class="card__dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </article>
+      <article class="card">
+        <div class="card__emoji" aria-hidden="true">&#128202;</div>
+        <h3 class="card__title">Databases for any workflow</h3>
+        <p class="card__dek">Sed do eiusmod tempor incididunt ut labore et dolore.</p>
+      </article>
+      <article class="card">
+        <div class="card__emoji" aria-hidden="true">&#129504;</div>
+        <h3 class="card__title">Agents that keep work moving</h3>
+        <p class="card__dek">Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Search input</div>
+    <div class="row">
+      <div class="search">
+        <svg class="icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="Search lorem ipsum..." aria-label="Search"/>
+        <span class="kbd" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Pricing tiers</div>
+    <div class="pricing">
+      <article class="tier">
+        <p class="tier__name">Free</p>
+        <p class="tier__price">$0 <small>per member / month</small></p>
+        <ul class="tier__list">
+          <li>Lorem ipsum dolor</li>
+          <li>Sit amet consectetur</li>
+          <li>Adipiscing elit</li>
+        </ul>
+        <button class="btn-ghost tier__cta">Sign up</button>
+      </article>
+      <article class="tier tier--rec">
+        <span class="badge-rec">Recommended</span>
+        <p class="tier__name">Business</p>
+        <p class="tier__price">$20 <small>per member / month</small></p>
+        <ul class="tier__list">
+          <li>Sed do eiusmod tempor</li>
+          <li>Incididunt ut labore</li>
+          <li>Et dolore magna aliqua</li>
+        </ul>
+        <button class="btn-accent tier__cta">Get started</button>
+      </article>
+      <article class="tier">
+        <p class="tier__name">Enterprise</p>
+        <p class="tier__price">Custom</p>
+        <ul class="tier__list">
+          <li>Ut enim ad minim</li>
+          <li>Quis nostrud exercitation</li>
+          <li>Ullamco laboris nisi</li>
+        </ul>
+        <button class="btn-ghost tier__cta">Contact sales</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Customer quote</div>
+    <div class="quote">
+      <p class="quote__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
+      <div class="quote__byline">
+        <span class="avatar-init" aria-hidden="true">L</span>
+        <div>
+          <div class="quote__name">Lorem Ipsum</div>
+          <div class="quote__role">Director of dolor, Sit Amet Inc.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Sidebar (page tree + workspace switcher)</div>
+    <aside class="sidebar">
+      <div class="ws">
+        <span class="ws__avatar" aria-hidden="true">L</span>
+        <span class="ws__name">Lorem Workspace</span>
+        <span class="ws__chev" aria-hidden="true">&#9662;</span>
+      </div>
+      <ul class="tree">
+        <li><span class="ico" aria-hidden="true">&#128193;</span> Getting started</li>
+        <li><span class="ico" aria-hidden="true">&#128221;</span> Lorem ipsum docs</li>
+        <ul class="tree nested">
+          <li><span class="ico" aria-hidden="true">&#9642;</span> Dolor sit amet</li>
+          <li><span class="ico" aria-hidden="true">&#9642;</span> Consectetur</li>
+          <li><span class="ico" aria-hidden="true">&#9642;</span> Adipiscing elit</li>
+        </ul>
+        <li><span class="ico" aria-hidden="true">&#128202;</span> Project tracker</li>
+        <li><span class="ico" aria-hidden="true">&#128197;</span> Calendar</li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Illustration block</div>
+    <div class="illo" role="img" aria-label="Lorem illustration"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Callout and pull-quote variant</div>
+    <div class="callout">
+      <p class="callout__label">Note</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+    </div>
+    <div class="callout quote-variant">
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">CTA block</div>
+    <div class="cta">
+      <h2>Try lorem ipsum free</h2>
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
+      <div class="row">
+        <button class="btn-accent">Get started</button>
+        <button class="btn-ghost">Talk to sales</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

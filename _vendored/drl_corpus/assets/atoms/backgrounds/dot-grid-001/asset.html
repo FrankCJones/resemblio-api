@@ -1,0 +1,96 @@
+<!--
+  Asset: dot-grid-001
+  Class: backgrounds
+  Pattern: (none)
+  Inspired by: Linear
+  Notes:
+    - A radial-gradient tile repeated across a near-black surface produces a
+      regular dot grid. Tile is 24px square; dot diameter is 1px; dot color
+      is a soft white at ~28% alpha. The grid sits behind hero type without
+      competing because the contrast against the bg stays minimal.
+    - Inline ornament: the tile size (24px), dot size (1px), and dot alpha
+      are character. They are commented in place. A radial-mask fades the
+      grid toward the page edges so the pattern never reads as a tablecloth.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>dot-grid-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  /* The dot grid layer.
+   * radial-gradient draws one circle in a 24x24 tile, then background-repeat
+   * tiles it across the surface. The dot color is white at 28% alpha so the
+   * grid is felt rather than read. The mask-image fades the grid out toward
+   * the edges using a radial mask; without it the pattern reads as a regular
+   * fill instead of a hero device.
+   */
+  .grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.28) 0,
+      rgba(255, 255, 255, 0.28) 1px,
+      transparent 1.5px
+    );
+    background-size: 24px 24px;   /* Inline ornament: 24px tile is the grid rhythm. */
+    background-position: 0 0;
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, #000 30%, transparent 100%);
+  }
+
+  .label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(15, 16, 17, 0.6);
+    backdrop-filter: blur(6px);
+  }
+
+  .lorem {
+    position: relative;
+    z-index: 1;
+    max-width: 32ch;
+    margin-top: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="grid" aria-hidden="true"></div>
+  <span class="label">dot-grid-001 . background atom</span>
+  <p class="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+</body>
+</html>

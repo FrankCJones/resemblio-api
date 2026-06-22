@@ -1,0 +1,91 @@
+/*
+ * r3f-orbit-scene-001 tokens
+ *
+ * Background atom: a minimal orbit-controllable 3D scene used as ambient
+ * page background. The pattern is the configuration: one ambient light at
+ * intensity Math.PI / 2, one spotLight at [10, 10, 10] with angle 0.15 and
+ * intensity Math.PI, one pointLight at [-10, -10, -10], a single mesh with
+ * boxGeometry args [1, 1, 1] and meshStandardMaterial. The default R3F
+ * intro example uses 'orange' for the at-rest material color and 'hotpink'
+ * on hover. We keep those as the literal accent values because they ARE
+ * the canonical R3F brand register for this example.
+ *
+ * Asset rendered with vanilla three.js + OrbitControls (UMD via CDN) so it
+ * runs standalone from disk without a React build step. The R3F idiom is
+ * the source pattern; three.js is the execution.
+ *
+ * Camera position [3, 3, 3] looking at origin gives the canonical 3/4
+ * isometric read of the demo cube. autoRotate at 0.6 deg/sec is slow
+ * enough to read as ambient rather than spinning.
+ */
+:root {
+  /* Colors - paper-and-ink shell, hotpink + orange as the R3F accent register */
+  --ds-bg:           #FAFAFA;   /* Near-white page; the R3F docs themselves run on a light shell, mesh and accent carry the color. */
+  --ds-surface:      #FFFFFF;   /* Pure white panel for any UI overlay. */
+  --ds-surface-2:    #F4F4F5;   /* Subtle gray for nested chrome. */
+  --ds-text:         #18181B;   /* Near-black reading color. */
+  --ds-text-muted:   #71717A;   /* Zinc 500; secondary metadata. */
+  --ds-text-strong:  #09090B;   /* Emphasized headings. */
+  --ds-border:       #E4E4E7;   /* Hairline divider; zinc 200. */
+  --ds-hairline:     #F4F4F5;   /* Thinnest visible band. */
+  --ds-accent:       #FF6F20;   /* Orange; the at-rest meshStandardMaterial color in the canonical R3F intro example. */
+  --ds-accent-2:     #FF69B4;   /* Hotpink; the on-hover material color in the same example. The orange-to-hotpink swap is the pattern signature. */
+  --ds-success:      #16A34A;   /* Standard green; not from the example but contract requires the slot. */
+  --ds-warning:      #F59E0B;   /* Amber; orange-adjacent on the warm side. */
+  --ds-error:        #DC2626;   /* Standard red. */
+  --ds-info:         #2563EB;   /* Blue; cool counterweight to the warm accent. */
+  --ds-focus-ring:   #FF69B4;   /* Hotpink; the hover state becomes the focus state on this asset. */
+
+  /* Type - the R3F docs ship with a generic humanist sans; we mirror that with Inter and JetBrains Mono. */
+  --ds-font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Inter", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Tight", sans-serif;
+
+  /* Type scale */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 42px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  /* Leading */
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  /* Tracking */
+  --ds-tracking-tight: -0.025em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.06em;
+  --ds-tracking-wider: 0.16em;
+
+  /* Spacing */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows - light shell, soft elevation */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(24, 24, 27, 0.06);
+  --ds-shadow-sm:  0 1px 2px rgba(24, 24, 27, 0.08);
+  --ds-shadow-md:  0 4px 14px rgba(24, 24, 27, 0.10);
+  --ds-shadow-lg:  0 12px 32px rgba(24, 24, 27, 0.14);
+  --ds-shadow-2xl: 0 28px 64px rgba(24, 24, 27, 0.20);
+
+  /* Motion - OrbitControls damping factor 0.05 matches the standard ease curve closely */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

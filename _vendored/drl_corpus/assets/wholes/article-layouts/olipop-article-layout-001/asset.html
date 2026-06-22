@@ -1,0 +1,441 @@
+<!--
+  Asset: olipop-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, editorial-hero, breadcrumb-trail, image-bleed, pull-quote-breakout
+  Inspired by: Olipop /blogs/digest
+  Notes:
+    - Mechanic: retro-soda chunky display H1 even on long-form, narrow Ano body measure on peach-cream ground, forest-green ink for body, pull-quote interrupts the column inside a candy-bright pink block.
+    - Variable: peach-pink bg, forest-green ink, WindsorEF display family, 18px Ano body at 1.65 leading, 72px article H1, mint accent ribbon on pull-quote.
+    - Inline ornament: 64ch body measure, breadcrumb slash glyph, closing-summary bullet glyph, social-share row spacing.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-article-layout-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* Breadcrumb header */
+  .article__breadcrumb {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__breadcrumb a { color: var(--ds-accent); text-decoration: none; }
+  .article__breadcrumb a:hover,
+  .article__breadcrumb a:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+  .article__breadcrumb .sep {
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-text-muted);
+    opacity: 0.5;
+  }
+
+  /* Header - chunky Windsor H1, metadata strip, mono min-read chip. */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-8);
+    text-align: left;
+  }
+  .article__title {
+    font-family: "Fraunces", "WindsorEF", "Cooper Std", "Georgia", serif;
+    font-weight: 800;
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-5xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid color-mix(in srgb, var(--ds-hairline) 30%, transparent);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .article__meta time { font-variant-numeric: tabular-nums; }
+  .article__meta .sep { opacity: 0.5; }
+  .article__meta .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    margin-left: auto;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    background: var(--ds-surface);
+    border: 1.5px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero image - bleeds wider than the body. */
+  .article__hero {
+    max-width: 920px;
+    margin: 0 auto var(--ds-space-10);
+  }
+  .article__hero-frame {
+    aspect-ratio: 4 / 3;
+    background: radial-gradient(85% 70% at 30% 30%, #FFF6EA 0%, #FFE1D9 55%, #FFB8B3 100%);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+  }
+
+  /* Lead paragraph */
+  .article__lead {
+    max-width: 64ch;
+    margin: 0 auto var(--ds-space-8);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+
+  /* Body */
+  .article__body {
+    max-width: 64ch;
+    margin: 0 auto;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p { margin: 0 0 var(--ds-space-5); }
+  .article__body a {
+    color: var(--ds-accent);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible { background: var(--ds-accent-2); }
+  .article__body h2 {
+    font-family: "Fraunces", "WindsorEF", "Cooper Std", "Georgia", serif;
+    font-size: var(--ds-text-3xl);
+    font-weight: 800;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+  .article__body h3 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-6) 0 var(--ds-space-3);
+  }
+
+  /* Pull quote */
+  .article__pullquote {
+    margin: var(--ds-space-10) auto;
+    padding: var(--ds-space-6) var(--ds-space-8);
+    max-width: 72ch;
+    background: var(--ds-surface-2);
+    border-left: 6px solid var(--ds-accent-2);
+    border-radius: var(--ds-radius-lg);
+  }
+  .article__pullquote blockquote {
+    margin: 0;
+    font-family: "Fraunces", "WindsorEF", "Cooper Std", "Georgia", serif;
+    font-weight: 800;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .article__pullquote cite {
+    display: block;
+    margin-top: var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+  }
+
+  /* Closing summary box */
+  .article__cheatsheet {
+    margin: var(--ds-space-10) auto;
+    max-width: 64ch;
+    padding: var(--ds-space-6) var(--ds-space-8);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .article__cheatsheet h3 {
+    margin: 0 0 var(--ds-space-4);
+    font-family: "Fraunces", "WindsorEF", "Cooper Std", "Georgia", serif;
+    font-weight: 800;
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+  }
+  .article__cheatsheet ul {
+    margin: 0;
+    padding: 0 0 0 var(--ds-space-5);
+    color: var(--ds-text);
+  }
+  .article__cheatsheet li {
+    margin: 0 0 var(--ds-space-3);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article__cheatsheet li::marker { color: var(--ds-accent); }
+
+  /* Social share row */
+  .article__share {
+    margin: var(--ds-space-6) auto var(--ds-space-12);
+    max-width: 64ch;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__share a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    border: 1.5px solid var(--ds-border);
+    color: var(--ds-accent);
+    text-decoration: none;
+    font-weight: 700;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__share a:hover,
+  .article__share a:focus-visible { background: var(--ds-accent-2); }
+
+  /* Related rail */
+  .article__related {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid color-mix(in srgb, var(--ds-hairline) 30%, transparent);
+  }
+  .article__related-kicker {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-6);
+  }
+  .article__related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .article__related-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__related-card:hover { transform: translateY(-2px); }
+  .article__related-card .thumb {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--ds-radius-md);
+    background: radial-gradient(80% 70% at 35% 30%, #FFF6EA 0%, #FFB8B3 60%, #98E1C3 100%);
+  }
+  .article__related-card .kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .article__related-card .title {
+    font-family: "Fraunces", "WindsorEF", "Cooper Std", "Georgia", serif;
+    font-size: var(--ds-text-xl);
+    font-weight: 800;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+  }
+  .article__related-card .title:hover,
+  .article__related-card .title:focus-visible { color: var(--ds-accent); }
+  .article__related-card .meta {
+    margin-top: auto;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__related-grid { grid-template-columns: 1fr; }
+    .article__pullquote blockquote { font-size: var(--ds-text-xl); }
+    .article__lead { font-size: var(--ds-text-lg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__related-card,
+    .article__share a { transition: none; }
+    .article__related-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <nav class="article__breadcrumb" aria-label="Breadcrumb">
+      <a href="#">Digest</a><span class="sep">/</span><a href="#">Flavors</a><span class="sep">/</span><span>Lorem ipsum dolor</span>
+    </nav>
+
+    <header class="article__header">
+      <h1 class="article__title">Lorem ipsum dolor sit amet, consectetur adipiscing</h1>
+      <div class="article__meta">
+        <span>Posted <time datetime="2026-05-19">May 19, 2026</time></span>
+        <span class="sep">&bull;</span>
+        <span>Updated <time datetime="2026-05-20">May 20, 2026</time></span>
+        <span class="chip">5 min read</span>
+      </div>
+    </header>
+
+    <figure class="article__hero" aria-label="Lorem ipsum hero illustration">
+      <div class="article__hero-frame" role="img" aria-label="Candy-cream gradient placeholder"></div>
+    </figure>
+
+    <p class="article__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla per saecula.</p>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. <a href="#">Pellentesque habitant morbi</a> tristique senectus et netus et malesuada fames ac turpis egestas ipsum.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.</p>
+
+      <aside class="article__pullquote">
+        <blockquote>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.</blockquote>
+        <cite>Lorem Ipsum, Olipop</cite>
+      </aside>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa.</p>
+
+      <h3>Lorem subhead at a sub-section level</h3>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.</p>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.</p>
+
+    </div>
+
+    <aside class="article__cheatsheet" aria-label="Closing summary">
+      <h3>The closing summary</h3>
+      <ul>
+        <li>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod.</li>
+        <li>Vivamus sit amet sapien velit curabitur nec libero non nisi convallis.</li>
+        <li>Aenean fermentum magna at suscipit lacinia ipsum lectus malesuada ante.</li>
+      </ul>
+    </aside>
+
+    <div class="article__share" aria-label="Share this article">
+      <span>Share</span>
+      <a href="#" aria-label="Share on Facebook">f</a>
+      <a href="#" aria-label="Share on Twitter">t</a>
+      <a href="#" aria-label="Share on Pinterest">p</a>
+      <a href="#" aria-label="Share by email">@</a>
+    </div>
+
+    <aside class="article__related" aria-label="Related reading">
+      <span class="article__related-kicker">Related reading</span>
+      <ul class="article__related-grid">
+        <li class="article__related-card">
+          <div class="thumb" role="img" aria-label="Candy-bright gradient thumbnail"></div>
+          <a class="kicker" href="#">Flavors</a>
+          <a class="title" href="#">Lorem ipsum dolor sit amet consectetur</a>
+          <span class="meta">May 12, 2026</span>
+        </li>
+        <li class="article__related-card">
+          <div class="thumb" role="img" aria-label="Candy-bright gradient thumbnail"></div>
+          <a class="kicker" href="#">Digestive Health</a>
+          <a class="title" href="#">Vivamus sit amet sapien velit curabitur</a>
+          <span class="meta">Apr 28, 2026</span>
+        </li>
+        <li class="article__related-card">
+          <div class="thumb" role="img" aria-label="Candy-bright gradient thumbnail"></div>
+          <a class="kicker" href="#">Community</a>
+          <a class="title" href="#">Aenean fermentum magna at suscipit lacinia</a>
+          <span class="meta">Apr 10, 2026</span>
+        </li>
+      </ul>
+    </aside>
+
+  </article>
+</body>
+</html>

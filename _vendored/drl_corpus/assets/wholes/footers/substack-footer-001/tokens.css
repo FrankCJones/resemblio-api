@@ -1,0 +1,116 @@
+/*
+ * substack-footer-001 tokens
+ *
+ * Substack site footer on a dark inverted band. The writing surface above is
+ * warm paper; the footer flips to near-black so the marketing chrome reads
+ * as a basement to the editorial surface. Signature Substack orange appears
+ * as the logomark accent above the app-badge row; column links sit at muted
+ * gray and lift to white on hover; a single hairline rule splits the link
+ * grid from the meta-and-app row. Structure verified 2026-05-20 via WebFetch
+ * HTML inspection of substack.com and substack.com/going-paid; specific token
+ * values approximated from observed surface tone and Substack's published
+ * brand orange (#FF6719). WebFetch on substack.com strips inline computed
+ * styles, so chrome values are approximated, not devtools-read.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #111111;             /* Near-black footer surface; off-pure-black so the orange logomark reads warm on it. */
+  --ds-surface:      #1A1A1A;             /* Raised surface (the app-badge frame and any inset panels). */
+  --ds-surface-2:    #222222;             /* Second raised surface; nested chrome. */
+  --ds-text:         #FFFFFF;             /* Column headings and copyright; white on the dark band. */
+  --ds-text-muted:   #B8B8B8;             /* Link rest color; warm gray that lifts to white on hover. */
+  --ds-text-strong:  #FFFFFF;             /* Emphasized text; same as --ds-text on this dark surface. */
+  --ds-border:       rgba(255, 255, 255, 0.12); /* Standard hairline weight on dark; used by social-icon hit targets. */
+  --ds-hairline:     rgba(255, 255, 255, 0.08); /* Lighter rule that splits link grid from meta row. */
+  --ds-accent:       #FF6719;             /* Substack signature orange; reserved for the footer logomark only. */
+  --ds-accent-2:     #FF8A4C;             /* Secondary warm orange; reserved for hover or focus moments on the mark. */
+  --ds-success:      #4ADE80;
+  --ds-warning:      #FACC15;
+  --ds-error:        #F87171;
+  --ds-info:         #60A5FA;
+  --ds-focus-ring:   #FF6719;             /* Accent orange doubles as focus ring on the dark surface. */
+
+  /* ---------- Type families ----------
+   * Substack ships a custom serif (Substack Serif) for editorial moments
+   * and a system sans stack for UI chrome. The footer is the UI register,
+   * so body and display both bind to the system sans here. The serif is
+   * available for inline editorial accents the footer itself does not use.
+   */
+  --ds-font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Newsreader", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;     /* Copyright and legal-strip links. */
+  --ds-text-sm:   14px;     /* Footer column links. */
+  --ds-text-base: 14px;     /* Column heading; same size as links but heavier weight. */
+  --ds-text-lg:   18px;     /* App-row tagline. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.6;
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;     /* Footer vertical padding. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Substack's footer chrome is mostly flat. Radii available for the
+   * app-badge frame, the social hit-targets, and the focus ring.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Dark surface; visible shadows go theatrical and rarely appear in chrome.
+   * Hairline-as-chrome carries the lift instead.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   0 2px 8px rgba(0, 0, 0, 0.40);
+  --ds-shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.50);
+  --ds-shadow-2xl:  0 24px 48px rgba(0, 0, 0, 0.60);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

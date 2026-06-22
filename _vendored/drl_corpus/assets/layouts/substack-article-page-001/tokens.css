@@ -1,0 +1,104 @@
+/*
+ * substack-article-page-001 tokens
+ *
+ * Substack's canonical post-page surface. Every newsletter post in the
+ * Substack network renders on this template; it IS the marketing surface
+ * for the platform. Palette is near-white warm paper, near-black ink, the
+ * signature Substack orange accent (#FF6719) reserved for interactive
+ * affordances (subscribe CTA, like/restack on-state). Typography pairs a
+ * serif post title with a sans body register; the publication header
+ * carries the publication wordmark in sans. Mono is reserved for share
+ * counts and date stamps.
+ *
+ * Layout-specific notes: the body reading column is locked at ~620px
+ * (the actual Substack measure), narrower than most modern editorial
+ * layouts. The page max-width and column measure are inline in
+ * asset.html because they are page-grid character, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Near-pure white page background; Substack reading surface. */
+  --ds-surface:      #FAFAFA;   /* Tinted surface; subscribe CTA card, comments preview. */
+  --ds-surface-2:    #F4F4F2;   /* Second surface; paywall divider band, footer panel. */
+  --ds-text:         #1A1A1A;   /* Body ink; near-black for long-form reading. */
+  --ds-text-muted:   #757575;   /* Byline metadata, share counts, footer links. */
+  --ds-text-strong:  #000000;   /* Post title, publication wordmark. */
+  --ds-border:       #E6E6E6;   /* Card edges, comment-preview chrome. */
+  --ds-hairline:     #EDEDED;   /* Section dividers between body / engagement / comments / footer. */
+  --ds-accent:       #FF6719;   /* Substack orange. Subscribe CTA fill, like on-state, link hover. */
+  --ds-accent-2:     #E55A12;   /* Deeper orange; hover and active states on the orange CTA. */
+  --ds-success:      #2D8A3E;
+  --ds-warning:      #B0801F;
+  --ds-error:        #B33A2F;
+  --ds-info:         #2563EB;   /* Inline body link blue; Substack default link color. */
+  --ds-focus-ring:   #FF6719;   /* Orange focus ring on the subscribe CTA. */
+
+  /* ---------- Type families ----------
+   * Substack uses a serif (Spectral or publication-chosen) for post titles
+   * and a humanist sans (Source Sans 3 by default) for body, header, and
+   * UI chrome. Mono is reserved for date and share-count micro-labels.
+   */
+  --ds-font-display: "Spectral", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Source Sans 3", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "SF Mono", "Menlo", Consolas, "Liberation Mono", monospace;
+  --ds-font-accent:  "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Share counts, date, footer legal. */
+  --ds-text-sm:   14px;   /* Byline secondary, comment metadata. */
+  --ds-text-base: 18px;   /* Body reading. Substack body sits one step larger than typical UI. */
+  --ds-text-lg:   22px;   /* Post subtitle / dek. */
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  32px;   /* Section heads inside post body. */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  44px;   /* Post title H1 (Substack's measured title size on desktop). */
+  --ds-text-5xl:  64px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* Post title. */
+  --ds-leading-snug:    1.25;   /* Subtitle / dek. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Body reading; Substack's measured rhythm at 18/28.8. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;   /* Serif post title. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;     /* Uppercase mono date and share-count labels. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Subscribe CTA button. */
+  --ds-radius-md:   8px;     /* Subscribe card, comments preview card. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;  /* Avatar circles, like/restack pill buttons. */
+
+  /* ---------- Shadows ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 3px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 28px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 56px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

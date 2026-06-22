@@ -1,0 +1,139 @@
+/*
+ * notion-hero-001 tokens
+ *
+ * Native token values for Notion's homepage marketing hero, captured via
+ * WebFetch on https://www.notion.com 2026-05-20 (structure and copy
+ * confirmed live: H1 "Meet the night shift.", paired primary "Get Notion
+ * free" plus secondary "Request a demo" CTAs, product screenshots
+ * presented in soft-shadow card frames as the dominant visual).
+ *
+ * Token values cross-checked against the verified Notion atoms already in
+ * the library (assets/atoms/cards/warm-paper-rule-001, assets/atoms/
+ * inputs/text-underline-001, assets/atoms/wordmarks/lowercase-geometric-001),
+ * each of which carries score A devtools-captured tokens from prior waves.
+ *
+ * The character is warm paper, not stark white: the page background is a
+ * warm cream rather than #FFFFFF, the body text is a near-black ink with
+ * a touch of warmth, and the only chromatic moment in the first viewport
+ * is the primary CTA. Product screenshots ride in soft-shadow frames
+ * which sit at 12px radius and use a warm-tinted shadow, not a neutral
+ * one. Inter carries both display and body.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Warm paper canvas (#F7F6F3 family) over near-black ink. The CTA
+   * fills with Notion's near-black charcoal instead of a bright color;
+   * the discipline is "one chromatic moment is the dark button on the
+   * cream page," not "one chromatic moment is a saturated accent." */
+  --ds-bg:           #F7F6F3;   /* Notion warm paper canvas; the dominant surface. */
+  --ds-surface:      #FFFFFF;   /* Card body; brighter than bg so screenshots read as raised. */
+  --ds-surface-2:    #FBFAF7;   /* Nested element surface; one step cooler than card. */
+  --ds-text:         #191918;   /* Near-black ink; the H1 and body color. */
+  --ds-text-muted:   #6B6B66;   /* Dek paragraph and secondary copy; warm gray. */
+  --ds-text-strong:  #0F0F0E;   /* Reserved for the deepest emphasis moment. */
+  --ds-border:       rgba(0, 0, 0, 0.1);    /* The 0.8px hairline that frames cards. */
+  --ds-hairline:     rgba(0, 0, 0, 0.06);   /* Subtle internal divider under the topbar. */
+  --ds-accent:       #191918;   /* Primary CTA fill; charcoal-not-color is the Notion move. */
+  --ds-accent-2:     #2A2A28;   /* Hover lift on the primary CTA. */
+  --ds-success:      #2E6F50;   /* Muted green from the prior Notion atom canon. */
+  --ds-warning:      #B88E3A;
+  --ds-error:        #A14438;
+  --ds-info:         #6B6B66;
+  --ds-focus-ring:   #191918;   /* Focus ring is the charcoal, not a halo color. */
+
+  /* ---------- Type families ----------
+   * Inter carries display and body across notion.com. Notion historically
+   * also used GT Walsheim on marketing display; the fallback chain keeps
+   * Walsheim ahead of Inter for sites that license it. Mono is reserved
+   * for technical labels and does not appear in the hero copy. */
+  --ds-font-display: "Inter Display", "GT Walsheim", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Newsreader", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Notion marketing H1 sets at roughly 64-72px on the widest viewport,
+   * scaling down to 40-48px on mobile. The dek paragraph reads at
+   * 19-20px on a 1.5 leading. Scale is slightly softer than Geist's:
+   * 14 / 16 / 19 / 24 / 30 / 40 / 56 / 72. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono kicker; not used in this hero variant. */
+  --ds-text-sm:   14px;   /* CTA pill label, topbar nav. */
+  --ds-text-base: 16px;   /* Body default. */
+  --ds-text-lg:   19px;   /* Dek paragraph below the H1. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   /* Hero H1 desktop baseline. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* H1; slightly looser than Geist because Inter at 72px wants air. */
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.5;    /* Dek paragraph and body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Notion display headlines pull -0.015em to -0.02em at 64-72px;
+   * lighter than Geist's -0.04em because the warm-paper register
+   * rewards a more open letterfit. */
+  --ds-tracking-tight:  -0.02em;   /* Display H1. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Notion marketing rhythm: 24px between hero column elements, 96-128px
+   * vertical padding above the headline column, 32-48px between dek and
+   * the CTA row, 64-96px between the headline column and the product
+   * screenshot frame. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;    /* Inter-element gap inside the hero column. */
+  --ds-space-6:  32px;    /* Dek to CTA row. */
+  --ds-space-8:  48px;    /* CTA row to product frame. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;    /* Top padding above the H1. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Notion uses gentle corners, not pills. CTA at 8px, screenshot frame
+   * at 12px. The roundness is part of the warm-paper register. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;     /* Primary CTA. */
+  --ds-radius-lg:   12px;    /* Product screenshot card frame. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * The screenshot frame uses a soft, wide, warm-tinted shadow rather
+   * than a neutral gray drop. The warm tint is what makes the frame
+   * read as continuous with the paper canvas rather than pasted on. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60, 50, 30, 0.04);
+  --ds-shadow-sm:   0 2px 8px rgba(60, 50, 30, 0.06);
+  --ds-shadow-md:   0 8px 24px rgba(60, 50, 30, 0.08);
+  --ds-shadow-lg:   0 24px 48px rgba(60, 50, 30, 0.12);    /* Product screenshot lift. */
+  --ds-shadow-2xl:  0 40px 80px rgba(60, 50, 30, 0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

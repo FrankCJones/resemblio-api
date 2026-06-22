@@ -1,0 +1,758 @@
+<!--
+  Asset: mailchimp-pricing-page-001
+  Class: layouts
+  Pattern: tiered-pricing-grid, comparison-feature-table, faq-accordions, mega-footer, accent-on-neutral
+  Inspired by: Mailchimp (mailchimp.com/pricing)
+  Notes:
+    - Pricing-page skeleton: nav (flush-top with product/solutions/
+      integrations/resources/pricing cluster), pricing-hero (H1 + dek +
+      contact-count selector, no imagery), tiered-pricing-grid (four
+      equal cards Free / Essentials / Standard / Premium with the
+      Premium card lifted by a Cavendish Yellow recommended banner),
+      comparison-feature-table (sticky tier-header row over seven named
+      category bands: Email Marketing and Segmentation, Marketing
+      Automation Flows, Generative AI Features, SMS Marketing, Admin,
+      Services and Support, Custom Coded Templates), faq-accordion
+      (ten-item FAQ), cta-block, mega-footer (six columns). Page rides
+      at 1280px; tier cards equal width on desktop; the comparison
+      table is full container-width.
+    - Variable: section sequence, page max-width, tier card structure
+      (four equal columns), comparison-table category banding,
+      recommended-tier signal (banner above card rather than card
+      inversion), typographic role per slot. Inline: page max-width
+      (1280px), four-column tier grid, Cavendish Yellow recommended
+      banner geometry, comparison-cell included/not-available glyph,
+      CTA pill geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-pricing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Cooper Light and Graphik are the Mailchimp marketing faces.
+  Faces are not loaded in the asset; the fallback chains in tokens.css
+  (Georgia for the serif display, Helvetica for the body) carry the
+  register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so the tier grid, comparison
+   * table, FAQ all breathe on the same gutter. Inline value, not a
+   * contract slot, because it is page-grid character.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Pricing hero. H1 in Cooper Light serif at 56px, sentence-case, no
+   * kicker, no imagery. Centered with a short muted dek beneath and an
+   * inline contact-count selector slot.
+   */
+  .pricing-hero { text-align: center; padding-block: var(--ds-space-12) var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .pricing-hero { padding-block: var(--ds-space-16) var(--ds-space-12); }
+  }
+  .pricing-hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 22ch;
+  }
+  .pricing-hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 60ch;
+  }
+  .pricing-hero__selector {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    background: var(--ds-surface);
+  }
+
+  /*
+   * Tier grid. Four equal cards on desktop, stacks single-column on
+   * mobile, two-up on tablet. The Premium card carries a Cavendish
+   * Yellow banner above it as the recommended-tier signal. Mailchimp
+   * lifts a card with a banner rather than inverting the surface.
+   * Four-column inline value, not a contract slot.
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 700px) {
+    .tier-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .tier-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .tier-card-wrap { position: relative; display: flex; flex-direction: column; }
+  .tier-banner {
+    /* Cavendish Yellow banner badge sitting above the recommended card.
+       Inline geometry: full-radius top, attaches to card top edge. */
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-md) var(--ds-radius-md) 0 0;
+    text-align: center;
+  }
+  .tier-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    flex: 1;
+  }
+  .tier-card--featured {
+    /* Recommended card: keep paper surface but lose the top-radius so
+       the banner attaches cleanly, and lift the border to Cavendish
+       Yellow at full saturation. */
+    border-color: var(--ds-accent);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-width: 2px;
+  }
+  .tier-card__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .tier-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .tier-card__tagline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+    min-height: 3em;
+  }
+  .tier-card__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-2) 0 0;
+  }
+  .tier-card__price-unit {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+  }
+  .tier-card__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier-card__feature::before {
+    content: "+ ";
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTA pill. Cavendish Yellow on near-black for the primary tier
+     (Premium); paper outline on body color for other tiers. Geometry
+     is inline. */
+  .cta-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: var(--ds-text-strong);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-text-strong);
+    align-self: stretch;
+    text-align: center;
+    margin-top: auto;
+  }
+  .tier-card--featured .cta-pill {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-color: var(--ds-accent);
+  }
+
+  /*
+   * Comparison feature table. Full container-width, hairline-bordered.
+   * Sticky tier-header row keeps the Free / Essentials / Standard /
+   * Premium labels persistent while the user scrolls the seven
+   * category groupings (Email Marketing and Segmentation, Marketing
+   * Automation Flows, Generative AI Features, SMS Marketing, Admin,
+   * Services and Support, Custom Coded Templates). Each category leads
+   * with a warm-tinted mono-uppercase band heading. Cells render check
+   * (included), em-marker (not_available), numeric usage limits, or
+   * "Custom" / "Add-on" qualifiers.
+   */
+  .compare-section { padding-top: var(--ds-space-10); }
+  .compare-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    text-align: center;
+  }
+  .compare-table-wrap {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    text-align: left;
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    color: var(--ds-text-strong);
+  }
+  .compare-table tbody tr.category-band td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody td {
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare-table tbody tr:first-child td { border-top: 0; }
+  .compare-table .feature-cell { color: var(--ds-text); }
+  .compare-table .cell-tier {
+    color: var(--ds-text);
+    width: 14%;
+  }
+  .compare-table .glyph-included { color: var(--ds-success); font-family: var(--ds-font-mono); }
+  .compare-table .glyph-na { color: var(--ds-text-muted); font-family: var(--ds-font-mono); }
+  .compare-table .cell-unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * FAQ accordion. Single column. Each item is a hairline-divided row
+   * with a serif question on the left and a mono "+ / -" affordance on
+   * the right. Open items reveal a muted answer beneath.
+   */
+  .faq-list { border-top: 1px solid var(--ds-hairline); max-width: 880px; margin: 0 auto; }
+  .faq-item {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--ds-space-5) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+  }
+  .faq-item[open] summary::after { content: "-"; }
+  .faq-item__body {
+    padding-bottom: var(--ds-space-6);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+  }
+  .faq-item__body a {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /*
+   * CTA block. Warm tinted surface, Cavendish Yellow primary pill.
+   * Sits between FAQ and footer.
+   */
+  .cta-block {
+    text-align: center;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    margin-block: var(--ds-space-12);
+  }
+  .cta-block__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-4);
+    max-width: 24ch;
+    line-height: var(--ds-leading-tight);
+  }
+  .cta-block__dek {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 56ch;
+    line-height: var(--ds-leading-snug);
+  }
+  .cta-block .cta-pill {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-color: var(--ds-accent);
+    align-self: center;
+    margin: 0;
+    padding: var(--ds-space-3) var(--ds-space-8);
+  }
+
+  /* Footer band. Full-width, sits outside .page container. Stands in
+     for wholes/footers/mailchimp-mega-footer. Six-column structure. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a mailchimp-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster (products, solutions, integrations, resources, pricing)</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 200px;">
+        <span class="slot__label">cta-pill + login</span>
+        Sign Up Lorem
+      </div>
+    </nav>
+
+    <!-- Section: pricing-hero. Title + dek + contact-count selector. -->
+    <header class="pricing-hero" aria-label="Pricing hero">
+      <h1 class="pricing-hero__title">Find the lorem plan that fits your business.</h1>
+      <p class="pricing-hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="pricing-hero__selector" role="combobox" aria-label="Contacts">
+        <span style="font-family: var(--ds-font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ds-text-muted);">Contacts</span>
+        <strong>500</strong>
+        <span style="color: var(--ds-text-muted);">[+]</span>
+      </div>
+    </header>
+
+    <!-- Section: tiered-pricing-grid. Four equal cards; Premium gets the Cavendish Yellow banner. -->
+    <section class="section" aria-label="Pricing tiers">
+      <div class="tier-grid">
+
+        <div class="tier-card-wrap">
+          <article class="tier-card" aria-label="Free tier">
+            <span class="tier-card__label">Tier 01</span>
+            <h2 class="tier-card__name">Lorem Free</h2>
+            <p class="tier-card__tagline">Lorem ipsum dolor sit amet for businesses just starting out.</p>
+            <p class="tier-card__price">
+              $0
+              <span class="tier-card__price-unit">/ lorem forever</span>
+            </p>
+            <ul class="tier-card__features">
+              <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+              <li class="tier-card__feature">Consectetur adipiscing elit</li>
+              <li class="tier-card__feature">Sed do eiusmod tempor</li>
+              <li class="tier-card__feature">Incididunt ut labore</li>
+              <li class="tier-card__feature">Et dolore magna aliqua</li>
+            </ul>
+            <a class="cta-pill" href="#">Sign up free</a>
+          </article>
+        </div>
+
+        <div class="tier-card-wrap">
+          <article class="tier-card" aria-label="Essentials tier">
+            <span class="tier-card__label">Tier 02</span>
+            <h2 class="tier-card__name">Lorem Essentials</h2>
+            <p class="tier-card__tagline">Send the right content at the right time with A/B testing.</p>
+            <p class="tier-card__price">
+              $13
+              <span class="tier-card__price-unit">/ month</span>
+            </p>
+            <ul class="tier-card__features">
+              <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+              <li class="tier-card__feature">Consectetur adipiscing elit</li>
+              <li class="tier-card__feature">Sed do eiusmod tempor</li>
+              <li class="tier-card__feature">Incididunt ut labore</li>
+              <li class="tier-card__feature">Et dolore magna aliqua</li>
+              <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            </ul>
+            <a class="cta-pill" href="#">Start free trial</a>
+          </article>
+        </div>
+
+        <div class="tier-card-wrap">
+          <article class="tier-card" aria-label="Standard tier">
+            <span class="tier-card__label">Tier 03</span>
+            <h2 class="tier-card__name">Lorem Standard</h2>
+            <p class="tier-card__tagline">Sell even more with automations, optimization tools, and analytics.</p>
+            <p class="tier-card__price">
+              $20
+              <span class="tier-card__price-unit">/ month</span>
+            </p>
+            <ul class="tier-card__features">
+              <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+              <li class="tier-card__feature">Consectetur adipiscing elit</li>
+              <li class="tier-card__feature">Sed do eiusmod tempor</li>
+              <li class="tier-card__feature">Incididunt ut labore</li>
+              <li class="tier-card__feature">Et dolore magna aliqua</li>
+              <li class="tier-card__feature">Ut enim ad minim veniam</li>
+              <li class="tier-card__feature">Quis nostrud exercitation</li>
+            </ul>
+            <a class="cta-pill" href="#">Start free trial</a>
+          </article>
+        </div>
+
+        <div class="tier-card-wrap">
+          <div class="tier-banner" role="note">Mailchimp recommends</div>
+          <article class="tier-card tier-card--featured" aria-label="Premium tier (recommended)">
+            <span class="tier-card__label">Tier 04 / Recommended</span>
+            <h2 class="tier-card__name">Lorem Premium</h2>
+            <p class="tier-card__tagline">Our most advanced tools, unlimited contacts, and priority support.</p>
+            <p class="tier-card__price">
+              $350
+              <span class="tier-card__price-unit">/ month</span>
+            </p>
+            <ul class="tier-card__features">
+              <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+              <li class="tier-card__feature">Consectetur adipiscing elit</li>
+              <li class="tier-card__feature">Sed do eiusmod tempor</li>
+              <li class="tier-card__feature">Incididunt ut labore</li>
+              <li class="tier-card__feature">Et dolore magna aliqua</li>
+              <li class="tier-card__feature">Ut enim ad minim veniam</li>
+              <li class="tier-card__feature">Quis nostrud exercitation</li>
+              <li class="tier-card__feature">Ullamco laboris nisi</li>
+            </ul>
+            <a class="cta-pill" href="#">Start free trial</a>
+          </article>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: comparison-feature-table. Sticky tier row over seven banded categories. -->
+    <section class="section compare-section" aria-label="Compare plans">
+      <h2 class="compare-heading">Compare lorem plans</h2>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Free</th>
+              <th scope="col">Essentials</th>
+              <th scope="col">Standard</th>
+              <th scope="col">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="category-band"><td colspan="5">Email Marketing and Segmentation</td></tr>
+            <tr>
+              <td class="feature-cell">Lorem ipsum dolor sit amet</td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Consectetur adipiscing elit</td>
+              <td class="cell-tier"><span class="cell-unit">1</span></td>
+              <td class="cell-tier"><span class="cell-unit">3</span></td>
+              <td class="cell-tier"><span class="cell-unit">5</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Marketing Automation Flows</td></tr>
+            <tr>
+              <td class="feature-cell">Sed do eiusmod tempor</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Incididunt ut labore</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="cell-unit">Basic</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Generative AI Features</td></tr>
+            <tr>
+              <td class="feature-cell">Et dolore magna aliqua</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="cell-unit">Limited</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">SMS Marketing</td></tr>
+            <tr>
+              <td class="feature-cell">Ut enim ad minim veniam</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="cell-unit">Add-on</span></td>
+              <td class="cell-tier"><span class="cell-unit">Add-on</span></td>
+              <td class="cell-tier"><span class="cell-unit">Add-on</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Admin</td></tr>
+            <tr>
+              <td class="feature-cell">Quis nostrud exercitation</td>
+              <td class="cell-tier"><span class="cell-unit">500</span></td>
+              <td class="cell-tier"><span class="cell-unit">5k</span></td>
+              <td class="cell-tier"><span class="cell-unit">12k</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Ullamco laboris nisi</td>
+              <td class="cell-tier"><span class="cell-unit">1 user</span></td>
+              <td class="cell-tier"><span class="cell-unit">3 users</span></td>
+              <td class="cell-tier"><span class="cell-unit">5 users</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Services and Support</td></tr>
+            <tr>
+              <td class="feature-cell">Duis aute irure dolor</td>
+              <td class="cell-tier"><span class="cell-unit">Email (30d)</span></td>
+              <td class="cell-tier"><span class="cell-unit">24/7 chat</span></td>
+              <td class="cell-tier"><span class="cell-unit">24/7 chat</span></td>
+              <td class="cell-tier"><span class="cell-unit">Phone + chat</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Custom Coded Templates</td></tr>
+            <tr>
+              <td class="feature-cell">Excepteur sint occaecat</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section: faq-accordion. Ten-item FAQ; hairline-divided rows. -->
+    <section class="section" aria-label="Pricing FAQ">
+      <h2 class="compare-heading">Lorem ipsum questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>Lorem ipsum dolor sit amet, free trial?</summary>
+          <div class="faq-item__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. <a href="#">Lorem ipsum link</a>
+            for further reading.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I upgrade or downgrade lorem during free trial?</summary>
+          <div class="faq-item__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What happens if I pause or cancel lorem?</summary>
+          <div class="faq-item__body">
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+            aute irure dolor in reprehenderit in voluptate velit esse.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Will I get billing reminders before lorem ends?</summary>
+          <div class="faq-item__body">
+            Cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How do SMS credits lorem ipsum?</summary>
+          <div class="faq-item__body">
+            Mollit anim id est laborum. Lorem ipsum dolor sit amet,
+            consectetur adipiscing elit, sed do eiusmod tempor.
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <!-- Section: cta-block. Sits between FAQ and footer; Cavendish Yellow pill. -->
+    <section aria-label="Final CTA">
+      <div class="cta-block">
+        <h2 class="cta-block__title">Lorem ipsum dolor sit amet ready?</h2>
+        <p class="cta-block__dek">
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua.
+        </p>
+        <a class="cta-pill" href="#">Sign up free</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width band outside .page. Six-column mega-footer. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div class="slot"><span class="slot__label">Products</span>Lorem 8 links</div>
+        <div class="slot"><span class="slot__label">Resources</span>Lorem 4 links</div>
+        <div class="slot"><span class="slot__label">Community</span>Lorem 3 links</div>
+        <div class="slot"><span class="slot__label">Company</span>Lorem 5 links</div>
+        <div class="slot"><span class="slot__label">Help</span>Lorem 4 links</div>
+        <div class="slot"><span class="slot__label">Mailchimp Presents</span>Lorem promo</div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

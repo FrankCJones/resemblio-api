@@ -1,0 +1,119 @@
+/*
+ * mailchimp-customer-story-page-001 tokens
+ *
+ * Native token values for the Mailchimp customer-story skeleton, inspired
+ * by mailchimp.com/case-studies/chani-email-marketing-customer-loyalty/
+ * (cross-checked against /case-studies/earl-of-east-value-added-content/).
+ * Mailchimp's marketing register: paper-white body with deep-roast brand
+ * ink (Peppercorn near-black), Cavendish Yellow as the single signature
+ * accent reserved for primary CTAs and the hero color moment, sentence
+ * case throughout, modest radii (4-8px), warm whitespace between bands,
+ * and a sans display face (Mailchimp ships Graphik on marketing surfaces
+ * with Helvetica Neue as the system fallback chain). The system manifest
+ * (systems/mailchimp/system.json) declares this vocabulary; tokens here
+ * mirror those design principles.
+ *
+ * Chrome MCP refused the mailchimp.com domain in this session; WebFetch
+ * returned section order, byline/metadata band shape, H2 cadence, and
+ * pull-quote treatment but stripped inline computed styles. Numeric
+ * values follow the Mailchimp marketing convention documented in the
+ * system manifest's design_principles rather than devtools reads.
+ *
+ * Layout-specific notes: the narrative column sits at ~66ch (inline rule
+ * in asset.html). The metadata band (date / industry / location chips),
+ * pull quotes, related-stories grid, and footer all widen to the 1240px
+ * page container. The hero customer-photo aspect is 16:10 with the
+ * customer logo lockup floating above the article title.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body surface; Mailchimp customer-stories default. */
+  --ds-surface:      #F6F6F4;   /* Warm half-step above body; metadata-chip ground, related card. */
+  --ds-surface-2:    #ECECE6;   /* Tinted putty; aside chrome, pull-quote inset on long pages. */
+  --ds-text:         #241C15;   /* Mailchimp Peppercorn near-black; body reading ink. */
+  --ds-text-muted:   #6B6258;   /* Warm grey; byline meta, date stamp, metadata chips. */
+  --ds-text-strong:  #1A1410;   /* Hero title display; one step heavier than body. */
+  --ds-border:       #E0DED7;   /* Card edges, chip outlines, sidebar chrome on warm whitespace. */
+  --ds-hairline:     rgba(36,28,21,0.10);  /* Section rule alpha; warm-tinted hairline. */
+  --ds-accent:       #FFE01B;   /* Cavendish Yellow; primary CTA fill, hero color block, brand signature. */
+  --ds-accent-2:     #007C89;   /* Mailchimp teal; secondary link accent, used sparingly. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #F4A11C;
+  --ds-error:        #D32F2F;
+  --ds-info:         #007C89;
+  --ds-focus-ring:   #241C15;   /* Peppercorn focus outline; sits on the yellow without vibrating. */
+
+  /* ---------- Type families ----------
+   * Graphik on Mailchimp marketing; Helvetica Neue / system fallbacks so
+   * the asset opens standalone without the licensed Commercial Type face.
+   */
+  --ds-font-display: "Graphik", "Helvetica Neue", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Graphik", "Helvetica Neue", "Inter", system-ui, sans-serif;
+  --ds-font-mono:    "Söhne Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Graphik", "Helvetica Neue", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Metadata chip, date stamp, pull-quote role label. */
+  --ds-text-sm:   14px;   /* Author byline, related-card meta. */
+  --ds-text-base: 17px;   /* Body reading; Mailchimp leans slightly larger than 16. */
+  --ds-text-lg:   20px;   /* Lead paragraph, dek beneath the hero title. */
+  --ds-text-xl:   26px;   /* Pull-quote body. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  42px;   /* CTA block heading, metrics value. */
+  --ds-text-4xl:  56px;   /* Hero H1 display. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Hero title, metrics value. */
+  --ds-leading-snug:    1.2;    /* Pull quote, body H2. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Graphik display squeeze; lighter than Geist. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Metadata chip, mono role label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Mailchimp's subtle-rounded-corners principle: 4-8px on cards, pills
+   * reserved for chips and CTAs. Nothing past 12px.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;    /* Metadata chip, related card. */
+  --ds-radius-md:   8px;    /* Aside panel, CTA card. */
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px; /* CTA pill, chip pill. */
+
+  /* ---------- Shadows ----------
+   * Mailchimp marketing favors flat, hairline-bordered tiles over cast
+   * shadow. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(36,28,21,0.05);
+  --ds-shadow-sm:   0 1px 2px rgba(36,28,21,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(36,28,21,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(36,28,21,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(36,28,21,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

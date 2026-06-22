@@ -1,0 +1,109 @@
+/*
+ * github-article-page-001 tokens
+ *
+ * Tokens drawn from the GitHub Blog (github.blog/ai-and-ml/...), a
+ * WordPress theme by 10up that adopts the Primer color/type register
+ * shipped across github.com. WebFetch on the article URL returned the
+ * full vertical content sequence (nav, hero with category breadcrumb,
+ * byline + duration, feature image, narrow body, related-3up,
+ * newsletter band, dark mega-footer) but stripped inline computed
+ * styles. Color and type values reference the public Primer
+ * primitives repo (github.com/primer/primitives) which is the source
+ * of truth for GitHub's product chrome, cross-checked against the
+ * blog's visible character (white body, near-black headlines, GitHub
+ * green CTA, charcoal footer).
+ *
+ * Layout-specific notes: this is an article (single-post) skeleton.
+ * The article column is constrained near 720px via inline rules in
+ * asset.html; the page max-width and gutter values are inline because
+ * they are page-grid character, not contract slots.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Canvas. Page background across the article. Primer canvas.default light. */
+  --ds-surface:      #F6F8FA;   /* Raised surface; code-block fill, newsletter band. Primer canvas.subtle. */
+  --ds-surface-2:    #EAEEF2;   /* Tinted surface for inline figures and related-card placeholders. */
+  --ds-text:         #1F2328;   /* Article body ink; Primer fg.default light. */
+  --ds-text-muted:   #59636E;   /* Byline, date, duration, related-post metadata. Primer fg.muted. */
+  --ds-text-strong:  #0A0C10;   /* Article title display, H2/H3. */
+  --ds-border:       #D1D9E0;   /* Card edges, hairline card chrome. Primer border.default. */
+  --ds-hairline:     #D8DEE4;   /* Section breaks between hero / body / related / newsletter. */
+  --ds-accent:       #1F883D;   /* GitHub green; primary CTA fill, in-body links. Primer success.emphasis / btn-primary bg. */
+  --ds-accent-2:     #0969DA;   /* GitHub blue; secondary link affordance. Primer accent.fg. */
+  --ds-success:      #1A7F37;
+  --ds-warning:      #9A6700;
+  --ds-error:        #CF222E;
+  --ds-info:         #0969DA;
+  --ds-focus-ring:   #0969DA;   /* Primer accent.emphasis; standard keyboard focus across GitHub. */
+
+  /* ---------- Type families ----------
+   * GitHub's marketing/blog stack uses the Mona Sans family for display
+   * and body, with Hubot Sans as an alternate display moment. The
+   * product chrome and code blocks use SF Mono / monospace stacks. The
+   * date stamp and the duration ("11 minutes") are sans, not mono, so
+   * --ds-font-mono here serves code blocks rather than the byline.
+   */
+  --ds-font-display: "Mona Sans", "Hubot Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Mona Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --ds-font-accent:  "Mona Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Category breadcrumb eyebrow. */
+  --ds-text-sm:   14px;   /* Byline, date, duration, footer links. */
+  --ds-text-base: 16px;   /* Body reading. Primer fontSize-2. */
+  --ds-text-lg:   20px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   24px;   /* Body H3. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* Related-posts / newsletter section heading. */
+  --ds-text-4xl:  56px;   /* Article H1 (the marketing-page display size). */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Article title. */
+  --ds-leading-snug:    1.2;    /* Body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.75;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;   /* Mona Sans display tightens. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;   /* Uppercase category eyebrow. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;   /* Primer borderRadius-medium; code blocks, inputs. */
+  --ds-radius-md:   8px;   /* Card frames, newsletter input. */
+  --ds-radius-lg:   12px;  /* Feature image frame. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(31,35,40,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(31,35,40,0.04), 0 1px 3px rgba(31,35,40,0.06);
+  --ds-shadow-md:   0 3px 6px rgba(140,149,159,0.15);
+  --ds-shadow-lg:   0 8px 24px rgba(140,149,159,0.20);
+  --ds-shadow-2xl:  0 24px 48px rgba(31,35,40,0.30);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

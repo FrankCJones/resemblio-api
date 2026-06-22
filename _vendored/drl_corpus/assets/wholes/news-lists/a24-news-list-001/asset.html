@@ -1,0 +1,344 @@
+<!--
+  Asset: a24-news-list-001
+  Class: news-lists (whole)
+  Pattern: story-card-grid, mono-eyebrow, paper-and-ink
+  Inspired by: A24 (https://a24films.com/notes)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/a24-cinematic-palette-001 (cinema-black field)
+    - type-pairings/a24-cinematic-pair-001   (sans display + mono kicker)
+    - buttons/a24-cinematic-001              (inverse Read More / Listen Now slab)
+  Notes:
+    - The defining gesture is the FILTER BAR above a flat thumb-led
+      grid. A24's /notes index mixes article, zine, and podcast
+      content; the filter row (All / Articles / Zines / Podcast) is
+      the user's only sort. There is no date, no byline, no dek on
+      the card face; the kicker carries the only metadata.
+    - Each card is thumb + mono category kicker + sans title + inverse
+      CTA. The inverse CTA varies by item type (Read More / Listen
+      Now), which is the one place this whole borrows from the A24
+      button atom.
+    - "Show More" at the foot of the list pages the grid; there is
+      no numbered pagination. Hover lift is a single value step, not
+      a shadow rise.
+    - Variable: every color, type size, spacing, and radius slot.
+      Inline: the 16x9 thumb aspect-ratio (a one-off framing rule)
+      and the placeholder diagonal hatch (one-off character).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-news-list-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter and JetBrains Mono stand in for A24's licensed GT America /
+     Söhne / Söhne Mono register so the file renders standalone. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Page container. A24's editorial pages sit on a generous outer
+   * margin; the grid does not fill the viewport edge to edge. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* Page head: large sans title, no eyebrow. The title IS the
+   * editorial frame; the filter bar handles secondary structure. */
+  .page__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-8);
+  }
+  .page__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Filter bar. Horizontal row of category links; the active item
+   * gets a paper-white underline; inactive items sit at muted text.
+   * The bar separates from the grid via a single hairline below. */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-5);
+    padding-bottom: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    margin-bottom: var(--ds-space-8);
+  }
+  .filter {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: var(--ds-space-1) 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .filter:hover { color: var(--ds-text); }
+  .filter[aria-current="page"] {
+    color: var(--ds-text-strong);
+    /* Inline ornament: 1px paper underline as the active-state cue.
+     * Kept inline because it is the only place this register appears. */
+    box-shadow: inset 0 -1px 0 var(--ds-text-strong);
+  }
+  .filter:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* The grid. Flat three-up on desktop, two-up on tablet, single
+   * column on phone. Cards are flush; no card chrome, no rule
+   * between rows. Vertical and horizontal rhythm comes from a
+   * generous gap. */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10) var(--ds-space-6);
+  }
+  @media (min-width: 640px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-12) var(--ds-space-6); }
+  }
+
+  /* Card. Thumb + kicker + title + CTA. Pure text-on-paper register;
+   * no border, no background. */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    color: inherit;
+    text-decoration: none;
+    /* Hover lifts the whole card a single step in value, never as
+     * shadow. Matches the rest of the A24 system. */
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 6px;
+  }
+
+  /* Thumb. Inline aspect-ratio 16/9 is the one-off framing rule for
+   * A24's /notes grid; landscape format reads as still rather than
+   * portrait poster. The card-on-dark surface plus a faint diagonal
+   * hatch stand in for the real image. */
+  .card__thumb {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    overflow: hidden;
+    /* Inline ornament: placeholder hatch. Real implementations swap
+     * this for the production image. */
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 14px,
+        rgba(245, 241, 234, 0.03) 14px,
+        rgba(245, 241, 234, 0.03) 15px);
+  }
+
+  /* Mono category kicker. Uppercase, tracked-wider, muted; the only
+   * metadata on the card face. */
+  .card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Title. Mixed-case sans, sits at xl on the grid. */
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .card:hover .card__title { color: var(--ds-accent); }
+
+  /* Inverse CTA. A24's defining slab: pure paper on cinema-black,
+   * near-sharp corner, mono label. The label flips between Read More
+   * and Listen Now depending on item type. */
+  .card__cta {
+    align-self: flex-start;
+    margin-top: var(--ds-space-1);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    border-radius: var(--ds-radius-xs);
+    border: 1px solid var(--ds-accent);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .card__cta:hover {
+    background: var(--ds-accent-2);
+  }
+
+  /* Show More affordance. A24's /notes pages with a single button at
+   * the foot of the grid; numbered pagination is refused. The button
+   * mirrors the inverse CTA register but sits centered. */
+  .more {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .more__btn {
+    padding: var(--ds-space-3) var(--ds-space-6);
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-text-strong);
+    border-radius: var(--ds-radius-xs);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .more__btn:hover {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+  }
+  .more__btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .card__cta, .more__btn, .filter { transition: none; }
+    .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header class="page__head">
+      <h1 class="page__title">Lorem Notes</h1>
+    </header>
+
+    <!-- Filter bar. Single-select. Active item shows a paper-white
+         underline; inactives sit at muted text. -->
+    <nav class="filters" aria-label="Filter notes by category">
+      <a class="filter" href="#all" aria-current="page">All</a>
+      <a class="filter" href="#articles">Articles</a>
+      <a class="filter" href="#zines">Zines</a>
+      <a class="filter" href="#podcast">Podcast</a>
+    </nav>
+
+    <!-- The grid. Flat thumb-led cards. -->
+    <section class="grid" aria-label="All notes">
+      <a class="card" href="#a">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Podcast</span>
+        <h2 class="card__title">Lorem ipsum dolor sit amet with Consectetur Adipiscing &amp; Elit Sed.</h2>
+        <span class="card__cta">Listen Now</span>
+      </a>
+
+      <a class="card" href="#b">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Article</span>
+        <h2 class="card__title">Sepulchre of dolor: a note from lorem ipsum.</h2>
+        <span class="card__cta">Read More</span>
+      </a>
+
+      <a class="card" href="#c">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Podcast</span>
+        <h2 class="card__title">Endless grasping with Ali Lorem &amp; Oscar Ipsum.</h2>
+        <span class="card__cta">Listen Now</span>
+      </a>
+
+      <a class="card" href="#d">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Zine</span>
+        <h2 class="card__title">Quis nostrud exercitation ullamco laboris nisi ut aliquip.</h2>
+        <span class="card__cta">Read More</span>
+      </a>
+
+      <a class="card" href="#e">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Article</span>
+        <h2 class="card__title">Duis aute irure dolor in reprehenderit in voluptate velit esse.</h2>
+        <span class="card__cta">Read More</span>
+      </a>
+
+      <a class="card" href="#f">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Podcast</span>
+        <h2 class="card__title">Excepteur sint occaecat cupidatat non proident sunt in culpa.</h2>
+        <span class="card__cta">Listen Now</span>
+      </a>
+
+      <a class="card" href="#g">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Article</span>
+        <h2 class="card__title">Nam libero tempore cum soluta nobis est eligendi optio.</h2>
+        <span class="card__cta">Read More</span>
+      </a>
+
+      <a class="card" href="#h">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Zine</span>
+        <h2 class="card__title">Temporibus autem quibusdam et aut officiis debitis aut rerum.</h2>
+        <span class="card__cta">Read More</span>
+      </a>
+
+      <a class="card" href="#i">
+        <div class="card__thumb" aria-hidden="true"></div>
+        <span class="card__kicker">Podcast</span>
+        <h2 class="card__title">Itaque earum rerum hic tenetur a sapiente delectus.</h2>
+        <span class="card__cta">Listen Now</span>
+      </a>
+    </section>
+
+    <!-- Show More. A24 refuses numbered pagination. -->
+    <div class="more">
+      <a class="more__btn" href="#more">Show More</a>
+    </div>
+  </main>
+</body>
+</html>

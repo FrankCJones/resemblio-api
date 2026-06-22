@@ -1,0 +1,72 @@
+<!--
+  Asset: maggie-garden-headline-001
+  Class: headings
+  Pattern: display-editorial
+  Inspired by: Maggie Appleton
+  Notes:
+    - Heavy serif H1 on warm cream paper; editorial register rather than modern-sans display.
+    - Type family, color, size, weight, leading, and tracking are all variables.
+      One inline value: the optical kerning hint on the italic accent, which is
+      a per-asset character choice that lives outside the contract.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>maggie-garden-headline-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inria Serif and Inria Sans are the closest free family to Maggie's editorial-serif character.
+     Fallback chain in tokens.css covers the case where these do not load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Inria+Sans:wght@400;700&display=swap"/>
+<style>
+  /* Asset-local reset; we assume nothing about the harness frame. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    /* Center the heading vertically and horizontally; the asset is a single
+     * editorial moment so the surrounding space matters. */
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-8) var(--ds-space-6);
+  }
+
+  /* The headline itself: heavy serif display at the 4xl scale step.
+   * Max-width holds the line count around two; text-wrap balance keeps
+   * the breaks visually even rather than ragged-by-default. */
+  h1.headline {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  /* The italic accent word lifts in sage; same family at lighter weight so
+   * the italic carries the emphasis rather than the chroma alone. */
+  h1.headline em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ds-accent);
+    /* Inline ornament: the italic of this serif sits slightly tight against
+     * the upright neighbor at display size; the kerning nudge restores the
+     * visual gap. This is a per-headline character moment, not a token. */
+    margin-inline: 0.04em;
+  }
+</style>
+</head>
+<body>
+  <h1 class="headline">Lorem ipsum <em>dolor</em> sit amet consectetur.</h1>
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!--
+  Asset: github-marketing-page-001
+  Class: layouts
+  Pattern: single-cta-hero, flush-top-nav, bento-grid, mega-footer, mono-utility-pair, accent-on-neutral
+  Inspired by: GitHub (github.com)
+  Notes:
+    - Marketing homepage skeleton: flush-top nav, dark-band single-CTA hero
+      with "The future of building happens together" register, GitHub
+      features pillar tab row (Code/Plan/Collaborate/Automate/Secure),
+      customer logo strip, "Accelerate your entire workflow" Copilot +
+      Actions + Codespaces feature column block, application security
+      block with stats, collaboration block, single pull-quote testimonial,
+      enterprise customer-story three-up, final dark-band CTA, mega-footer.
+      Container caps at 1280px; hero and final CTA bleed dark beyond.
+    - Variable: section sequence, container width, vertical rhythm, dark
+      vs light band assignment per section. Inline: container max-width
+      (1280px), customer-logo grid (6-up desktop), stat row two-up,
+      testimonial pull-quote measure, footer five-column break.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Mona Sans and Mona Sans Mono are GitHub's marketing faces
+  since the 2023 refresh. Faces are not loaded inline; the Inter / system
+  fallback chain in tokens.css carries the register so the asset opens
+  standalone from disk.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1280px cap so the bento feature grid, customer-logo
+   * row, and footer columns breathe at desktop. Inline value. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Dark band. Used for the hero and the final CTA. Near-black surface,
+   * white display ink, no chrome. The whole band stretches full-bleed;
+   * only the inner content respects the page container. */
+  .band-dark {
+    background: var(--ds-surface-2);
+    color: var(--ds-text-strong);
+  }
+  .band-light {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+  }
+  .band-tint {
+    background: var(--ds-surface);
+    color: var(--ds-text);
+  }
+
+  /* Nav. Flush-top, full-bleed dark surface that carries directly into
+   * the hero below. Wordmark left, primary link cluster center, auth
+   * actions right. */
+  .nav {
+    background: var(--ds-surface-2);
+    color: var(--ds-text-strong);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+    padding-block: var(--ds-space-4);
+  }
+  .nav__mark {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-5);
+    flex: 1;
+    margin-left: var(--ds-space-6);
+  }
+  .nav__links a {
+    font-size: var(--ds-text-sm);
+    color: rgba(255,255,255,0.75);
+  }
+  .nav__auth {
+    display: flex;
+    gap: var(--ds-space-4);
+    align-items: center;
+    font-size: var(--ds-text-sm);
+  }
+  .nav__signup {
+    background: var(--ds-text-strong);
+    color: var(--ds-surface-2);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    font-weight: 600;
+  }
+
+  /* Hero. Single-CTA dark band. Centered measure, large display, single
+   * email-capture row plus dual CTA. Subtle inline particles hint at
+   * GitHub's animated background motif (kept as a CSS placeholder). */
+  .hero {
+    padding-block: var(--ds-space-16);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: rgba(255,255,255,0.6);
+    margin-bottom: var(--ds-space-5);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(40px, 7vw, var(--ds-text-5xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0 auto var(--ds-space-5);
+    max-width: 16ch;
+  }
+  .hero__lede {
+    max-width: 56ch;
+    margin: 0 auto var(--ds-space-8);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: rgba(255,255,255,0.8);
+  }
+  .hero__form {
+    display: flex;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--ds-space-5);
+  }
+  .hero__email {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+    color: var(--ds-text-strong);
+    font-size: var(--ds-text-sm);
+    min-width: 280px;
+  }
+  .btn-primary {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 0;
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+    cursor: pointer;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid rgba(255,255,255,0.25);
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Section block. Used for every product-pillar / collaboration /
+   * security section. Heading-left rhythm with feature-tile grid below. */
+  .section {
+    padding-block: var(--ds-space-12);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    max-width: 22ch;
+    margin: 0 0 var(--ds-space-4);
+  }
+  .section__lede {
+    max-width: 60ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    margin-bottom: var(--ds-space-10);
+  }
+
+  /* Pillar tabs - product-pillar row above the feature blocks. */
+  .pillars {
+    display: flex;
+    gap: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    overflow-x: auto;
+    margin-bottom: var(--ds-space-10);
+  }
+  .pillars a {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    padding-block: var(--ds-space-4);
+    color: var(--ds-text-muted);
+    border-bottom: 2px solid transparent;
+  }
+  .pillars a[aria-current="true"] {
+    color: var(--ds-text);
+    border-bottom-color: var(--ds-text);
+  }
+
+  /* Feature bento. Asymmetric three-up that breaks to single column.
+   * One large tile leads, four supporting tiles follow. */
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .bento {
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-auto-rows: minmax(220px, auto);
+    }
+    .bento__tile--lead { grid-column: span 2; grid-row: span 2; }
+    .bento__tile--tall { grid-row: span 2; }
+  }
+  .bento__tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--ds-space-3);
+  }
+  .bento__tile h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .bento__tile p {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 36ch;
+  }
+  .bento__tile a {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+    font-weight: 500;
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Customer logo strip. Six-up muted logos on the surface tint. */
+  .logos {
+    background: var(--ds-surface);
+    padding-block: var(--ds-space-10);
+  }
+  .logos__title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-align: center;
+    margin-bottom: var(--ds-space-6);
+  }
+  .logos__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-items: center;
+  }
+  @media (min-width: 600px)  { .logos__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px)  { .logos__grid { grid-template-columns: repeat(6, 1fr); } }
+  .logos__cell {
+    height: 36px;
+    width: 100%;
+    background: var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    opacity: 0.55;
+  }
+
+  /* Stat row. Two-up large mono figures inside the security section. */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } }
+  .stats__fig {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .stats__label {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    max-width: 38ch;
+  }
+
+  /* Testimonial pull-quote. Centered editorial moment that breaks the
+   * column rhythm. */
+  .quote {
+    padding-block: var(--ds-space-16);
+    text-align: center;
+  }
+  .quote__mark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-5);
+  }
+  .quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    max-width: 28ch;
+    margin: 0 auto var(--ds-space-6);
+    font-weight: 500;
+  }
+  .quote__cite {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Enterprise three-up customer-story cards. */
+  .stories {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 800px) { .stories { grid-template-columns: repeat(3, 1fr); } }
+  .stories__card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    aspect-ratio: 4 / 5;
+    justify-content: flex-end;
+  }
+  .stories__industry {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .stories__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+
+  /* Final CTA. Dark band echo of the hero. Centered display, dual CTA,
+   * newsletter sign-up row. */
+  .endcta {
+    padding-block: var(--ds-space-16);
+    text-align: center;
+  }
+  .endcta__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(36px, 6vw, var(--ds-text-4xl));
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    max-width: 22ch;
+    margin: 0 auto var(--ds-space-5);
+  }
+  .endcta__lede {
+    max-width: 56ch;
+    margin: 0 auto var(--ds-space-8);
+    color: rgba(255,255,255,0.75);
+    font-size: var(--ds-text-lg);
+  }
+  .endcta__actions { display: flex; gap: var(--ds-space-3); justify-content: center; flex-wrap: wrap; }
+
+  /* Mega-footer. Dark surface, five column groups, social row, language
+   * selector, copyright meta row. */
+  .footer {
+    background: var(--ds-surface-2);
+    color: rgba(255,255,255,0.75);
+    padding-block: var(--ds-space-12) var(--ds-space-8);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-8);
+    margin-bottom: var(--ds-space-10);
+  }
+  @media (min-width: 700px) { .footer__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1000px) { .footer__grid { grid-template-columns: repeat(5, 1fr); } }
+  .footer__col h4 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    font-weight: 600;
+  }
+  .footer__col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .footer__col a { font-size: var(--ds-text-sm); color: rgba(255,255,255,0.6); }
+  .footer__meta {
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--ds-text-xs);
+    color: rgba(255,255,255,0.5);
+  }
+  .footer__social { display: flex; gap: var(--ds-space-4); }
+  .footer__social span {
+    width: 18px; height: 18px; border-radius: var(--ds-radius-full);
+    background: rgba(255,255,255,0.2); display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. Nav (dark, flush-top, carries into the hero band) -->
+<header class="nav">
+  <div class="page nav__inner">
+    <span class="nav__mark">Lorem</span>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#">Platform</a>
+      <a href="#">Solutions</a>
+      <a href="#">Resources</a>
+      <a href="#">Open Source</a>
+      <a href="#">Enterprise</a>
+      <a href="#">Pricing</a>
+    </nav>
+    <div class="nav__auth">
+      <a href="#">Sign in</a>
+      <a href="#" class="nav__signup">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<!-- 2. Hero (dark band, single-CTA, email capture + dual CTA) -->
+<section class="band-dark hero">
+  <div class="page">
+    <div class="hero__kicker">Lorem ipsum dolor sit</div>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur</h1>
+    <p class="hero__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+    <form class="hero__form" onsubmit="return false">
+      <input type="email" class="hero__email" placeholder="Enter your email"/>
+      <button class="btn-primary" type="submit">Lorem ipsum</button>
+      <a href="#" class="btn-ghost">Dolor sit amet</a>
+    </form>
+  </div>
+</section>
+
+<!-- 3. Product-pillar feature section (Code / Plan / Collaborate / Automate / Secure) -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem features</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet consectetur</h2>
+    <nav class="pillars" aria-label="Feature pillars">
+      <a href="#" aria-current="true">Lorem</a>
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="bento">
+      <article class="bento__tile bento__tile--lead">
+        <h3>Lorem ipsum dolor sit amet</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <a href="#">Explore Lorem &rarr;</a>
+      </article>
+      <article class="bento__tile bento__tile--tall">
+        <h3>Dolor sit amet</h3>
+        <p>Consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        <a href="#">Explore Ipsum &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Consectetur</h3>
+        <p>Sed do eiusmod tempor incididunt ut labore.</p>
+        <a href="#">Explore Dolor &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Adipiscing elit</h3>
+        <p>Ut enim ad minim veniam quis nostrud.</p>
+        <a href="#">Explore Sit &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Tempor incididunt</h3>
+        <p>Magna aliqua ut enim ad minim veniam.</p>
+        <a href="#">Explore Amet &rarr;</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Customer logo strip -->
+<section class="logos">
+  <div class="page">
+    <p class="logos__title">Lorem ipsum dolor sit amet consectetur</p>
+    <div class="logos__grid" aria-label="Customer logos">
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Application security pillar with stat row -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem security</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet consectetur adipiscing</h2>
+    <p class="section__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="bento">
+      <article class="bento__tile bento__tile--lead">
+        <h3>Lorem ipsum dolor</h3>
+        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <a href="#">Explore Lorem &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Dolor amet</h3>
+        <p>Consectetur adipiscing elit sed do eiusmod.</p>
+        <a href="#">Explore Ipsum &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Adipiscing</h3>
+        <p>Ut enim ad minim veniam.</p>
+        <a href="#">Explore Dolor &rarr;</a>
+      </article>
+    </div>
+    <div class="stats">
+      <div>
+        <p class="stats__fig">70%</p>
+        <p class="stats__label">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</p>
+      </div>
+      <div>
+        <p class="stats__fig">8.3M</p>
+        <p class="stats__label">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Collaboration pillar -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem collaboration</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet</h2>
+    <p class="section__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.</p>
+    <div class="bento">
+      <article class="bento__tile bento__tile--lead">
+        <h3>Lorem ipsum</h3>
+        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <a href="#">Explore Lorem &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Dolor sit</h3>
+        <p>Consectetur adipiscing elit.</p>
+        <a href="#">Explore Ipsum &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Amet</h3>
+        <p>Ut enim ad minim veniam.</p>
+        <a href="#">Explore Dolor &rarr;</a>
+      </article>
+      <article class="bento__tile">
+        <h3>Consectetur</h3>
+        <p>Quis nostrud exercitation.</p>
+        <a href="#">Explore Sit &rarr;</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Pull-quote testimonial -->
+<section class="band-tint quote">
+  <div class="page">
+    <div class="quote__mark">&ldquo; &rdquo;</div>
+    <p class="quote__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p class="quote__cite">Lorem Ipsum &middot; Dolor Sit Amet, Lorem Inc.</p>
+  </div>
+</section>
+
+<!-- 8. Enterprise customer-story three-up (pricing teaser proxy) -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem enterprise</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet consectetur adipiscing elit</h2>
+    <p class="section__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <div class="stories">
+      <article class="stories__card">
+        <p class="stories__industry">Lorem industry</p>
+        <h3 class="stories__head">Lorem ipsum dolor sit amet consectetur adipiscing</h3>
+      </article>
+      <article class="stories__card">
+        <p class="stories__industry">Ipsum industry</p>
+        <h3 class="stories__head">Dolor sit amet consectetur adipiscing elit sed do</h3>
+      </article>
+      <article class="stories__card">
+        <p class="stories__industry">Dolor industry</p>
+        <h3 class="stories__head">Consectetur adipiscing elit sed do eiusmod tempor</h3>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Final CTA (dark band, mirrors the hero) -->
+<section class="band-dark endcta">
+  <div class="page">
+    <h2 class="endcta__title">Lorem ipsum dolor sit amet consectetur</h2>
+    <p class="endcta__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="endcta__actions">
+      <button class="btn-primary">Lorem ipsum</button>
+      <a href="#" class="btn-ghost">Dolor sit amet</a>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Mega-footer (dark, five column groups + meta row) -->
+<footer class="footer">
+  <div class="page">
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Lorem</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+          <li><a href="#">Adipiscing</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Ipsum</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Dolor</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Amet</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Consectetur</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__meta">
+      <span>(c) 2026 Lorem Ipsum, Inc.</span>
+      <div class="footer__social" aria-label="Social">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

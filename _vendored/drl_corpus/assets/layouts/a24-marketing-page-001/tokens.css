@@ -1,0 +1,131 @@
+/*
+ * a24-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the A24 homepage. Tokens mirror the
+ * A24 system canon shipped in prior waves (color-groups/a24-cinematic-
+ * palette-001, type-pairings/a24-cinematic-pair-001, buttons/a24-
+ * cinematic-001, wholes/heroes/a24-film-spotlight-hero-001) so the
+ * layout reads as a coherent system page rather than a one-off.
+ *
+ * Native context: a24films.com homepage. Cinema-black warm-tinted
+ * surface with paper-white type. No chromatic accent at any band; the
+ * film stills carry every drop of color. Near-sharp 2px radii rather
+ * than pills. Humanist sans pair (Inter Tight display / Inter body
+ * standing in for A24's GT America / Söhne); mono reserved for the
+ * 2026 / "WATCH NOW" / "SHOP NOW" titlecard labels with wide tracking.
+ *
+ * Provenance: a24films.com homepage inspected via WebFetch (Chrome MCP
+ * has historically refused the a24films.com family; per the system
+ * manifest precedent set by the sibling A24 assets). WebFetch returned
+ * the homepage section sequence verbatim — hamburger-only nav cluster,
+ * dual newsletter placement, upcoming-films grid, alternating film /
+ * shop / podcast tiles, four-column compact footer — but stripped
+ * the rendered stylesheet, so hex / size values inherit the A24
+ * canon already documented in systems/a24/system.json.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cinema-black warm-tinted field; paper-white type; no chromatic
+   * accent. The "accent" is inverse white reserved for the slab CTA
+   * register; film stills carry every other moment of color. */
+  --ds-bg:           #0A0908;   /* Cinema black; warm-tinted near-black, not pure #000. */
+  --ds-surface:      #14110F;   /* Card-on-dark for the film-tile container. */
+  --ds-surface-2:    #1E1A17;   /* Two steps; nested overlays, podcast tiles. */
+  --ds-text:         #F5F1EA;   /* Paper-white reading on the cinema field. */
+  --ds-text-muted:   #9C968A;   /* Year markers, footer column secondaries. */
+  --ds-text-strong:  #FFFFFF;   /* Title-card film titles, section section-headings. */
+  --ds-border:       #2A2522;   /* Hairline frame on film tiles. */
+  --ds-hairline:     #1A1714;   /* Sub-section divider; between footer columns. */
+  --ds-accent:       #FFFFFF;   /* Inverse slab: pure paper on cinema field. */
+  --ds-accent-2:     #F5F1EA;   /* Warm-hover step for the inverse CTA. */
+  --ds-success:      #4A8A5C;   /* Reserved. */
+  --ds-warning:      #C49449;   /* Reserved. */
+  --ds-error:        #B24A3F;   /* Reserved. */
+  --ds-info:         #F5F1EA;   /* Info collapses to text; palette refuses chromatic UI. */
+  --ds-focus-ring:   #F5F1EA;   /* Paper outline against the dark field. */
+
+  /* ---------- Type families ----------
+   * Inter Tight / Inter as open analogs for A24's GT America / Söhne.
+   * Mono reserved for titlecard mono labels (year, WATCH NOW, SHOP NOW).
+   * Tiempos-class serif kept available for the rare italic accent. */
+  --ds-font-display: "Inter Tight", "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", "GT America", "Söhne", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Söhne Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Hero film title sits at 5xl (76px) desktop. Section headings 3xl.
+   * Tile titles 2xl. Body 16px. Mono labels at xs with wider tracking. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Display lock at 1.04 so film titles read as cinema title-cards. */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Mono titlecard labels at 0.18em to register as cinema, not dev-tool. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;
+
+  /* ---------- Spacing ----------
+   * Section rhythm: 96px between sections desktop (--ds-space-12),
+   * 64px tablet (--ds-space-10), 48px mobile (--ds-space-8). */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp 2px; film tiles at xs. Pills explicitly refused per system
+   * principle "near-sharp-radii-2px-not-pills". */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cinema field refuses elevation; depth comes from value contrast. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.6);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.7);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.8);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

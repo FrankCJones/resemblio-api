@@ -1,0 +1,193 @@
+<!--
+  Asset: locomotive-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: oversized-statement, paper-and-ink, single-typeface-system, mono-eyebrow
+  Inspired by: Locomotive
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/locomotive-mono-001     (palette context: cream, black, electric-blue focus)
+    - headings/kinetic-headline-001        (the 70px Let's talk link at the H1 step)
+    - kickers/mono-eyebrow-001             (the wide-tracked CTA step label)
+    - dividers/hairline-rule-001           (single rule between the statement and the mailto row)
+    - links/footer-link-mono-001           (mono mailto row discipline as the secondary affordance)
+  Notes:
+    - The block is three bands: a small wide-tracked step kicker, an oversized
+      location-as-statement (the studio's address as a 122.88px headline), and a
+      70px "Let's talk" link set in LocomotiveNew weight 400 with a permanent
+      underline. The link IS the conversion; there is no button chrome.
+      Below the rule, a quiet mono mailto provides the backup affordance.
+    - Variable: every color, type size, spacing step lives in tokens.css and
+      can be reskinned. Inline: the clamp() on the location statement and the
+      negative top-margin that visually couples the statement to the link.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-cta-block-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Tight stands in for LocomotiveNew's grotesque display register; Inter
+     stands in for HelveticaNowDisplay. Open-license, similar texture. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The CTA shell. Pure black inversion surface; full-bleed band. The 40px
+   * page-edge padding matches the .c-lisa observation on the contact page. */
+  .cta {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-12);
+    min-height: 100vh;
+  }
+  .cta__inner {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* Kicker. A tiny wide-tracked uppercase step label above the statement; the
+   * library mono-eyebrow register. Not from the source's own kicker, which is
+   * absent on this block; transferred from the system's other moments. */
+  .cta__kicker {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-10) 0;
+  }
+
+  /* The oversized location-as-statement. The Locomotive move: the studio's
+   * address is the headline, not the prompt. Inline: clamp() scales from a
+   * comfortable mobile size to the observed 122.88px desktop step. */
+  .cta__statement {
+    font-family: var(--ds-font-display);
+    /* clamp anchors the lower bound to the contract 4xl step and the upper to
+     * the observed 7xl step. */
+    font-size: clamp(var(--ds-text-4xl), 11vw, var(--ds-text-7xl));
+    font-weight: 400;            /* LocomotiveNew renders at 400, not the usual 600/700 for display. */
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* The conversion. "Let's talk" set in the same display family at the 70px
+   * step, with a permanent underline. No button chrome, no padding, no fill.
+   * Inline: the negative top margin couples this line visually to the
+   * statement above it so they read as one composition. */
+  .cta__link {
+    display: inline-block;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.12em;
+    margin: var(--ds-space-5) 0 var(--ds-space-12) 0;   /* Inline: hand-tuned coupling distance. */
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                text-decoration-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__link:hover {
+    color: var(--ds-accent-2);   /* Cream slip on hover; the only chromatic event. */
+    text-decoration-color: var(--ds-accent-2);
+  }
+  .cta__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 6px;
+  }
+
+  /* Hairline between the headline composition and the mono mailto row. Uses
+   * the white-at-15% hairline tuned for black surfaces. */
+  .cta__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0 0 var(--ds-space-8) 0;
+  }
+
+  /* Metadata row at the foot of the block. Two pieces: a wide-tracked label
+   * and a mono mailto. The mono carries the studio-software register the
+   * paired locomotive-mono-001 atom set up. */
+  .cta__meta {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-10);
+    flex-wrap: wrap;
+    font-size: var(--ds-text-sm);
+  }
+  .cta__meta-label {
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    min-width: 16ch;
+  }
+  .cta__email {
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    word-break: break-all;     /* Long lorem mailtos shouldn't overflow on narrow viewports. */
+  }
+  .cta__email:hover { border-bottom-color: var(--ds-text); }
+  .cta__email:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__link, .cta__email { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .cta { padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-10); }
+    .cta__meta { gap: var(--ds-space-5); }
+    .cta__meta-label { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-link">
+    <div class="cta__inner">
+
+      <span class="cta__kicker">Lorem / Step 01</span>
+
+      <h2 class="cta__statement">
+        Lorem ipsum, Dolor sit
+      </h2>
+
+      <a class="cta__link" id="cta-link" href="#">Let's talk</a>
+
+      <hr class="cta__rule" aria-hidden="true"/>
+
+      <div class="cta__meta">
+        <span class="cta__meta-label">New Business / Lorem</span>
+        <a class="cta__email" href="#">hello@loremipsum.example</a>
+      </div>
+
+    </div>
+  </section>
+</body>
+</html>

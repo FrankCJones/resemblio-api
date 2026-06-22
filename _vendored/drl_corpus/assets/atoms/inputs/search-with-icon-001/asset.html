@@ -1,0 +1,144 @@
+<!--
+  Asset: search-with-icon-001
+  Class: inputs
+  Pattern: (none in TAXONOMY; search input pattern)
+  Inspired by: Anthropic
+  Notes:
+    - Search input with leading magnifying-glass icon and trailing keyboard-shortcut hint (Cmd K).
+    - Pattern observed on Anthropic's documentation surface (docs.anthropic.com which redirects to platform.claude.com/docs); inspected the search trigger button computed styles; modal-input character extrapolated from Anthropic's warm paper system (body bg rgb(250,249,245), anthropicSans, ink rgb(20,20,19)). The trigger collapses to a 32px icon button at narrow viewports; this asset renders the expanded desktop form.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>search-with-icon-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Anthropic ships anthropicSans + Anthropic Mono; system fallbacks approximate the register. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 0 var(--ds-space-3);
+    height: 40px;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .search-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--ds-text-muted);
+    flex: none;
+  }
+  .search-input {
+    flex: 1;
+    background: transparent;
+    color: var(--ds-text);
+    border: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    outline: none;
+  }
+  .search-input::placeholder { color: var(--ds-text-muted); }
+  .kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    flex: none;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    min-width: 18px;
+    padding: 1px 4px;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    color: var(--ds-text-muted);
+    font: inherit;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .search.is-focus,
+  .search:focus-within {
+    border-color: var(--ds-focus-ring);
+    box-shadow: 0 0 0 3px rgba(198,97,63,0.18); /* inline: crimson focus glow at 18% alpha */
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block { padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-hairline); }
+  .block:first-child { border-top: 0; padding-top: 0; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="block">
+      <div class="state-label">rest</div>
+      <div class="search">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="search-input" type="search" placeholder="Search documentation..." aria-label="Search"/>
+        <span class="kbd-hint" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">focus</div>
+      <div class="search is-focus">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="search-input" type="search" placeholder="Search documentation..." aria-label="Search"/>
+        <span class="kbd-hint" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+    <div class="block">
+      <div class="state-label">filled</div>
+      <div class="search">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="search-input" type="search" value="lorem ipsum dolor" aria-label="Search"/>
+        <span class="kbd-hint" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

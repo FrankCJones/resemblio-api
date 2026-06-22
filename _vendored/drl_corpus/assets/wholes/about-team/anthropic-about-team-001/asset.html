@@ -1,0 +1,567 @@
+<!--
+  Asset: anthropic-about-team-001
+  Class: about-team (whole)
+  Pattern: warm-earth-palette, serif-display-sans-body, mono-utility-pair, numbered-section, paper-and-ink
+  Inspired by: Anthropic (anthropic.com/company)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001              (warm cream palette field)
+    - type-pairings/serif-mono-editorial-001   (serif heads + sans body + mono meta)
+    - headings/display-editorial-serif-001     (display serif headline)
+    - body-text/lead-paragraph-001             (purpose-statement dek)
+    - kickers/numbered-section-001             ("01 / 07" value counters)
+    - labels/section-label-numbered-001        (value-card serial labels)
+    - dividers/hairline-rule-001               (warm hairline between sections)
+    - backgrounds/subtle-noise-001             (paper-grain field)
+  Notes:
+    - Anthropic's "Company" page refuses the conventional leadership grid.
+      There is no founders-mosaic, no portrait wall, no "meet the team"
+      tile array. Instead the page reads as four thematic department
+      sections (Research, Policy, Product, Operations) each carrying a
+      single full-width landscape image and a paragraph of intent, then a
+      numbered 01-07 values list, then a quiet governance block. The team
+      IS the work the four departments do; the values are the contract.
+    - Variable in tokens.css: every color, font, size, spacing, radius.
+    - Inline in this file: the alternating asymmetric image-text rows for
+      the four departments (image left / text right, then text left /
+      image right), the warm gradient placeholder standing in for the
+      photography, the numbered serif counters running tabular figures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-about-team-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Anthropic Serif / Söhne are licensed; Newsreader + Inter carry the
+     same serif-display-sans-body posture for library demonstration. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Outer page rail. Anthropic uses a generous editorial measure; the
+   * page never goes edge-to-edge except for department imagery. */
+  .company {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------- Hero "Our Purpose" ---------- */
+
+  .company__kicker {
+    /* From atoms/kickers/numbered-section-001: mono uppercase, wide
+     * tracking, muted ink. Sits above the display headline as a section
+     * marker. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  .company__purpose {
+    /* From atoms/headings/display-editorial-serif-001. Tiempos-family
+     * display serif at hero scale, tight tracking, balanced line wrap. */
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-5xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-6) 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  .company__dek {
+    /* From atoms/body-text/lead-paragraph-001. One step up from body,
+     * sans body face, sets the purpose voice. */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Section break ---------- */
+
+  .company__rule {
+    /* From atoms/dividers/hairline-rule-001. Section break; warm hairline. */
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-12) 0 var(--ds-space-10) 0;
+  }
+
+  /* ---------- Section heads ---------- */
+
+  .section-head {
+    margin: 0 0 var(--ds-space-8) 0;
+    max-width: 36em;
+  }
+  .section-head__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .section-head__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 3.2vw, var(--ds-text-3xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* ---------- Departments (the load-bearing pattern) ---------- */
+
+  /* Each department row is a two-column asymmetric layout: full-bleed
+   * image one side, paragraph and link on the other. Rows alternate
+   * direction to keep visual rhythm. This is the page's anti-grid: an
+   * editorial sequence rather than a leadership mosaic. */
+  .departments {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+  }
+  .dept {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-10);
+    align-items: center;
+  }
+  .dept--reverse {
+    /* Inline ornament: alternating row direction is composition-specific,
+     * not a contract slot. */
+    direction: rtl;
+  }
+  .dept--reverse > * { direction: ltr; }
+
+  @media (max-width: 820px) {
+    .dept,
+    .dept--reverse {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-6);
+      direction: ltr;
+    }
+  }
+
+  .dept__image {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-border);
+    box-shadow: var(--ds-shadow-sm);
+    /* Inline ornament: a warm paper-toned placeholder gradient. In a
+     * real deployment this becomes an <img>; the gradient stands in
+     * because the library uses no bundled photography. Tones picked to
+     * match the warm-paper palette so the image-frame still reads as
+     * Anthropic when the photography is absent. */
+    background:
+      radial-gradient(120% 80% at 30% 30%, #E3D8C2 0%, #C4B59A 45%, #7A6A52 100%);
+  }
+
+  .dept__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .dept__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .dept__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .dept__copy {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 44ch;
+  }
+  .dept__link {
+    /* From atoms/links/inline-link-accent-001 register: clay-crimson,
+     * persistent underline. The trailing arrow glyph is inline ornament. */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    align-self: flex-start;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .dept__link:hover { color: var(--ds-accent-2); }
+  .dept__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+  .dept__link::after {
+    /* Inline ornament: NE arrow glyph indicating onward navigation into
+     * the department's own page. Not a contract token. */
+    content: " \2197";
+  }
+
+  /* ---------- Values 01 / 07 ---------- */
+
+  .values {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 720px) { .values { grid-template-columns: 1fr; } }
+
+  .value {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .value__index {
+    /* From atoms/labels/section-label-numbered-001. Tabular mono numeral
+     * acting as the value's serial. The /07 denominator is inline. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+    margin: 0;
+  }
+  .value__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .value__copy {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Governance ---------- */
+
+  .governance {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: var(--ds-space-10);
+    row-gap: var(--ds-space-5);
+    margin: 0;
+    padding: 0;
+  }
+  @media (max-width: 720px) {
+    .governance { grid-template-columns: 1fr; row-gap: var(--ds-space-2); }
+  }
+  .governance dt {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+  .governance dd {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Join CTA ---------- */
+
+  .join {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    align-items: flex-start;
+  }
+  .join__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 3vw, var(--ds-text-3xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .join__copy {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 50ch;
+  }
+  .join__cta {
+    /* From atoms/buttons/anthropic-primary-square-001: square small-radius
+     * button, ink fill on warm paper, sans label. Inline padding values
+     * are composition-specific to the CTA-block weight. */
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-bg);
+    background: var(--ds-text);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    text-decoration: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .join__cta:hover { background: var(--ds-accent); }
+  .join__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+  <main class="company" aria-label="About Lorem Ipsum">
+
+    <p class="company__kicker">Lorem &middot; Mundi</p>
+
+    <h1 class="company__purpose">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </h1>
+
+    <p class="company__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+      nisi ut aliquip ex ea commodo consequat.
+    </p>
+
+    <hr class="company__rule" aria-hidden="true"/>
+
+    <!-- Departments. The four-row asymmetric sequence is the load-bearing
+         pattern of this whole. There is no leadership grid. -->
+    <header class="section-head">
+      <p class="section-head__kicker">Lorem &middot; Sectiones</p>
+      <h2 class="section-head__title">
+        Duis aute irure dolor in reprehenderit in voluptate velit.
+      </h2>
+    </header>
+
+    <div class="departments">
+
+      <article class="dept">
+        <div class="dept__image" role="img" aria-label="Lorem ipsum department placeholder"></div>
+        <div class="dept__body">
+          <p class="dept__label">01 &middot; Lorem Ricerca</p>
+          <h3 class="dept__title">
+            Lorem ipsum dolor sit amet, consectetur.
+          </h3>
+          <p class="dept__copy">
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa
+            qui officia deserunt mollit anim id est laborum. Sed ut
+            perspiciatis unde omnis iste natus error sit voluptatem.
+          </p>
+          <a class="dept__link" href="#">Lorem ricerca</a>
+        </div>
+      </article>
+
+      <article class="dept dept--reverse">
+        <div class="dept__image" role="img" aria-label="Lorem ipsum department placeholder"></div>
+        <div class="dept__body">
+          <p class="dept__label">02 &middot; Lorem Politica</p>
+          <h3 class="dept__title">
+            Accusantium doloremque laudantium, totam rem aperiam.
+          </h3>
+          <p class="dept__copy">
+            Eaque ipsa quae ab illo inventore veritatis et quasi architecto
+            beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem
+            quia voluptas sit aspernatur aut odit aut fugit.
+          </p>
+          <a class="dept__link" href="#">Lorem politica</a>
+        </div>
+      </article>
+
+      <article class="dept">
+        <div class="dept__image" role="img" aria-label="Lorem ipsum department placeholder"></div>
+        <div class="dept__body">
+          <p class="dept__label">03 &middot; Lorem Productum</p>
+          <h3 class="dept__title">
+            Sed quia consequuntur magni dolores eos qui ratione.
+          </h3>
+          <p class="dept__copy">
+            Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+            consectetur, adipisci velit, sed quia non numquam eius modi
+            tempora incidunt.
+          </p>
+          <a class="dept__link" href="#">Lorem productum</a>
+        </div>
+      </article>
+
+      <article class="dept dept--reverse">
+        <div class="dept__image" role="img" aria-label="Lorem ipsum department placeholder"></div>
+        <div class="dept__body">
+          <p class="dept__label">04 &middot; Lorem Operationes</p>
+          <h3 class="dept__title">
+            Ut labore et dolore magnam aliquam quaerat voluptatem.
+          </h3>
+          <p class="dept__copy">
+            Ut enim ad minima veniam, quis nostrum exercitationem ullam
+            corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
+            consequatur.
+          </p>
+          <a class="dept__link" href="#">Lorem operationes</a>
+        </div>
+      </article>
+
+    </div>
+
+    <hr class="company__rule" aria-hidden="true"/>
+
+    <!-- Values 01 / 07 -->
+    <header class="section-head">
+      <p class="section-head__kicker">Lorem &middot; Valores</p>
+      <h2 class="section-head__title">
+        Quis autem vel eum iure reprehenderit qui in ea voluptate.
+      </h2>
+    </header>
+
+    <div class="values">
+      <article class="value">
+        <p class="value__index">01 / 07</p>
+        <h3 class="value__title">Lorem pro bono mundi.</h3>
+        <p class="value__copy">
+          Velit esse quam nihil molestiae consequatur, vel illum qui
+          dolorem eum fugiat quo voluptas nulla pariatur.
+        </p>
+      </article>
+      <article class="value">
+        <p class="value__index">02 / 07</p>
+        <h3 class="value__title">Lumen et umbra ferre.</h3>
+        <p class="value__copy">
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti.
+        </p>
+      </article>
+      <article class="value">
+        <p class="value__index">03 / 07</p>
+        <h3 class="value__title">Pro utentibus benigne.</h3>
+        <p class="value__copy">
+          Et quas molestias excepturi sint occaecati cupiditate non
+          provident, similique sunt in culpa qui officia deserunt.
+        </p>
+      </article>
+      <article class="value">
+        <p class="value__index">04 / 07</p>
+        <h3 class="value__title">Veritas in operis.</h3>
+        <p class="value__copy">
+          Mollitia animi, id est laborum et dolorum fuga. Et harum quidem
+          rerum facilis est et expedita distinctio.
+        </p>
+      </article>
+      <article class="value">
+        <p class="value__index">05 / 07</p>
+        <h3 class="value__title">Sapientia per laborem.</h3>
+        <p class="value__copy">
+          Nam libero tempore, cum soluta nobis est eligendi optio cumque
+          nihil impedit quo minus id quod maxime placeat facere possimus.
+        </p>
+      </article>
+      <article class="value">
+        <p class="value__index">06 / 07</p>
+        <h3 class="value__title">Modestia in voce.</h3>
+        <p class="value__copy">
+          Omnis voluptas assumenda est, omnis dolor repellendus. Temporibus
+          autem quibusdam et aut officiis debitis aut rerum necessitatibus.
+        </p>
+      </article>
+      <article class="value">
+        <p class="value__index">07 / 07</p>
+        <h3 class="value__title">Conservare quod aedificamus.</h3>
+        <p class="value__copy">
+          Saepe eveniet ut et voluptates repudiandae sint et molestiae non
+          recusandae. Itaque earum rerum hic tenetur a sapiente delectus.
+        </p>
+      </article>
+    </div>
+
+    <hr class="company__rule" aria-hidden="true"/>
+
+    <!-- Governance: names appear here, as quiet metadata, not as a hero. -->
+    <header class="section-head">
+      <p class="section-head__kicker">Lorem &middot; Gubernatio</p>
+      <h2 class="section-head__title">
+        Quis dolorem ipsum quia dolor sit amet consectetur.
+      </h2>
+    </header>
+
+    <dl class="governance">
+      <dt>Consilium</dt>
+      <dd>Lorem Ipsum &middot; Dolor Sit &middot; Amet Consect &middot; Adipisc Elit &middot; Sed Eiusmod &middot; Tempor Incid &middot; Ut Labore</dd>
+
+      <dt>Fideicommissum</dt>
+      <dd>Magna Aliqua &middot; Quis Nostrud &middot; Exerci Tation</dd>
+
+      <dt>Praesides</dt>
+      <dd>Lorem Ipsum, praesidens &middot; Dolor Sit, praesidens adiutor</dd>
+
+      <dt>Sedes</dt>
+      <dd>San Francisco &middot; London &middot; Dublin</dd>
+    </dl>
+
+    <!-- Join CTA -->
+    <section class="join" aria-label="Lorem ipsum join">
+      <h2 class="join__title">
+        Lorem ipsum dolor sit amet, veni adiungere.
+      </h2>
+      <p class="join__copy">
+        Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua.
+      </p>
+      <a class="join__cta" href="#">Veni adiungere</a>
+    </section>
+
+  </main>
+</body>
+</html>

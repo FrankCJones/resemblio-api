@@ -1,0 +1,365 @@
+<!--
+  Asset: github-hero-001
+  Class: heroes (whole)
+  Pattern: dual-cta-hero, no-imagery, display-tight, mono-eyebrow
+  Inspired by: GitHub (github.com homepage + github.com/features/copilot)
+  Notes:
+    - Native context: GitHub.com marketing hero, captured via WebFetch
+      2026-05-20. Near-black canvas (Primer dark.neutral.0 = #010409),
+      pure-white Mona Sans 900 display H1, muted neutral.9 dek, paired
+      primary (saturated GitHub green) and ghost (hairline-outline) CTAs,
+      and a screenshot/animation surface beneath the headline column.
+      The Copilot subpage ("Command your craft") and Actions subpage
+      ("Automate your workflow from idea to production") both share this
+      structure; the homepage variant adds a Copilot inline carousel
+      below. Tokens corroborated against the Primer primitives repo at
+      primer/primitives/main/src/tokens/base/color/dark/dark.json5 so
+      neutral.0-9 and green.4-5 are the exact ones github.com ships.
+    - Variable: every color, type, spacing, radius via tokens.css.
+    - Inline ornament: the YAML/CLI snippet inside the hero visual is a
+      mocked GitHub Actions workflow file; the radial green glow behind
+      the visual is a one-off radial-gradient with no contract slot. The
+      hero kicker chip's tiny pulsing dot uses an inline keyframe.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter at heavy weights stands in for Mona Sans on machines without
+     the licensed woff2; JetBrains Mono carries the YAML/CLI snippet. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Near-black Primer dark.neutral.0 canvas. The first
+   * viewport has one chromatic moment: the green primary CTA. Everything
+   * else is neutral on dark, ruled by hairlines instead of shadows. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: wordmark left, sparse nav center, sign-in + sign-up right.
+   * A single hairline separates the chrome from the canvas. */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 800;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: invertocat-style mark; geometry is asset-specific. */
+  .topbar__mark svg { width: 28px; height: 28px; display: block; }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right { display: flex; align-items: center; gap: var(--ds-space-4); }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 960px so the H1 holds a balanced two- or
+   * three-line shape. Generous vertical padding so the headline lands
+   * well below the chrome. The radial green wash behind the column is
+   * the signature GitHub marketing-hero atmospheric. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-12);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  /* Inline ornament: radial green glow behind the hero column. No
+   * contract slot for arbitrary gradient geometry. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -10% 0 auto 0;
+    height: 700px;
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 0%,
+      rgba(35, 134, 54, 0.28) 0%,
+      rgba(35, 134, 54, 0.10) 35%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Mono kicker chip with a green pulsing dot. */
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: 6px 12px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+  }
+  .hero__kicker__dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent-2);
+    /* Inline keyframe: kicker pulse is asset-specific. */
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.45; transform: scale(0.85); }
+  }
+
+  /* H1: the GitHub display moment. Mona Sans 900 at 72-96px clamped.
+   * text-wrap: balance holds the marketing headline shape. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 8vw, var(--ds-text-6xl));
+    font-weight: 900;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading, in muted neutral.9. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 58ch;
+  }
+
+  /* CTA row: saturated green primary on the left, hairline-outline ghost
+   * on the right. GitHub ships paired CTAs (Sign up / Try Copilot or
+   * Get started / Contact sales) far more often than single-CTA. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    padding: 14px 20px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent-2);
+    /* Inline: faint inner highlight so the green CTA reads lifted on the
+     * dark canvas. No contract slot for a one-off inset gradient. */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 0 0 4px rgba(46,160,67,0.30);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--ghost:hover { background: var(--ds-surface); border-color: #656C76; }
+
+  /* Visual surface beneath the headline column. Hairline-ringed card
+   * holding a mocked GitHub Actions workflow snippet. This is the
+   * canonical "screenshot of the product" moment that grounds the hero
+   * abstraction in a concrete artifact. */
+  .visual {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto var(--ds-space-16);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface);
+    overflow: hidden;
+    box-shadow: var(--ds-shadow-2xl);
+  }
+  .visual__chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-surface-2);
+  }
+  .visual__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-border);
+  }
+  .visual__title {
+    margin-left: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .visual__code {
+    margin: 0;
+    padding: var(--ds-space-6) var(--ds-space-8);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    text-align: left;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .visual__code .k { color: #FF7B72; }   /* mocked YAML key color, neutral red */
+  .visual__code .s { color: #A5D6FF; }   /* mocked YAML string color, neutral blue */
+  .visual__code .c { color: var(--ds-text-muted); }
+  .visual__code .ok { color: var(--ds-accent-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+    .hero__kicker__dot { animation: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .hero { padding-top: var(--ds-space-12); }
+    .visual__code { font-size: var(--ds-text-xs); padding: var(--ds-space-5) var(--ds-space-5); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: octocat-style monogram silhouette. -->
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" fill="currentColor"/>
+        <path d="M11 22c-2 0-3-1-3-3 0-1 .5-2 1.5-2.5C9 16 9 15 9 14c0-1.5.5-2.5 1.5-3 0-1 0-2 .5-3 1 0 2 .5 3 1.5 1-.5 2-.5 3 0 1-1 2-1.5 3-1.5.5 1 .5 2 .5 3 1 .5 1.5 1.5 1.5 3 0 1 0 2-.5 2.5 1 .5 1.5 1.5 1.5 2.5 0 2-1 3-3 3v3" stroke="#010409" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--ghost">Sed Do</a>
+      <a href="#" class="btn btn--primary">Tempor</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__kicker">
+      <span class="hero__kicker__dot" aria-hidden="true"></span>
+      Lorem / Ipsum Dolor 26
+    </span>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,
+      ut enim ad minim veniam quis nostrud exercitation ullamco laboris.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--ghost">Dolor Sit Amet</a>
+    </div>
+  </section>
+
+  <figure class="visual" aria-label="Lorem ipsum workflow preview">
+    <div class="visual__chrome" aria-hidden="true">
+      <span class="visual__dot"></span>
+      <span class="visual__dot"></span>
+      <span class="visual__dot"></span>
+      <span class="visual__title">lorem-ipsum.yml</span>
+    </div>
+    <pre class="visual__code"><span class="c"># lorem ipsum dolor sit amet</span>
+<span class="k">name</span>: <span class="s">"Lorem Ipsum Workflow"</span>
+<span class="k">on</span>: [<span class="s">push</span>, <span class="s">pull_request</span>]
+
+<span class="k">jobs</span>:
+  <span class="k">build</span>:
+    <span class="k">runs-on</span>: <span class="s">ubuntu-latest</span>
+    <span class="k">steps</span>:
+      - <span class="k">uses</span>: <span class="s">actions/checkout@v4</span>
+      - <span class="k">run</span>: <span class="s">npm install</span>
+      - <span class="k">run</span>: <span class="s">npm test</span>            <span class="ok">&#10003; passed</span>
+      - <span class="k">run</span>: <span class="s">npm run build</span>       <span class="ok">&#10003; passed</span></pre>
+  </figure>
+</body>
+</html>

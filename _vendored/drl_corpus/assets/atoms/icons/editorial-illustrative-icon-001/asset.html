@@ -1,0 +1,315 @@
+<!--
+  Asset: editorial-illustrative-icon-001
+  Class: icons
+  Pattern: (none)
+  Inspired by: Cabinet Magazine (cabinetmagazine.org)
+  Notes:
+    - Single-color editorial icon set in saturated orange (#F26D21); UI glyphs are stroked in a 21x21 viewBox at stroke-width 2 with fill:none, social and decorative glyphs are filled paths in a 30x30 viewBox.
+    - The orange accent is the only token; everything else about the icon geometry (viewBox, stroke-width, fill choice) lives inline because it carries the asset's character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>editorial-illustrative-icon-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+  }
+  .frame { max-width: 760px; margin: 0 auto; display: grid; gap: var(--ds-space-8); }
+
+  header h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-tight);
+    font-style: italic;
+  }
+  header p {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Section caption: small caps mono-feel rule kept light to mirror Cabinet's archive labels */
+  .section-cap {
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-3);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* The icon grid */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--ds-space-5) var(--ds-space-4);
+  }
+  .icon-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-2);
+    text-align: center;
+  }
+  .icon-cell svg {
+    width: 28px;
+    height: 28px;
+    /* color drives currentColor on strokes/fills inside each glyph */
+    color: var(--ds-accent);
+  }
+  .icon-cell .label {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Demonstration row showing icon-in-context: orange icon next to italic serif label */
+  .demo-row {
+    display: grid;
+    gap: var(--ds-space-3);
+  }
+  .demo-row .item {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-3) 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .demo-row .item:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .demo-row .item svg { width: 21px; height: 21px; color: var(--ds-accent); flex-shrink: 0; }
+  .demo-row .item .title {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    font-style: italic;
+  }
+  .demo-row .item .meta {
+    margin-left: auto;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* Hover-state demo: inverted; orange field, white icon */
+  .hover-strip {
+    display: flex;
+    gap: var(--ds-space-3);
+    align-items: center;
+  }
+  .hover-strip .swatch {
+    width: 44px; height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ds-accent);
+    /* inline: hover swatch background reverses figure/ground; not a contract slot */
+  }
+  .hover-strip .swatch svg { width: 21px; height: 21px; color: #FFFFFF; }
+  .hover-strip .swatch.rest {
+    background: transparent;
+    border: 1px solid var(--ds-border);
+  }
+  .hover-strip .swatch.rest svg { color: var(--ds-accent); }
+  .hover-strip .caption {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin-left: var(--ds-space-3);
+  }
+</style>
+</head>
+<body>
+  <main class="frame">
+    <header>
+      <h1>Lorem ipsum dolor sit amet</h1>
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+    </header>
+
+    <section>
+      <p class="section-cap">Lorem ipsum dolor sit / set in single accent</p>
+      <div class="icon-grid">
+        <!-- search: ellipse + diagonal handle; stroke-width 1.9 per source -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 21 21" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="1.9">
+              <ellipse cx="12.7" cy="8.1" rx="7" ry="6.8"/>
+              <line x1="7.8" y1="13.5" x2="1.3" y2="19.7"/>
+            </g>
+          </svg>
+          <span class="label">lorem</span>
+        </div>
+
+        <!-- close X: two diagonal lines, stroke-width 2 -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 21 21" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="1" y1="0.7" x2="20.3" y2="20.3"/>
+              <line x1="20.3" y1="0.9" x2="0.7" y2="20.1"/>
+            </g>
+          </svg>
+          <span class="label">ipsum</span>
+        </div>
+
+        <!-- down chevron: polyline -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 21 21" aria-hidden="true">
+            <polyline points="1.4,2.5 10.5,18.5 19.6,2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="label">dolor</span>
+        </div>
+
+        <!-- up chevron: same polyline, flipped -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 21 21" aria-hidden="true">
+            <polyline points="1.4,18.5 10.5,2.5 19.6,18.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="label">sit</span>
+        </div>
+
+        <!-- left arrow: filled triangular head plus stroked rule, per es-left-arrow-hover.svg -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 37 21" aria-hidden="true">
+            <polyline points="18.2,1.1 1.5,10.5 18.2,19.9" fill="currentColor"/>
+            <line x1="11.3" y1="10.5" x2="35.5" y2="10.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="label">amet</span>
+        </div>
+
+        <!-- right arrow: mirror -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 37 21" aria-hidden="true">
+            <polyline points="18.8,1.1 35.5,10.5 18.8,19.9" fill="currentColor"/>
+            <line x1="1.5" y1="10.5" x2="25.7" y2="10.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="label">elit</span>
+        </div>
+
+        <!-- envelope: two polygons, all filled -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 30 30" aria-hidden="true">
+            <polygon points="25.3,4.8 4.7,4.8 15,13.9" fill="currentColor"/>
+            <polygon points="2.5,8.2 2.5,25.2 27.5,25.2 27.5,8.2 15,19.4" fill="currentColor"/>
+          </svg>
+          <span class="label">tempor</span>
+        </div>
+
+        <!-- play triangle: filled -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 30 30" aria-hidden="true">
+            <polygon points="7,4 25,15 7,26" fill="currentColor"/>
+          </svg>
+          <span class="label">labore</span>
+        </div>
+
+        <!-- pause: two filled bars -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 30 30" aria-hidden="true">
+            <rect x="7" y="4.5" width="5" height="21" fill="currentColor"/>
+            <rect x="18" y="4.5" width="5" height="21" fill="currentColor"/>
+          </svg>
+          <span class="label">dolore</span>
+        </div>
+
+        <!-- sound on: speaker + arcs, stroked at width 2 -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 30 30" aria-hidden="true">
+            <polygon points="4,11 9,11 15,6 15,24 9,19 4,19" fill="currentColor"/>
+            <g fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 10c2.5 2 2.5 8 0 10"/>
+              <path d="M21 7c4 4 4 12 0 16"/>
+            </g>
+          </svg>
+          <span class="label">magna</span>
+        </div>
+
+        <!-- mute: speaker + X -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 30 30" aria-hidden="true">
+            <polygon points="4,11 9,11 15,6 15,24 9,19 4,19" fill="currentColor"/>
+            <g fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="11" x2="26" y2="19"/>
+              <line x1="26" y1="11" x2="19" y2="19"/>
+            </g>
+          </svg>
+          <span class="label">aliqua</span>
+        </div>
+
+        <!-- print: rectilinear, all filled outline -->
+        <div class="icon-cell">
+          <svg viewBox="0 0 30 30" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="8" y="4" width="14" height="6"/>
+              <path d="M5 11h20v9h-4v6H9v-6H5z"/>
+              <rect x="11" y="17" width="8" height="6"/>
+            </g>
+          </svg>
+          <span class="label">veniam</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-row" aria-label="Icons in context">
+      <p class="section-cap">Icon + italic serif label, archive-listing register</p>
+      <div class="item">
+        <svg viewBox="0 0 21 21" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="1.9">
+            <ellipse cx="12.7" cy="8.1" rx="7" ry="6.8"/>
+            <line x1="7.8" y1="13.5" x2="1.3" y2="19.7"/>
+          </g>
+        </svg>
+        <span class="title">Lorem ipsum dolor sit amet</span>
+        <span class="meta">Issue 42 / 2026</span>
+      </div>
+      <div class="item">
+        <svg viewBox="0 0 30 30" aria-hidden="true">
+          <polygon points="25.3,4.8 4.7,4.8 15,13.9" fill="currentColor"/>
+          <polygon points="2.5,8.2 2.5,25.2 27.5,25.2 27.5,8.2 15,19.4" fill="currentColor"/>
+        </svg>
+        <span class="title">Consectetur adipiscing elit</span>
+        <span class="meta">Issue 41 / 2025</span>
+      </div>
+      <div class="item">
+        <svg viewBox="0 0 21 21" aria-hidden="true">
+          <polyline points="1.4,2.5 10.5,18.5 19.6,2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="title">Sed do eiusmod tempor</span>
+        <span class="meta">Issue 40 / 2024</span>
+      </div>
+    </section>
+
+    <section class="hover-strip" aria-label="Rest vs hover states">
+      <span class="swatch rest" title="rest">
+        <svg viewBox="0 0 21 21" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="1" y1="0.7" x2="20.3" y2="20.3"/>
+            <line x1="20.3" y1="0.9" x2="0.7" y2="20.1"/>
+          </g>
+        </svg>
+      </span>
+      <span class="swatch" title="hover">
+        <svg viewBox="0 0 21 21" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="1" y1="0.7" x2="20.3" y2="20.3"/>
+            <line x1="20.3" y1="0.9" x2="0.7" y2="20.1"/>
+          </g>
+        </svg>
+      </span>
+      <span class="caption">Rest / hover</span>
+    </section>
+  </main>
+</body>
+</html>

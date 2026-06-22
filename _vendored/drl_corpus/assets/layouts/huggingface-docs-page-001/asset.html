@@ -1,0 +1,653 @@
+<!--
+  Asset: huggingface-docs-page-001
+  Class: layouts
+  Pattern: three-column-docs-grid, centered-narrow-column, mono-utility-pair
+  Inspired by: Hugging Face (huggingface.co/docs/transformers/en/quicktour)
+  Notes:
+    - HF docs-article skeleton: top library-bar (library name +
+      version-selector + search), three-column grid (260px left
+      sidebar with category groups under wider-tracked uppercase
+      labels, 1fr main column capped at ~80ch, 200px right TOC rail
+      shown on wide viewports only). Main column sequence: H1 page
+      title, lede paragraph, body of H2 sections with code blocks
+      and a TIP-style callout, then a Next-steps bullet close, then
+      prev/next pagination. Sidebar holds the canonical HF taxonomy
+      (GET STARTED, BASE CLASSES, INFERENCE, TRAINING, QUANTIZATION,
+      RESOURCES). Code blocks carry a small mono language tag (py /
+      bash); inline code wears a tinted chip.
+    - Variable: column widths, sidebar grouping, section sequence,
+      number of code blocks. Inline: column gutters, sidebar width
+      (260px), TOC width (200px), main column cap (~80ch).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-docs-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Source Sans 3 (display + body) and Source Code Pro (mono)
+  are the HF docs faces. Faces are not loaded in this asset; the
+  fallback chains in tokens.css carry the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max 1440px so the three-column docs grid breathes
+   * on wide monitors; gutters scale up at the desktop breakpoint.
+   */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .page { padding-inline: var(--ds-space-8); } }
+
+  /*
+   * Top primary nav. Flush against the viewport top, hairline rule
+   * below. Wordmark is the literal hug emoji + words "Hugging Face";
+   * captured here as a slot so we don't bundle the emoji glyph.
+   */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Library bar. Sits beneath the primary nav. Library name + version
+   * selector on the left, full-width docs search on the right. The
+   * doubled bar is an HF signature: huggingface.co/docs sites read as
+   * a sub-site of the platform, with their own search separate from
+   * the platform-wide search above.
+   */
+  .lib-bar {
+    padding-block: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  .lib-bar__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .lib-bar__version {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    padding: 2px var(--ds-space-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+  }
+
+  /* Three-column docs grid. Sidebar 260px, main 1fr, TOC 200px. */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    padding-bottom: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .docs-grid {
+      grid-template-columns: 260px 1fr;
+      gap: var(--ds-space-10);
+    }
+  }
+  @media (min-width: 1200px) {
+    .docs-grid { grid-template-columns: 260px 1fr 200px; }
+  }
+
+  /*
+   * Left sidebar. Category groups under uppercase wider-tracked
+   * labels; active link picks up the warm-yellow accent with a 2px
+   * left rule. HF's sidebar is denser than Vercel's: more groups,
+   * smaller gaps, no group icons.
+   */
+  .sidebar {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-5);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: var(--ds-space-4);
+    border-right: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) { .sidebar { display: block; } }
+  .sidebar__group { margin-bottom: var(--ds-space-5); }
+  .sidebar__group-label {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .sidebar__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .sidebar__link {
+    display: block;
+    padding: 4px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-left: 2px solid transparent;
+    border-radius: 0 var(--ds-radius-xs) var(--ds-radius-xs) 0;
+  }
+  .sidebar__link:hover { color: var(--ds-text-strong); background: var(--ds-surface-2); }
+  .sidebar__link--active {
+    color: var(--ds-text-strong);
+    border-left-color: var(--ds-accent);
+    background: var(--ds-surface-2);
+    font-weight: 600;
+  }
+
+  /* Main column. ~80ch cap on the prose; code blocks may exceed. */
+  .main { min-width: 0; max-width: 80ch; }
+
+  /* Breadcrumb above the title; mono register. */
+  .breadcrumb {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .breadcrumb__sep { padding: 0 var(--ds-space-2); }
+
+  .doc-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .doc-lead {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  .doc-body { font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .doc-body > * + * { margin-top: var(--ds-space-5); }
+  .doc-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    scroll-margin-top: var(--ds-space-8);
+  }
+  .doc-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .doc-body a {
+    color: var(--ds-info);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .doc-body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.88em;
+    background: var(--ds-surface-2);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+  .doc-body ul { padding-left: var(--ds-space-5); }
+  .doc-body ul li + li { margin-top: var(--ds-space-2); }
+
+  /*
+   * Code block. Tinted surface, hairline border, sm radius. Small
+   * mono language tag in the top-right; HF docs use these tags to
+   * label py / bash / json blocks.
+   */
+  .codeblock {
+    position: relative;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-5);
+    overflow-x: auto;
+  }
+  .codeblock__tag {
+    position: absolute;
+    top: var(--ds-space-3);
+    right: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: lowercase;
+    color: var(--ds-text-muted);
+  }
+  .codeblock pre {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    white-space: pre;
+  }
+
+  /*
+   * Model-card embed. HF docs sometimes inline a model card link
+   * (mono id + small "Updated X" caption + hairline frame). Kept as
+   * a slot here; downstream cards live in assets/libraries/hugging-face/.
+   */
+  .model-card {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    background: var(--ds-surface);
+  }
+  .model-card__id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+  }
+  .model-card__meta {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * TIP / Note callout. HF markdown renders > [!TIP] as an inset
+   * block with an accent-colored left rule and a small heading.
+   */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    margin-top: var(--ds-space-6);
+  }
+  .callout__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .callout__body { margin: 0; font-size: var(--ds-text-sm); color: var(--ds-text); }
+
+  /* Prev/next pagination. Two hairline cards; mono labels; sans titles. */
+  .pagination {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+  }
+  .pagination__cell {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .pagination__cell--next { text-align: right; align-items: flex-end; }
+  .pagination__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .pagination__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  /* Right TOC rail. Shown on wide viewports. */
+  .toc {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-5);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-left: var(--ds-space-5);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 1200px) { .toc { display: block; } }
+  .toc__label {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 700;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .toc__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-1); }
+  .toc__link {
+    display: block;
+    padding: 4px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-left: 2px solid transparent;
+  }
+  .toc__link:hover { color: var(--ds-text-strong); }
+  .toc__link--active { color: var(--ds-text-strong); border-left-color: var(--ds-accent); font-weight: 600; }
+
+  /* Footer band: full-width, outside the page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); text-transform: uppercase; letter-spacing: var(--ds-tracking-wider); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Primary nav: stands in for huggingface-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem Face</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster + search</span>
+        Models Datasets Spaces Lorem
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Sign Up Log In
+      </div>
+    </nav>
+
+    <!-- Library bar: library title + version + docs-search. -->
+    <div class="lib-bar" aria-label="Library navigation">
+      <span class="lib-bar__title">Lorem Library Docs</span>
+      <span class="lib-bar__version">v5.8.1</span>
+      <div class="slot" style="flex: 1; min-width: 200px;">
+        <span class="slot__label">docs-search</span>
+        Search Lorem docs
+      </div>
+    </div>
+
+    <!-- Three-column docs grid. -->
+    <div class="docs-grid">
+
+      <!-- Left sidebar: HF taxonomy across groups. -->
+      <aside class="sidebar" aria-label="Documentation navigation">
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Get Started</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem installation</a></li>
+            <li><a class="sidebar__link sidebar__link--active" href="#">Lorem quickstart</a></li>
+            <li><a class="sidebar__link" href="#">Lorem philosophy</a></li>
+            <li><a class="sidebar__link" href="#">Lorem glossary</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Base Classes</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem configuration</a></li>
+            <li><a class="sidebar__link" href="#">Lorem models</a></li>
+            <li><a class="sidebar__link" href="#">Lorem processors</a></li>
+            <li><a class="sidebar__link" href="#">Lorem tokenizers</a></li>
+            <li><a class="sidebar__link" href="#">Lorem feature extractors</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Inference</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem pipelines</a></li>
+            <li><a class="sidebar__link" href="#">Lorem chat templates</a></li>
+            <li><a class="sidebar__link" href="#">Lorem agents</a></li>
+            <li><a class="sidebar__link" href="#">Lorem llm tutorial</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Training</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem trainer</a></li>
+            <li><a class="sidebar__link" href="#">Lorem accelerate</a></li>
+            <li><a class="sidebar__link" href="#">Lorem deepspeed</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Quantization</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem bitsandbytes</a></li>
+            <li><a class="sidebar__link" href="#">Lorem gptq</a></li>
+            <li><a class="sidebar__link" href="#">Lorem awq</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Resources</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem task recipes</a></li>
+            <li><a class="sidebar__link" href="#">Lorem notebooks</a></li>
+            <li><a class="sidebar__link" href="#">Lorem benchmarks</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main content column. -->
+      <main class="main">
+
+        <p class="breadcrumb">
+          <span>Docs</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem library</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Get started</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem quickstart</span>
+        </p>
+
+        <h1 class="doc-title">Lorem ipsum quickstart</h1>
+
+        <p class="doc-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. The
+          library is designed to be fast and easy to use so that everyone
+          can start building with ipsum models.
+        </p>
+
+        <div class="doc-body">
+
+          <h2 id="set-up">Set up</h2>
+          <p>
+            To start, we recommend creating a Lorem <a href="#">account</a>.
+            An account lets you host and access version controlled models,
+            datasets, and <a href="#">Spaces</a> on the Lorem
+            <a href="#">Hub</a>, a collaborative platform for discovery
+            and building.
+          </p>
+          <p>
+            Create a <a href="#">User Access Token</a> and log in to your
+            account. Paste your token into <code>notebook_login</code>
+            when prompted.
+          </p>
+          <div class="codeblock">
+            <span class="codeblock__tag">py</span>
+<pre>from lorem_hub import notebook_login
+
+notebook_login()</pre>
+          </div>
+          <p>
+            Make sure the <code>lorem_hub[cli]</code> package is installed
+            and run the command below.
+          </p>
+          <div class="codeblock">
+            <span class="codeblock__tag">bash</span>
+<pre>lorem auth login</pre>
+          </div>
+
+          <h2 id="pretrained-models">Pretrained models</h2>
+          <p>
+            Each pretrained model inherits from three base classes.
+            We recommend using the <a href="#">AutoClass</a> API to load
+            models and preprocessors because it automatically infers the
+            appropriate architecture for each task and framework.
+          </p>
+
+          <!-- Model-card embed: mono id + meta. -->
+          <div class="model-card">
+            <span class="model-card__id">lorem-research/Ipsum-2-7b-hf</span>
+            <span class="model-card__meta">Updated 2 hours ago . 4.2k downloads</span>
+          </div>
+
+          <p>
+            Use <a href="#">from_pretrained()</a> to load the weights and
+            configuration file from the Hub into the model and
+            preprocessor class.
+          </p>
+          <div class="codeblock">
+            <span class="codeblock__tag">py</span>
+<pre>from lorem import AutoModelForCausalLM, AutoTokenizer
+
+model = AutoModelForCausalLM.from_pretrained(
+    "lorem-research/Ipsum-2-7b-hf",
+    dtype="auto",
+    device_map="auto",
+)
+tokenizer = AutoTokenizer.from_pretrained("lorem-research/Ipsum-2-7b-hf")</pre>
+          </div>
+
+          <aside class="callout" aria-label="Tip">
+            <p class="callout__title">Tip</p>
+            <p class="callout__body">
+              Skip ahead to the <a href="#trainer">Trainer</a> section to
+              learn how to fine-tune a lorem model.
+            </p>
+          </aside>
+
+          <h2 id="pipeline">Pipeline</h2>
+          <p>
+            The <a href="#">Pipeline</a> class is the most convenient way
+            to inference with a pretrained model. It supports many tasks
+            such as text generation, image segmentation, automatic speech
+            recognition, and more.
+          </p>
+          <div class="codeblock">
+            <span class="codeblock__tag">py</span>
+<pre>from lorem import pipeline
+
+pipe = pipeline("text-generation", model="lorem-research/Ipsum-2-7b-hf")
+pipe("The secret to a good ipsum is ", max_length=50)</pre>
+          </div>
+
+          <h2 id="trainer">Trainer</h2>
+          <p>
+            <a href="#">Trainer</a> is a complete training and evaluation
+            loop for PyTorch models. It abstracts away the boilerplate
+            usually involved in manually writing a training loop, so you
+            can start training faster and focus on training design choices.
+          </p>
+
+          <h2 id="next-steps">Next steps</h2>
+          <p>
+            Now that you have a better understanding of the library and
+            what it offers, keep exploring what interests you most.
+          </p>
+          <ul>
+            <li><strong>Base classes:</strong> learn more about lorem configuration, model and processor classes.</li>
+            <li><strong>Inference:</strong> explore the Pipeline further, inference and chatting with LLMs, and agents.</li>
+            <li><strong>Training:</strong> study the Trainer in more detail, plus distributed training.</li>
+            <li><strong>Quantization:</strong> reduce memory and storage requirements with quantization.</li>
+            <li><strong>Resources:</strong> check out end-to-end task recipes for ipsum workflows.</li>
+          </ul>
+
+        </div>
+
+        <!-- Prev/next pagination at the column close. -->
+        <nav class="pagination" aria-label="Pagination">
+          <a class="pagination__cell" href="#">
+            <span class="pagination__label">Previous</span>
+            <span class="pagination__title">Lorem installation</span>
+          </a>
+          <a class="pagination__cell pagination__cell--next" href="#">
+            <span class="pagination__label">Next</span>
+            <span class="pagination__title">Lorem philosophy</span>
+          </a>
+        </nav>
+      </main>
+
+      <!-- Right TOC rail: in-page headings, current active. -->
+      <aside class="toc" aria-label="On this page">
+        <p class="toc__label">On this page</p>
+        <ul class="toc__list">
+          <li><a class="toc__link" href="#set-up">Set up</a></li>
+          <li><a class="toc__link toc__link--active" href="#pretrained-models">Pretrained models</a></li>
+          <li><a class="toc__link" href="#pipeline">Pipeline</a></li>
+          <li><a class="toc__link" href="#trainer">Trainer</a></li>
+          <li><a class="toc__link" href="#next-steps">Next steps</a></li>
+        </ul>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 200px;">
+        <span class="slot__label">mega-footer</span>
+        Models Datasets Spaces Posts Docs Pricing Lorem ipsum dolor sit amet
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

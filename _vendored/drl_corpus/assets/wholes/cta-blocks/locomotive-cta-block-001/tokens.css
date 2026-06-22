@@ -1,0 +1,134 @@
+/*
+ * locomotive-cta-block-001 tokens
+ *
+ * Locomotive's recurring "Let's talk" CTA register inspected live on
+ * https://locomotive.ca/en/contact and https://locomotive.ca/en on 2026-05-20.
+ *
+ * The site swaps between a cream paper surface for editorial work and a pure
+ * black inversion surface for the contact / menu moment; the CTA block is the
+ * black-surface variant. White ink, oversized LocomotiveNew weight 400, an
+ * underlined "Let's talk" at the H1 step, and a 122.88px location-as-statement
+ * above it. Hard 0px corners; no button chrome. The electric-blue accent from
+ * locomotive-mono-001 is reserved for the keyboard focus ring on the link.
+ *
+ * Open-license substitution: Locomotive ships custom LocomotiveNew + licensed
+ * HelveticaNowDisplay. The fallback chain below uses Inter Tight / Inter for
+ * the geometric-grotesque register without the licensing tax.
+ */
+:root {
+  /* ---------- Colors ----------
+   * The CTA sits on the inverted (black) surface. Cream is reserved as the
+   * accent-2 in case downstream sites want to invert the inversion.
+   */
+  --ds-bg:           #000000;   /* Inversion surface. Observed black background under the menu/contact 70px headline 2026-05-20. */
+  --ds-surface:      #000000;   /* Same as bg; the CTA does not raise. */
+  --ds-surface-2:    #141413;   /* Near-black warm ink as a second layer; observed rgb(20,20,19) elsewhere in the system. */
+  --ds-text:         #FFFFFF;   /* Pure white ink. Observed rgb(255,255,255) on the .c-menu_nav_link 70px headline. */
+  --ds-text-muted:   rgba(255, 255, 255, 0.6);   /* Reserved for support copy; tuned to read at long measure on black. */
+  --ds-text-strong:  #FFFFFF;   /* The Let's talk link and the oversized statement both read at full white. */
+  --ds-border:       #FFFFFF;   /* Used only for the underline under the CTA link, which IS the conversion affordance. */
+  --ds-hairline:     rgba(255, 255, 255, 0.15);   /* Quiet divider between the statement and the mailto row. */
+  --ds-accent:       #FFFFFF;   /* No saturated accent; the accent IS the white ink against black. */
+  --ds-accent-2:     #FAF9F5;   /* Cream from the paired locomotive-mono-001 palette; available for inverse layouts. */
+  --ds-success:      #1F8A4B;
+  --ds-warning:      #C77A1F;
+  --ds-error:        #B83A2E;
+  --ds-info:         #312DFB;   /* Electric blue from the parent system. */
+  --ds-focus-ring:   #312DFB;   /* Observed rgb(49,45,251) reserved as the one chromatic event on a focused link. */
+
+  /* ---------- Type families ----------
+   * LocomotiveNew (custom) for display; HelveticaNowDisplay for body and the
+   * small-step "Let's talk" link in the menu chrome. Open-license fallback
+   * chain leans on Inter Tight for the display register.
+   */
+  --ds-font-display: "LocomotiveNew", "Inter Tight", "Helvetica Now Display", "HelveticaNowDisplay", system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", "Inter", system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Inter Tight", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * The CTA anchors to the two observed display steps: 70px (link headline)
+   * and 122.88px (location-as-statement). Smaller steps carry kicker and
+   * support copy.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;   /* Observed body computed font-size in parent system. */
+  --ds-text-lg:   19px;
+  --ds-text-xl:   26px;   /* Observed alternate link step (.c-header_cta "Let's talk" at 26px). */
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  46px;
+  --ds-text-4xl:  58px;
+  --ds-text-5xl:  70px;   /* Observed .c-menu_nav_link "Let's talk" 70px / 98px line-height 2026-05-20. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  122.88px;   /* Observed .c-menu_location "Montréal, Quebec" 122.88px / 122.88px line-height. */
+
+  /* ---------- Line heights ----------
+   * Display moments at 1.0 to 1.4 ratios; the 122.88/122.88 = 1.0 location
+   * statement is the most extreme.
+   */
+  --ds-leading-tight:   1.0;     /* Matches the 122.88/122.88 location statement. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Locomotive heads track at normal (0). Kicker labels open up at wider steps.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;   /* Step kicker (CTA / 01) tracking. */
+
+  /* ---------- Spacing ----------
+   * Black-surface CTAs need generous vertical air. The 40px page padding
+   * observed on .c-lisa anchors the inner gutters.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  40px;   /* Observed page-edge padding on .c-lisa contact band 2026-05-20. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Every interactive element in the system renders at 0px. The CTA commits.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;   /* Unused here; available for downstream skins. */
+
+  /* ---------- Shadows ----------
+   * None on the CTA. Inversion does the work elevation would.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.20);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.30);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.40);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.50);
+
+  /* ---------- Motion ----------
+   * Underline reveal on hover and a quiet color transition. Lenis smooth-scroll
+   * is a page-level concern handled outside the CTA asset.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

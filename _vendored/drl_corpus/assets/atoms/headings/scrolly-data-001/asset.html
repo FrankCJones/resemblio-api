@@ -1,0 +1,133 @@
+<!--
+  Asset: scrolly-data-001
+  Class: headings
+  Pattern: oversized-statement, display-tight
+  Inspired by: The Pudding
+  Notes:
+    - Editorial scrollytelling display heading; warm paper canvas, oversized sans, kicker above, one rust accent word.
+    - All color, type, scale, spacing values are variables; the optical text-wrap balance hint on H1 is asset-specific layout tuning kept inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>scrolly-data-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter at three weights covers display (600), body (400/500), and the
+     italic accent word in the H1. JetBrains Mono carries the eyebrow kicker. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;1,500&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  /* Asset-local reset. Assumes nothing about parent context. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-12) var(--ds-space-8);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    font-optical-sizing: auto;
+  }
+
+  /* The kicker above the H1 reads as a section marker; mono uppercase with
+   * wide tracking, muted warm-grey. This is the scrollytelling convention:
+   * a small label that orients the reader before the statement lands. */
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  /* The H1: oversized statement, 5xl scale, modest negative tracking, snug
+   * leading. The italic accent word picks up the rust accent and reads as
+   * the load-bearing claim the rest of the headline qualifies. */
+  h1.display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    /* Inline ornament: text-wrap: balance is a one-off optical tune for
+     * the headline's visual mass; not promoted to a token because no
+     * other asset binds this property by name. */
+    text-wrap: balance;
+  }
+  h1.display em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ds-accent);
+  }
+
+  /* H2 section title: the recurring scroll-marker; sits at 3xl, same family,
+   * snug leading. Each H2 is a self-contained claim ("Every adjective has
+   * a fingerprint", "Specialists and generalists") that lands as the reader
+   * scrolls a new section into view. */
+  h2.section {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-12) 0 var(--ds-space-4) 0;
+    max-width: 22ch;
+  }
+
+  /* H3 micro-section: smaller still, often used as a chart caption or a
+   * fill-in-the-blank pattern ("As ___ as a Cat"). Bound to xl scale. */
+  h3.micro {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: var(--ds-space-6) 0 var(--ds-space-2) 0;
+  }
+
+  /* Container constrains the heading stack to an editorial measure; the
+   * H1 itself is allowed to break the measure via its own max-width. */
+  .stack {
+    max-width: 760px;
+    width: 100%;
+  }
+
+  /* Subtle hairline under each H2 echoes the print-magazine section
+   * marker. Inline because it is a per-asset structural decision, not
+   * a reusable rule. */
+  h2.section::after {
+    content: "";
+    display: block;
+    width: var(--ds-space-10);
+    height: 1px;
+    background: var(--ds-text);
+    margin-top: var(--ds-space-4);
+  }
+</style>
+</head>
+<body>
+  <div class="stack">
+    <p class="kicker">Lorem . Ipsum 2026 . Dolor Sit</p>
+    <h1 class="display">Lorem ipsum dolor sit amet, <em>consectetur</em> adipiscing elit.</h1>
+
+    <h2 class="section">Sed do eiusmod tempor incididunt</h2>
+    <h3 class="micro">Ut labore et ___ dolore</h3>
+
+    <h2 class="section">Magna aliqua ut enim ad minim</h2>
+    <h3 class="micro">Quis ___ exercitation</h3>
+  </div>
+</body>
+</html>

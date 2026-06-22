@@ -1,0 +1,252 @@
+<!--
+  Asset: notion-feature-grid-001
+  Class: feature-grids
+  Pattern: story-card-grid
+  Inspired by: Notion (notion.com homepage; notion.com/product/docs)
+  Notes:
+    - Tile composition: emoji at top, sentence-case headline, single-line
+      dek in muted text, optional soft-shadow screenshot frame below. Warm
+      cream page; near-white tile with hairline border and warm-tinted
+      shadow as the dominant chrome. Sans-serif throughout; emoji is the
+      illustration vocabulary.
+    - Variable: every color, font, spacing, radius, shadow from the
+      contract. Inline: the placeholder screenshot SVG inside the
+      `screenshot` tile variant (a one-off card ornament), and the
+      emoji glyphs themselves (content, not chrome).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-feature-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Notion ships GT Walsheim for display and Inter for body. Walsheim is a
+  paid foundry face; we substitute Inter at runtime via Google Fonts so
+  the asset renders standalone. The fallback chain in tokens.css preserves
+  the display-vs-body distinction even when neither is available.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  /* Reset only what the asset needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. Generous whitespace is Notion's signature. */
+  .fg {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  /* Section head above the grid. Notion uses sentence-case throughout. */
+  .fg__head {
+    margin-bottom: var(--ds-space-8);
+    max-width: 38ch;
+  }
+
+  .fg__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .fg__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Grid: 3 columns desktop, 2 mid, 1 narrow. */
+  .fg__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-4);
+  }
+
+  @media (max-width: 960px) {
+    .fg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .fg__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. Soft warm shadow is the chrome; hairline is the safety net. */
+  .fg__tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    box-shadow: var(--ds-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+                transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* Emoji is the illustration vocabulary; sized roughly to text-3xl. */
+  .fg__emoji {
+    font-size: 36px; /* Emoji-specific size; not on the type scale because
+                        rendering varies per OS. Tuned to read as the
+                        anchor of the tile, not as decoration. */
+    line-height: 1;
+    margin: 0 0 var(--ds-space-2);
+  }
+
+  .fg__tile-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  .fg__tile-dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 36ch;
+  }
+
+  /* Screenshot frame variant. The soft-shadow tile-inside-tile is one of
+     Notion's recurring moves; reserved for the more prominent feature
+     tiles in the grid. */
+  .fg__shot {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-hairline);
+    box-shadow: var(--ds-shadow-sm);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    margin-top: var(--ds-space-2);
+  }
+
+  .fg__shot svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Optional in-tile link; reserved for the lead tiles. */
+  .fg__link {
+    margin-top: auto;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__link:hover { color: var(--ds-accent-2); }
+
+  .fg__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  .fg__link::after {
+    content: "→";
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__link:hover::after { transform: translateX(2px); }
+</style>
+</head>
+<body>
+  <section class="fg" aria-labelledby="fg-title">
+    <header class="fg__head">
+      <h2 id="fg-title" class="fg__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      <p class="fg__dek">Adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+    </header>
+
+    <div class="fg__grid">
+      <!-- Tile 1: emoji + headline + dek + screenshot frame (lead tile) -->
+      <article class="fg__tile">
+        <p class="fg__emoji" aria-hidden="true">📄</p>
+        <h3 class="fg__tile-title">Lorem ipsum docs</h3>
+        <p class="fg__tile-dek">Simple and powerful.</p>
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#FFFFFF"/>
+            <rect x="20" y="20" width="40" height="10" rx="3" fill="#E8E2D5"/>
+            <rect x="20" y="44" width="220" height="14" rx="3" fill="#1F1F1F"/>
+            <rect x="20" y="70" width="280" height="6" rx="2" fill="#D9D3C5"/>
+            <rect x="20" y="84" width="240" height="6" rx="2" fill="#D9D3C5"/>
+            <rect x="20" y="98" width="260" height="6" rx="2" fill="#D9D3C5"/>
+            <rect x="20" y="124" width="280" height="40" rx="6" fill="#F4EFE3"/>
+            <rect x="32" y="138" width="80" height="6" rx="2" fill="#B8B0A0"/>
+            <rect x="32" y="150" width="120" height="6" rx="2" fill="#B8B0A0"/>
+          </svg>
+        </div>
+      </article>
+
+      <!-- Tile 2 -->
+      <article class="fg__tile">
+        <p class="fg__emoji" aria-hidden="true">📚</p>
+        <h3 class="fg__tile-title">Lorem knowledge base</h3>
+        <p class="fg__tile-dek">One source of truth for teams and agents.</p>
+      </article>
+
+      <!-- Tile 3 -->
+      <article class="fg__tile">
+        <p class="fg__emoji" aria-hidden="true">✅</p>
+        <h3 class="fg__tile-title">Lorem projects</h3>
+        <p class="fg__tile-dek">Less tracking. More progress.</p>
+      </article>
+
+      <!-- Tile 4 -->
+      <article class="fg__tile">
+        <p class="fg__emoji" aria-hidden="true">🧠</p>
+        <h3 class="fg__tile-title">Lorem AI</h3>
+        <p class="fg__tile-dek">Ask a question, get an answer from your workspace.</p>
+      </article>
+
+      <!-- Tile 5 -->
+      <article class="fg__tile">
+        <p class="fg__emoji" aria-hidden="true">📅</p>
+        <h3 class="fg__tile-title">Lorem calendar</h3>
+        <p class="fg__tile-dek">Your meetings, deadlines, and docs in one view.</p>
+      </article>
+
+      <!-- Tile 6 -->
+      <article class="fg__tile">
+        <p class="fg__emoji" aria-hidden="true">🔍</p>
+        <h3 class="fg__tile-title">Lorem enterprise search</h3>
+        <p class="fg__tile-dek">One search for everything across your tools.</p>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

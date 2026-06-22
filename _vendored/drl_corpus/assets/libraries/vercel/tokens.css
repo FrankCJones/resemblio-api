@@ -1,0 +1,139 @@
+/*
+ * Vercel (Geist) library tokens
+ *
+ * Vercel's complete Geist component vocabulary as one coherent system.
+ * Two faces from one foundry: Geist Sans across display and body, Geist
+ * Mono for metadata, status, deploy IDs, plan SKUs (hobby/pro/enterprise),
+ * and state labels (READY/BUILDING/ERROR). Light-mode native: near-white
+ * bg #FAFAFA, near-black ink #171717, hairline #EAEAEA doing all the
+ * chrome work via box-shadow ring rather than border (corners stay crisp
+ * at any radius). One saturated chromatic punctuation: Vercel Blue
+ * #0070F3 as the only marketing accent; status family (green operational,
+ * amber warning, red error) reserved for deploy badges and indicators.
+ *
+ * Token values mirror the verified Geist alphabet at
+ * assets/alphabets/vercel/tokens.css (A-grade, devtools-extracted
+ * 2026-05-19 across system-tagged atoms: kickers/mono-eyebrow-001,
+ * cards/hairline-flat-001, status-indicators/pulsing-dot-001,
+ * wordmarks/mono-uppercase-001). Component structure cross-checked
+ * against the Geist component index at vercel.com/geist and the
+ * contact-sales form fetched 2026-05-20.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Near-white surface, near-black ink, one saturated blue. The chromatic
+   * restraint outside status is load-bearing: Geist Blue is the only
+   * marketing accent, which is what makes a single CTA feel decisive.
+   */
+  --ds-bg:           #FAFAFA;   /* Marketing body bg; cool near-white. */
+  --ds-surface:      #FFFFFF;   /* Card surface; one step above bg. */
+  --ds-surface-2:    #F4F4F5;   /* Nested panel / hovered surface. */
+  --ds-text:         #171717;   /* Body color rgb(23,23,23); Geist near-black. */
+  --ds-text-muted:   #666666;   /* Geist secondary; metadata, timestamps, footer. */
+  --ds-text-strong:  #000000;   /* Hero H1 maximum-contrast; reserved emphasis. */
+  --ds-border:       #EAEAEA;   /* Geist card hairline; the entire chrome character. */
+  --ds-hairline:     #F0F0F0;   /* Subtler still; section breaks, sidebar rules. */
+  --ds-accent:       #0070F3;   /* Vercel Blue; sole chromatic punctuation. */
+  --ds-accent-2:     #0050C0;   /* Pressed / hover state of accent. */
+  --ds-success:      #00C875;   /* Operational green; deploy READY badges. */
+  --ds-warning:      #F5A623;   /* Geist warning amber. */
+  --ds-error:        #EE0000;   /* Geist error red. */
+  --ds-info:         #0070F3;   /* Matches accent. */
+  --ds-focus-ring:   #0070F3;   /* Vercel Blue at full strength on :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Geist Sans + Geist Mono. The mono is functional, not ornamental: it
+   * runs alongside the sans wherever a value is being measured or
+   * recorded. Inter is the documented fallback (Geist loads from Vercel's
+   * CDN; Inter approximates the metrics for offline rendering).
+   */
+  --ds-font-display: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", "Roboto Mono", monospace;
+  --ds-font-accent:  "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* ---------- Type sizes ----------
+   * Base 16px. Conventional 1.25 ratio through body and subhead steps,
+   * stepping wider at display. Hero ceiling at 72px; Geist never reaches
+   * the editorial 7xl statement display. Mono labels sit at 12px (xs).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Geist Mono uppercase kicker / status / SKU label. */
+  --ds-text-sm:   14px;   /* Secondary UI, nav links, footer links. */
+  --ds-text-base: 16px;   /* Body reading default. */
+  --ds-text-lg:   20px;   /* Lead paragraph / feature description. */
+  --ds-text-xl:   24px;   /* Subheads (H3). */
+  --ds-text-2xl:  32px;   /* Section heads (H2). */
+  --ds-text-3xl:  40px;   /* Pricing tier headline. */
+  --ds-text-4xl:  56px;   /* Marketing hero H1 lower bound. */
+  --ds-text-5xl:  72px;   /* Marketing hero H1 upper bound. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;   /* Hero H1, H2. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.14em;    /* Uppercase Geist Mono kicker / status label. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Vercel's vertical rhythm is tighter than Linear's;
+   * marketing sections breathe at space-10 (64px). Card padding lands
+   * at space-6 / space-8 (32 / 48).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Small radii, never pills outside small chips. Cards at 8px, CTAs at
+   * 5px. The editorial flat register would round to 0; Geist softens just
+   * enough to read as modern rather than brutalist.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   5px;     /* CTA buttons, input fields. */
+  --ds-radius-md:   8px;     /* Card corner. */
+  --ds-radius-lg:   12px;    /* Featured / pricing card. */
+  --ds-radius-full: 9999px;  /* Small status chips, badges, avatars. */
+
+  /* ---------- Shadows ----------
+   * The Geist signature: a 1px ring box-shadow stands in for a border on
+   * cards so corners stay crisp at any radius. Drops are rare and soft.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 0 0 1px var(--ds-border), 0 2px 4px rgba(0,0,0,0.04);
+  --ds-shadow-lg:   0 0 0 1px var(--ds-border), 0 8px 24px rgba(0,0,0,0.08);
+  --ds-shadow-2xl:  0 0 0 1px var(--ds-border), 0 24px 48px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ----------
+   * Fast (150ms) UI feedback paired with a slow (1800ms) breath on
+   * operational pulses; the contrast is intentional.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

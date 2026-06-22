@@ -1,0 +1,143 @@
+<!--
+  Asset: minimal-essay-footer-001
+  Class: footers
+  Pattern: minimal-footer
+  Inspired by: Robin Sloan (robinsloan.com)
+  Notes:
+    - One-paragraph signature footer in editorial serif, preceded by a
+      centered asterism divider; mono "last updated" timestamp below; a
+      single accent-color link to a colophon. No sitemap, no social row,
+      no subscribe band. The page itself is the artifact; the footer
+      just signs and dates it.
+    - Variable: every color, every font, every size step (all `--ds-*`).
+      Inline: the asterism letter-spacing (`0.5em`) and the small lift
+      transform on link hover, both one-off character moments that
+      would over-promote a slot if pulled into the contract.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>minimal-essay-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font import. The token contract names Filosofia and Trade
+  Gothic Next (per Robin Sloan's published colophon) but both are
+  licensed. The fallback chain (Newsreader, Charter, Georgia) carries
+  the editorial-serif register on systems without the licensed family.
+-->
+<style>
+  /* Reset only what this asset needs. The harness handles broader normalization. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Page wrapper: narrow measure echoing the reading column above the footer.
+     The 36em width matches the canonical longform measure; the footer inherits it. */
+  .page {
+    max-width: 36em;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-10);
+  }
+
+  /* The asterism divider sits at the top of the footer with generous breathing room.
+     Composed of three asterisks separated by `0.5em` of inline letter-spacing; the
+     spacing is the asterism's character (denser would read as bold punctuation,
+     looser would read as decorative noise). Kept inline because it is one-off. */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    letter-spacing: 0.5em;            /* one-off character; not a contract role */
+    margin: var(--ds-space-12) 0 var(--ds-space-10);
+    user-select: none;                /* the glyph is decoration, not content */
+  }
+  .asterism::before { content: "* * *"; }
+
+  /* Signature line: the single sentence that does all the work. Editorial serif,
+     centered, set at body size with comfortable line-height. The voice rides
+     entirely on the typography choice. */
+  .signature {
+    text-align: center;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 30em;
+  }
+
+  /* Colophon line: smaller, muted, mono treatment for the timestamp; the link
+     inherits the accent color. The footer's only chrome lives in this one link. */
+  .colophon {
+    text-align: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  .colophon a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;              /* one-off, keeps the rule off the baseline */
+  }
+  .colophon a:hover,
+  .colophon a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+  .colophon a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Reading body above the footer; included so the footer's relationship to
+     the column reads correctly when this asset is opened standalone. */
+  .reading {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .reading p { margin: 0 0 var(--ds-space-5); }
+</style>
+</head>
+<body>
+  <main class="page">
+    <article class="reading">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in nisl ac mauris vehicula commodo. Sed faucibus, libero a posuere fringilla, sapien justo blandit eros, quis interdum nibh ipsum nec lectus. Praesent et tempor sapien.</p>
+      <p>Vivamus euismod, justo a egestas tincidunt, augue lectus sollicitudin lorem, eu fermentum velit ipsum at libero. Donec a ornare nibh. Curabitur posuere, urna sit amet pretium tristique, magna lorem dictum metus, in malesuada arcu eros sit amet eros.</p>
+      <p>Phasellus eu lorem nec sapien fermentum tincidunt. Integer in malesuada justo. Sed sit amet libero ut nibh viverra euismod. Aliquam erat volutpat. Cras sed sapien id velit congue malesuada in nec lorem.</p>
+    </article>
+
+    <footer aria-label="Site footer">
+      <div class="asterism" role="separator" aria-hidden="true"></div>
+
+      <p class="signature">
+        Lorem ipsum non collegit informationes de te aut de lectione tua.
+        Aspirat ad celeritatem et privatum paginae impressae.
+      </p>
+
+      <p class="colophon">
+        Lorem ipsum colophon &middot;
+        <a href="#colophon">Vide colophonem</a> &middot;
+        Ultimum aedificatum MMXXVI
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

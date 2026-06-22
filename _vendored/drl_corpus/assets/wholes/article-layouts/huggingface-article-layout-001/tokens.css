@@ -1,0 +1,152 @@
+/*
+ * huggingface-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Hugging Face's /blog surface. Inherits
+ * the hugging-face system alphabet captured in
+ * assets/alphabets/hugging-face/tokens.css (provenance B via WebFetch on
+ * 2026-05-20). Pure white canvas with Slate 900 ink, the signature warm
+ * yellow #FFD21E held back from prose and reserved for the focus ring and
+ * the kicker pill border, and platform blue #2563EB as the single inline
+ * link role. Source Sans 3 owns display and body; Source Code Pro carries
+ * every model id, dataset id, Space id, and code block.
+ *
+ * Sources inspected via WebFetch on 2026-05-20:
+ *   - https://huggingface.co/blog (recent-post listing chrome)
+ *   - https://huggingface.co/blog/huggingface/agent-traces-as-memory
+ *     (single-author post, code-block heavy, "Community Article" kicker
+ *     pill, multi-avatar byline with Follow button on the lead author)
+ *   - https://huggingface.co/blog/adalat-ai/vividh-benchmark (multi-author
+ *     post with "+5" avatar stack overflow, org affiliation, model-card
+ *     and dataset-card embeds at the tail of the article).
+ *
+ * Chrome MCP unavailable for this session; structural and token signals
+ * triangulated against the system manifest (systems/hugging-face/system.json)
+ * and the alphabet tokens.css already in the library.
+ *
+ * Free-font analog in asset.html:
+ *   - Source Sans 3 and Source Code Pro both load directly from Google
+ *     Fonts; no substitution is needed.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure-white surface with near-black ink and a single signature yellow
+   * accent used sparingly (focus ring, kicker pill border, Follow button
+   * hover). Platform blue does inline links. Card chrome is hairline only;
+   * no shadows at rest, by HF system principle.
+   */
+  --ds-bg:           #FFFFFF;   /* Page canvas; paper white. */
+  --ds-surface:      #FFFFFF;   /* Embed card surface; flat against page. */
+  --ds-surface-2:    #F3F4F6;   /* Inset code block background; gray-100. */
+  --ds-text:         #1F2937;   /* Body and headline ink; slate-800. */
+  --ds-text-muted:   #6B7280;   /* Byline date, model metadata, "Updated 2 hours ago". */
+  --ds-text-strong:  #111827;   /* H1 emphasis; slate-900. */
+  --ds-border:       #E5E7EB;   /* Card hairline; gray-200. */
+  --ds-hairline:     #F3F4F6;   /* Section divider; gray-100. */
+  --ds-accent:       #FFD21E;   /* Hugging-face yellow; kicker pill and focus ring. */
+  --ds-accent-2:     #FF9D00;   /* Orange used in PRO badges and "Running on Zero" chips. */
+  --ds-success:      #10B981;
+  --ds-warning:      #F59E0B;
+  --ds-error:        #EF4444;
+  --ds-info:         #2563EB;   /* Platform link blue; inline links and breadcrumb. */
+  --ds-focus-ring:   #FFD21E;   /* Yellow halo; signature focus state on white. */
+
+  /* ---------- Type families ----------
+   * Source Sans 3 for display and body, Source Code Pro for every mono
+   * moment. The pair is the HF signature; the academic-community register
+   * that distinguishes the surface from the Inter + JetBrains Mono dev-tool
+   * pairing of Vercel / Linear / Cursor.
+   */
+  --ds-font-display: "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Source Code Pro", "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --ds-font-accent:  "Source Sans 3", "Source Sans Pro", sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Article H1 sits at the 5xl step (~48-56px), one step below the home
+   * hero. Body reads at base (16px) with relaxed leading; dek at lg (18px).
+   * Model-id rows and code blocks read at sm (14px).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Kicker pill, byline date, model metadata. */
+  --ds-text-sm:   14px;   /* Code block, model-card row, Follow button. */
+  --ds-text-base: 16px;   /* Body reading default. */
+  --ds-text-lg:   18px;   /* Dek lead paragraph below H1. */
+  --ds-text-xl:   22px;   /* H3 inside body. */
+  --ds-text-2xl:  28px;   /* H2 inside body. */
+  --ds-text-3xl:  36px;   /* Large section head. */
+  --ds-text-4xl:  44px;
+  --ds-text-5xl:  52px;   /* Article H1. */
+  --ds-text-6xl:  64px;
+  --ds-text-7xl:  88px;
+
+  /* ---------- Line heights ----------
+   * Body reading at 1.7 (relaxed); H1 tight at 1.1; H2 snug at 1.25. The
+   * HF reading register sits one step looser than the Vercel/Geist 1.6
+   * because the surface carries longer-form research and community posts.
+   */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.55;
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Negative on H1, neutral on body, wide on the "COMMUNITY ARTICLE"
+   * uppercase chip and any small-caps metadata moments.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Body paragraph rhythm at space-4 (16px); avatar stack gap at
+   * space-2 (8px); section heading carries space-8 above and space-4 below.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cards at md (8px); kicker pill and Follow button fully rounded;
+   * inline code at sm (6px); code block at md (8px). Avatar fully round.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome. Cards stay flat at rest; no shadow on the model-card
+   * embed, the code block, or the article header.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(17,24,39,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(17,24,39,0.05);
+  --ds-shadow-md:   0 4px 12px rgba(17,24,39,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(17,24,39,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(17,24,39,0.14);
+
+  /* ---------- Motion ----------
+   * Standard ease; HF blog motion is mostly absent. Durations short.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

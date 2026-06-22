@@ -1,0 +1,104 @@
+<!--
+  Asset: dotted-grid-isometric-001
+  Class: backgrounds
+  Pattern: (none)
+  Inspired by: Framer
+  Notes:
+    - A radial-gradient dot tile (32px) rendered on an oversized plane that is
+      rotated 60deg and skewed -30deg in 3D space. The grid recedes toward a
+      vanishing point and reads as a perspective floor rather than a flat
+      pattern.
+    - Inline ornament: the tile size (32px), the rotateX/skew values, and
+      the radial mask that fades the grid behind the type are the asset's
+      character. Each is commented in place.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>dotted-grid-isometric-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    perspective: 1200px;   /* Inline ornament: depth of the isometric projection. */
+  }
+
+  /* The isometric grid plane.
+   * An oversized 200vw x 200vh element holds the dot tile, then a 3D
+   * transform tilts it like a floor. rotateX(60deg) is what creates the
+   * "looking down" feel; translateY pushes the plane down so the visible
+   * portion is the receding grid rather than a wall.
+   * Without the radial mask, the dots near the bottom of the viewport are
+   * larger than at the top (perspective foreshortening) and read as a tablecloth;
+   * the mask fades the grid where type sits so the hierarchy stays clear.
+   */
+  .grid {
+    position: absolute;
+    left: 50%;
+    bottom: -40vh;
+    width: 200vw;
+    height: 160vh;
+    transform: translateX(-50%) rotateX(60deg);
+    transform-origin: 50% 100%;
+    pointer-events: none;
+    background-image: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.35) 0,
+      rgba(255, 255, 255, 0.35) 1.2px,
+      transparent 2px
+    );
+    background-size: 32px 32px;
+    background-position: 0 0;
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 85%);
+    mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 85%);
+  }
+
+  .label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(19, 19, 22, 0.65);
+    backdrop-filter: blur(6px);
+  }
+
+  .lorem {
+    position: relative;
+    z-index: 1;
+    max-width: 32ch;
+    margin-top: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="grid" aria-hidden="true"></div>
+  <span class="label">dotted-grid-isometric-001 . background atom</span>
+  <p class="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+</body>
+</html>

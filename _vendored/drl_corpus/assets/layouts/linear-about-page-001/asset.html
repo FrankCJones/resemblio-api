@@ -1,0 +1,374 @@
+<!--
+  Asset: linear-about-page-001
+  Class: layouts
+  Pattern: floating-pill-nav, single-cta-hero, story-card-grid, logo-wall, mega-footer
+  Inspired by: Linear (linear.app/about)
+  Notes:
+    - About-page skeleton: nav, mission statement, team grid, values band,
+      press strip, cta, footer. Same dark surface and hairline chrome as
+      the Linear marketing page, but the rhythm hands the page to a
+      single mission statement at the top and a backers strip in place
+      of the marketing surface's feature grid.
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, floating-pill nav shell, gutter, padding
+      rhythm, and section sequence are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter Display and Inter are open substitutes for the Inter
+  Display variant Linear ships; Berkeley Mono is licensed, JetBrains Mono
+  is the open fallback for the mono kicker face.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px (Linear runs tighter than Anthropic);
+   * gutter 24px on mobile, 48px on desktop. Inline value: 1200px; not a
+   * contract slot.
+   */
+  .page {
+    max-width: 1200px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Mission section gets the extra vertical breathing room.
+   * Single column, narrow centered measure, oversized statement. */
+  .section--mission {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--mission { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Floating-pill nav. Sits at the top of the viewport with rounded
+   * border, backdrop blur, and a hairline outline. The shell itself is
+   * the Linear-canonical chrome; the link cluster and CTA pill stand in
+   * for child wholes. Inline values: 12px radius, backdrop-filter blur,
+   * and the sticky top offset are inline ornament specific to this nav
+   * shell, not contract slots.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: var(--ds-space-4);
+    z-index: 10;
+    padding-block: var(--ds-space-4);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-hairline);
+    border-radius: 12px;                                /* pill shell radius, inline */
+    background: rgba(8, 9, 10, 0.7);                    /* dark glass; inline ornament */
+    backdrop-filter: saturate(180%) blur(20px);         /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Mission statement. Sans display at 5xl on desktop; tight leading;
+   * narrow measure; the load-bearing moment of the page. Linear's
+   * register is left-aligned (not centered like Anthropic). */
+  .mission__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .mission__statement { font-size: var(--ds-text-5xl); }
+  }
+  .mission__support {
+    margin: var(--ds-space-6) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .mission__media {
+    margin-top: var(--ds-space-10);
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-lg);
+  }
+
+  /* Team grid: four-column on desktop, two on tablet, one on mobile.
+   * Each cell is a leadership-card placeholder. The extended alphabetical
+   * roster sits below in its own multi-column flow. */
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .team-grid { grid-template-columns: repeat(4, 1fr); } }
+  .team-roster {
+    margin-top: var(--ds-space-8);
+    columns: 2;
+    column-gap: var(--ds-space-8);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+  @media (min-width: 768px) { .team-roster { columns: 4; } }
+
+  /* Values band: numbered statements stacked in a two-column grid on
+   * desktop, single column on mobile. Each row reads as a small editorial
+   * card with a mono number prefix. */
+  .values-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .values-grid { grid-template-columns: repeat(2, 1fr); gap: var(--ds-space-8); }
+  }
+
+  /* Press strip: row of muted investor logos / executive mentions; small,
+   * single hairline above and below, no decoration. */
+  .press-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-items: center;
+  }
+  @media (min-width: 768px) {
+    .press-strip { grid-template-columns: repeat(5, 1fr); }
+  }
+  .press-strip .slot {
+    background: transparent;
+    border: 1px dashed var(--ds-hairline);
+    width: 100%;
+    text-align: center;
+  }
+
+  /* CTA section: centered closing call-to-action, narrow measure. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 24ch;
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Section heading shared style: small mono kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Footer band: full-width, sits outside .page container, single
+   * hairline rule above, dark surface continues. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: floating-pill nav. Stands in for wholes/navigation/linear-nav-001. -->
+    <div class="nav-wrap">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 480px;">
+          <span class="slot__label">nav-link-cluster</span>
+          Lorem ipsum dolor sit amet
+        </div>
+        <div class="slot" style="min-width: 140px;">
+          <span class="slot__label">cta-pill</span>
+          Try Lorem
+        </div>
+      </nav>
+    </div>
+
+    <!-- Section: mission statement. Left-aligned oversized sans line with supporting copy and embedded product video. -->
+    <section class="section section--mission" aria-label="Mission">
+      <h1 class="mission__statement">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="mission__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+      <div class="mission__media" role="img" aria-label="Product video placeholder"></div>
+    </section>
+
+    <!-- Section: team grid. Four-up leadership cards plus extended alphabetical roster. -->
+    <section class="section" aria-label="Team">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 / Team</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="team-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">leadership-card</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">leadership-card</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">leadership-card</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 3 / 4;"><span class="slot__label">leadership-card</span>Lorem</div>
+      </div>
+      <div class="team-roster">
+        Lorem ipsum, Dolor sit, Amet consectetur, Adipiscing elit, Sed do,
+        Eiusmod tempor, Incididunt ut, Labore et dolore, Magna aliqua, Ut
+        enim, Ad minim, Veniam quis, Nostrud exercitation, Ullamco laboris,
+        Nisi ut aliquip, Ex ea commodo, Consequat duis, Aute irure, Dolor
+        in, Reprehenderit voluptate, Velit esse, Cillum dolore.
+      </div>
+    </section>
+
+    <!-- Section: values band. Two-column numbered statements; no tinted surface, just hairline rhythm. -->
+    <section class="section" aria-label="Values">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 / Principles</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="values-grid">
+        <div class="slot"><span class="slot__label">value-statement-01</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-statement-02</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-statement-03</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">value-statement-04</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
+    </section>
+
+    <!-- Section: press strip. Investor logos and executive mentions. Stands in for wholes/press-strips/linear-customer-logo-wall-001. -->
+    <section class="section" aria-label="Backers">
+      <div class="section-heading" style="text-align: center;">
+        <span class="section-heading__kicker">03 / Backers</span>
+      </div>
+      <div class="press-strip">
+        <div class="slot"><span class="slot__label">investor-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">investor-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">investor-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">investor-logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">investor-logo</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: cta. Centered closing call-to-action with four action buttons. -->
+    <section class="section section--cta" aria-label="Call to action">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h2>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 140px;">
+          <span class="slot__label">primary-cta</span>
+          Try Lorem
+        </div>
+        <div class="slot" style="min-width: 140px;">
+          <span class="slot__label">secondary-cta</span>
+          Read Lorem
+        </div>
+        <div class="slot" style="min-width: 140px;">
+          <span class="slot__label">tertiary-cta</span>
+          Watch Lorem
+        </div>
+        <div class="slot" style="min-width: 140px;">
+          <span class="slot__label">quaternary-cta</span>
+          Open Lorem
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/linear-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (6 link columns)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

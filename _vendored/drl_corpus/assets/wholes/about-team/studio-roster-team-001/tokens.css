@@ -1,0 +1,138 @@
+/*
+ * studio-roster-team-001 tokens
+ *
+ * Studio-roster palette inspired by Pentagram (pentagram.com /about).
+ * The character is editorial-severe: pure white page, near-black ink,
+ * one restrained black accent for hover and focus, a custom-feeling
+ * display sans for headlines, a neutral system sans for body. No
+ * gradients, no chrome, no shadows. The discipline is the design.
+ *
+ * Pentagram's site itself uses a custom F37 Foundry display face. The
+ * web fallback here is Inter Display, which carries the same geometric
+ * register at small sizes without the licensing cost.
+ *
+ * Source inspection: WebFetch HTML read of pentagram.com/about
+ * 2026-05-19. Computed styles were not accessible via WebFetch; color
+ * and type values below are tuned to the visible character (white page,
+ * black text, light-weight display sans, 4-column partner grid) rather
+ * than extracted as exact rgb numbers. Provenance score: B.
+ *
+ * Composes:
+ *   color-groups/paper-ink-zero-001       (paper-and-ink discipline)
+ *   type-pairings/display-distinctive-001 (custom display sans + body)
+ *   headings/display-light-001            (light-weight display heading)
+ *   avatars/squircle-avatar-001           (slightly softened square crop)
+ *   labels/metadata-mono-001              (city label under each name)
+ *   kickers/mono-eyebrow-001              (section eyebrow)
+ *   dividers/hairline-rule-001            (section break)
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure white paper, ink black text. One muted gray for the city
+   * captions. No brand accent in the page chrome; the partners' work
+   * carries the color when it appears.
+   */
+  --ds-bg:           #FFFFFF;   /* Pure white. Pentagram refuses to warm the page. */
+  --ds-surface:      #FFFFFF;   /* Cards and tiles sit on the page; no raised surface. */
+  --ds-surface-2:    #FAFAFA;   /* Reserved; any tinted aside lands here. */
+  --ds-text:         #111111;   /* Near-black ink. Strong but not aggressive against white. */
+  --ds-text-muted:   #6B6B6B;   /* City labels, associate names in lists, metadata. */
+  --ds-text-strong:  #000000;   /* Absolute black for the rare highest-emphasis moment. */
+  --ds-border:       #E5E5E5;   /* Quiet card hairline; rarely visible. */
+  --ds-hairline:     #E0E0E0;   /* Section break rule between roster blocks. */
+  --ds-accent:       #111111;   /* The accent IS the ink. Hover and focus stay in the family. */
+  --ds-accent-2:     #6B6B6B;   /* Hover-state demotion: lifts to muted gray. */
+  --ds-success:      #1F6B3A;   /* Reserved; not used on this page. */
+  --ds-warning:      #8A6A1F;   /* Reserved. */
+  --ds-error:        #B11A1A;   /* Reserved. */
+  --ds-info:         #111111;   /* Info collapses to text color. */
+  --ds-focus-ring:   #111111;   /* Black focus ring; high contrast against white paper. */
+
+  /* ---------- Type families ----------
+   * Display: a custom-feeling geometric display sans. Pentagram uses
+   * F37 Plain (custom commission); we declare a stack that lands on
+   * Inter Display or system-ui at the same register. Mono appears
+   * only on the section kicker and the city captions.
+   */
+  --ds-font-display: "Inter Display", "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --ds-font-body:    "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Display", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Editorial scale; the partner-name size sits at lg, the section H2
+   * at 3xl, the introductory manifesto at xl. Pentagram's actual page
+   * scales larger; this asset is a reading reference.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Display headlines and large partner names. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.9;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Display heading. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;   /* Kicker eyebrow. */
+  --ds-tracking-wider:  0.18em;   /* Section labels in mono. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Hard corners on the page; the partner tile carries a 4px softening
+   * lift from Pentagram's strict squareness, in the squircle-avatar
+   * register. The default is zero everywhere else.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Partner tile uses this. */
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   8px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * No elevation. Pentagram is a flat editorial page.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   none;
+  --ds-shadow-lg:   none;
+  --ds-shadow-2xl:  none;
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

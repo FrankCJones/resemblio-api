@@ -1,0 +1,163 @@
+/*
+ * quanta alphabet tokens
+ *
+ * Quanta Magazine's complete typography expression as one coherent vocabulary.
+ *
+ * Three families do the work: Tiempos Headline for display, Tiempos Text for
+ * body reading, and GT America for the lowercase sans kicker and metadata.
+ * JetBrains Mono carries the rare technical caption. The whole system sits
+ * on plain paper #FFFFFF with near-black ink #1A1A1A and a single deep
+ * violet accent #4A2D7E used only on the lowercase sans kicker, on figure
+ * credits, and on inline links inside the body column.
+ *
+ * The signature inversion: where most editorial brands set the kicker in
+ * uppercase sans, Quanta sets it in LOWERCASE sans and colors it violet.
+ * The quiet case plus the saturated color is the brand cue. The serif
+ * carries the reading; the sans carries the chrome; the violet ties them.
+ *
+ * Base body 17px / 1.65 leading. Science articles run long; the relaxed
+ * leading is a fatigue-reduction choice, one notch slower than the SaaS
+ * 1.5 default. Article H1 reaches 56px (4xl) on feature pages, card
+ * titles bound at 32px (2xl).
+ *
+ * Type values corroborated against existing system-tagged atoms
+ * (type-pairings/quanta-science-pair-001, kickers/quanta-section-001,
+ * article-layouts/quanta-science-article-001) which captured the same
+ * values via WebFetch on 2026-05-19. quantamagazine.org is documented
+ * blocked from Claude in Chrome MCP; provenance ships at B per that
+ * precedent.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink palette with one violet punctuation. The page is plain
+   * white, the ink is brown-undertone near-black, and the violet shows up
+   * in exactly three places: the kicker above article titles, the figure
+   * credit line, and inline links inside the body column.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper. Articles sit on plain white. */
+  --ds-surface:      #FAFAFA;   /* Card hover surface; one half-step off paper. */
+  --ds-surface-2:    #F2F2F2;   /* Pull-quote inset, related-reading block. */
+  --ds-text:         #1A1A1A;   /* Body ink; near-black for ink feel. */
+  --ds-text-muted:   #6B6B6B;   /* Byline, date, caption secondary. */
+  --ds-text-strong:  #000000;   /* Pure black for the rare emphasis moment. */
+  --ds-border:       #E5E5E5;   /* Figure frame, related-card edges. */
+  --ds-hairline:     #EDEDED;   /* Section divider, byline rule. */
+  --ds-accent:       #4A2D7E;   /* Quanta signature deep violet; kicker, credit, inline link. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet; hover state on kicker links. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #C77700;
+  --ds-error:        #B3261E;
+  --ds-info:         #4A2D7E;
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet, visible against paper. */
+
+  /* ---------- Type families ----------
+   * Three families, three jobs.
+   *   display: Tiempos Headline. High-contrast modern serif for the
+   *            article H1 and card titles.
+   *   body:    Tiempos Text. Screen-optimized reading serif for body
+   *            paragraphs and dek. Same family voice as display, tuned
+   *            for the 17px reading register.
+   *   accent:  GT America. Humanist sans used only for the lowercase
+   *            kicker, byline, figure caption, and UI chrome.
+   *   mono:    JetBrains-style mono used sparingly: equation captions,
+   *            technical labels.
+   * The split is strict: serif owns everything readable, sans owns
+   * everything functional. The lowercase kicker is the brand cue.
+   */
+  --ds-font-display: "Tiempos Headline", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Editorial scale. Base 17px (between UI 16 and editorial 18); Quanta
+   * optimizes for science reading at length. Lead paragraph lifts to
+   * 19px. Card title bounds at 32px; feature article H1 climbs to 56px.
+   * Scale ratio sits near 1.25 through xl, wider at display sizes.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;   /* Lowercase kicker, figure credit, footer meta. */
+  --ds-text-sm:   14px;   /* Byline, caption secondary, UI chrome. */
+  --ds-text-base: 17px;   /* Body reading (Tiempos Text). */
+  --ds-text-lg:   19px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   24px;   /* Subhead (H3). */
+  --ds-text-2xl:  32px;   /* Card title; section heading (H2). */
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;   /* Feature article H1. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Body sits at 1.65, the editorial-relaxed register. The extra leading
+   * over the 1.5 SaaS default is a fatigue-reduction choice for long
+   * science articles; it tells the eye to slow down.
+   */
+  --ds-leading-tight:   1.1;    /* Display H1 / feature title. */
+  --ds-leading-snug:    1.2;    /* Subheads. */
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;   /* Quanta body. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Display serif takes a touch of negative tracking. The lowercase sans
+   * kicker takes positive 0.04em to compensate for losing the structural
+   * rhythm uppercase would provide; the wider step is reserved for any
+   * uppercase chrome that does appear (mono section labels).
+   */
+  --ds-tracking-tight:  -0.02em;   /* Display headlines. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;    /* Lowercase sans kicker. */
+  --ds-tracking-wider:  0.14em;    /* Uppercase mono section labels (rare). */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Editorial column hits its max at 60-68ch; vertical
+   * rhythm between paragraphs runs at space-5 (24px), and the gap from
+   * kicker to title sits at space-3 (12px) - close enough to read as a
+   * pair, separate enough to read as a pair.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Sharp corners almost everywhere. Quanta is a print-rooted brand;
+   * only avatars and the rare hover-tile sit at md.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial pages prefer hairlines to shadows. Used sparingly for
+   * related-card hover lift only.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

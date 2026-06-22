@@ -1,0 +1,249 @@
+<!--
+  Asset: anthropic-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses paper-and-ink + display-editorial + serif-display-sans-body + primary-square + ghost-button + link-button)
+  Inspired by: Anthropic (anthropic.com/research, anthropic.com/company)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001                 (warm paper bg, ink text, clay-crimson accent)
+    - type-pairings/serif-mono-editorial-001      (serif display, sans chrome, mono reserved)
+    - headings/display-editorial-serif-001        (serif H2 at editorial display step)
+    - body-text/lead-paragraph-001                (serif lead sentence under the headline)
+    - buttons/anthropic-primary-square-001        (ink-fill 6px radius primary)
+    - buttons/anthropic-secondary-ghost-001       (ghost ink-border secondary)
+    - buttons/anthropic-link-arrow-001            (tertiary text-arrow option)
+    - dividers/hairline-rule-001                  (warm hairline above the block)
+  Notes:
+    - The block sits flush on the warm-paper page surface. A single warm
+      hairline above it separates the CTA from the section that preceded.
+      No card, no fill, no shadow. The CTA earns its weight through type
+      hierarchy and measure, not through a container.
+    - Left-aligned, narrow editorial column (max 720px content width).
+      Anthropic's marketing pages close with a serif headline asking a
+      direct question, a one-sentence lead, and a button row. Variant
+      observed: single primary on /research and /company; paired
+      primary+ghost on enterprise marketing surfaces.
+    - Inline ornament: the 6px button radius, the clay-crimson focus
+      ring, the 30% accent underline on the tertiary link-arrow. These
+      are Anthropic-system signatures, not portable contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Open-license substitutes for the proprietary Anthropic faces:
+     Newsreader stands in for anthropicSerif (Tiempos register); Inter
+     stands in for anthropicSans (Söhne register); JetBrains Mono is
+     declared in tokens but unused on this asset. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: warm paper. The CTA sits inline on the page surface,
+   * one hairline above it the only separator. This is the Anthropic
+   * marketing-page closing register. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container that holds the hairline rule and
+   * the content column. The rule spans the full reading width above the
+   * block. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-10);
+    /* Inline ornament: the warm hairline above the block is the only
+     * structural chrome; on the live site it sits where the next
+     * section would have begun. */
+  }
+
+  /* Content column: left-aligned, narrow editorial measure. Anthropic's
+   * closing CTAs are left-aligned within the marketing column, not
+   * centered. The measure matches the article column above. */
+  .cta__content {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: from atoms/headings/display-editorial-serif-001.
+   * Serif at 4xl (52px on desktop, fluid down for narrow), tight
+   * leading, negative tracking. The headline asks the closing question
+   * in the same voice the marketing copy used above. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-4xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the headline from
+     * orphaning a single word; an editorial typesetting move. */
+  }
+
+  /* Lead sentence: from atoms/body-text/lead-paragraph-001. Serif at lg,
+   * relaxed leading, muted ink. One sentence; not a paragraph. */
+  .cta__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Button row: primary square + ghost secondary, with an optional
+   * tertiary text-arrow on a second line. The row wraps on narrow
+   * widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Primary: from atoms/buttons/anthropic-primary-square-001. Ink fill
+   * (near-black slate), cream label, 6px radius. anthropicSans medium. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 6px radius is the Anthropic-system signature
+     * (sits between the SaaS pill and the brutalist hard corner). */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-text);
+    border-color: var(--ds-text);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: from atoms/buttons/anthropic-secondary-ghost-001.
+   * No fill, 1px ink border, 6px radius. Same dimensions as primary so
+   * the pair reads as a deliberate two-action set. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-text);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Tertiary link-arrow: from atoms/buttons/anthropic-link-arrow-001.
+   * Text-only with a clay-crimson tint, trailing arrow glyph, 30%
+   * accent hairline under the label. Sits on a second line after the
+   * button pair. */
+  .cta__link {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ds-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-1);
+    padding: var(--ds-space-2) 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--ds-accent) 30%, transparent);
+    transition:
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 30% clay-crimson hairline underline matches the
+     * inline-link register used in body copy across the site. */
+  }
+  .cta__link::after {
+    content: " \2192";
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__link:hover {
+    color: var(--ds-accent-2);
+    border-bottom-color: var(--ds-accent-2);
+  }
+  .cta__link:hover::after { transform: translateX(2px); }
+  .cta__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost, .cta__link, .cta__link::after {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+        <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+      </div>
+      <a class="cta__link" href="#">Lorem consectetur adipiscing</a>
+    </div>
+  </section>
+</body>
+</html>

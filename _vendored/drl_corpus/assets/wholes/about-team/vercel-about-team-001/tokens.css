@@ -1,0 +1,135 @@
+/*
+ * vercel-about-team-001 tokens
+ *
+ * Vercel /about page composition. Light-mode Geist canvas with the
+ * canonical Geist Blue accent reserved for link hover and focus rings.
+ * Tokens inherit the canonical Vercel/Geist alphabet captured via
+ * WebFetch on https://vercel.com/about 2026-05-20 and cross-referenced
+ * against vercel-hero-001/tokens.css and the published Geist scale
+ * (vercel.com/geist/colors, vercel.com/geist/typography):
+ *   - background-1 light #FFFFFF (page canvas)
+ *   - Gray 4 #EAEAEA (hairline borders, the only chrome)
+ *   - Gray 9 #666666 (role / company metadata in card)
+ *   - Gray 12 #171717 (display headline, name ink)
+ *   - Blue 9 #0070F3 (link hover, focus ring; no filled CTA in this section)
+ *   - Geist Sans variable across display and body
+ *   - Geist Mono on the "Individual investors" section kicker
+ *
+ * The composition expresses Vercel's distinctive about-team move:
+ * the page leads with a venture-firm logo strip, then renders the
+ * "Individual investors" tier as a 4-column grid of square portrait
+ * cards (name + one-line role/company in Gray 9), and closes with a
+ * single quiet "View Open Positions" link. There is no leadership
+ * grid; the social-proof tier IS the team display. Geist Blue holds
+ * back almost entirely; the page reads as monochrome until you mouse
+ * over a name.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure Geist light surface system. Background is white; the investor
+   * cards sit directly on the canvas with hairline borders, no fill.
+   * Blue 9 is held back entirely from the resting state. */
+  --ds-bg:           #FFFFFF;   /* Geist background-1 light; page canvas. */
+  --ds-surface:      #FAFAFA;   /* Geist background-2 light; subtle VC logo strip wash. */
+  --ds-surface-2:    #F2F2F2;   /* Geist Gray 2 light; card hover lift. */
+  --ds-text:         #171717;   /* Geist Gray 12 light; H1 and investor name ink. */
+  --ds-text-muted:   #666666;   /* Geist Gray 9 light; role / company metadata, dek copy. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for the deepest emphasis moment. */
+  --ds-border:       #EAEAEA;   /* Geist Gray 4 light; default component border, card edge. */
+  --ds-hairline:     #EAEAEA;   /* Same Gray 4; section divider rules between investor tiers. */
+  --ds-accent:       #0070F3;   /* Geist Blue 9; link hover and focus ring only. */
+  --ds-accent-2:     #3291FF;   /* Geist Blue 10; sustained hover. */
+  --ds-success:      #0070F3;   /* Geist convention: brand blue carries successful semantics. */
+  --ds-warning:      #F5A623;   /* Geist Amber 9. */
+  --ds-error:        #E5484D;   /* Geist Red 9. */
+  --ds-info:         #0070F3;   /* Matches accent. */
+  --ds-focus-ring:   #0070F3;   /* Blue 9; the focus ring is the brand color, not a halo. */
+
+  /* ---------- Type families ----------
+   * Geist Sans is the single variable type system across vercel.com.
+   * Geist Mono carries the "Individual investors" kicker and any
+   * technical metadata; it does not appear in card bodies. */
+  --ds-font-display: "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Geist Mono", "Geist Mono Variable", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Geist", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Vercel marketing scale: 12 / 14 / 16 / 20 / 24 / 32 / 48 / 64 / 80.
+   * About-page H1 sets at 56-72px; section headings at 32-40px; investor
+   * name at 16px; role/company at 14px. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono kicker uppercase label. */
+  --ds-text-sm:   14px;   /* Investor role / company metadata. */
+  --ds-text-base: 16px;   /* Investor name; section dek. */
+  --ds-text-lg:   20px;   /* Hero dek paragraph. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;   /* Section headlines ("Individual investors"). */
+  --ds-text-3xl:  48px;
+  --ds-text-4xl:  56px;   /* About H1 baseline. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* H1 set just above 1:1 to hold display tight. */
+  --ds-leading-snug:    1.2;    /* Section headings, investor name. */
+  --ds-leading-normal:  1.5;    /* Card metadata, dek paragraph. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Geist Sans pulls -0.04em on the display headline. Mono kicker gets
+   * wider tracking so it reads as a label. */
+  --ds-tracking-tight:  -0.04em;   /* Display H1. */
+  --ds-tracking-normal: -0.01em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;    /* Mono uppercase kicker. */
+
+  /* ---------- Spacing ----------
+   * Geist marketing rhythm: 24px gap inside cards, 32px between cards,
+   * 96-128px between major sections, 16px between name and role text. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;    /* Inside card: portrait to name. */
+  --ds-space-4:  16px;    /* Inside card: name to role line. */
+  --ds-space-5:  24px;    /* Inter-card gap in investor grid. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;    /* Section dek to grid. */
+  --ds-space-10: 64px;    /* Inside section padding. */
+  --ds-space-12: 96px;    /* Between major sections. */
+  --ds-space-16: 128px;   /* Page top / bottom padding. */
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Geist signature: 6px on buttons and inputs, 8px on cards. Portrait
+   * thumbnails use sm (4px) to sit just shy of square. No pills. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Investor portrait thumbnail; near-square. */
+  --ds-radius-md:   6px;     /* Standard control radius. */
+  --ds-radius-lg:   8px;     /* Card frame chrome. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Geist on light surfaces uses hairlines, not shadows. The only shadow
+   * here is the focus ring glow on the closing CTA link. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 4px rgba(0,112,243,0.20);   /* Focus glow on the closing link. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Geist transitions are fast and standard; 150ms ease for hover. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,475 @@
+<!--
+  Asset: linear-marketing-page-001
+  Class: layouts
+  Pattern: floating-pill-nav, dark-mesh-hero, alternating-feature-stack, integrations-grid, pricing-strip, customer-strip, single-cta-block, mega-footer
+  Inspired by: Linear (linear.app homepage)
+  Notes:
+    - The page rhythm is dark-mode-native: a near-black column with
+      hairline rules separating long-padded sections. The single indigo
+      accent appears only in primary CTAs, focus rings, and the hero
+      mesh-gradient blob.
+    - Section blocks are placeholders for downstream wholes; the max-
+      width container, gutter, padding rhythm, and section sequence
+      (nav, hero, product-feature x 3, integrations grid, pricing strip,
+      customer strip, single-CTA block, footer) are the variables this
+      asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px on Linear (tighter than Anthropic's
+   * editorial 1280); gutter 24px mobile, 48px desktop. Centered.
+   * Inline value: 1200px; not a contract slot.
+   */
+  .page {
+    max-width: 1200px;            /* page container max-width; tighter than editorial column */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Floating-pill nav. Detached from the viewport top; sits inside a
+   * container, rounded, hairline border, backdrop-blur surface. Sticky.
+   */
+  .nav-shell {
+    position: sticky;
+    top: var(--ds-space-4);
+    z-index: 10;
+    padding-block: var(--ds-space-4);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    background: rgba(16, 17, 19, 0.72);            /* inline: hand-tuned blur surface tint */
+    backdrop-filter: blur(20px) saturate(140%);     /* inline: nav-pill characteristic blur */
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-full);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Section block. Padding-block 96px desktop (--ds-space-12), 48px
+   * mobile (--ds-space-8). Hero extends to 128px (--ds-space-16).
+   * Hairline divider on the bottom edge; last child has no rule.
+   */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Hero mesh blob: indigo radial behind the statement. One-off ornament. */
+  .hero__mesh {
+    position: absolute;
+    inset: -10% 20% auto 20%;
+    height: 60%;
+    background: radial-gradient(ellipse at center, rgba(94, 106, 210, 0.35), transparent 60%); /* inline: hero mesh blob */
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero__inner { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; }
+
+  .hero__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-5);
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-5) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta-row {
+    display: flex;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    margin-top: var(--ds-space-8);
+    flex-wrap: wrap;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-hairline);
+    color: var(--ds-text-strong);
+    background: transparent;
+    cursor: pointer;
+  }
+  .cta--primary {
+    background: var(--ds-accent);
+    border-color: var(--ds-accent);
+    color: #FFFFFF;
+  }
+
+  /* Alternating product-feature block. 50/50 two-column on desktop;
+   * the visual side swaps left/right by adding --reverse. */
+  .feature {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .feature { grid-template-columns: 1fr 1fr; gap: var(--ds-space-10); }
+    .feature--reverse > :first-child { order: 2; }
+  }
+  .feature__index {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+    display: block;
+  }
+  .feature__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .feature__heading { font-size: var(--ds-text-3xl); }
+  }
+  .feature__body { color: var(--ds-text-muted); max-width: 44ch; font-size: var(--ds-text-base); }
+
+  /* Section kicker label (small uppercase mono above section heading). */
+  .section__kicker {
+    display: block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+  }
+  .section__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .section__heading { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Integrations grid: 6-up on desktop, 3 tablet, 2 mobile.
+   * Each cell is a square-ish slot with hairline border + logo. */
+  .integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-3);
+  }
+  @media (min-width: 640px) { .integrations-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .integrations-grid { grid-template-columns: repeat(6, 1fr); } }
+
+  /* Pricing strip: 3-tier horizontal row. Cards share hairline edges.
+   * On Linear the strip is dense, low-decoration, with the indigo
+   * accent only on the middle tier's CTA. */
+  .pricing-strip {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .pricing-strip { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  }
+
+  /* Customer logo strip: single-row marquee-style grid; 5-6 logos
+   * inline; muted text color; centered. */
+  .customer-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (min-width: 640px) { .customer-strip { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .customer-strip { grid-template-columns: repeat(6, 1fr); } }
+
+  /* Final single-CTA section: centered statement + CTA row + small
+   * supporting line. Higher vertical padding for emphasis. */
+  .cta-block {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .cta-block__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    font-weight: 600;
+    margin: 0 0 var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .cta-block__statement { font-size: var(--ds-text-4xl); }
+  }
+
+  /* Placeholder slot. Used to stand in for downstream wholes. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width mega-footer band, top hairline. Outside container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: nav (floating pill). Sticky inside the page container.
+       Stands in for wholes/navigation/linear-nav-001. -->
+  <div class="page nav-shell">
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 420px; min-height: 0; padding: var(--ds-space-2) var(--ds-space-4); border: 0; background: transparent;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <button class="cta cta--primary" type="button">Sign up</button>
+    </nav>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: hero. Centered statement on near-black; indigo mesh blob
+         behind; mono kicker above; primary + secondary CTA row below.
+         Pattern: dark-mesh-hero. -->
+    <section class="section section--hero" aria-label="Hero">
+      <div class="hero__mesh" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <span class="hero__kicker">Lorem ipsum 1.0</span>
+        <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+        <p class="hero__support">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <div class="hero__cta-row">
+          <button class="cta cta--primary" type="button">Start lorem</button>
+          <button class="cta" type="button">Lorem demo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: product-feature 1. Two-column 50/50, copy left, visual
+         right. Stands in for wholes/feature-grids/linear-feature-block-001. -->
+    <section class="section" aria-label="Feature one">
+      <div class="feature">
+        <div>
+          <span class="feature__index">01 . Lorem</span>
+          <h2 class="feature__heading">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="feature__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore.
+          </p>
+        </div>
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">product-screenshot</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: product-feature 2. Reversed; visual left, copy right. -->
+    <section class="section" aria-label="Feature two">
+      <div class="feature feature--reverse">
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">product-screenshot</span>
+          Lorem ipsum
+        </div>
+        <div>
+          <span class="feature__index">02 . Lorem</span>
+          <h2 class="feature__heading">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="feature__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: product-feature 3. Back to copy-left. The alternation is
+         the rhythm; three features carry the page's center. -->
+    <section class="section" aria-label="Feature three">
+      <div class="feature">
+        <div>
+          <span class="feature__index">03 . Lorem</span>
+          <h2 class="feature__heading">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="feature__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore.
+          </p>
+        </div>
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">product-screenshot</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: integrations grid. 6-up on desktop; each cell a hairline
+         square housing a logo + label. Pattern: integrations-grid. -->
+    <section class="section" aria-label="Integrations">
+      <span class="section__kicker">Lorem integrations</span>
+      <h2 class="section__heading">Lorem ipsum integrates with the dolor sit amet stack.</h2>
+      <div class="integrations-grid">
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">logo</span>Ipsum</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">logo</span>Dolor</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">logo</span>Sit</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">logo</span>Amet</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">logo</span>Consect</div>
+      </div>
+    </section>
+
+    <!-- Section: pricing strip. Three-tier horizontal row. Middle tier
+         gets the indigo CTA emphasis. Pattern: pricing-strip. -->
+    <section class="section" aria-label="Pricing">
+      <span class="section__kicker">Lorem pricing</span>
+      <h2 class="section__heading">Lorem ipsum dolor sit amet.</h2>
+      <div class="pricing-strip">
+        <div class="slot" style="min-height: 200px; align-items: flex-start;">
+          <span class="slot__label">tier-free</span>
+          Lorem ipsum dolor.
+        </div>
+        <div class="slot" style="min-height: 200px; align-items: flex-start; border-color: var(--ds-accent);">
+          <span class="slot__label">tier-business</span>
+          Lorem ipsum dolor sit.
+        </div>
+        <div class="slot" style="min-height: 200px; align-items: flex-start;">
+          <span class="slot__label">tier-enterprise</span>
+          Lorem ipsum dolor.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: customer strip. 6-logo single row; muted; no card chrome
+         on the cells. Pattern: customer-strip. -->
+    <section class="section" aria-label="Customers">
+      <span class="section__kicker" style="text-align: center; display: block;">Lorem trusts ipsum</span>
+      <div class="customer-strip">
+        <div class="slot" style="border: 0; background: transparent; min-height: 48px; text-align: center;"><span class="slot__label">customer-logo</span>Lorem</div>
+        <div class="slot" style="border: 0; background: transparent; min-height: 48px; text-align: center;"><span class="slot__label">customer-logo</span>Ipsum</div>
+        <div class="slot" style="border: 0; background: transparent; min-height: 48px; text-align: center;"><span class="slot__label">customer-logo</span>Dolor</div>
+        <div class="slot" style="border: 0; background: transparent; min-height: 48px; text-align: center;"><span class="slot__label">customer-logo</span>Sit</div>
+        <div class="slot" style="border: 0; background: transparent; min-height: 48px; text-align: center;"><span class="slot__label">customer-logo</span>Amet</div>
+        <div class="slot" style="border: 0; background: transparent; min-height: 48px; text-align: center;"><span class="slot__label">customer-logo</span>Consect</div>
+      </div>
+    </section>
+
+    <!-- Section: closing CTA block. Centered single statement +
+         primary/secondary CTA row. Pattern: single-cta-block. -->
+    <section class="section" aria-label="Final CTA">
+      <div class="cta-block">
+        <h2 class="cta-block__statement">Lorem ipsum dolor sit amet consectetur.</h2>
+        <div class="hero__cta-row" style="margin-top: var(--ds-space-6);">
+          <button class="cta cta--primary" type="button">Start lorem</button>
+          <button class="cta" type="button">Contact ipsum</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width mega-footer band outside the .page container.
+       Stands in for wholes/footers/linear-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

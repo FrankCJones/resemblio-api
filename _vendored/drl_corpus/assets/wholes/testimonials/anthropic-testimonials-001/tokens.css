@@ -1,0 +1,111 @@
+/*
+ * anthropic-testimonials-001 tokens
+ *
+ * Whole testimonial composing six atoms. Token values are the canonical
+ * Anthropic warm-paper system: cream body bg rgb(250,249,245), ink
+ * rgb(20,20,19), clay-crimson accent rgb(198,97,63), Anthropic Serif as
+ * display register, sans for byline body, mono for the kicker and the
+ * role-comma-company attribution line. Values consolidated from twelve
+ * prior A-grade devtools extractions captured in
+ * assets/libraries/anthropic/tokens.css and assets/alphabets/anthropic/
+ * tokens.css; this whole adopts that system verbatim. Source evidence
+ * for the pattern itself is the claude.com/customers/cognition case
+ * study reached via the anthropic.com redirect on 2026-05-20 (per
+ * meta.json > inspired_by).
+ *
+ * Composition_atoms in meta.json names every atom this whole references:
+ * color-groups/warm-paper-001, type-pairings/serif-mono-editorial-001,
+ * body-text/pull-quote-breakout-001, kickers/mono-eyebrow-001,
+ * labels/metadata-mono-001, dividers/hairline-rule-001.
+ */
+:root {
+  /* Colors - Anthropic warm-paper system */
+  --ds-bg:           #FAF9F5;   /* Anthropic body bg rgb(250,249,245); warm cream paper. */
+  --ds-surface:      #FFFFFF;   /* Lifted card surface; rarely used in this whole. */
+  --ds-surface-2:    #F2EFE3;   /* Warmer second surface for hover or aside. */
+  --ds-text:         #141413;   /* Anthropic body ink rgb(20,20,19); near-black, brown undertone. */
+  --ds-text-muted:   #6B6963;   /* Bylines, mono attribution metadata, role-and-company. */
+  --ds-text-strong:  #0A0A09;   /* Pull-quote display ink. */
+  --ds-border:       #D9D5C7;   /* Warm-paper border. */
+  --ds-hairline:     #E5E1D2;   /* Hairline rule above attribution row. */
+  --ds-accent:       #C6613F;   /* Clay-crimson rgb(198,97,63); kicker and focus only. */
+  --ds-accent-2:     #D97757;   /* Lifted clay; secondary CTA states (unused here). */
+  --ds-success:      #5F8A4E;
+  --ds-warning:      #B0801F;
+  --ds-error:        #B33A2F;
+  --ds-info:         #C6613F;
+  --ds-focus-ring:   #C6613F;   /* Accent doubled as focus ring; Anthropic affordance convention. */
+
+  /* Type families - Anthropic Serif display, Anthropic Sans body, mono utility */
+  --ds-font-display: "Anthropic Serif", "Tiempos Headline", "Tiempos Text", Georgia, serif;
+  --ds-font-body:    "Anthropic Sans", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Anthropic Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Anthropic Serif", "Tiempos Text", Georgia, serif;   /* Italic variant for byline accent. */
+
+  /* Type sizes - quote sits at 3xl (~44px); base body at 16-17px register */
+  --ds-text-2xs: 10px;
+  --ds-text-xs:  12px;   /* Mono kicker, attribution metadata. */
+  --ds-text-sm:  14px;
+  --ds-text-base: 16px;  /* Byline name (sans). */
+  --ds-text-lg:  18px;
+  --ds-text-xl:  24px;
+  --ds-text-2xl: 32px;
+  --ds-text-3xl: 44px;   /* Pull-quote primary size; Anthropic news-article display register. */
+  --ds-text-4xl: 52px;   /* News article H1 measured value. */
+  --ds-text-5xl: 72px;
+  --ds-text-6xl: 96px;
+  --ds-text-7xl: 128px;
+
+  /* Line heights - body 17/26.35 = 1.55 verified on the Anthropic live site */
+  --ds-leading-tight:   1.05;   /* Display quote. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.55;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking - negative on display, wide on mono kicker */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;   /* Mono uppercase kicker. */
+
+  /* Spacing - 4px base grid */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii - restrained; the whole uses none except a 2px portrait clip */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* Shadows - warm-tinted; sparingly used. This whole renders flush, no shadow. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60,40,20,0.06);
+  --ds-shadow-sm:   0 2px 4px rgba(60,40,20,0.08);
+  --ds-shadow-md:   0 6px 14px rgba(60,40,20,0.10);
+  --ds-shadow-lg:   0 14px 30px rgba(60,40,20,0.14);
+  --ds-shadow-2xl:  0 24px 56px rgba(60,40,20,0.20);
+
+  /* Motion - Anthropic standard easing */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

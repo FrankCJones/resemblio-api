@@ -1,0 +1,131 @@
+/*
+ * github-hero-001 tokens
+ *
+ * Native token values for GitHub's marketing-page hero, captured via
+ * WebFetch on https://github.com and https://github.com/features/copilot
+ * 2026-05-20. Color values corroborated against GitHub's own Primer
+ * primitives repository (raw.githubusercontent.com/primer/primitives/main/
+ * src/tokens/base/color/dark/dark.json5) so the scale numbers below are
+ * the exact ones GitHub.com ships.
+ *
+ * Surface: dark.neutral.0 (#010409) near-black canvas. Type: Mona Sans
+ * variable (GitHub's licensed display) across display and body, with
+ * monospace reserved for CLI snippets and YAML samples. Accent: the
+ * canonical GitHub green at scale.green.5 (#238636), used as the
+ * primary CTA fill; hover lifts to scale.green.4 (#2EA043). Secondary
+ * CTA is a hairline-outline ghost.
+ *
+ * All variable names come from TOKEN_CONTRACT.md.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Primer dark.neutral 0-9 plus the green scale. Body sits on neutral.0;
+   * subtle surface lifts to neutral.1; nested chrome to neutral.2. Text
+   * is pure white on the hero (the heaviest contrast moment on the
+   * marketing surface), with neutral.9 carrying the dek. The single
+   * chromatic moment is the GitHub green CTA. */
+  --ds-bg:           #010409;   /* Primer dark.neutral.0; the near-black hero canvas. */
+  --ds-surface:      #0D1117;   /* Primer dark.neutral.1; subtle surface lift behind the visual. */
+  --ds-surface-2:    #151B23;   /* Primer dark.neutral.2; nested cards and code chrome. */
+  --ds-text:         #FFFFFF;   /* Pure white H1 on the dark hero; max contrast moment. */
+  --ds-text-muted:   #9198A1;   /* Primer dark.neutral.9; dek paragraph and helper copy. */
+  --ds-text-strong:  #FFFFFF;   /* Same white; the hero treats H1 as the strongest moment. */
+  --ds-border:       #3D444D;   /* Primer dark.neutral.7; secondary CTA border, card outlines. */
+  --ds-hairline:     #2A313C;   /* Primer dark.neutral.5; subtle dividers in the page chrome. */
+  --ds-accent:       #238636;   /* Primer green.5; the canonical GitHub primary-action green. */
+  --ds-accent-2:     #2EA043;   /* Primer green.4; hover lift on the primary CTA. */
+  --ds-success:      #238636;   /* Same green; carries successful-check semantics across GitHub. */
+  --ds-warning:      #BF8700;   /* Primer yellow.5 equivalent for caution states. */
+  --ds-error:        #DA3633;   /* Primer red.5 equivalent for failure states. */
+  --ds-info:         #1F6FEB;   /* Primer blue.5 equivalent. */
+  --ds-focus-ring:   #2EA043;   /* Green.4 lifted for the keyboard focus state. */
+
+  /* ---------- Type families ----------
+   * Mona Sans is GitHub's licensed marketing display; on machines without
+   * the woff2 we fall through to system-ui. Mona Sans Mono carries the
+   * YAML / CLI samples in the hero visual. */
+  --ds-font-display: "Mona Sans", "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Mona Sans", "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Mona Sans Mono", "MonaspiceNe", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ds-font-accent:  "Mona Sans", "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * GitHub marketing H1 sets at roughly 72-96px on the widest viewport
+   * with a deep negative tracking step. Dek paragraph reads at 18-20px.
+   * Mona Sans variable allows weights from 200 to 900; the hero uses
+   * the 800-900 axis for the H1. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;   /* CTA pill label, topbar nav. */
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek paragraph below the H1. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   /* Hero H1 baseline at desktop. */
+  --ds-text-6xl:  96px;   /* Wide-viewport ceiling for the H1. */
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Hero H1 set just above 1:1. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;    /* Dek paragraph and body reading. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Mona Sans 900 at 72-96px pulls hard negative tracking to hold the
+   * marketing H1 shape. The mono kicker uses the wider step. */
+  --ds-tracking-tight:  -0.03em;   /* Hero H1 display set. */
+  --ds-tracking-normal: -0.01em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;    /* Uppercase mono kicker / chip labels. */
+
+  /* ---------- Spacing ----------
+   * GitHub marketing rhythm: 24px between hero column elements, 96-128px
+   * vertical padding above and below the headline block, 48px between
+   * dek and the CTA row. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;    /* Inter-element gap inside the hero column. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;    /* Dek to CTA row. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;    /* Top padding above the H1. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * GitHub buttons use a 6px radius rectangle. Cards lift to 12px. The
+   * brand does not ship pills on marketing surfaces. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;     /* Primary and secondary CTAs. */
+  --ds-radius-lg:   12px;    /* Card chrome behind the hero visual. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * The dark hero uses hairlines, not drop-shadows. The visible elevation
+   * sits inside the green CTA via a subtle inner-light from the gradient. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.5);
+  --ds-shadow-lg:   0 0 0 4px rgba(46,160,67,0.30);   /* Green focus glow on the primary CTA. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.6);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

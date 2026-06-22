@@ -1,0 +1,176 @@
+/*
+ * hugging-face alphabet tokens
+ *
+ * Hugging Face's complete typography expression as one coherent vocabulary.
+ *
+ * Two faces do the job: Source Sans 3 (formerly Source Sans Pro) for display
+ * and body, and Source Code Pro (with IBM Plex Mono / ui-monospace fallback)
+ * for every model id, dataset id, Space id, and code sample. The face pair
+ * is itself a thesis: both are Adobe-released open-source families, used here
+ * as a small open-source-as-the-thesis flag. The surface is pure white
+ * (#FFFFFF) with near-black ink (#1F2937) and the signature warm-yellow
+ * (#FFD21E) accent borrowed directly from the hugging-face emoji wordmark.
+ *
+ * The mono is the platform signature. Every model id (bytedance-research/Lance,
+ * openbmb/MiniCPM-V-4.6, HauhauCS/Gemma-4-E4B-Uncensored-Hauh), every dataset
+ * id (HuggingFaceFW/fineweb-edu, cais/mmlu, openai/gsm8k), every Space id
+ * (multimodalart/scenema-audio, TencentARC/Pixal3D), every library name in
+ * lists (Transformers, Diffusers, Safetensors, Tokenizers), and every file
+ * format chip (json, csv, parquet, optimized-parquet, imagefolder, soundfolder,
+ * webdataset, arrow) sits in Source Code Pro. The pair "Source Sans + Source
+ * Code Pro" carries the community-academic register that distinguishes HF
+ * from the Inter+JetBrains-Mono dev-tool register of Linear, Vercel, Cursor.
+ *
+ * Hero display is restrained editorial: H1 "The AI community building the
+ * future." sits at ~56-64px Source Sans 3 Semibold (600), tight tracking
+ * (-0.02em), short lines. The pricing hero "Leveling up AI collaboration and
+ * compute." hits the same scale. Section heads at 28-36px. Tier names "PRO
+ * Account / Team / Enterprise" at ~22px Semibold; price numbers "$9 / $20 /
+ * $50 /month per user" hit ~40-48px Semibold next to a 14-16px regular
+ * /month suffix.
+ *
+ * Eyebrows are mixed: marketing kickers like "Running on Zero", "Running on
+ * T4", "Running on CPU Upgrade" render in title-case sans with the yellow
+ * accent or a muted grey; the all-caps register is reserved for chips like
+ * "MCP", "TOS", "Featured" and category headers in lists ("Main", "Tasks",
+ * "Libraries", "Languages", "Licenses"). The wordmark is the literal hug
+ * emoji glyph plus the words "Hugging Face" set in Source Sans Semibold;
+ * the emoji is the brand, the wordmark just labels it.
+ *
+ * Type values corroborated against home (hero H1, "Browse 2M+ models" CTA,
+ * "Sign Up" / "Log In" header buttons, "Starting at $20/user/month" footnote,
+ * model-card list rows with mono ids), /pricing (tier names, price numerals,
+ * feature lists, "Get Pro" / "Get Team (via credit card)" / "Talk to sales"
+ * CTAs), /datasets (filter section labels, format chips in mono, model-id
+ * rows), /spaces (Space-id rows, "Running on Zero" / "Running on T4" /
+ * "Running on CPU Upgrade" status chips, "Featured" / "MCP" / "Trending"
+ * eyebrows). All captured 2026-05-20 via webfetch_html_inspection at
+ * provenance score B.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure-white surface system with near-black ink and one saturated warm
+   * yellow accent borrowed from the hugging-face emoji. Secondary accent
+   * is the platform blue used on links and the "PRO" badge. Status colors
+   * (green/amber/red) live in deploy badges and inference-endpoint chips.
+   */
+  --ds-bg:           #FFFFFF;   /* Page background. Pure white; HF reads as paper-clean. */
+  --ds-surface:      #FFFFFF;   /* Tile / card surface; flat against page. */
+  --ds-surface-2:    #F3F4F6;   /* Inset code area / tag chip background. */
+  --ds-text:         #1F2937;   /* Near-black body and headline ink. Slate-900 register. */
+  --ds-text-muted:   #6B7280;   /* Captions, model-card metadata, "Updated 2 hours ago". */
+  --ds-text-strong:  #111827;   /* Hero H1 emphasis. */
+  --ds-border:       #E5E7EB;   /* Card hairline; the only chrome cards carry. */
+  --ds-hairline:     #F3F4F6;   /* Sub-divider inside a card; section rules. */
+  --ds-accent:       #FFD21E;   /* Hugging-face yellow. The signature accent. */
+  --ds-accent-2:     #FF9D00;   /* Warmer orange used in PRO badges and "Running on Zero" chips. */
+  --ds-success:      #10B981;   /* Deploy / running success on Spaces hardware chips. */
+  --ds-warning:      #F59E0B;
+  --ds-error:        #EF4444;
+  --ds-info:         #2563EB;   /* Link blue used for in-text references and breadcrumbs. */
+  --ds-focus-ring:   #FFD21E;   /* Yellow halo on :focus-visible; high contrast on white. */
+
+  /* ---------- Type families ----------
+   * Source Sans 3 (display and body) + Source Code Pro (mono). Both Adobe
+   * open-source families. The pair carries an academic / community register
+   * that distinguishes Hugging Face from the Inter + JetBrains Mono dev-tool
+   * register.
+   */
+  --ds-font-display: "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Source Code Pro", "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --ds-font-accent:  "Source Sans 3", "Source Sans Pro", sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Base 16px. Marketing hero sits in the 56-64px range; section heads at
+   * 28-36px; tile heads at 20-22px; lede at 18-20px; mono utility at 13-14px
+   * (model ids are read at small sizes, often as a row of 50+ items).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Tag chips, "Updated 2 hours ago" metadata. */
+  --ds-text-sm:   14px;   /* Model-id row default, format chips, secondary UI. */
+  --ds-text-base: 16px;   /* Body reading default. */
+  --ds-text-lg:   18px;   /* Lede paragraph below hero. */
+  --ds-text-xl:   22px;   /* Tier name "PRO Account / Team / Enterprise". */
+  --ds-text-2xl:  28px;   /* Section head (H2). */
+  --ds-text-3xl:  36px;   /* Large section head. */
+  --ds-text-4xl:  44px;   /* Price numeral "$50 /month per user". */
+  --ds-text-5xl:  56px;   /* Marketing hero H1 lower bound. */
+  --ds-text-6xl:  64px;   /* Marketing hero H1 upper bound. */
+  --ds-text-7xl:  88px;
+
+  /* ---------- Line heights ----------
+   * Display tight at 1.1; body at 1.55; subhead at 1.25.
+   */
+  --ds-leading-tight:   1.1;    /* Hero H1. */
+  --ds-leading-snug:    1.25;   /* H2 / H3. */
+  --ds-leading-normal:  1.55;   /* Body reading. Slightly looser than dev-tool register. */
+  --ds-leading-relaxed: 1.7;    /* Article longform / model card markdown. */
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Negative tracking on display, neutral on body, wide on uppercase
+   * chips and labels ("MCP", "TOS", filter section headers).
+   */
+  --ds-tracking-tight:  -0.02em;  /* Hero H1. */
+  --ds-tracking-normal: 0;        /* Body neutral. */
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Uppercase chip "MCP", "FEATURED". */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Marketing sections breathe at space-10 (64px); card
+   * padding lands at space-5 (24px); grid gap at space-3 (12px) — HF lists
+   * are denser than the dev-tool register because users scan many rows.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;     /* Model-card list row gap. */
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;     /* Card interior padding. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;     /* Marketing section rhythm. */
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cards at 8-12px (md); buttons at 8px; chips at 6px (sm); the format
+   * chip ("json", "csv", "parquet") is a hard sub-9999 pill at 6px radius,
+   * not a fully-rounded pill — this is an HF signature distinct from the
+   * fully-rounded pill register of OpenAI / Anthropic marketing chrome.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;     /* Format chips, tag chips, mono pill labels. */
+  --ds-radius-md:   8px;     /* CTA button, card. */
+  --ds-radius-lg:   12px;    /* Larger feature card. */
+  --ds-radius-full: 9999px;  /* PRO badge, avatar, the rare fully-round pill. */
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome: cards stay flat at rest, carrying only a 1px
+   * border at #E5E7EB. Hover engages a very soft lift. Drop shadows on
+   * marketing-surface elements are absent by principle.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(17,24,39,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(17,24,39,0.05);
+  --ds-shadow-md:   0 4px 12px rgba(17,24,39,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(17,24,39,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(17,24,39,0.14);
+
+  /* ---------- Motion ----------
+   * Standard ease for UI; HF marketing motion is mostly absent (the page
+   * itself is a directory of community work, not a sales surface), so
+   * durations are short and curves are flat.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

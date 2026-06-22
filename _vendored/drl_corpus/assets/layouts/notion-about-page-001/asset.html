@@ -1,0 +1,582 @@
+<!--
+  Asset: notion-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, editorial-hero, story-card-grid, pull-quote-breakout, mega-footer
+  Inspired by: Notion (notion.com/about)
+  Notes:
+    - About-page skeleton: top-bar nav with mega-menu triggers, an
+      editorial mission hero ("A story of tools and the future of work"),
+      a nine-block illustrated narrative running down the page with
+      mixed illustration / historical photo / embedded video frames and
+      a centered editorial pull quote interrupting the column, a
+      centered careers CTA, a six-logo press strip, and a four-column
+      footer. The page argues by narrative, not by product evidence;
+      load-bearing block is the long vertical story, not a feature grid.
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, narrow-column reading measure, illustration
+      frame rhythm, and section sequence are the variables this asset
+      captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Notion ships a humanist sans (Söhne family in production);
+  Inter is the open-source substitute. GT Super is the serif accent
+  used on editorial moments; Georgia is the system fallback.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1080px (Notion runs narrower than the
+   * dev-tool canon; the about page is a reading surface). Gutter 24px
+   * on mobile, 48px on desktop. Inline value: 1080px; not a contract slot.
+   */
+  .page {
+    max-width: 1080px;             /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Narrow reading column for narrative body copy. About 64ch keeps
+   * the long-form story-of-tools narrative at a comfortable measure. */
+  .column {
+    max-width: 640px;
+    margin-inline: auto;
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a soft hairline rule between blocks. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section + .section { border-top: 1px solid var(--ds-hairline); }
+
+  /* Hero gets the extra vertical breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Sits flush at the top with a hairline rule beneath,
+   * no floating-pill chrome. The Notion canonical: a flat full-width
+   * bar with the lowercase wordmark left, mega-menu triggers center
+   * (Product, Solutions, Resources, Pricing), and the auth/CTA cluster
+   * right (Log in, Get Notion free, Request a demo). Inline values:
+   * the 64px height and the sticky top offset are inline ornament
+   * specific to this nav shell, not contract slots.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(251, 250, 248, 0.85);                /* warm-paper glass; inline ornament */
+    backdrop-filter: saturate(180%) blur(20px);           /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 64px;                                         /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-transform: lowercase;                            /* the lowercase-wordmark pattern */
+  }
+
+  /* Hero. Editorial register: small serif kicker "About", centered
+   * narrative subhead ("A story of tools and the future of work"),
+   * supporting paragraph, then a wide illustration frame anchoring
+   * the block. Display sans at 4xl on desktop with tight leading. */
+  .hero__kicker {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-4);
+    display: block;
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 18ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-4xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) auto 0;
+    max-width: 52ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__illustration {
+    margin-top: var(--ds-space-10);
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /*
+   * Narrative blocks. Nine in series: each is a centered narrow
+   * reading column with a small chapter kicker, an optional inline
+   * heading, body copy, and an illustration / historical photo /
+   * embedded video frame either above or below the text. The seventh
+   * block is interrupted by a centered editorial pull quote (Alan Kay
+   * on the live page).
+   */
+  .narrative {
+    display: grid;
+    gap: var(--ds-space-8);
+  }
+  .narrative__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+    display: block;
+  }
+  .narrative__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .narrative__body {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .narrative__media {
+    margin-top: var(--ds-space-6);
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Pull quote breakout. Full-measure (wider than the reading column),
+   * serif italic, centered, no quote marks. The single editorial
+   * ornament on the about page. */
+  .pull-quote {
+    max-width: 760px;
+    margin: var(--ds-space-10) auto;
+    text-align: center;
+    padding-block: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .pull-quote__text {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .pull-quote__text { font-size: var(--ds-text-3xl); }
+  }
+  .pull-quote__attribution {
+    display: block;
+    margin-top: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-style: normal;
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Careers CTA. Centered closing call-to-action, narrow measure,
+   * single primary button in Notion brand red. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 22ch;
+  }
+  .cta__support {
+    margin: var(--ds-space-5) auto 0;
+    max-width: 48ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-8);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Press strip. Six-column logo grid; the only social-proof block on
+   * the page. Logos sit muted on the warm-paper surface with no card
+   * chrome. */
+  .press-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+    align-items: center;
+    justify-items: center;
+  }
+  @media (min-width: 640px) { .press-strip { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .press-strip { grid-template-columns: repeat(6, 1fr); } }
+  .press-strip .slot {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: var(--ds-space-3);
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Section heading shared style: small kicker above title, centered. */
+  .section-heading { margin-bottom: var(--ds-space-8); text-align: center; }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 28ch;
+  }
+
+  /* Footer band: full-width, sits outside .page container, single
+   * hairline rule above. Notion ships a four-column footer (Company,
+   * Download, Resources, Notion for) plus a social-icon row and a
+   * legal line. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/notion-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">lorem</span>
+        <div class="slot" style="flex: 1; max-width: 480px;">
+          <span class="slot__label">mega-menu-cluster</span>
+          Product / Solutions / Resources / Pricing
+        </div>
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">auth-and-cta</span>
+          Log in / Get Lorem free
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: hero. Editorial register, centered, serif kicker, narrative subhead, illustration frame. -->
+    <section class="section section--hero" aria-label="Hero">
+      <span class="hero__kicker">About</span>
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet, consectetur adipiscing.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__illustration slot">
+        <span class="slot__label">hero-illustration</span>
+        16:9 frame
+      </div>
+    </section>
+
+    <!-- Section: narrative blocks 1 to 9. Centered narrow reading column, each block with a small chapter kicker, optional inline heading, body copy, and a media frame (illustration / historical photo / embedded video). -->
+    <section class="section" aria-label="Narrative one">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 01</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">illustration</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative two">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 02</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">illustration</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative three">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 03</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">historical-photo</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative four">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 04</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">historical-photo</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative five">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 05</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">illustration</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative six with embedded video">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 06</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">embedded-video</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Editorial pull quote interrupts the narrative column. Full-measure, centered, italic serif accent face. -->
+    <div class="pull-quote">
+      <p class="pull-quote__text">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore.
+      </p>
+      <span class="pull-quote__attribution">Lorem Ipsum</span>
+    </div>
+
+    <section class="section" aria-label="Narrative seven">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 07</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">illustration</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative eight">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 08</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">illustration</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Narrative nine">
+      <div class="column narrative">
+        <div>
+          <span class="narrative__kicker">Chapter 09</span>
+          <h2 class="narrative__title">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="narrative__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="narrative__media slot">
+            <span class="slot__label">illustration</span>
+            16:9 frame
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: careers cta. Centered closing call-to-action, single primary button in brand red. -->
+    <section class="section section--cta" aria-label="Careers">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet.</h2>
+      <p class="cta__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">primary-cta</span>
+          Lorem here
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: press strip. Six-column logo grid; the only social-proof block on the page. -->
+    <section class="section" aria-label="In the news">
+      <div class="section-heading">
+        <span class="section-heading__kicker">In the news</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="press-strip">
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/notion-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 260px;">
+        <span class="slot__label">mega-footer (4 link columns: Company / Download / Resources / Notion for + social row + legal)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

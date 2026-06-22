@@ -1,0 +1,129 @@
+<!--
+  Asset: block-light-copy-001
+  Class: code-blocks
+  Pattern: (light code block with hover-revealed copy button)
+  Inspired by: Vercel Docs (light Geist surface) and GitHub Docs (copy-button affordance)
+  Notes:
+    - Light panel on a white docs page; the copy button lives in the top-right corner.
+    - Copy button is faintly visible at rest and lifts on hover; clicking flips its label to "Copied".
+    - The button radius and the panel radius are tokens; the icon stroke is inline ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>block-light-copy-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    display: flex;
+    justify-content: center;
+  }
+  .panel {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-border);
+    box-shadow: var(--ds-shadow-sm);
+    overflow: hidden;
+  }
+  .panel__body {
+    padding: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-strong);
+    overflow-x: auto;
+  }
+  pre { margin: 0; font: inherit; color: inherit; }
+  .copy {
+    position: absolute;
+    top: var(--ds-space-3);
+    right: var(--ds-space-3);
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 4px 10px;             /* GitHub Docs copy button measured at 3px 12px; rounded to step. */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    cursor: pointer;
+    opacity: 0.7;                  /* Faint at rest; the affordance is discoverable but quiet. */
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .panel:hover .copy { opacity: 1; }
+  .copy:hover {
+    color: var(--ds-text-strong);
+    background: #FFFFFF;
+  }
+  .copy:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .copy[data-copied="true"] {
+    color: var(--ds-success);
+  }
+  /* The copy icon: a 12px stroked square-on-square mark, kept inline because the geometry
+     is specific to this asset rather than a reused design token. */
+  .copy svg { width: 12px; height: 12px; }
+  /* Syntax tokens: keyword, string, comment, etc. Comment grey kept inline as ornament. */
+  .tok-keyword { color: #5E3FBE; }
+  .tok-string  { color: #047857; }
+  .tok-number  { color: #B45309; }
+  .tok-comment { color: #6B6B6B; font-style: italic; }
+  .tok-fn      { color: #2563EB; }
+</style>
+</head>
+<body>
+  <section class="panel" aria-label="Lorem ipsum code example">
+    <button class="copy" type="button" aria-label="Copy code to clipboard" id="copyBtn">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="5" y="5" width="8" height="8" rx="1.5"/>
+        <path d="M3 11V4a1 1 0 0 1 1-1h7"/>
+      </svg>
+      <span id="copyLabel">Copy</span>
+    </button>
+    <div class="panel__body">
+<pre><span class="tok-comment">// Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+<span class="tok-keyword">import</span> { <span class="tok-fn">create</span> } <span class="tok-keyword">from</span> <span class="tok-string">"lorem-ipsum"</span>;
+
+<span class="tok-keyword">export async function</span> <span class="tok-fn">handler</span>(req, res) {
+  <span class="tok-keyword">const</span> data = <span class="tok-keyword">await</span> <span class="tok-fn">create</span>({
+    paragraphs: <span class="tok-number">3</span>,
+    units: <span class="tok-string">"words"</span>,
+  });
+  res.<span class="tok-fn">json</span>(data);
+}</pre>
+    </div>
+  </section>
+  <script>
+    const btn = document.getElementById('copyBtn');
+    const label = document.getElementById('copyLabel');
+    btn.addEventListener('click', () => {
+      btn.setAttribute('data-copied', 'true');
+      label.textContent = 'Copied';
+      setTimeout(() => {
+        btn.removeAttribute('data-copied');
+        label.textContent = 'Copy';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

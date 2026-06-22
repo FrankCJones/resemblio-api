@@ -1,0 +1,134 @@
+/*
+ * quanta-about-page-001 tokens
+ *
+ * About-page layout skeleton for Quanta Magazine. Inherits the same
+ * three-family editorial register documented in systems/quanta/system.json
+ * and used by the marketing-page sibling (quanta-marketing-page-001):
+ * Tiempos Headline + Tiempos Text for editorial reading, GT America for
+ * the lowercase sans kicker, deep violet (#4A2D7E) held back for kickers,
+ * inline links, and the newsletter band. Paper page, near-black ink,
+ * hairlines for section breaks, no shadows on rest surfaces.
+ *
+ * Source inspected via WebFetch 2026-05-20: quantamagazine.org/about.
+ * Section sequence (nav, mission hero, editorial mission body, masthead
+ * with Staff / Featured Contributors / Advisory Board, Simons Foundation
+ * founding statement, contact + careers, newsletter band, footer)
+ * captured verbatim from the live HTML body. Numeric token values
+ * inherit from the Quanta system convention; Chrome MCP rejected the
+ * domain this session so devtools computed-style reads were not possible.
+ *
+ * Free-font analogs in asset.html:
+ *   - Source Serif 4 substitutes for Tiempos Headline / Tiempos Text.
+ *   - Inter substitutes for GT America.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper page, ink type, single deep-violet accent. The masthead grid
+   * sits on plain white with hairline cell rules; the newsletter band
+   * lifts to --ds-surface to mark the conversion moment.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper page surface; carries the whole vertical column. */
+  --ds-surface:      #FAFAFA;   /* Half-step lift; newsletter band fill. */
+  --ds-surface-2:    #F2F2F2;   /* Second lift; rare hover-state surround on portrait tiles. */
+  --ds-text:         #1A1A1A;   /* Body and headline near-black; reads as ink on paper. */
+  --ds-text-muted:   #6B6B6B;   /* Bylines, role titles, footer link rest state. */
+  --ds-text-strong:  #000000;   /* Pure black for the mission hero headline. */
+  --ds-border:       #E5E5E5;   /* Portrait tile edge, masthead grid cell border. */
+  --ds-hairline:     #EDEDED;   /* Section divider; carries the entire page rhythm. */
+  --ds-accent:       #4A2D7E;   /* Quanta deep violet; lowercase kickers and inline links. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet for hover and focus. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #C77700;
+  --ds-error:        #B3261E;
+  --ds-info:         #4A2D7E;
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet, visible against paper. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Tiempos Headline", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Mission hero headline takes the 4xl step (56px). Section titles for
+   * Staff / Advisory Board / Newsletter sit at 2xl. Body reads at 17px.
+   * Lowercase kicker sits at xs (13px) on positive tracking.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Serif headline takes a touch of negative tracking. The lowercase sans
+   * kicker takes positive 0.04em (the Quanta inversion of the all-caps
+   * convention). Mono labels are absent from this page.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Sections separated by 64-96px on desktop. Masthead grid gaps at
+   * 24-32px. Mission hero gets the 128px step.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Sharp corners on tiles and cards. Portrait thumbnails take the small
+   * 4px step; pills are reserved for the newsletter submit button.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairlines carry the structure; shadows held in reserve for rare hover.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,378 @@
+<!--
+  Asset: github-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet, mono-eyebrow
+  Inspired by: GitHub (github.com homepage and /features, captured 2026-05-20)
+  Notes:
+    - Mega-footer at planetary-scale dev-platform register: Octocat mark on
+      the left, four link columns (Platform, Ecosystem, Support, Company)
+      under sentence-case sans headers, then a newsletter band, then a
+      hairline meta row with social icons, locale picker, and the legal
+      sub-line (copyright, Terms, Privacy, Sitemap, manage cookies).
+    - Variable: every color, type size, spacing step. Inline: the Octocat
+      SVG path geometry (GitHub's mark; a recognized brand glyph).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-footer-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Mona Sans (GitHub's display/body face) via the open-source CDN. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8) var(--ds-space-6);
+  }
+
+  /* Footer shell at ~1280px max measure, matching GitHub marketing. */
+  .ftr {
+    max-width: 1280px;
+    margin: 0 auto;
+    color: var(--ds-text-muted);
+  }
+
+  /* Top band: Octocat brand left + column grid + newsletter right.
+   * GitHub composes its footer with brand and newsletter flanking the
+   * link columns. We use a CSS grid so the brand block and the four
+   * link columns sit on one row at wide widths and stack on narrow. */
+  .ftr__top {
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) repeat(4, minmax(0, 1.4fr)) minmax(220px, 1.6fr);
+    gap: var(--ds-space-8) var(--ds-space-6);
+    padding-bottom: var(--ds-space-8);
+  }
+  @media (max-width: 1100px) {
+    .ftr__top { grid-template-columns: minmax(160px, 1fr) repeat(2, 1fr); }
+    .ftr__newsletter { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .ftr__top { grid-template-columns: 1fr 1fr; }
+    .ftr__brand-block { grid-column: 1 / -1; }
+  }
+
+  /* Octocat brand block: large mark + short tagline. */
+  .ftr__brand-block { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .ftr__octocat { width: 32px; height: 32px; color: var(--ds-text); }
+
+  /* Column header: sentence-case sans 16px medium ink. GitHub does NOT
+   * use mono uppercase here (unlike Vercel); the register stays close
+   * to the body type and reads as a heading via weight, not tracking. */
+  .ftr__col-h {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Column link list: Mona Sans 14px in muted gray; lifts to ink on hover.
+   * No underline at rest; underline appears on hover and focus. */
+  .ftr__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .ftr__link {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: 1.5;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__link:hover { color: var(--ds-accent); text-decoration: underline; text-underline-offset: 2px; }
+  .ftr__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-accent);
+  }
+
+  /* Newsletter band: heading, dek, email input + submit. */
+  .ftr__newsletter { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .ftr__news-h {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .ftr__news-dek {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+    line-height: var(--ds-leading-normal);
+  }
+  .ftr__news-form { display: flex; gap: var(--ds-space-2); margin-top: var(--ds-space-2); }
+  .ftr__news-input {
+    flex: 1;
+    min-width: 0;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 8px 12px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .ftr__news-input:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 1px;
+    border-color: var(--ds-accent);
+  }
+  .ftr__news-btn {
+    appearance: none;
+    border: 1px solid var(--ds-border);
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border-radius: var(--ds-radius-sm);
+    padding: 8px 14px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__news-btn:hover { background: var(--ds-surface-2); border-color: var(--ds-text-muted); }
+
+  /* Hairline between the link/newsletter band and the meta row. */
+  .ftr__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-border);
+    margin: 0;
+  }
+
+  /* Meta row: legal links cluster left; locale + socials cluster right. */
+  .ftr__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-5) 0 0;
+    flex-wrap: wrap;
+  }
+
+  .ftr__legal { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); color: var(--ds-text-muted); font-size: var(--ds-text-xs); }
+  .ftr__legal a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__legal a:hover { color: var(--ds-accent); text-decoration: underline; }
+  .ftr__legal-copy { color: var(--ds-text-muted); }
+
+  /* Meta-right cluster: locale picker + socials. */
+  .ftr__meta-r { display: inline-flex; align-items: center; gap: var(--ds-space-4); flex-wrap: wrap; }
+
+  /* Locale picker: a small button with a globe icon and the language label. */
+  .ftr__locale {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 6px 10px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__locale:hover { background: var(--ds-surface); color: var(--ds-text); }
+  .ftr__locale svg { width: 14px; height: 14px; }
+
+  /* Social icon row. Square hit areas; icons in muted gray; lift to ink on hover. */
+  .ftr__socials { display: inline-flex; align-items: center; gap: var(--ds-space-1); }
+  .ftr__social {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__social:hover { color: var(--ds-text); }
+  .ftr__social svg { width: 18px; height: 18px; display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ftr__link, .ftr__news-btn, .ftr__legal a, .ftr__locale, .ftr__social { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="ftr" aria-labelledby="ftr-heading">
+    <h2 id="ftr-heading" style="position:absolute;left:-9999px">Lorem ipsum site footer</h2>
+
+    <div class="ftr__top">
+      <!-- Brand block: Octocat (inline ornament) + short tagline. -->
+      <div class="ftr__brand-block">
+        <a href="#" aria-label="Lorem home" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;">
+          <!-- Inline ornament: GitHub Octocat SVG path; a recognized brand glyph,
+               kept as inline geometry rather than tokenized. -->
+          <svg class="ftr__octocat" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <p style="margin:0;font-size:var(--ds-text-xs);color:var(--ds-text-muted);line-height:var(--ds-leading-normal);">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </p>
+      </div>
+
+      <!-- Column: Platform -->
+      <div>
+        <h3 class="ftr__col-h">Lorem</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Ipsum dolor</a></li>
+          <li><a class="ftr__link" href="#">Sit amet</a></li>
+          <li><a class="ftr__link" href="#">Consectetur</a></li>
+          <li><a class="ftr__link" href="#">Adipiscing</a></li>
+          <li><a class="ftr__link" href="#">Elit sed</a></li>
+          <li><a class="ftr__link" href="#">Do eiusmod</a></li>
+          <li><a class="ftr__link" href="#">Tempor</a></li>
+          <li><a class="ftr__link" href="#">Incididunt</a></li>
+          <li><a class="ftr__link" href="#">Ut labore</a></li>
+          <li><a class="ftr__link" href="#">Et dolore</a></li>
+        </ul>
+      </div>
+
+      <!-- Column: Ecosystem -->
+      <div>
+        <h3 class="ftr__col-h">Ipsum</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Magna aliqua</a></li>
+          <li><a class="ftr__link" href="#">Enim ad minim</a></li>
+          <li><a class="ftr__link" href="#">Veniam quis</a></li>
+          <li><a class="ftr__link" href="#">Nostrud exer</a></li>
+          <li><a class="ftr__link" href="#">Citation ullam</a></li>
+          <li><a class="ftr__link" href="#">Laboris nisi</a></li>
+          <li><a class="ftr__link" href="#">Aliquip ex ea</a></li>
+          <li><a class="ftr__link" href="#">Commodo</a></li>
+        </ul>
+      </div>
+
+      <!-- Column: Support -->
+      <div>
+        <h3 class="ftr__col-h">Dolor</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Consequat</a></li>
+          <li><a class="ftr__link" href="#">Duis aute</a></li>
+          <li><a class="ftr__link" href="#">Irure dolor</a></li>
+          <li><a class="ftr__link" href="#">In reprehen</a></li>
+          <li><a class="ftr__link" href="#">Voluptate velit</a></li>
+          <li><a class="ftr__link" href="#">Esse cillum</a></li>
+          <li><a class="ftr__link" href="#">Dolore eu</a></li>
+        </ul>
+      </div>
+
+      <!-- Column: Company -->
+      <div>
+        <h3 class="ftr__col-h">Sit Amet</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Fugiat nulla</a></li>
+          <li><a class="ftr__link" href="#">Pariatur</a></li>
+          <li><a class="ftr__link" href="#">Excepteur sint</a></li>
+          <li><a class="ftr__link" href="#">Occaecat</a></li>
+          <li><a class="ftr__link" href="#">Cupidatat non</a></li>
+          <li><a class="ftr__link" href="#">Proident sunt</a></li>
+          <li><a class="ftr__link" href="#">In culpa qui</a></li>
+          <li><a class="ftr__link" href="#">Officia deserunt</a></li>
+          <li><a class="ftr__link" href="#">Mollit anim</a></li>
+          <li><a class="ftr__link" href="#">Id est laborum</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter band -->
+      <div class="ftr__newsletter">
+        <h3 class="ftr__news-h">Consectetur adipiscing</h3>
+        <p class="ftr__news-dek">Lorem ipsum dolor sit amet, consectetur. Bis in mense.</p>
+        <form class="ftr__news-form" onsubmit="return false;">
+          <input class="ftr__news-input" type="email" placeholder="lorem@ipsum.dolor" aria-label="Email address"/>
+          <button class="ftr__news-btn" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Hairline between top band and meta row. -->
+    <hr class="ftr__rule"/>
+
+    <!-- Meta row: legal cluster (copyright + terms + privacy + sitemap) on the
+         left; locale picker + social icons on the right. -->
+    <div class="ftr__meta">
+      <div class="ftr__legal">
+        <span class="ftr__legal-copy">(c) 2026 Lorem Ipsum, Inc.</span>
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Sitemap</a>
+        <a href="#">Quid est Git?</a>
+        <a href="#">Manage cookies</a>
+        <a href="#">Do not share my personal information</a>
+      </div>
+
+      <div class="ftr__meta-r">
+        <!-- Locale picker: globe icon + current language label. -->
+        <button type="button" class="ftr__locale" aria-label="Choose language">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="8" cy="8" r="6.3"/>
+            <path d="M1.7 8h12.6M8 1.7c2 2 2 10.6 0 12.6M8 1.7c-2 2-2 10.6 0 12.6"/>
+          </svg>
+          <span>English</span>
+        </button>
+
+        <div class="ftr__socials" aria-label="Social links">
+          <a class="ftr__social" href="#" aria-label="LinkedIn">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M3 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zM3.2 6h2.6v8H3.2V6zm4.4 0H10v1.1c.4-.7 1.3-1.3 2.5-1.3 2 0 2.7 1.3 2.7 3.1V14H12.6V9.4c0-1-.4-1.7-1.4-1.7-.9 0-1.4.6-1.4 1.7V14H7.6V6z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="Instagram">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.4">
+              <rect x="1.8" y="1.8" width="12.4" height="12.4" rx="3.2"/>
+              <circle cx="8" cy="8" r="3"/>
+              <circle cx="11.6" cy="4.4" r="0.6" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="YouTube">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M15.4 4.6a2 2 0 0 0-1.4-1.4C12.7 2.9 8 2.9 8 2.9s-4.7 0-6 .3a2 2 0 0 0-1.4 1.4C.3 5.9.3 8 .3 8s0 2.1.3 3.4a2 2 0 0 0 1.4 1.4c1.3.3 6 .3 6 .3s4.7 0 6-.3a2 2 0 0 0 1.4-1.4c.3-1.3.3-3.4.3-3.4s0-2.1-.3-3.4zM6.5 10.6V5.4l4.3 2.6-4.3 2.6z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="X">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M11.7 1.5h2.4l-5.3 6.1 6.2 7.9h-4.8l-3.8-4.9-4.3 4.9H-.3l5.6-6.5L-.6 1.5h4.9l3.4 4.5 4-4.5zm-.8 12.6h1.3L4.3 2.8H2.9l8 11.3z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="TikTok">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M10.5 1h2.1c.1 1.4 1.1 2.5 2.5 2.7v2.1c-1 0-2-.3-2.8-.9v4.9c0 2.7-2.2 4.9-4.9 4.9S2.5 12.5 2.5 9.8s2.2-4.9 4.9-4.9c.2 0 .4 0 .6.1v2.2c-.2 0-.4-.1-.6-.1-1.5 0-2.7 1.2-2.7 2.7s1.2 2.7 2.7 2.7 2.7-1.2 2.7-2.7V1z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="Twitch">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M2 1.5 1 4.2v9.3h3.1V15h1.7l1.5-1.5h2.5L13 10.3V1.5H2zm10.1 8.1L10.4 11.3H7.7L6.2 12.8v-1.5H3.8V2.7h8.3v6.9zM10 4.9h-1.1v3.3H10V4.9zm-2.9 0H6v3.3h1.1V4.9z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="GitHub">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M8 .2a8 8 0 0 0-2.5 15.6c.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1 0-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.6 7.6 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.5.8 1.2.8 2.1 0 3-1.8 3.7-3.6 3.9.3.3.6.8.6 1.6v2.3c0 .2.1.5.5.4A8 8 0 0 0 8 .2z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!--
+  Asset: webflow-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid, comparison-feature-table, segmented-switch
+  Inspired by: Webflow /pricing
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (light surface, near-black ink)
+    - type-pairings/sans-system-modern-001  (humanist sans system)
+    - cards/hairline-flat-001               (tier cards with hairline borders, no shadow at rest)
+    - buttons/primary-square-001            (filled-blue small-radius CTA on featured tier)
+    - buttons/ghost-bordered-001            (bordered secondary CTAs on unfeatured tiers)
+    - inputs/switch-toggle-001              (monthly / yearly billing-period toggle)
+    - badges/status-pill-001                ("Recommended" and "New" status pills)
+    - headings/display-tight-001            (tier name and section heading)
+    - tables/docs-comparison-table-001      (the dense feature-comparison table)
+    - kickers/mono-eyebrow-001              (category-band kickers inside the comparison table)
+    - icons/stroke-line-uniform-001         (row check and dash glyphs)
+    - dividers/hairline-rule-001            (break between Site plans and Platform plans)
+  Notes:
+    - Two-section pattern: Site plans (Starter free / Basic / Premium) with a
+      monthly / yearly toggle and three tier cards, then a hairline break
+      and a Platform plans row (Team / Enterprise) for higher-priced
+      contracts. Each section is paired with its own dense comparison
+      table grouped by category band.
+    - The "Recommended" treatment is a Webflow Blue inset stroke plus a
+      blue pill, not a surface inversion. Webflow holds the chromatic
+      restraint of the rest of the marketing chrome even when calling out
+      a tier; the blue accent does the work.
+    - Variable: every named role (card frame, CTA chrome, price size,
+      toggle, table row, category kicker) maps to a token slot. Inline:
+      the Webflow Blue inset stroke geometry, the toggle thumb translate
+      distance, and the recommended-pill offset above the card are
+      asset-specific tuning.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter as the system fallback for WF Visual Sans Variable; the foundry
+     face is proprietary and not publicly distributed, so renderers without
+     the variable woff2 land on Arial / Inter / system-ui via the cascade. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+    line-height: var(--ds-leading-normal);
+  }
+
+  .pricing {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Section header. Single-family display with tight tracking on H1. */
+  .pricing__header {
+    text-align: center;
+    margin-bottom: var(--ds-space-8);
+  }
+  .pricing__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: var(--ds-space-4) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Section-level heading for "Site plans" / "Platform plans". Smaller
+   * than the page H1 but still display-tight. */
+  .section {
+    margin-top: var(--ds-space-12);
+  }
+  .section__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    margin-bottom: var(--ds-space-6);
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .section__pitch {
+    margin: var(--ds-space-2) 0 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    max-width: 52ch;
+  }
+
+  /* Monthly / yearly billing-period toggle. Segmented-switch pattern;
+   * the active pill is a soft blue-tinted background with the brand
+   * accent text. */
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: 4px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+  .toggle__option {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--ds-text-muted);
+    padding: 8px 16px;
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .toggle__option--active {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    /* Inline ornament: a faint shadow under the active thumb. Calibrated
+     * for the toggle thumb specifically; not a reusable elevation step. */
+    box-shadow: 0 1px 2px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  }
+  .toggle__save {
+    margin-left: var(--ds-space-2);
+    color: var(--ds-accent);
+    font-weight: 600;
+  }
+  .toggle__option:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Tier-card row. Three equal cards for Site plans; two-up wider cards
+   * for Platform plans. */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-5);
+  }
+  .tiers--two-up {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 880px) {
+    .tiers, .tiers--two-up { grid-template-columns: 1fr; }
+  }
+
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+
+  /* Featured tier: Webflow Blue inset stroke. NOT a surface inversion.
+   * The blue ring around the card carries the accent; the surface and
+   * type stay light-mode. */
+  .tier--featured {
+    /* Inline ornament: 2px inset blue stroke. The thickness is calibrated
+     * to read as a deliberate ring without competing with the section
+     * H1; not a reusable shadow step. */
+    box-shadow: inset 0 0 0 2px var(--ds-accent);
+    border-color: transparent;
+  }
+
+  /* Inline ornament: "Recommended" pill offset above the featured card.
+   * Translate value is calibrated to the pill height. */
+  .tier__pill {
+    position: absolute;
+    top: 0;
+    left: var(--ds-space-6);
+    transform: translateY(-50%);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+  .tier__pill--quiet {
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .tier__pitch {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    min-height: 3em; /* keeps the price line aligned across cards */
+  }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+  }
+  .tier__amount {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .tier__period {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__terms {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin-top: calc(var(--ds-space-1) * -1);
+  }
+
+  /* CTA buttons. Filled-blue primary on featured tiers; bordered ghost
+   * on unfeatured. 4px radius (Webflow CTA convention). */
+  .tier__cta {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    margin-top: auto;
+  }
+  .tier__cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .tier__cta--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover {
+    border-color: var(--ds-text);
+  }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Tier highlights list. Sans bullets with a check glyph; never mono. */
+  .tier__highlights {
+    list-style: none;
+    padding: 0;
+    margin: var(--ds-space-3) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier__highlights li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+  }
+  .check {
+    width: 16px; height: 16px;
+    color: var(--ds-accent);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .tier__highlights-head {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    font-weight: 500;
+    margin: var(--ds-space-3) 0 0;
+  }
+
+  /* Section break: hairline rule between Site plans and Platform plans. */
+  .section-break {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-12) 0 0;
+  }
+
+  /* Comparison table beneath each tier section. Dense; grouped by
+   * category band. Three or two value columns matching the tier count. */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    text-align: left;
+    margin-top: var(--ds-space-8);
+  }
+  .compare thead th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    padding: var(--ds-space-4) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+  }
+  .compare thead th:first-child {
+    color: var(--ds-text-muted);
+    font-weight: 500;
+  }
+  .compare tbody td,
+  .compare tbody th {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+    text-align: left;
+  }
+  .compare tbody td {
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .compare tbody tr:hover td,
+  .compare tbody tr:hover th { background: var(--ds-surface-2); }
+
+  /* Category-band row inside the comparison table. Mono kicker register;
+   * pulled directly from kickers/mono-eyebrow-001. */
+  .compare .group td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare .check-cell { color: var(--ds-accent); }
+  .compare .dash-cell  { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="pricing">
+    <header class="pricing__header">
+      <h1 class="pricing__h1">Lorem ipsum, choose the plan that fits.</h1>
+      <p class="pricing__sub">Curabitur nec libero non nisi convallis fringilla. Aenean fermentum sit amet sapien velit, magna at suscipit lacinia.</p>
+    </header>
+
+    <!-- ============= SITE PLANS ============= -->
+    <div class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">Lorem site plans</h2>
+          <p class="section__pitch">Vivamus sit amet sapien velit. For a single project lorem ipsum dolor sit amet consectetur.</p>
+        </div>
+        <div role="tablist" class="toggle" aria-label="Billing period">
+          <button type="button" class="toggle__option" role="tab" aria-selected="false">Monthly</button>
+          <button type="button" class="toggle__option toggle__option--active" role="tab" aria-selected="true">Yearly<span class="toggle__save">save 40%</span></button>
+        </div>
+      </div>
+
+      <div class="tiers">
+        <!-- Starter free -->
+        <article class="tier">
+          <h3 class="tier__name">Lorem</h3>
+          <p class="tier__pitch">For exploring lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+          <div class="tier__price">
+            <span class="tier__amount">Free</span>
+          </div>
+          <p class="tier__terms">No credit card required.</p>
+          <button type="button" class="tier__cta tier__cta--ghost">Start for free</button>
+          <ul class="tier__highlights">
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem ipsum subdomain</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>2 static pages</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>1 GB bandwidth</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>50 form submissions</span></li>
+          </ul>
+        </article>
+
+        <!-- Basic -->
+        <article class="tier">
+          <h3 class="tier__name">Ipsum</h3>
+          <p class="tier__pitch">For simple sites that do not need a content management system.</p>
+          <div class="tier__price">
+            <span class="tier__amount">$15</span>
+            <span class="tier__period">/mo</span>
+          </div>
+          <p class="tier__terms">Billed yearly.</p>
+          <button type="button" class="tier__cta tier__cta--ghost">Add plan</button>
+          <p class="tier__highlights-head">Everything in Lorem, plus</p>
+          <ul class="tier__highlights">
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Custom domain</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>300 static pages</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>10 GB bandwidth</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited form submissions</span></li>
+          </ul>
+        </article>
+
+        <!-- Premium (featured, marked New) -->
+        <article class="tier tier--featured">
+          <span class="tier__pill">Recommended</span>
+          <h3 class="tier__name">Dolor <span class="tier__pill tier__pill--quiet" style="position:static;transform:none;left:auto;margin-left:6px;vertical-align:middle;">New</span></h3>
+          <p class="tier__pitch">For content-rich projects that need robust CMS and traffic capacity.</p>
+          <div class="tier__price">
+            <span class="tier__amount">$25</span>
+            <span class="tier__period">/mo</span>
+          </div>
+          <p class="tier__terms">Billed yearly.</p>
+          <button type="button" class="tier__cta tier__cta--primary">Add plan</button>
+          <p class="tier__highlights-head">Everything in Ipsum, plus</p>
+          <ul class="tier__highlights">
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem CMS with 2,000 items</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>50 GB to 2.5 TB bandwidth tiers</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Code components</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Site search and AI prompts</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Advanced interactions</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- Comparison table for Site plans. Dense, grouped by category band. -->
+      <table class="compare" aria-label="Compare site plans">
+        <thead>
+          <tr>
+            <th scope="col">Compare site plans</th>
+            <th scope="col">Lorem</th>
+            <th scope="col">Ipsum</th>
+            <th scope="col">Dolor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="4">Publishing</td></tr>
+          <tr><th scope="row">Static pages</th><td>2</td><td>300</td><td>300</td></tr>
+          <tr><th scope="row">Custom domain</th><td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">SSL certificate</th><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+
+          <tr class="group"><td colspan="4">CMS</td></tr>
+          <tr><th scope="row">CMS items</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td>2,000</td></tr>
+          <tr><th scope="row">Collections</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td>20</td></tr>
+          <tr><th scope="row">Localization</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td>Add-on</td></tr>
+
+          <tr class="group"><td colspan="4">Traffic and bandwidth</td></tr>
+          <tr><th scope="row">Bandwidth</th><td>1 GB</td><td>10 GB</td><td>50 GB to 2.5 TB</td></tr>
+          <tr><th scope="row">Monthly visits</th><td>250</td><td>25k</td><td>100k+</td></tr>
+          <tr><th scope="row">Form submissions</th><td>50</td><td>Unlimited</td><td>Unlimited</td></tr>
+
+          <tr class="group"><td colspan="4">SEO and AI</td></tr>
+          <tr><th scope="row">301 redirects</th><td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">Site search</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">AI prompts</th><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="section-break" aria-hidden="true"/>
+
+    <!-- ============= PLATFORM PLANS ============= -->
+    <div class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">Lorem platform plans</h2>
+          <p class="section__pitch">For organizations and growing teams that need control, governance, and scale.</p>
+        </div>
+      </div>
+
+      <div class="tiers tiers--two-up">
+        <!-- Team -->
+        <article class="tier tier--featured">
+          <span class="tier__pill">New</span>
+          <h3 class="tier__name">Sit team</h3>
+          <p class="tier__pitch">For growing teams that need more control without complexity.</p>
+          <div class="tier__price">
+            <span class="tier__amount">$2,500</span>
+            <span class="tier__period">/mo</span>
+          </div>
+          <p class="tier__terms">Annual contract required.</p>
+          <button type="button" class="tier__cta tier__cta--primary">Talk to us</button>
+          <ul class="tier__highlights">
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Site and Workspace bundle</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem localization for global audiences</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Publishing workflows and review queues</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Governance and audit logs</span></li>
+          </ul>
+        </article>
+
+        <!-- Enterprise -->
+        <article class="tier">
+          <h3 class="tier__name">Amet enterprise</h3>
+          <p class="tier__pitch">For organizations that need a fully customizable solution at scale.</p>
+          <div class="tier__price">
+            <span class="tier__amount">Custom</span>
+          </div>
+          <p class="tier__terms">Annual contract; flexible terms.</p>
+          <button type="button" class="tier__cta tier__cta--ghost">Talk to us</button>
+          <p class="tier__highlights-head">Everything in Sit team, plus</p>
+          <ul class="tier__highlights">
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Granular permissions and custom roles</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Dedicated account manager</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SSO, SAML, and SCIM provisioning</span></li>
+            <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>99.99% uptime SLA</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- Comparison table for Platform plans. Two columns of values. -->
+      <table class="compare" aria-label="Compare platform plans">
+        <thead>
+          <tr>
+            <th scope="col">Compare platform plans</th>
+            <th scope="col">Sit team</th>
+            <th scope="col">Amet enterprise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="3">Governance</td></tr>
+          <tr><th scope="row">SSO and SAML</th><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">SCIM provisioning</th><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">Custom roles</th><td>Standard set</td><td>Unlimited</td></tr>
+          <tr><th scope="row">Audit logs</th><td>1 year</td><td>Unlimited</td></tr>
+
+          <tr class="group"><td colspan="3">Publishing workflows</td></tr>
+          <tr><th scope="row">Review queues</th><td class="check-cell">Included</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">Approval gates</th><td>Up to 3</td><td>Unlimited</td></tr>
+          <tr><th scope="row">Staging environments</th><td>1</td><td>Unlimited</td></tr>
+
+          <tr class="group"><td colspan="3">Support</td></tr>
+          <tr><th scope="row">Dedicated CSM</th><td class="dash-cell">—</td><td class="check-cell">Included</td></tr>
+          <tr><th scope="row">SLA</th><td>99.9%</td><td>99.99%</td></tr>
+          <tr><th scope="row">Onboarding</th><td>Self-serve</td><td>White-glove</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</body>
+</html>

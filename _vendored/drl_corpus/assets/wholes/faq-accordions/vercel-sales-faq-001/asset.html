@@ -1,0 +1,288 @@
+<!--
+  Asset: vercel-sales-faq-001
+  Class: faq-accordions (whole)
+  Pattern: hairline-row-accordion-with-mono-numbering
+  Inspired by: Vercel /pricing FAQ section
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001     (light surface, near-black text)
+    - type-pairings/grotesk-mono-001      (Geist sans + Geist Mono kicker)
+    - kickers/mono-eyebrow-001            (FAQ eyebrow above the section title)
+    - dividers/hairline-rule-001          (between every question row)
+    - icons/stroke-line-uniform-001       (chevron affordance on each row)
+    - body-text/lead-paragraph-001        (answer copy reading register)
+  Notes:
+    - The pattern: native <details> elements stacked, separated only by a
+      hairline rule. The question is a sans line; a Geist Mono index runs to
+      its left. The chevron rotates on open; the answer reveals beneath.
+    - Variable: row padding, hairline color, mono number register, chevron
+      timing all live in tokens. Inline: the exact rotate transform on the
+      open-state chevron and the answer max-width measure are asset tuning.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-sales-faq-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Web fonts: Geist is gated behind Vercel CDN; Inter + JetBrains Mono are
+     the standalone-renderable proxy that matches the Geist register. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  .faq {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* Section header. Mono eyebrow, display-tight title, muted lede. */
+  .faq__header {
+    margin-bottom: var(--ds-space-8);
+  }
+  .faq__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .faq__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .faq__sub {
+    margin: var(--ds-space-3) 0 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    max-width: 56ch;
+  }
+
+  /* Accordion list. Each row is a native <details> for accessibility and
+   * standalone-no-JS rendering. The summary IS the click target. */
+  .faq__list {
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .faq__item[open] {
+    background: var(--ds-surface);   /* tinted band on open */
+  }
+
+  /* Summary row. Three-cell layout: mono number, question, chevron. */
+  .faq__summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 48px 1fr 32px;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-5) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    color: var(--ds-text);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  /* Remove the default disclosure triangle in WebKit / Firefox. */
+  .faq__summary::-webkit-details-marker { display: none; }
+  .faq__summary::marker { content: ""; }
+
+  .faq__summary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: -2px;
+  }
+
+  /* Mono question index. Tracks wider than body sans; muted color so the
+   * question text remains the reading focus. */
+  .faq__num {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    font-weight: 500;
+    /* Inline: tabular-nums so 01..09..10..11 align in the gutter. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Chevron. Stroke-line-uniform glyph; rotates on open. */
+  .faq__chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--ds-text-muted);
+    justify-self: end;
+    /* Inline: rotate by 180deg on open. Calibrated to a 16px chevron with
+     * stroke origin at viewBox center; not a reusable token value. */
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .faq__item[open] .faq__chevron {
+    transform: rotate(180deg);
+    color: var(--ds-text);
+  }
+  .faq__summary:hover .faq__chevron { color: var(--ds-text); }
+
+  /* Answer body. Indented to align with the question text column; bounded
+   * measure for reading comfort. */
+  .faq__answer {
+    padding: 0 var(--ds-space-4) var(--ds-space-6);
+    /* Inline: 48px left start matches the .faq__num gutter so the answer
+     * aligns with the question text, not the row edge. */
+    padding-left: calc(var(--ds-space-4) + 48px + var(--ds-space-4));
+    padding-right: calc(var(--ds-space-4) + 32px + var(--ds-space-4));
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 64ch;
+  }
+  .faq__answer p { margin: 0 0 var(--ds-space-3); }
+  .faq__answer p:last-child { margin-bottom: 0; }
+  .faq__answer a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+  }
+  .faq__answer a:hover { color: var(--ds-text-strong); }
+
+  /* Mobile: collapse the mono-number gutter; let the question expand. */
+  @media (max-width: 560px) {
+    .faq__summary {
+      grid-template-columns: 32px 1fr 24px;
+      gap: var(--ds-space-3);
+      font-size: var(--ds-text-base);
+      padding: var(--ds-space-4) var(--ds-space-3);
+    }
+    .faq__answer {
+      padding-left: calc(var(--ds-space-3) + 32px + var(--ds-space-3));
+      padding-right: var(--ds-space-3);
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="faq" aria-labelledby="faq-title">
+    <header class="faq__header">
+      <div class="faq__eyebrow">Lorem ipsum FAQ</div>
+      <h1 class="faq__h1" id="faq-title">Sit amet consectetur, adipiscing answers.</h1>
+      <p class="faq__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut sodales eros porttitor.</p>
+    </header>
+
+    <div class="faq__list" role="list">
+      <details class="faq__item" role="listitem" open>
+        <summary class="faq__summary">
+          <span class="faq__num">01</span>
+          <span class="faq__question">Lorem ipsum dolor sit amet, consectetur adipiscing elit?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore. <a href="#">Contact sales</a> for more detail.</p>
+        </div>
+      </details>
+
+      <details class="faq__item" role="listitem">
+        <summary class="faq__summary">
+          <span class="faq__num">02</span>
+          <span class="faq__question">Excepteur sint occaecat cupidatat non proident, sunt in culpa?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+        </div>
+      </details>
+
+      <details class="faq__item" role="listitem">
+        <summary class="faq__summary">
+          <span class="faq__num">03</span>
+          <span class="faq__question">Quis autem vel eum iure reprehenderit qui in ea voluptate?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.</p>
+        </div>
+      </details>
+
+      <details class="faq__item" role="listitem">
+        <summary class="faq__summary">
+          <span class="faq__num">04</span>
+          <span class="faq__question">Neque porro quisquam est, qui dolorem ipsum quia dolor sit?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+        </div>
+      </details>
+
+      <details class="faq__item" role="listitem">
+        <summary class="faq__summary">
+          <span class="faq__num">05</span>
+          <span class="faq__question">Ut enim ad minima veniam, quis nostrum exercitationem ullam?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae.</p>
+        </div>
+      </details>
+
+      <details class="faq__item" role="listitem">
+        <summary class="faq__summary">
+          <span class="faq__num">06</span>
+          <span class="faq__question">At vero eos et accusamus et iusto odio dignissimos ducimus?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+        </div>
+      </details>
+
+      <details class="faq__item" role="listitem">
+        <summary class="faq__summary">
+          <span class="faq__num">07</span>
+          <span class="faq__question">Similique sunt in culpa qui officia deserunt mollitia animi?</span>
+          <svg class="faq__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <div class="faq__answer">
+          <p>Id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. <a href="#">Contact sales</a> for enterprise terms.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+</body>
+</html>

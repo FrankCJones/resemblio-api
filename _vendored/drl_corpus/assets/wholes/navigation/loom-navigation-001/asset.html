@@ -1,0 +1,382 @@
+<!--
+  Asset: loom-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: Loom
+  Notes:
+    - Flush-top register on a white canvas. The async-video-messaging
+      counter-move to the dev-tool dark-bar idiom and to Notion's
+      warm-paper bar: same architecture (flush, hairline foot, no
+      shadow at rest) but on Loom's white surface, with sentence-case
+      copy and a single purple-blue pill CTA at the right edge. The
+      purple is the only chromatic moment on the bar; everything else
+      stays monochrome so the brand color reads as a signature.
+    - Variable vs inline: every color, type, spacing, radius, motion
+      value comes from the contract. Inline ornaments: the lowercase
+      "loom" wordmark glyph (per-site geometry, not a reusable atom),
+      the 64 px bar height, and the small sentence-case caret glyph.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-nav-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter as the documented closest-public-match for Loom's humanist
+     sans marketing register. System stack catches the rest. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Flush-top bar. Pinned to the top of the viewport over white.
+   * Hairline foot is the only chrome at rest; no shadow. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: bar height. Loom's marketing bar reads at
+     * roughly 64 px on desktop. */
+    height: 64px;
+  }
+
+  .nav__inner {
+    max-width: 1248px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Wordmark. Loom's lowercase wordmark register. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .nav__wordmark svg {
+    /* Inline ornament: lowercase wordmark glyph mark stand-in for
+     * Loom's documented mark. Geometry is per-site, not reusable. */
+    width: 22px;
+    height: 22px;
+    display: block;
+    color: var(--ds-accent);
+  }
+
+  /* Link cluster. Sits between the wordmark and the action cluster.
+   * Sentence-case labels, muted-to-strong on hover. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    /* Inline ornament: small caret glyph tuned to read at 14 px text. */
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    color: var(--ds-text-muted);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+    color: var(--ds-text-strong);
+  }
+
+  /* Dropdown panel. Lifts above the bar on a white surface with a soft
+   * neutral shadow. CSS-only hover/focus reveal. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    min-width: 560px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column dropdown grid. Loom's Product and
+     * Solutions menus run two columns at desktop width. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); }
+  .nav__menu-icon {
+    /* Inline ornament: small rounded icon tile stand-in for the
+     * per-feature glyph (Loom uses bespoke illustrations here). */
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-xs);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-surface-2);
+    flex: 0 0 28px;
+  }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.3;
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin-top: 2px;
+  }
+
+  /* Action cluster. Right edge: "Log in" muted text link plus the
+   * purple "Get Loom for free" CTA. The single primary CTA is the
+   * only chromatic moment on the bar. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .nav__signin {
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text-strong); }
+
+  .nav__primary {
+    appearance: none;
+    border: 1px solid var(--ds-accent);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 10px var(--ds-space-4);
+    /* Inline ornament: medium radius, not a true pill. Per system
+     * principle subtle-rounded-corners-not-pills. */
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible,
+  .nav__signin:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the bar has a surface to sit over. Lorem ipsum only. */
+  .page-stub {
+    max-width: 880px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 880px) {
+    .nav__links, .nav__signin { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__signin, .nav__link, .nav__menu, .nav__caret { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <!-- Lowercase wordmark glyph stand-in for Loom's documented mark. -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="currentColor"/>
+          <circle cx="12" cy="12" r="4" fill="#FFFFFF"/>
+        </svg>
+        <span>lorem</span>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Product
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Screen recorder</span>
+                <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur adipiscing elit.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Chrome extension</span>
+                <span class="nav__menu-item-sub">Curabitur nec libero non nisi convallis fringilla.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Desktop app</span>
+                <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit lacinia.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Mobile app</span>
+                <span class="nav__menu-item-sub">Vivamus sit amet sapien velit tincidunt.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Solutions
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Sales</span>
+                <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur adipiscing.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Engineering</span>
+                <span class="nav__menu-item-sub">Curabitur nec libero non nisi convallis.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Support</span>
+                <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Design</span>
+                <span class="nav__menu-item-sub">Vivamus sit amet sapien velit tincidunt.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li><a class="nav__link" href="#">Enterprise</a></li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+        <li><a class="nav__link" href="#">Resources</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Log in</a>
+        <a class="nav__primary" href="#">Get Lorem for free</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

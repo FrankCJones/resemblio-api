@@ -1,0 +1,109 @@
+/*
+ * airtable-about-page-001 tokens
+ *
+ * Page-level layout skeleton for the Airtable /company surface, which on the
+ * live site renders as /newsroom (the practical about/company page; /about and
+ * /careers are JavaScript shells that webfetch cannot render). The token
+ * register matches airtable-marketing-page-001 and the system manifest at
+ * systems/airtable/system.json: paper-white page, near-black ink, a single
+ * saturated Airtable Blue accent reserved for primary CTA fills and inline
+ * links, a humanist sans across display and body, mono used only for small
+ * uppercase kicker labels, hairline card chrome with no resting shadow on
+ * section cards, subtle rounded corners on cards and CTAs (never pills).
+ *
+ * Chrome MCP refused the airtable.com domain this session. WebFetch on
+ * /about and /careers returned an empty body (the marketing site is a
+ * Next.js single-page app and its content is JS-rendered). WebFetch on
+ * /newsroom returned the live section sequence (hero with mission dek, Top
+ * Stories grid, Latest News list, Key Facts stat band, Media Resources
+ * three-card row, press-inquiry contact CTA, full mega-footer) verbatim. The
+ * about-page layout shipped here uses the conventional company-page section
+ * order (mission hero, company story, leadership, values, press, careers
+ * CTA, footer) which is the documented archetype, with the Airtable register
+ * carried by tokens inherited from the system manifest and from
+ * airtable-marketing-page-001 (paper-white #FFFFFF, near-black #0F1014,
+ * Airtable Blue #2D7FF9, 10px card radius, 96px section padding).
+ *
+ * Load-bearing slots: --ds-bg (paper-white page), --ds-text +
+ * --ds-text-strong (near-black + black ink), --ds-accent (the Airtable blue
+ * used on the primary CTA, the active tab, and inline links), --ds-hairline
+ * (between-section dividers and card edges), --ds-radius-md (the consistent
+ * 8-12px card corner radius), --ds-space-10 / --ds-space-12 (section padding
+ * rhythm), --ds-font-display + --ds-font-body (the single humanist sans
+ * shared across every section).
+ */
+:root {
+  /* Colors. Paper-white page, near-black ink, single Airtable Blue accent.
+   * Hairlines carry separation; shadow reserved for the leadership and
+   * media cards. Inherited from airtable-marketing-page-001. */
+  --ds-bg:           #FFFFFF;   /* Paper-white page surface; Airtable marketing default. */
+  --ds-surface:      #F9F9F9;   /* Raised surface for value-prop cards and leadership cards. */
+  --ds-surface-2:    #F2F4F7;   /* Second-level surface for nested elements and inactive tab fills. */
+  --ds-text:         #1D1F25;   /* Near-black reading ink; body and section copy. */
+  --ds-text-muted:   #6B6F76;   /* Secondary text; nav labels, captions, role titles, dek paragraphs. */
+  --ds-text-strong:  #0F1014;   /* Near-pure black for mission hero statement and section headings. */
+  --ds-border:       #E5E7EB;   /* Card and stat-row edges. */
+  --ds-hairline:     #ECEDEF;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #2D7FF9;   /* Airtable Blue; primary CTA fill, inline link, active state. */
+  --ds-accent-2:     #166EE1;   /* Pressed / hover Airtable Blue. */
+  --ds-success:      #20A464;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E04949;
+  --ds-info:         #2D7FF9;
+  --ds-focus-ring:   #2D7FF9;
+
+  /* Type. Single humanist sans across display and body; mono only for
+   * uppercase kicker labels above section headings. */
+  --ds-font-display: "Inter", "Inter Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Roboto Mono", "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", "Inter Display", sans-serif;
+
+  /* Type scale. Mission statement at 4xl-to-5xl on desktop; section titles
+   * at 3xl; lead support at lg; body at base. Matches the marketing page
+   * scale; the about page does not push into 6xl editorial territory. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 18px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 42px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.08;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.12em;
+
+  /* Spacing. Section rhythm matches the marketing page: 96px between
+   * sections desktop, 48-64px mobile / tablet; hero adds one extra step. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Subtle rounded corners on cards and CTA; never pills. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;  --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Mostly flat; leadership portrait cards and media cards
+   * carry the single resting lift. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(15,16,20,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(15,16,20,0.06);
+  --ds-shadow-md:  0 6px 16px rgba(15,16,20,0.06);
+  --ds-shadow-lg:  0 16px 32px rgba(15,16,20,0.08);
+  --ds-shadow-2xl: 0 28px 56px rgba(15,16,20,0.12);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

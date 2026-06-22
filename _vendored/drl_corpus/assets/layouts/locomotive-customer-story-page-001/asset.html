@@ -1,0 +1,612 @@
+<!--
+  Asset: locomotive-customer-story-page-001
+  Class: layouts
+  Pattern: full-bleed-cover-hero, project-metadata-band, alternating-media-rhythm, pull-quote-breakout, process-step-walkthrough, credits-list, next-project-link, kinetic-footer
+  Inspired by: Locomotive (locomotive.ca/en/work/scout-motors)
+  Notes:
+    - Project / case-study page skeleton: kinetic nav, full-bleed black cover
+      hero with statement-display project title and one-line tagline, project
+      metadata band (Categories / Industry / Location / Website / Awards mono
+      labels on cream with black 1.6px dividers), alternating narrative-and-
+      media body, full-width pull quote breakout, three-step process walkthrough
+      (mono step number + display heading + sans body), credits list (mono role
+      label / sans name pairs in two columns), next-project link as a giant
+      hover-kinetic display name, kinetic footer band. Cover hero and footer
+      run on the black surface; everything else sits on cream.
+    - Variable: section sequence, narrative block count, media-tile aspect
+      ratios, awards list length, credits count. Inline: cover-hero min-height
+      (100vh-bound), metadata band column ratios, alternating media tile
+      aspect (16/10), step-number numeral geometry, footer band min-height.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: LocomotiveNew (custom Locomotive face) and Helvetica Now Display
+  are the studio's working faces. Faces are not loaded here; the fallback
+  chains in tokens.css (Helvetica Neue, system-ui) carry the register so the
+  asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1440px at desktop; the studio uses generous margins on
+   * everything except the cover hero and full-bleed media tiles. Inline. */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-10); }
+  }
+
+  /* Kinetic nav: flush-top on cream sections; inverts when sitting on the
+   * black cover hero. Sits as a fixed band in the source; here it sits at
+   * page top so the skeleton renders without scroll. */
+  .nav {
+    position: relative;
+    z-index: 2;
+    padding-block: var(--ds-space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    color: var(--ds-accent-2);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    color: inherit;
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-6);
+    align-items: center;
+  }
+  .nav__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: inherit;
+  }
+  .nav__link--cta {
+    border: 1px solid currentColor;
+    padding: var(--ds-space-2) var(--ds-space-4);
+  }
+
+  /* Cover hero: full-bleed black surface. Statement-display project title
+   * overlay drops in oversized; one-line tagline sits below at the secondary
+   * display step. Inline min-height locks the cover to roughly viewport. */
+  .cover {
+    background: var(--ds-surface-2);
+    color: var(--ds-accent-2);
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .cover__inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: var(--ds-space-12);
+  }
+  .cover__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(72px, 14vw, var(--ds-text-7xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent-2);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .cover__tagline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-accent-2);
+    max-width: 32ch;
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  /* Project metadata band: five mono-label / sans-value columns separated by
+   * 1.6px black vertical rules. Stacks to two columns on tablet, one on
+   * mobile. */
+  .meta {
+    border-top: 1.6px solid var(--ds-border);
+    border-bottom: 1.6px solid var(--ds-border);
+    padding-block: var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .meta { grid-template-columns: repeat(5, 1fr); }
+  }
+  .meta__cell + .meta__cell { position: relative; }
+  @media (min-width: 768px) {
+    .meta__cell + .meta__cell::before {
+      content: "";
+      position: absolute;
+      inset-block: -8px;
+      left: calc(var(--ds-space-6) * -0.5);
+      width: 1.6px;
+      background: var(--ds-border);
+    }
+  }
+  .meta__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .meta__value {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .meta__list { list-style: none; margin: 0; padding: 0; }
+  .meta__list li + li { margin-top: var(--ds-space-1); }
+
+  /* Generic section spacing: very large vertical breathing on desktop. */
+  .section {
+    padding-block: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-16); }
+  }
+
+  /* Narrative blocks. The body alternates a left-anchored 64ch text column
+   * with full-bleed or right-anchored media tiles. */
+  .narrative {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    .narrative { grid-template-columns: 1fr 1fr; gap: var(--ds-space-16); align-items: start; }
+  }
+  .narrative__text { max-width: 60ch; }
+  .narrative__text > * + * { margin-top: var(--ds-space-5); }
+  .narrative h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .narrative p { font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); color: var(--ds-text); }
+  .narrative .lead { font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); }
+
+  /* Media tiles: alternating videos and stills. 16/10 inline aspect, hard
+   * corners, pure-white surface so the tile reads as a frame against cream. */
+  .media-tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    aspect-ratio: 16 / 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .media-tile--tall { aspect-ratio: 4 / 5; }
+  .media-tile--wide { aspect-ratio: 21 / 9; }
+  .media-caption {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Full-bleed media row used between narrative blocks for breathing. */
+  .full-bleed {
+    margin-inline: calc(var(--ds-space-10) * -1);
+  }
+  @media (max-width: 767px) {
+    .full-bleed { margin-inline: calc(var(--ds-space-5) * -1); }
+  }
+
+  /* Pull quote: cream surface, no border, statement-display body at the 34px
+   * step. Attribution sits in mono below. The breakout pattern mirrors
+   * locomotive-case-walkthrough-001 voice. */
+  .pull-quote {
+    max-width: 32ch;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .pull-quote__attribution {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Process steps walkthrough: numbered steps, each a row with mono step
+   * numeral, display heading, sans body. Separated by 1.6px black hairlines. */
+  .steps__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+    padding-block: var(--ds-space-8);
+    border-top: 1.6px solid var(--ds-border);
+  }
+  @media (min-width: 768px) {
+    .step { grid-template-columns: 80px 1fr 1fr; gap: var(--ds-space-10); align-items: start; }
+  }
+  .step:last-child { border-bottom: 1.6px solid var(--ds-border); }
+  .step__number {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .step__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .step__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Credits list: two-column grid of role-label-and-name pairs. Mono role
+   * label, sans name; names that are multiple people stack. */
+  .credits__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .credits {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .credits { grid-template-columns: repeat(2, 1fr); column-gap: var(--ds-space-10); row-gap: var(--ds-space-5); }
+  }
+  .credit {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+    padding-block: var(--ds-space-3);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .credit__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .credit__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Next-project link: full-width display moment. Mono kicker label above
+   * a giant LocomotiveNew project name; on hover in the source the name
+   * translates left and an arrow slides in. Asset shows the steady state. */
+  .next {
+    padding-block: var(--ds-space-16);
+    border-top: 1.6px solid var(--ds-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .next__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .next__name {
+    font-family: var(--ds-font-display);
+    font-size: clamp(56px, 10vw, var(--ds-text-7xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+  }
+  .next__arrow {
+    display: inline-block;
+    font-family: var(--ds-font-display);
+    font-size: 0.6em;
+    color: var(--ds-info);
+    transition: transform var(--ds-duration-normal) var(--ds-ease-emphasize);
+  }
+  .next:hover .next__arrow { transform: translateX(var(--ds-space-4)); }
+
+  /* Kinetic footer band: black surface inversion, oversized footer wordmark
+   * placeholder. Stands in for wholes/footers/locomotive-kinetic-footer-001. */
+  .footer-band {
+    background: var(--ds-surface-2);
+    color: var(--ds-accent-2);
+    padding-block: var(--ds-space-12);
+    margin-top: 0;
+  }
+  .footer-band .slot {
+    background: transparent;
+    border: 1px dashed var(--ds-accent-2);
+    color: var(--ds-accent-2);
+  }
+
+  /* Slot placeholders for downstream wholes. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+
+  <!-- Cover hero: black surface; nav inverts into white-on-black here. -->
+  <section class="cover" aria-label="Project cover">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem&reg;</span>
+        <div class="nav__links">
+          <a class="nav__link" href="#">Work</a>
+          <a class="nav__link" href="#">Agency</a>
+          <a class="nav__link" href="#">Careers</a>
+          <a class="nav__link nav__link--cta" href="#">Let's talk</a>
+        </div>
+      </nav>
+    </div>
+    <div class="page cover__inner">
+      <h1 class="cover__title">Lorem Ipsum</h1>
+      <p class="cover__tagline">Dolor sit amet, consectetur adipiscing elit.</p>
+    </div>
+  </section>
+
+  <div class="page">
+
+    <!-- Project metadata band: five mono-label columns separated by 1.6px black rules. -->
+    <section class="meta" aria-label="Project details">
+      <div class="meta__cell">
+        <p class="meta__label">Categories</p>
+        <ul class="meta__list meta__value">
+          <li>Lorem</li>
+          <li>Ipsum</li>
+          <li>Dolor</li>
+        </ul>
+      </div>
+      <div class="meta__cell">
+        <p class="meta__label">Industry</p>
+        <p class="meta__value">Lorem Ipsum</p>
+      </div>
+      <div class="meta__cell">
+        <p class="meta__label">Location</p>
+        <p class="meta__value">Dolor Sit, USA</p>
+      </div>
+      <div class="meta__cell">
+        <p class="meta__label">Website</p>
+        <p class="meta__value">loremipsum.com</p>
+      </div>
+      <div class="meta__cell">
+        <p class="meta__label">Awards</p>
+        <ul class="meta__list meta__value">
+          <li>Lorem of the Year</li>
+          <li>Site of the Day</li>
+          <li>Developer Award</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Narrative block 1: lead + first body section, paired with a right-anchored media tile. -->
+    <section class="section" aria-label="About the project">
+      <div class="narrative">
+        <div class="narrative__text">
+          <h2>About</h2>
+          <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p>
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat.
+          </p>
+        </div>
+        <figure style="margin: 0;">
+          <div class="media-tile">
+            <span>media-still-01</span>
+          </div>
+          <figcaption class="media-caption">Lorem ipsum  /  hero brand still</figcaption>
+        </figure>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Full-bleed video row between narrative blocks; bleeds to viewport edge. -->
+  <div class="page">
+    <section class="section" aria-label="Project film" style="padding-top: 0;">
+      <div class="media-tile media-tile--wide full-bleed">
+        <span>full-bleed-video</span>
+      </div>
+      <p class="media-caption">Lorem ipsum  /  brand film, 90s cut</p>
+    </section>
+  </div>
+
+  <div class="page">
+
+    <!-- Narrative block 2: left media tile + right text. Alternating side. -->
+    <section class="section" aria-label="Context">
+      <div class="narrative">
+        <figure style="margin: 0; order: 1;">
+          <div class="media-tile media-tile--tall">
+            <span>media-still-02</span>
+          </div>
+          <figcaption class="media-caption">Lorem ipsum  /  identity sketches</figcaption>
+        </figure>
+        <div class="narrative__text" style="order: 2;">
+          <h2>Context</h2>
+          <p>
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+            officia deserunt mollit anim id est laborum. Sed ut perspiciatis
+            unde omnis iste natus error sit voluptatem accusantium.
+          </p>
+          <p>
+            Doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
+            inventore veritatis et quasi architecto beatae vitae dicta sunt.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull quote: full-width breakout, statement display body, mono attribution. -->
+    <section class="section" aria-label="Pull quote">
+      <blockquote class="pull-quote">
+        <p class="pull-quote__body">
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore."
+        </p>
+        <p class="pull-quote__attribution">Lorem Ipsum  /  Dolor Sit, Lorem Studio</p>
+      </blockquote>
+    </section>
+
+    <!-- Process steps walkthrough: three numbered rows separated by 1.6px black rules. -->
+    <section class="section" aria-label="Process">
+      <h2 class="steps__heading">Process</h2>
+      <div class="step">
+        <p class="step__number">01  /  Lorem</p>
+        <h3 class="step__name">Lorem ipsum dolor</h3>
+        <p class="step__body">
+          Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Ut enim ad minim veniam, quis nostrud exercitation.
+        </p>
+      </div>
+      <div class="step">
+        <p class="step__number">02  /  Ipsum</p>
+        <h3 class="step__name">Consectetur adipiscing</h3>
+        <p class="step__body">
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur.
+        </p>
+      </div>
+      <div class="step">
+        <p class="step__number">03  /  Dolor</p>
+        <h3 class="step__name">Excepteur sint occaecat</h3>
+        <p class="step__body">
+          Sunt in culpa qui officia deserunt mollit anim id est laborum.
+          Doloremque laudantium, totam rem aperiam.
+        </p>
+      </div>
+    </section>
+
+    <!-- Credits list: two-column grid, mono role labels and sans names. -->
+    <section class="section" aria-label="Credits">
+      <h2 class="credits__heading">Credits</h2>
+      <div class="credits">
+        <div class="credit">
+          <p class="credit__role">Creative Director</p>
+          <p class="credit__name">Lorem Ipsum</p>
+        </div>
+        <div class="credit">
+          <p class="credit__role">Art Director</p>
+          <p class="credit__name">Dolor Sit</p>
+        </div>
+        <div class="credit">
+          <p class="credit__role">Technical Director</p>
+          <p class="credit__name">Amet Consectetur</p>
+        </div>
+        <div class="credit">
+          <p class="credit__role">Front-end Developers</p>
+          <p class="credit__name">Adipiscing Elit, Sed Do, Tempor Incididunt</p>
+        </div>
+        <div class="credit">
+          <p class="credit__role">Account / Project Management</p>
+          <p class="credit__name">Ut Labore, Magna Aliqua</p>
+        </div>
+        <div class="credit">
+          <p class="credit__role">Production</p>
+          <p class="credit__name">Quis Nostrud</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next-project link: oversized display name with electric-blue arrow slide on hover. -->
+    <a class="next" href="#" aria-label="Next project">
+      <span class="next__kicker">Next project</span>
+      <span class="next__name">
+        Dolor Magna
+        <span class="next__arrow" aria-hidden="true">&rarr;</span>
+      </span>
+    </a>
+
+  </div>
+
+  <!-- Kinetic footer: black surface inversion. Stands in for locomotive-kinetic-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">kinetic-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

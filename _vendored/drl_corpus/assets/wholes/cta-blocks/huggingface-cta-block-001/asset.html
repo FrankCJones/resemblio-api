@@ -1,0 +1,256 @@
+<!--
+  Asset: huggingface-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses dual-cta-hero + accent-on-neutral + primary-square + ghost-button + paper-and-ink)
+  Inspired by: Hugging Face (huggingface.co, huggingface.co/pricing)
+  Notes:
+    - End-of-page closing block on near-white paper. Display headline plus
+      one-sentence dek, dual CTA pair (yellow primary + ghost ink secondary),
+      decorative emoji glyph sits next to the headline as the visual anchor.
+      A hairline rule above separates the CTA from the section that preceded.
+    - Yellow is HF's signature accent lifted from the hugging-face emoji
+      wordmark; the primary CTA carries the yellow fill against near-black
+      ink label. Ghost secondary mirrors the dimensions for a deliberate
+      two-action set. No card chrome, no shadow at rest.
+    - Variable vs inline: the yellow accent, the 8px button radius, the
+      Source Sans face are tokens. The decorative emoji glyph (hand-coded
+      span) and the avatar-disc carousel ornament are inline; the live HF
+      surface uses a hugging-face emoji and a strip of profile avatars,
+      both substituted with lorem placeholders here.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-cta-block-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Sans 3 stands in for the live HF face (same family, Adobe
+     open-source release). Source Code Pro declared in tokens but unused. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: pure-white paper. The CTA sits on the page surface with
+   * a single hairline rule above as the only structural chrome. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container with the hairline rule above. The
+   * rule spans the full reading width. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    border-top: 1px solid var(--ds-border);
+    padding-top: var(--ds-space-10);
+  }
+
+  /* Content row: headline column + decorative visual on the right at
+   * desktop; stacks at narrow widths. Centered alignment of the row
+   * matches the live HF closing register on the homepage and pricing. */
+  .cta__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-8);
+  }
+
+  .cta__content {
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: Source Sans Semibold at 3xl-4xl, tight tracking,
+   * tight leading. The closing headline asks a direct value proposition
+   * in HF's community voice. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 4.5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+
+  /* Decorative emoji glyph inline with the headline. On the live HF site
+   * this slot carries the hugging-face emoji; substituted with a generic
+   * placeholder here so the asset is content-neutral. The glyph is
+   * inline ornament, not a token. */
+  .cta__glyph {
+    font-size: 0.85em;
+    line-height: 1;
+    display: inline-block;
+    transform: translateY(-0.05em);
+  }
+
+  /* Dek subtitle: Source Sans Regular at lg, relaxed leading, muted ink.
+   * One sentence; the value proposition restated as the action. */
+  .cta__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* Button row: yellow primary + ghost secondary. The pair sits below
+   * the dek with a tight gap. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Primary: yellow fill with near-black ink label. 8px radius is the
+   * HF default. The yellow is the signature accent; this is the only
+   * place on the page where it dominates as a fill. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: transparent fill, 1px ink border, same dimensions
+   * as primary. Used on enterprise marketing surfaces as the "Talk to
+   * sales" partner action to the yellow "Get Enterprise" primary. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Decorative visual: a small carousel of avatar discs, the live HF
+   * closing-block ornament on the pricing page. Inline ornament; the
+   * radii and ring color come from tokens but the geometry is hand-tuned. */
+  .cta__visual {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--ds-space-1) * -1);
+    flex-shrink: 0;
+  }
+  .cta__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    border: 2px solid var(--ds-bg);
+    background: var(--ds-surface-2);
+    display: grid;
+    place-items: center;
+    font-family: var(--ds-font-accent);
+    font-weight: 600;
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin-left: -12px;
+    /* Inline ornament: negative margin produces the overlapping disc
+     * carousel; first child resets the offset. */
+  }
+  .cta__avatar:first-child { margin-left: 0; }
+  .cta__avatar--accent {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+  }
+
+  @media (max-width: 720px) {
+    .cta__row { flex-direction: column; align-items: flex-start; }
+    .cta__visual { order: -1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__row">
+      <div class="cta__content">
+        <h2 class="cta__h2" id="cta-headline">
+          <span>Lorem ipsum dolor sit amet</span>
+          <span class="cta__glyph" aria-hidden="true">&#x1F917;</span>
+        </h2>
+        <p class="cta__dek">Consectetur adipiscing elit. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla.</p>
+        <div class="cta__actions">
+          <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+          <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+        </div>
+      </div>
+      <div class="cta__visual" aria-hidden="true">
+        <div class="cta__avatar">L</div>
+        <div class="cta__avatar cta__avatar--accent">o</div>
+        <div class="cta__avatar">r</div>
+        <div class="cta__avatar">e</div>
+        <div class="cta__avatar">m</div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

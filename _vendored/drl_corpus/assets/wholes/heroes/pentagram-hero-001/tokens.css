@@ -1,0 +1,146 @@
+/*
+ * pentagram-hero-001 tokens
+ *
+ * Native token values for the Pentagram homepage hero, captured via
+ * WebFetch on https://pentagram.com 2026-05-20. The hero is a full-bleed
+ * featured project tile - an image of the most-recent case study filling
+ * the first viewport, with a hairline-ruled caption beneath carrying the
+ * project name, descriptive subtitle, and sector tag. There is no oversized
+ * statement headline, no CTA button, no copy block; the work is the
+ * statement.
+ *
+ * Cream-paper ground, full-ink body, one saturated Pentagram red reserved
+ * for the active link and the sector tag on hover. F37 Plain Display is
+ * Pentagram's commissioned wordmark face; Neue Haas Grotesk carries
+ * everything else on the marketing surface. Tokens cross-checked against
+ * the swiss-red-rule-001 color-group atom (Pentagram canon palette) and
+ * the pentagram system.json design_principles entries (paper-and-ink-with-
+ * red-as-punctuation, oversized-statement-display, hairline-rules-as-
+ * section-dividers, project-grid-as-primary-surface).
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cream paper one tick warm of pure white; near-black ink for the
+   * project caption; one Pentagram red as the only chromatic moment,
+   * reserved for the sector tag on hover and active states. Borders
+   * are full-ink because Swiss tradition treats rules as structural
+   * beats, not whispers.
+   */
+  --ds-bg:           #FAFAF7;   /* Cream paper; the Pentagram ground across .com and case-study indexes. */
+  --ds-surface:      #FFFFFF;   /* Pure white; reserved for image tiles framed against the cream page. */
+  --ds-surface-2:    #F2F2EE;   /* Sunken surface; one step into the page for nested cards. */
+  --ds-text:         #111111;   /* Near-black ink; project name and caption body. */
+  --ds-text-muted:   #6B6B6B;   /* Mid-gray; sector tag default and metadata. */
+  --ds-text-strong:  #000000;   /* Pure black; the wordmark and any structural beat. */
+  --ds-border:       #111111;   /* Full-ink border; rules between caption and adjacent rows. */
+  --ds-hairline:     #1A1A1A;   /* Near-ink hairline under the caption block. */
+  --ds-accent:       #E2231A;   /* Pentagram red; the studio's signature accent. */
+  --ds-accent-2:     #B91C16;   /* Deeper red for pressed and hover. */
+  --ds-success:      #1F7A4D;
+  --ds-warning:      #C68A14;
+  --ds-error:        #C0211A;   /* Distinct from accent so brand red and error red stay separable. */
+  --ds-info:         #1F4FA8;
+  --ds-focus-ring:   #E2231A;   /* Accent at full saturation; red ring on cream is unambiguous. */
+
+  /* ---------- Type families ----------
+   * F37 Plain Display is the Pentagram commissioned wordmark face (loaded
+   * here only on the .wordmark glyph; system fallback at all other
+   * surfaces). Neue Haas Grotesk Text Pro carries the marketing body
+   * across project captions, sector tags, and navigation. Geist Mono
+   * is the rare technical kicker; not used in this hero.
+   */
+  --ds-font-display: "F37 Plain", "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Neue Haas Grotesk Text Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "F37 Plain", "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Pentagram homepage holds a compact scale on the caption strip; the
+   * statement scale lives on case-study covers, not on the homepage.
+   * Project name sets at 26-34px (xl / 2xl); descriptive subtitle at
+   * 16-20px (base / lg); sector tag at 11-12px (xs).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   11px;   /* Sector tag uppercase label. */
+  --ds-text-sm:   14px;   /* Nav links. */
+  --ds-text-base: 16px;   /* Caption subtitle. */
+  --ds-text-lg:   20px;   /* Caption subtitle, wide viewport. */
+  --ds-text-xl:   26px;   /* Project name at small viewports. */
+  --ds-text-2xl:  34px;   /* Project name at desktop. */
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;  /* Reserved for case-study covers, not used in hero. */
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;    /* Project name caption. */
+  --ds-leading-normal:  1.5;    /* Subtitle body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Display tight on Neue Haas at large sizes; wider tracking on the
+   * sector tag so it reads as a label not a word.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;   /* Sector tag uppercase. */
+
+  /* ---------- Spacing ----------
+   * 4px grid. Caption block sits 24px below the image; sector tag sits
+   * 8px above the project name; 48-64px gutter between the hero and
+   * the next project row.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;   /* Image to caption gap. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;   /* Caption to next-row gutter. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Zero-radius. Swiss design refuses rounded corners on principle.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   2px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Print sensibility avoids elevation entirely. Hairlines carry every
+   * separation moment.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 0 rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 8px 20px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ----------
+   * Fast standard ease on color transitions; the sector tag turning red
+   * on hover is the only motion event in the hero.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,246 @@
+<!--
+  Asset: arena-marketing-page-001
+  Class: layouts
+  Pattern: centered-narrow-column, no-imagery
+  Inspired by: Are.na (https://www.are.na)
+  Notes:
+    - (no notes)
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>arena-marketing-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+.n-nav { background: var(--ds-bg); border-bottom: 1px solid var(--ds-hairline); }
+.n-nav__inner { max-width: 1200px; margin: 0 auto; padding: 16px 32px;
+                display: flex; align-items: center; gap: 32px; }
+.n-nav__brand { font-family: var(--ds-font-display); font-weight: 600;
+                font-size: var(--ds-text-lg); color: var(--ds-text);
+                text-decoration: none; }
+.n-nav__links { display: flex; gap: 24px; flex: 1; }
+.n-nav__links a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                  font-weight: 500; color: var(--ds-text); text-decoration: none; }
+.n-nav__actions { display: flex; align-items: center; gap: 16px; }
+.n-nav__signin { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                 font-weight: 500; color: var(--ds-text); text-decoration: none; }
+.n-btn { display: inline-flex; padding: 8px 14px; border-radius: var(--ds-radius-sm, 6px);
+         font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+         font-weight: 500; text-decoration: none; }
+.n-btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
+
+.h-hero { padding: 96px 32px; background: var(--ds-bg); color: var(--ds-text); }
+.h-hero__inner { max-width: 1100px; margin: 0 auto; }
+.h-hero__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+                  text-transform: uppercase; letter-spacing: 0.08em;
+                  color: var(--ds-text-muted); }
+.h-hero__title { font-family: var(--ds-font-display); font-size: var(--ds-text-5xl);
+                 line-height: var(--ds-leading-tight, 1.05); letter-spacing: -0.02em;
+                 font-weight: 600; margin: 24px 0 16px; max-width: 18ch; }
+.h-hero__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+               line-height: 1.45; color: var(--ds-text-muted);
+               margin: 0 0 32px; max-width: 56ch; }
+.h-hero__actions { display: flex; gap: 12px; }
+.h-btn { display: inline-flex; align-items: center; padding: 12px 20px;
+         font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+         font-weight: 500; border-radius: var(--ds-radius-sm, 6px);
+         text-decoration: none; }
+.h-btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
+.h-btn--ghost { background: transparent; color: var(--ds-text);
+                border: 1px solid var(--ds-border); }
+
+.pt { background: var(--ds-bg); padding: 96px 32px; }
+.pt__inner { max-width: 1100px; margin: 0 auto; }
+.pt__head { text-align: center; margin-bottom: 48px; }
+.pt__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+              text-transform: uppercase; letter-spacing: 0.08em;
+              color: var(--ds-text-muted); }
+.pt__title { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
+             margin: 16px 0 0; line-height: 1.15; }
+.pt__tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.pt__tier { position: relative; padding: 32px 24px; border: 1px solid var(--ds-border);
+            border-radius: var(--ds-radius-md, 8px); background: var(--ds-surface); }
+.pt__tier--recommended { border-color: var(--ds-accent); border-width: 2px; }
+.pt__badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+             padding: 4px 12px; background: var(--ds-accent); color: var(--ds-bg);
+             font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+             font-weight: 500; border-radius: var(--ds-radius-full, 9999px);
+             text-transform: uppercase; letter-spacing: 0.06em; }
+.pt__tier h3 { font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
+               margin: 0 0 8px; }
+.pt__price { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
+             margin: 16px 0; font-weight: 600; }
+.pt__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+           color: var(--ds-text-muted); line-height: 1.5; margin: 0 0 24px;
+           min-height: 3em; }
+.pt__btn { display: inline-block; padding: 10px 18px; width: 100%; text-align: center;
+           border-radius: var(--ds-radius-sm, 6px); border: 1px solid var(--ds-border);
+           font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+           font-weight: 500; color: var(--ds-text); text-decoration: none; box-sizing: border-box; }
+.pt__btn--primary { background: var(--ds-accent); color: var(--ds-bg);
+                    border-color: var(--ds-accent); }
+
+.fg-grid { background: var(--ds-bg); color: var(--ds-text); padding: 96px 32px; }
+.fg-grid__inner { max-width: 1200px; margin: 0 auto; }
+.fg-grid__head { max-width: 720px; margin-bottom: 48px; }
+.fg-grid__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+                   text-transform: uppercase; letter-spacing: 0.08em;
+                   color: var(--ds-text-muted); }
+.fg-grid__title { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
+                  line-height: 1.15; margin: 16px 0 12px; }
+.fg-grid__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+                color: var(--ds-text-muted); margin: 0; }
+.fg-grid__tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.fg-tile { padding: 24px; border: 1px solid var(--ds-border);
+           border-radius: var(--ds-radius-md, 8px); background: var(--ds-surface); }
+.fg-tile h3 { font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
+              margin: 0 0 8px; }
+.fg-tile p { font-family: var(--ds-font-body); font-size: var(--ds-text-base);
+             color: var(--ds-text-muted); line-height: 1.5;
+             margin: 0 0 16px; }
+.fg-tile a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+             font-weight: 500; color: var(--ds-accent); text-decoration: none; }
+
+.cta { background: var(--ds-surface); color: var(--ds-text);
+       padding: 96px 32px; border-top: 1px solid var(--ds-hairline); }
+.cta__inner { max-width: 720px; margin: 0 auto; text-align: center; }
+.cta__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+               text-transform: uppercase; letter-spacing: 0.08em;
+               color: var(--ds-text-muted); }
+.cta__title { font-family: var(--ds-font-display); font-size: var(--ds-text-4xl);
+              line-height: 1.1; margin: 16px 0 12px; letter-spacing: -0.015em; }
+.cta__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+            color: var(--ds-text-muted); margin: 0 0 32px; }
+.cta__actions { display: inline-flex; gap: 12px; }
+.cta__btn { padding: 12px 20px; border-radius: var(--ds-radius-sm, 6px);
+            font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+            font-weight: 500; text-decoration: none; }
+.cta__btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
+.cta__btn--ghost { background: transparent; color: var(--ds-text);
+                   border: 1px solid var(--ds-border); }
+
+.f-footer { background: var(--ds-bg); color: var(--ds-text);
+            border-top: 1px solid var(--ds-hairline); padding: 64px 32px 24px; }
+.f-footer__inner { max-width: 1200px; margin: 0 auto;
+                   display: grid; grid-template-columns: 1fr 2fr; gap: 48px; }
+.f-footer__wordmark { font-family: var(--ds-font-display); font-weight: 600;
+                      font-size: var(--ds-text-lg); }
+.f-footer__tagline { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                     color: var(--ds-text-muted); margin: 8px 0 0; max-width: 32ch; }
+.f-footer__cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.f-footer__col h4 { font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+                    text-transform: uppercase; letter-spacing: 0.06em;
+                    color: var(--ds-text-muted); margin: 0 0 12px; font-weight: 500; }
+.f-footer__col a { display: block; font-family: var(--ds-font-body);
+                   font-size: var(--ds-text-sm); color: var(--ds-text);
+                   text-decoration: none; padding: 4px 0; }
+.f-footer__legal { max-width: 1200px; margin: 48px auto 0;
+                   padding-top: 24px; border-top: 1px solid var(--ds-hairline);
+                   font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+                   color: var(--ds-text-muted); }
+
+</style>
+</head>
+<body>
+<header class="n-nav">
+  <div class="n-nav__inner">
+    <a class="n-nav__brand" href="#">Wordmark</a>
+    <nav class="n-nav__links">
+      <a href="#">Lorem</a>
+      <a href="#">Lorem</a>
+      <a href="#">Lorem</a>
+      <a href="#">Lorem</a>
+    </nav>
+    <div class="n-nav__actions">
+      <a class="n-nav__signin" href="#">Sign in</a>
+      <a class="n-btn n-btn--primary" href="#">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<section class="h-hero">
+  <div class="h-hero__inner">
+    <span class="h-hero__kicker">New</span>
+    <h1 class="h-hero__title">Lorem ipsum dolor sit amet</h1>
+    <p class="h-hero__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+    <div class="h-hero__actions">
+      <a class="h-btn h-btn--primary" href="#">Get started</a>
+      <a class="h-btn h-btn--ghost" href="#">Learn more</a>
+    </div>
+  </div>
+</section>
+
+<section class="pt">
+  <div class="pt__inner">
+    <header class="pt__head">
+      <span class="pt__kicker">New</span>
+      <h2 class="pt__title">Lorem ipsum dolor sit amet</h2>
+    </header>
+    <div class="pt__tiers">
+      <article class="pt__tier"><h3>Lorem</h3><p class="pt__price">Lorem</p><p class="pt__dek">Lorem</p><a href="#" class="pt__btn">Lorem</a></article>
+      <article class="pt__tier pt__tier--recommended"><span class="pt__badge">Most popular</span><h3>Lorem</h3><p class="pt__price">Lorem</p><p class="pt__dek">Lorem</p><a href="#" class="pt__btn pt__btn--primary">Lorem</a></article>
+      <article class="pt__tier"><h3>Lorem</h3><p class="pt__price">Lorem</p><p class="pt__dek">Lorem</p><a href="#" class="pt__btn">Lorem</a></article>
+    </div>
+  </div>
+</section>
+
+<section class="fg-grid">
+  <div class="fg-grid__inner">
+    <header class="fg-grid__head">
+      <span class="fg-grid__kicker">New</span>
+      <h2 class="fg-grid__title">Lorem ipsum dolor sit amet</h2>
+      <p class="fg-grid__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+    </header>
+    <div class="fg-grid__tiles">
+      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="cta__inner">
+    <span class="cta__kicker">New</span>
+    <h2 class="cta__title">Lorem ipsum dolor sit amet</h2>
+    <p class="cta__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+    <div class="cta__actions">
+      <a class="cta__btn cta__btn--primary" href="#">Get started</a>
+      <a class="cta__btn cta__btn--ghost" href="#">Learn more</a>
+    </div>
+  </div>
+</section>
+
+<footer class="f-footer">
+  <div class="f-footer__inner">
+    <div class="f-footer__brand">
+      <span class="f-footer__wordmark">Wordmark</span>
+      <p class="f-footer__tagline">Tagline goes here</p>
+    </div>
+    <div class="f-footer__cols">
+      <div class="f-footer__col">
+        <h4>Lorem</h4>
+        <a href="#">Lorem</a><a href="#">Lorem</a><a href="#">Lorem</a>
+      </div>
+      <div class="f-footer__col">
+        <h4>Lorem</h4>
+        <a href="#">Lorem</a><a href="#">Lorem</a><a href="#">Lorem</a>
+      </div>
+      <div class="f-footer__col">
+        <h4>Lorem</h4>
+        <a href="#">Lorem</a><a href="#">Lorem</a><a href="#">Lorem</a>
+      </div>
+    </div>
+  </div>
+  <div class="f-footer__legal">
+    <span>© 2026 Lorem Ipsum</span>
+  </div>
+</footer>
+
+</body>
+</html>

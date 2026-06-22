@@ -1,0 +1,109 @@
+/*
+ * github-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for github.com homepage. GitHub's marketing
+ * register sits on a near-black hero band ("The future of building happens
+ * together"), then drops onto a white body for the product-pillar sections.
+ * Display moments are large white Mona Sans on the dark hero; body content
+ * uses the same family at reading sizes on white. Mona Sans Mono carries
+ * the kicker / metadata / CLI register. Saturated GitHub green is the
+ * primary CTA fill; everything else is neutral.
+ *
+ * Chrome MCP blocked github.com at the safety layer this session; WebFetch
+ * returned the full section sequence, nav labels, headlines, and column
+ * groups verbatim from the live HTML but stripped the inline computed
+ * styles. Numeric token values (1280px container, 64-80px display, 16px
+ * card radii, hairline alpha) are mapped to GitHub's known Primer system
+ * canon - the dark-hero / light-body register GitHub has shipped since
+ * the 2023 marketing refresh - and to the design_principles in
+ * systems/github/system.json, not from devtools reads. Section sequence
+ * captured verbatim.
+ *
+ * The slots that carry this layout: --ds-bg (dark hero band toggles to
+ * light body via section class), --ds-text / --ds-text-strong (white on
+ * dark, near-black on light), --ds-accent (GitHub green CTA + link),
+ * --ds-hairline (between-section rule), --ds-space-10 / --ds-space-12
+ * (section rhythm), --ds-font-display + --ds-font-mono (Mona Sans / Mona
+ * Sans Mono pair).
+ */
+:root {
+  /* Colors. Near-black hero surface (the marketing signature), white body
+   * for product-pillar sections, saturated GitHub green for the primary
+   * CTA. Hairlines do divider work; no shadows at rest. */
+  --ds-bg:           #FFFFFF;   /* Body page surface; the product-pillar register sits on white. */
+  --ds-surface:      #F6F8FA;   /* Raised surface; feature cards, customer-logo strip background. */
+  --ds-surface-2:    #0D1117;   /* Near-black hero band and footer surface (Primer canvas-default-dark). */
+  --ds-text:         #1F2328;   /* Near-black reading ink on white body sections. */
+  --ds-text-muted:   #59636E;   /* Secondary text; supporting body copy, footer link rest state. */
+  --ds-text-strong:  #FFFFFF;   /* White for the dark hero display + dark-section section heads. */
+  --ds-border:       #D1D9E0;   /* Card and feature-tile edges on white surface. */
+  --ds-hairline:     #D1D9E0;   /* Between-section divider on white body. */
+  --ds-accent:       #2DA44E;   /* GitHub green; primary CTA fill, inline link emphasis. */
+  --ds-accent-2:     #1F883D;   /* Lifted green for hover and pressed state. */
+  --ds-success:      #1A7F37;
+  --ds-warning:      #BF8700;
+  --ds-error:        #CF222E;
+  --ds-info:         #0969DA;
+  --ds-focus-ring:   #0969DA;   /* Primer blue focus ring; keyboard focus across the page. */
+
+  /* Type. Mona Sans is GitHub's marketing display + body face since the
+   * 2023 refresh; Mona Sans Mono carries the kicker, code, and CLI
+   * register. Fallbacks chain through Inter and system stacks so the
+   * asset opens standalone without web fonts. */
+  --ds-font-display: "Mona Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Mona Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Mona Sans Mono", "SF Mono", ui-monospace, "JetBrains Mono", monospace;
+  --ds-font-accent:  "Mona Sans", "Inter", sans-serif;
+
+  /* Type scale. Hero statement at 5xl (76px) on desktop; product-pillar
+   * section heads at 3xl-4xl; lead support at xl; body at base. GitHub
+   * runs a slightly larger display step than Vercel; the hero carries
+   * more vertical weight. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 20px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 42px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 76px;   --ds-text-6xl: 96px;  --ds-text-7xl: 128px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.14em;
+
+  /* Spacing. Section rhythm: 96-128px between product-pillar blocks
+   * (--ds-space-12 / --ds-space-16) on desktop, tightening to 64px on
+   * mobile. Hero takes the largest step. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. GitHub uses medium radii (12-16px) on feature tiles and
+   * pricing cards; the primary CTA uses a 6px small radius, not a pill.
+   * The customer-logo cells and testimonial cards take 12-16px. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 12px;  --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Hairlines do most of the work; tiles take a barely-there
+   * elevation on hover, not at rest. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(31,35,40,0.06);
+  --ds-shadow-sm:  0 1px 2px rgba(31,35,40,0.06);
+  --ds-shadow-md:  0 3px 12px rgba(31,35,40,0.08);
+  --ds-shadow-lg:  0 12px 28px rgba(31,35,40,0.12);
+  --ds-shadow-2xl: 0 24px 48px rgba(31,35,40,0.16);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

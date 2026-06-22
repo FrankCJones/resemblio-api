@@ -1,0 +1,193 @@
+<!--
+  Asset: newsletter-quote-testimonial-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, paper-and-ink, kicker-with-rule
+  Inspired by: Robin Sloan (robinsloan.com)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/terracotta-cream-001         (palette context)
+    - type-pairings/dual-serif-001              (display + body serif pair)
+    - body-text/pull-quote-breakout-001         (the quote breakout pattern)
+    - avatars/byline-portrait-avatar-001        (attribution portrait)
+    - kickers/swiss-rule-kicker-001             (the kicker plus hairline above)
+    - dividers/hairline-rule-001                (the hr that closes the block)
+  Notes:
+    - The block reads as a single newsletter testimonial: a mono kicker
+      with rule, a serif pull quote with a large oversized quotation
+      glyph, a portrait-and-byline attribution, and a closing hairline.
+      No card chrome; the cream surface IS the chrome. The hr at the end
+      mirrors the section-divider pattern Robin Sloan uses across his
+      site (three sections on the homepage are separated by hr).
+    - Variable: palette and type families come from tokens.css. Inline:
+      the oversized quotation glyph's negative margin and the exact
+      portrait diameter, both of which are this whole's own tuning.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>newsletter-quote-testimonial-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Cormorant Garamond stands in for Filosofia; Vollkorn is the body. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Vollkorn:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  /* The testimonial column. Narrow measure (around 36em) is the canonical
+   * personal-writer newsletter width: comfortable for a reading paragraph,
+   * forces the pull quote to break out without going theatrical. */
+  .testimonial {
+    max-width: 36em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+
+  /* Kicker: from atoms/kickers/swiss-rule-kicker-001. Mono uppercase
+   * label sitting above a thin terracotta rule. The rule is the kicker's
+   * structural feature; without it the kicker is just a label. */
+  .testimonial__kicker {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .testimonial__kicker::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--ds-accent);
+    /* Inline: the rule color is the accent (terracotta) instead of the
+     * default --ds-hairline because the kicker is the only place the warm
+     * accent appears as line; the rest of the block is paper and ink. */
+  }
+
+  /* Pull quote: from atoms/body-text/pull-quote-breakout-001. Serif
+   * display, large glyph, slightly looser tracking than a headline,
+   * generous leading for reading-aloud cadence. */
+  .testimonial__quote {
+    position: relative;
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4.5vw, var(--ds-text-3xl));
+    font-weight: 500;
+    font-style: italic;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-wrap: pretty;
+    padding-left: var(--ds-space-8);
+    /* Inline: the left padding reserves room for the oversized opening
+     * quotation glyph rendered as ::before. Hand-tuned to the chosen
+     * type scale; not a generalizable token. */
+  }
+  .testimonial__quote::before {
+    content: "\201C";          /* Curly opening quote. */
+    position: absolute;
+    left: -0.04em;
+    top: -0.18em;
+    font-family: var(--ds-font-display);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 4.5em;
+    line-height: 1;
+    color: var(--ds-accent);
+    /* Inline: the glyph's negative offset and size are this whole's
+     * tuning; they do not belong in the contract. */
+  }
+
+  /* Attribution row: portrait avatar plus byline. From
+   * atoms/avatars/byline-portrait-avatar-001. The portrait is a small
+   * round photograph; the name is set in the display serif at body size;
+   * the role is muted body text. */
+  .testimonial__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .testimonial__avatar {
+    width: 56px;                /* Inline: portrait diameter; hand-tuned. */
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    background:
+      radial-gradient(circle at 35% 30%,
+        color-mix(in oklab, var(--ds-accent-2) 45%, var(--ds-surface) 55%),
+        color-mix(in oklab, var(--ds-accent) 45%, var(--ds-text-strong) 30%));
+    /* Inline: a stand-in portrait. The actual asset would place an <img>
+     * or photographic <picture> here; the gradient stands in for the
+     * lorem ipsum face so the block renders self-contained. */
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    flex-shrink: 0;
+  }
+  .testimonial__byline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .testimonial__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .testimonial__role {
+    font-family: var(--ds-font-body);
+    font-style: italic;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Closing rule: from atoms/dividers/hairline-rule-001. Mirrors the
+   * section-divider hr Sloan uses on his homepage to close each block. */
+  .testimonial__rule {
+    border: 0;
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-2) 0 0 0;
+  }
+</style>
+</head>
+<body>
+  <figure class="testimonial">
+    <div class="testimonial__kicker" aria-hidden="false">
+      <span>From the mailbag</span>
+    </div>
+
+    <blockquote class="testimonial__quote">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla per saecula.
+    </blockquote>
+
+    <figcaption class="testimonial__attribution">
+      <span class="testimonial__avatar" role="img" aria-label="Portrait placeholder"></span>
+      <span class="testimonial__byline">
+        <span class="testimonial__name">Lorem Ipsumus</span>
+        <span class="testimonial__role">Reader, somewhere on the warm western coast</span>
+      </span>
+    </figcaption>
+
+    <hr class="testimonial__rule"/>
+  </figure>
+</body>
+</html>

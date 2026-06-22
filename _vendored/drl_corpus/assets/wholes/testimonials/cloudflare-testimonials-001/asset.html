@@ -1,0 +1,408 @@
+<!--
+  Asset: cloudflare-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, mono-eyebrow, accent-on-neutral, paper-and-ink
+  Inspired by: Cloudflare (case-studies pages - Shopify, Canva, Discord)
+  Notes:
+    - Native context: Cloudflare's customer story pages (/case-studies/<slug>/)
+      pair a mono uppercase "CASE STUDY" kicker, a 20-26px customer quote,
+      a hairline rule, and an attribution row built from a circular avatar,
+      a name + role stack, and the customer company wordmark. A three-up
+      grid runs across the customers index; below the grid a logo strip
+      shows other customer marks. The signature Cloudflare orange (#F6821F)
+      is reserved for the kicker and the trailing "Read the story" arrow
+      on hover - the only chromatic moment on the otherwise paper surface.
+    - Variable: every color, type family, size, spacing, radius, and motion
+      value via tokens.css. Tokens map to the --ds-* contract.
+    - Inline ornament: the avatar placeholder gradient, the customer
+      logo wordmark SVG geometries (stand-ins for real Shopify / Canva /
+      Discord marks), the trailing arrow SVG path. None has a contract slot
+      for arbitrary path data.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-testimonials-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter carries the Cloudflare marketing sans across this surface.
+     JetBrains Mono stands in on the kicker for whatever mono Cloudflare
+     ships locally. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White paper canvas; the customer-stories block sits in the
+   * middle of a marketing page, so the section gets generous vertical
+   * breathing room. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Section header: the mono kicker (orange) above a sans H2. Cloudflare
+   * pages frequently lead testimonial sections with a clear "Trusted by"
+   * or "Customer stories" header. */
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    align-items: flex-start;
+    max-width: 720px;
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);                /* Cloudflare orange; the only chromatic moment in the header. */
+    margin: 0;
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .section__lede {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Quote grid. Three-up on the customers index; collapses to one column
+   * below 900px. */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 720px) {
+    .quote-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1080px) {
+    .quote-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  /* The card. Cool-gray surface lift on the paper canvas, 1px hairline ring
+   * via box-shadow (no drop at rest), 8px corner. Whole card is the link to
+   * the case study; surface stays monochrome until hover, when the trailing
+   * "Read the story" arrow shifts to Cloudflare orange. */
+  .quote-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-6);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform  var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  @media (min-width: 720px) {
+    .quote-card { padding: var(--ds-space-8); }
+  }
+  .quote-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+  .quote-card:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(246,130,31,0.30), 0 0 0 1px var(--ds-accent);
+  }
+
+  /* Mono uppercase kicker. Orange on Cloudflare; this is the only place the
+   * brand color enters the card body. */
+  .quote-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+  }
+
+  /* Quote body. Inter 500 at 20-26px clamp, snug leading; no curly glyph -
+   * the size and the kicker do the punctuation work. text-wrap: pretty
+   * holds the line shape across the three-up grid. */
+  .quote-card__quote {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-lg), 1.8vw, var(--ds-text-xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Hairline rule above the attribution row. Matches the card hairline so
+   * the chrome reads as one ruled system. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Attribution row. Circular avatar on the left, name + role stack center,
+   * compact customer wordmark right-aligned. The mono wordmark is the
+   * dev-tool signal; the sans name line is the human signal. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Avatar circle. Inline-ornament gradient stands in for the customer
+   * portrait. 40px circle, paper border to lift it off the surface tint. */
+  .quote-card__avatar {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    /* Inline ornament: avatar placeholder gradient. No contract slot for an
+     * arbitrary fill recipe. */
+    background:
+      radial-gradient(circle at 30% 30%, #F6821F 0%, #FBAD41 55%, #C25E15 100%);
+    box-shadow: 0 0 0 2px var(--ds-bg);
+  }
+
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Customer wordmark slot. Inline SVG at 20px optical height in the muted
+   * gray so it reads as attribution chrome, not a brand moment. */
+  .quote-card__company {
+    flex: 0 0 auto;
+    color: var(--ds-text-muted);
+  }
+  .quote-card__company svg {
+    width: 28px;
+    height: 20px;
+    display: block;
+  }
+
+  /* Trailing "Read the story" affordance. Orange on hover only - the
+   * second chromatic moment per card. */
+  .quote-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    transition:
+      color     var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-instant) var(--ds-ease-standard);
+    margin-top: var(--ds-space-1);
+  }
+  .quote-card:hover .quote-card__link { color: var(--ds-accent); }
+  .quote-card:hover .quote-card__link svg { transform: translateX(2px); }
+  .quote-card__link svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+
+  /* Logo strip. Sits below the quote grid; a quiet row of customer
+   * wordmarks in the muted gray. The strip earns the "trusted by" line. */
+  .logo-strip {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    align-items: center;
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .logo-strip__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .logo-strip__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-8);
+    color: var(--ds-text-muted);
+  }
+  .logo-strip__row svg {
+    width: 96px;
+    height: 28px;
+    display: block;
+    opacity: 0.85;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard), color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .logo-strip__row svg:hover {
+    opacity: 1;
+    color: var(--ds-text-strong);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-card__link,
+    .quote-card__link svg,
+    .logo-strip__row svg { transition: none; }
+    .quote-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-label="Lorem ipsum customer stories">
+
+    <header class="section__head">
+      <p class="section__kicker">Customer Stories</p>
+      <h2 class="section__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+      <p class="section__lede">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud exercitation ullamco laboris.</p>
+    </header>
+
+    <div class="quote-grid">
+
+      <a href="#" class="quote-card" aria-label="Read Lorem Ipsum case study">
+        <p class="quote-card__kicker">Case Study</p>
+        <blockquote class="quote-card__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla a fermentum lacinia magna.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Lorem Ipsum</span>
+            <span class="quote-card__role">VP, Developer Productivity</span>
+          </span>
+          <span class="quote-card__company" aria-label="Lorem company">
+            <!-- Inline ornament: stand-in customer wordmark. -->
+            <svg viewBox="0 0 56 20" aria-hidden="true">
+              <rect x="2" y="4" width="12" height="12" fill="currentColor"/>
+              <text x="20" y="15" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="currentColor">LOREM</text>
+            </svg>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read the story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="quote-card" aria-label="Read Dolor Sit case study">
+        <p class="quote-card__kicker">Case Study</p>
+        <blockquote class="quote-card__quote">
+          Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true" style="background: radial-gradient(circle at 30% 30%, #5BA8E3 0%, #2E73B8 60%, #1A4A82 100%);"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Dolor Sit</span>
+            <span class="quote-card__role">Senior Engineering Manager</span>
+          </span>
+          <span class="quote-card__company" aria-label="Dolor company">
+            <!-- Inline ornament: stand-in customer wordmark. -->
+            <svg viewBox="0 0 56 20" aria-hidden="true">
+              <circle cx="8" cy="10" r="6" fill="currentColor"/>
+              <text x="20" y="15" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="currentColor">DOLOR</text>
+            </svg>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read the story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="quote-card" aria-label="Read Amet Consectetur case study">
+        <p class="quote-card__kicker">Case Study</p>
+        <blockquote class="quote-card__quote">
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true" style="background: radial-gradient(circle at 30% 30%, #8B5BD8 0%, #5E3AAE 60%, #3A1F7A 100%);"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Amet Consectetur</span>
+            <span class="quote-card__role">CTO</span>
+          </span>
+          <span class="quote-card__company" aria-label="Amet company">
+            <!-- Inline ornament: stand-in customer wordmark. -->
+            <svg viewBox="0 0 56 20" aria-hidden="true">
+              <path d="M2 16 L8 4 L14 16 Z" fill="currentColor"/>
+              <text x="20" y="15" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="currentColor">AMET</text>
+            </svg>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read the story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+    </div>
+
+    <!-- Logo strip below the grid. Customer wordmarks in the muted gray;
+         the row hits the orange-strong text only on hover. -->
+    <div class="logo-strip" aria-label="Other lorem ipsum customers">
+      <p class="logo-strip__label">Trusted by teams at</p>
+      <div class="logo-strip__row">
+        <svg viewBox="0 0 96 28" aria-hidden="true"><rect x="2" y="6" width="16" height="16" fill="currentColor"/><text x="24" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="currentColor">LOREM</text></svg>
+        <svg viewBox="0 0 96 28" aria-hidden="true"><circle cx="12" cy="14" r="9" fill="currentColor"/><text x="28" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="currentColor">DOLOR</text></svg>
+        <svg viewBox="0 0 96 28" aria-hidden="true"><path d="M2 22 L12 6 L22 22 Z" fill="currentColor"/><text x="28" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="currentColor">AMET</text></svg>
+        <svg viewBox="0 0 96 28" aria-hidden="true"><rect x="2" y="6" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><text x="24" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="currentColor">SIT</text></svg>
+        <svg viewBox="0 0 96 28" aria-hidden="true"><path d="M2 14 L22 14 M12 4 L12 24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><text x="28" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="currentColor">MAGNA</text></svg>
+      </div>
+    </div>
+
+  </section>
+</body>
+</html>

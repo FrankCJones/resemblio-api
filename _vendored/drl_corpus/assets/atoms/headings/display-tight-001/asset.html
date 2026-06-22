@@ -1,0 +1,60 @@
+<!--
+  Asset: display-tight-001
+  Class: headings
+  Pattern: display-tight, display-italic-accent
+  Inspired by: Linear, Stripe
+  Notes:
+    - Tight-tracked sans display with an italic accent word in lifted indigo.
+    - Italic word is positioned by line break to land at the start of line two
+      for optical balance; this layout choice is inline ornament.
+    - All type sizes, tracking values, colors, and spacing are variables.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>display-tight-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,500;0,600;1,400;1,500&family=Inter:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-6);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+
+  /* The display heading itself. Native size --ds-text-5xl (72px); the
+   * signature tight tracking is on --ds-tracking-tight. */
+  h1.display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    max-width: 18ch;        /* Bound width so the headline wraps to 2 lines reliably. */
+    /* text-wrap: balance distributes line breaks so the italic accent word
+     * lands cleanly on line two. Inline ornament: the specific value is
+     * asset character, not a contract slot. */
+    text-wrap: balance;
+  }
+  h1.display em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ds-accent);
+  }
+</style>
+</head>
+<body>
+  <h1 class="display">Lorem ipsum <em>dolor sit</em> amet.</h1>
+</body>
+</html>

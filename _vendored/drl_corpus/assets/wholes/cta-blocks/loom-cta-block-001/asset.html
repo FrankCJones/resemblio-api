@@ -1,0 +1,241 @@
+<!--
+  Asset: loom-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: cta-block; mono-eyebrow + display-tight + dual-cta (primary-pill + ghost-button) + electric-accent on neutral canvas
+  Inspired by: Loom (loom.com/, loom.com/enterprise, loom.com/pricing)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/saturated-tech-001       (light canvas + purple-blue accent)
+    - type-pairings/sans-system-modern-001  (humanist sans across the block)
+    - headings/display-tight-001            (sans display, tight tracking, sentence case)
+    - kickers/mono-eyebrow-001              (small uppercase mono kicker)
+    - body-text/lead-paragraph-001          (dek under the headline)
+    - buttons/primary-pill-001              (purple-blue rounded primary)
+    - buttons/ghost-bordered-001            (hairline ghost secondary)
+  Notes:
+    - The block sits flush on the white canvas, centered. No card,
+      no tinted band, no shadow at rest. The purple-blue brand
+      accent on the primary pill is the only saturated moment.
+    - Loom runs two parallel closing-CTA tracks across the marketing
+      surface: self-serve ("Get Loom for free" -> /signup) on
+      consumer/use-case pages, sales ("Contact Sales" ->
+      /connect/enterprise) on enterprise/pricing pages. This asset
+      offers both paths at equal visual weight in one block, which
+      is the transferable structural lesson: when a product has
+      two real conversion paths, hold both at the primary tier and
+      let the fill color (saturated vs ghost) carry the priority.
+    - Inline ornament: the small decorative play-affordance glyph
+      to the left of the kicker, nodding to Loom's recorder
+      identity without committing to a full product screenshot.
+      Optional; the block works without it.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the Loom marketing sans. Open-license
+     substitute; the Loom system itself ships a humanist sans on
+     production marketing surfaces. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: white canvas. The closing CTA sits flush on the
+   * page surface with generous vertical whitespace above and below. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container holding the centered content
+   * column. No band background; the canvas reads through. */
+  .cta {
+    width: 100%;
+    max-width: 1120px;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .cta__content {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Kicker: uppercase mono label cueing the section topic. Pairs
+   * with a small purple-blue play-glyph that nods to Loom's
+   * recorder identity. */
+  .cta__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    text-transform: uppercase;
+    margin: 0 0 var(--ds-space-1) 0;
+  }
+
+  /* Decorative glyph: small purple-blue play triangle inside a
+   * rounded square. Inline ornament; the glyph is a one-off Loom
+   * identity moment, not a contract slot. */
+  .cta__glyph {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: var(--ds-accent);
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+  }
+  .cta__glyph svg {
+    width: 8px;
+    height: 8px;
+    fill: #FFFFFF;
+  }
+
+  /* Display headline: sentence case, tight tracking, sans display.
+   * Loom's closing headlines are short conversational phrases. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5.5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the short
+     * conversational headline from orphaning a final word. */
+  }
+
+  /* Dek: one short supporting sentence under the headline.
+   * Muted ink, relaxed leading. Single sentence, never a paragraph. */
+  .cta__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+    font-weight: 400;
+  }
+
+  /* Button row: primary purple-blue + ghost secondary. Centered
+   * under the dek; wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Primary: purple-blue fill, white label, 8px radius. The single
+   * saturated moment in the block. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: no fill, hairline border, ink label. Same
+   * dimensions as the primary so the pair reads as two real paths,
+   * not primary plus link. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: rgba(15, 14, 26, 0.04);
+    border-color: var(--ds-text-muted);
+    /* Inline ornament: paper-press hover tint at 4% opacity. */
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <p class="cta__kicker">
+        <span class="cta__glyph" aria-hidden="true">
+          <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><polygon points="1.5,0.5 7,4 1.5,7.5"/></svg>
+        </span>
+        Lorem ipsum dolor
+      </p>
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur.</h2>
+      <p class="cta__dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec libero non nisi convallis fringilla in sit amet purus.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum free</a>
+        <a class="cta__btn--ghost" href="#">Contact sales</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

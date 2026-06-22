@@ -1,0 +1,399 @@
+<!--
+  Asset: figma-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: Figma
+  Notes:
+    - Flush-top register on bright white: the bar pins to the top of the
+      viewport with a single faint hairline at its foot, no shadow at rest.
+      The bar stays monochrome so the product canvas screenshots below it
+      carry the chroma.
+    - Variable vs inline: every color, type, spacing, radius, and motion
+      value comes from the contract. Inline ornaments: the Figma "F" mark
+      SVG (a one-off geometric glyph, not a reusable atom at this scale),
+      the bar's 72 px fixed height (layout decision specific to the
+      bright-surface flush register), and the dropdown two-column grid.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>figma-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Whyte is Figma's licensed marketing typeface; Inter stands in as the
+     closest open humanist sans. JetBrains Mono backs the optional kbd hint. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Flush-top bar. Sticks to the top edge of the viewport with a single
+   * hairline at its foot; no shadow at rest. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: bar height is a layout decision specific to the
+     * bright-surface flush register; Figma marketing runs at 72 px. */
+    height: 72px;
+  }
+
+  .nav__inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Wordmark. Figma's "F" mark plus the wordmark in the display family. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .nav__wordmark svg {
+    /* Inline ornament: F-shaped colored-blocks mark. Single SVG geometry
+     * filled with the canvas accents. Not a reusable atom at this scale. */
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+
+  /* Link cluster. Sits to the right of the wordmark. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text-strong);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    color: var(--ds-text-muted);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+    color: currentColor;
+  }
+
+  /* Status badge: "New" / "Beta" pill in the brand plum, used sparingly
+   * beside fresh product menu items. */
+  .nav__tag {
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: var(--ds-accent);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-sm);
+    margin-left: 6px;
+    line-height: 1;
+  }
+  .nav__tag--beta {
+    background: var(--ds-accent-2);
+  }
+
+  /* Dropdown panel. Light surface with a hairline edge and a soft light
+   * shadow. CSS-only on hover/focus. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 560px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-2);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column dropdown grid; layout decision specific
+     * to Figma's Products menu. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); }
+  .nav__menu-icon {
+    /* Inline ornament: small rounded square placeholder for the per-item
+     * canvas-color icon (Figma uses bright canvas accents inside these). */
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-accent);
+    flex: 0 0 28px;
+  }
+  .nav__menu-icon--cyan { background: var(--ds-accent-2); }
+  .nav__menu-icon--green { background: var(--ds-success); }
+  .nav__menu-icon--coral { background: var(--ds-warning); }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin-top: 2px;
+  }
+
+  /* Action cluster. "Log in" (muted text), "Contact sales" (ghost), and a
+   * black-filled "Get started for free" primary CTA. Subtle radii, not
+   * pills. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .nav__signin {
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text-strong); }
+
+  .nav__ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__ghost:hover { color: var(--ds-accent); }
+
+  .nav__primary {
+    appearance: none;
+    border: 0;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    padding: 10px var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: var(--ds-accent);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible,
+  .nav__ghost:focus-visible,
+  .nav__signin:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Page stub so the bar has a surface to sit over. */
+  .page-stub {
+    max-width: 1280px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 880px) {
+    .nav__links, .nav__signin, .nav__ghost { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__ghost, .nav__link, .nav__menu, .nav__caret { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <!-- F-shaped mark built from canvas-accent colored blocks. Stands in
+             for Figma's three-rectangle "F" glyph. -->
+        <svg viewBox="0 0 28 28" aria-hidden="true">
+          <rect x="4" y="2"  width="9" height="8" fill="#A259FF"/>
+          <rect x="15" y="2"  width="9" height="8" fill="#1ABCFE"/>
+          <rect x="4" y="11" width="9" height="8" fill="#0FA958"/>
+          <rect x="15" y="11" width="9" height="8" fill="#FF7262"/>
+          <rect x="4" y="20" width="9" height="8" fill="#F24822"/>
+        </svg>
+        <span>Lorem</span>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Products
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem Design</span>
+                <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur adipiscing elit.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon nav__menu-icon--cyan" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Sites <span class="nav__tag nav__tag--beta">Beta</span></span>
+                <span class="nav__menu-item-sub">Curabitur nec libero non nisi convallis fringilla.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon nav__menu-icon--green" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Buzz <span class="nav__tag">New</span></span>
+                <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit lacinia.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon nav__menu-icon--coral" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Weave</span>
+                <span class="nav__menu-item-sub">Vivamus sit amet sapien velit tincidunt.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li>
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Solutions
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </li>
+        <li>
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Community
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </li>
+        <li>
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Resources
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Log in</a>
+        <a class="nav__ghost" href="#">Contact sales</a>
+        <a class="nav__primary" href="#">Get started for free</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

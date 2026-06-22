@@ -1,0 +1,145 @@
+<!--
+  Asset: uptime-spark-001
+  Class: status-indicators
+  Pattern: (none)
+  Inspired by: Plausible (chart-as-hero motif and status palette on plausible.io)
+  Notes:
+    - 30 bars, one per day, showing recent uptime history at a glance.
+    - Bar height encodes uptime; bar color encodes incident severity.
+    - Bar dimensions are inline ornament (3px wide, gap 2px) since they fall outside the spacing scale.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>uptime-spark-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--ds-space-6);
+  }
+
+  .uptime {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 360px;
+  }
+
+  .uptime__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+  }
+
+  .uptime__label {
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+
+  .uptime__value {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+  .uptime__value--ok    { color: var(--ds-success); }
+  .uptime__value--warn  { color: var(--ds-warning); }
+  .uptime__value--err   { color: var(--ds-error); }
+
+  /* Sparkline track: 30 fixed bars laid out with grid so the column edges
+   * remain straight at every viewport. Bar width (3px) and gap (2px) sit
+   * outside the spacing scale; inline because they are ornament for this one
+   * visualization. */
+  .spark {
+    display: grid;
+    grid-template-columns: repeat(30, 3px);
+    gap: 2px;
+    height: 24px;
+    align-items: end;
+  }
+
+  .spark__bar {
+    width: 3px;
+    background: var(--ds-success);
+    border-radius: 1px;
+    height: 100%;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .spark__bar--warn { background: var(--ds-warning); height: 70%; }
+  .spark__bar--err  { background: var(--ds-error);   height: 40%; }
+  .spark__bar--dim  { background: var(--ds-hairline); height: 100%; }
+
+  .uptime__legend {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+</style>
+</head>
+<body>
+  <div class="uptime">
+    <div class="uptime__row">
+      <span class="uptime__label">Lorem ipsum api</span>
+      <span class="uptime__value uptime__value--ok">99.98%</span>
+    </div>
+    <div class="spark" role="img" aria-label="Uptime over the last 30 days">
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar spark__bar--warn"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar spark__bar--err"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar spark__bar--warn"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+    </div>
+    <div class="uptime__legend">
+      <span>30d ago</span>
+      <span>today</span>
+    </div>
+  </div>
+
+  <div class="uptime">
+    <div class="uptime__row">
+      <span class="uptime__label">Dolor sit cache</span>
+      <span class="uptime__value uptime__value--warn">99.62%</span>
+    </div>
+    <div class="spark" role="img" aria-label="Uptime over the last 30 days">
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar spark__bar--err"></span>
+      <span class="spark__bar spark__bar--err"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar spark__bar--warn"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar spark__bar--warn"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar spark__bar--err"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+      <span class="spark__bar"></span><span class="spark__bar"></span><span class="spark__bar"></span>
+    </div>
+    <div class="uptime__legend">
+      <span>30d ago</span>
+      <span>today</span>
+    </div>
+  </div>
+</body>
+</html>

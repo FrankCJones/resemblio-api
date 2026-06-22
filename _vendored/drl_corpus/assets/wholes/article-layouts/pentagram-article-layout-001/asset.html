@@ -1,0 +1,360 @@
+<!--
+  Asset: pentagram-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: asymmetric-grid, single-typeface-system, paper-and-ink
+  Inspired by: Pentagram /news/<slug> long-form posts
+  Notes:
+    - Mechanic: editorial-studio reading register on a pure-white field.
+      Two-column shell: a sticky left rail carries the title block (h1,
+      byline "Category - Date", dek, optional outbound link list); the
+      right column carries the body prose. One family (F37 Plain, mapped
+      to Inter Tight) does both display and body; one ink (Gray 900) does
+      every type role except the byline and dek (Gray 550). Red 500 is
+      the studio accent, held to inline links and focus only.
+    - Variable: the white bg, Gray 900 ink, Gray 550 muted ink, Red 500
+      accent, single-family Inter Tight stack, 52px H1 at 1.05 leading,
+      16px body at 1.25 leading.
+    - Inline ornament: the 6-of-12 column rail with sticky top behavior,
+      the en-dash separator between byline category and date, the
+      hairline rule above the byline strip, the optional pull-quote
+      treatment (canonical Pentagram editorial chrome; not present on
+      either inspected post but consistent with the studio's broader
+      register).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Tight (Google Fonts) substitutes for F37 Plain shipped by
+     Pentagram. Both are humanist-grotesk single-family systems used
+     across display and body. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "case" on;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Twelve-column grid with gutter; the article rail uses 6 cols at
+   * desktop, body uses 6 cols. On mobile both stack to full width. The
+   * source uses Tailwind cols-cols semantics; this asset reproduces the
+   * effect with a CSS grid.
+   */
+  .article {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-12);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+  }
+  @media (min-width: 900px) {
+    .article {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ds-space-8);
+      padding: var(--ds-space-12) var(--ds-space-8);
+    }
+  }
+
+  /* ---------------- Header rail (sticky on desktop) ----------------
+   * The Pentagram /news article rail is sticky at desktop, holding the
+   * title block in view while the reader scrolls the body. Order on the
+   * rail: byline category-and-date, H1, dek, optional outbound link
+   * list, optional tag list.
+   */
+  .article__rail {
+    align-self: start;
+    padding-right: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .article__rail {
+      position: sticky;
+      top: var(--ds-space-8);
+    }
+  }
+
+  /* Byline: category and date on a single line, separated by an en-dash.
+   * Sits above the title in Gray 550. The live source renders it after
+   * the H1; this asset hoists it above as a kicker for stronger
+   * editorial reading order. Both readings are valid; the visual weight
+   * is the same. */
+  .article__byline {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article__byline .endash {
+    /* Inline ornament: en-dash separator between category and date. The
+     * Pentagram byline strip uses "Category - Date" with a literal
+     * en-dash glyph; the asset preserves that single ornament. */
+    margin: 0 0.3em;
+  }
+
+  /* Article H1: 52px at desktop, single family, 400 weight, tight
+   * leading, mild negative tracking. The size and tracking are the
+   * literal source values read from --f-heading-1-* at the largest
+   * breakpoint. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-4xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-6);
+    font-feature-settings: "case" on;
+  }
+
+  /* Dek: f-heading-4 register; 24px at line-height 1.2, regular weight,
+   * full ink (the live source uses ink, not muted). Reads as the
+   * one-paragraph nutshell of the article's argument. */
+  .article__dek {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Outbound link list: small inline list of "Order the book", "Read the
+   * essay", etc. that the article surface sometimes carries beneath the
+   * dek. f-body-1 register, hover swap to ink color. */
+  .article__links {
+    list-style: none;
+    margin: 0 0 var(--ds-space-5);
+    padding: 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .article__links li {
+    margin: 0 0 var(--ds-space-2);
+  }
+  .article__links a {
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: 1px;
+    transition: border-color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__links a:hover { border-bottom-color: var(--ds-text); }
+
+  /* Tag list: hairline-bounded strip of category chips. Each chip is a
+   * small rounded rectangle (4px radius per source --rounded-4) on a
+   * faint gray field (bg-secondary = #00000012). Not present on the
+   * inspected article bodies; canonical Pentagram chrome on news
+   * teasers and surfaces tag-like classification when present.
+   * Treatment held to the editorial register: no color, no border, just
+   * the faint gray field. */
+  .article__tags {
+    list-style: none;
+    margin: var(--ds-space-5) 0 0;
+    padding: var(--ds-space-5) 0 0;
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: 1;
+  }
+  .article__tags li a {
+    display: inline-block;
+    padding: var(--ds-space-1) var(--ds-space-2);
+    background: rgba(0, 0, 0, 0.075);
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__tags li a:hover { color: var(--ds-text); }
+
+  /* ---------------- Body column ----------------
+   * The right column holds the article body. Pentagram's m-richText
+   * inherits the f-body-1 token: 16px family at 1.25 leading, with a
+   * 1rem top-margin between paragraphs. The asset reproduces those
+   * values literally. The column does not constrain measure beyond the
+   * 6-of-12 cap; on a 1280px shell the body sits around 560px which
+   * pushes a long measure (62-72ch) - tighter than blog default,
+   * editorial by intention.
+   */
+  .article__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-4);
+  }
+  .article__body p:first-child { margin-top: 0; }
+
+  /* Inline links: red accent, hairline underline at rest, no hover
+   * color shift; the underline is the affordance. The studio red is
+   * the only chromatic role on the article surface. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Italic and bold inside prose: the source carries them inline; the
+   * asset keeps them at body weight with the family's native italic. */
+  .article__body em, .article__body i { font-style: italic; }
+  .article__body strong, .article__body b { font-weight: 600; }
+
+  /* Subhead inside body: optional. The inspected posts use bold inline
+   * paragraphs ("Design Is Spiritual\nBy Eddie Opara") rather than h2
+   * elements as subheads; the asset surfaces h2 as the canonical
+   * editorial chrome for sectioned posts. f-heading-4 register. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* Pull-quote: full-column breakout, oversized sans, no quote marks,
+   * single hairline above and below. Not present on either inspected
+   * post body; included as canonical Pentagram editorial chrome
+   * consistent with the studio's broader register on longer features.
+   * If a post does not need a pull-quote, the markup is omitted. */
+  .article__pullquote {
+    margin: var(--ds-space-8) 0;
+    padding: var(--ds-space-6) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 400;
+  }
+
+  /* Figure: optional inline image with f-caption beneath. Caption in
+   * Gray 550. */
+  .article__body figure {
+    margin: var(--ds-space-6) 0;
+  }
+  .article__body figcaption {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* ---------------- Footnotes ----------------
+   * Long Pentagram essays carry a "Works cited" block at the tail;
+   * f-body-1 register, numbered manually, no special chrome.
+   */
+  .article__footnotes {
+    margin-top: var(--ds-space-8);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+  .article__footnotes p { margin: 0 0 var(--ds-space-3); }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-10); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-lg); }
+    .article__pullquote { font-size: var(--ds-text-xl); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__links a,
+    .article__tags li a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <aside class="article__rail">
+      <span class="article__byline">
+        Lorem<span class="endash" aria-hidden="true">—</span><time datetime="2026-05-12">May 12, 2026</time>
+      </span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos.</p>
+      <ul class="article__links">
+        <li><a href="#">Lorem ipsum dolor</a></li>
+        <li><a href="#">Sit amet consectetur</a></li>
+      </ul>
+      <ul class="article__tags" aria-label="Tags">
+        <li><a href="#">Lorem</a></li>
+        <li><a href="#">Ipsum dolor</a></li>
+        <li><a href="#">Sit amet</a></li>
+      </ul>
+    </aside>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst.</p>
+
+      <p><strong>Lorem Ipsum Dolor</strong></p>
+      <p>By Lorem Ipsum</p>
+
+      <p>In his book <em>Lorem Ipsum Dolor Sit Amet</em>, the Lorem Ipsum writer Dolor Sit Amet declares, "Consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation." [1]</p>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+
+      <blockquote class="article__pullquote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna.</blockquote>
+
+      <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. <a href="#">Neque porro quisquam</a> est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <div class="article__footnotes">
+        <p>Works cited:</p>
+        <p>1.&nbsp;&nbsp;&nbsp;Lorem, Ipsum. <em>Dolor Sit Amet: A Consectetur History.</em> London: Lorem Books, 2017.</p>
+        <p>2.&nbsp;&nbsp;&nbsp;Adipiscing, Elit. "Sed Do Eiusmod Tempor." <em>Lorem Ipsum Journal</em>. 2020;13(1):22-31.</p>
+      </div>
+
+    </div>
+
+  </article>
+</body>
+</html>

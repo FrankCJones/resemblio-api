@@ -1,0 +1,442 @@
+<!--
+  Asset: pentagram-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, full-bleed-image-rhythm, hairline-rule-metadata, pull-quote-breakout, project-grid-related-strip
+  Inspired by: Pentagram (pentagram.com/work/doris-duke-artist-awards-2026)
+  Notes:
+    - Studio-portfolio project case-study skeleton. Paper-and-ink discipline with red reserved as punctuation.
+    - Variable: every color, family, size, spacing step is contract. Inline: hero image aspect ratio (16/9), inset grid columns (12-col), pull-quote indent (8% from left), red-dot kicker, slash separator between disciplines.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-customer-story-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter via Google Fonts as an Inter Display / Inter fallback so the asset
+     renders standalone without the licensed F37 face used on the live site. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  /* Reset */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  /* Page chrome */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1440px; margin: 0 auto; }
+  .gutter { padding-left: var(--ds-space-8); padding-right: var(--ds-space-8); }
+
+  /* Hairline rules drawn in ink */
+  .rule { border: 0; border-top: 1px solid var(--ds-hairline); margin: 0; }
+
+  /* ---------- Top nav ---------- */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: var(--ds-space-5); padding-bottom: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .nav__links { display: flex; gap: var(--ds-space-6); font-size: var(--ds-text-sm); }
+  .nav__links a:hover { color: var(--ds-accent-2); }
+
+  /* ---------- Hero ----------
+   * Full-bleed editorial image; title sits below in a wide column. The
+   * red dot beside the kicker is the page's first punctuation moment.
+   */
+  .hero__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;  /* Inline: editorial cinema crop, character of the layout. */
+    background:
+      linear-gradient(135deg, #2A2A2A 0%, #6B6B6B 60%, #C4C4C4 100%);
+    margin-top: var(--ds-space-2);
+  }
+  .hero__caption {
+    display: flex; align-items: baseline; gap: var(--ds-space-3);
+    padding-top: var(--ds-space-4);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .hero__kicker {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+  }
+  .hero__kicker::before {
+    content: "";
+    width: 8px; height: 8px;        /* Inline: a one-off dot mark, not a contract slot. */
+    background: var(--ds-accent);   /* Red as punctuation. */
+    display: inline-block;
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-5) 0 0;
+    max-width: 22ch;  /* Inline: cap the display measure so it reads as a title, not a paragraph. */
+  }
+
+  /* ---------- Metadata band ----------
+   * Hairline-ruled rows: Client, Partner, Year, Sector, Disciplines,
+   * Office. Each row has a muted label on the left and ink-color value
+   * on the right. Disciplines separated by slashes.
+   */
+  .meta { margin-top: var(--ds-space-10); }
+  .meta__row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--ds-space-6);
+    padding: var(--ds-space-4) 0;
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-sm);
+  }
+  .meta__row:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .meta__label { color: var(--ds-text-muted); }
+  .meta__value { color: var(--ds-text); }
+  .meta__sep { color: var(--ds-text-muted); margin: 0 var(--ds-space-2); }
+
+  /* ---------- Narrative body ---------- */
+  .body { margin-top: var(--ds-space-12); }
+  .body__column {
+    max-width: 64ch;   /* Inline: reading measure for editorial prose. */
+    margin: 0 auto;
+  }
+  .body__lead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .body__h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+  .body__p { margin: 0 0 var(--ds-space-5); }
+
+  /* ---------- Pull quote ---------- */
+  .pullquote {
+    margin: var(--ds-space-12) auto;
+    max-width: 80ch;
+    padding-left: 8%;   /* Inline: hangs left of the reading column for editorial weight. */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .pullquote__attr {
+    display: block;
+    margin-top: var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+  }
+
+  /* ---------- Full-bleed image ---------- */
+  .bleed {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: var(--ds-space-12) 0;
+    background: linear-gradient(120deg, #3D3D3D 0%, #A0A0A0 100%);
+  }
+
+  /* ---------- Inset image grid (2-up) ---------- */
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+    margin: var(--ds-space-12) 0;
+  }
+  .grid2 > div {
+    aspect-ratio: 4 / 5;
+    background: linear-gradient(160deg, #5C5C5C 0%, #C8C8C8 100%);
+  }
+  .grid2 > div:nth-child(2) {
+    background: linear-gradient(20deg, #2A2A2A 0%, #8A8A8A 100%);
+  }
+
+  /* ---------- Inset image grid (3-up) ---------- */
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-3);
+    margin: var(--ds-space-12) 0;
+  }
+  .grid3 > div {
+    aspect-ratio: 3 / 4;
+    background: linear-gradient(140deg, #4A4A4A 0%, #BABABA 100%);
+  }
+  .grid3 > div:nth-child(2) { background: linear-gradient(220deg, #2F2F2F 0%, #909090 100%); }
+  .grid3 > div:nth-child(3) { background: linear-gradient(60deg, #555 0%, #D0D0D0 100%); }
+
+  /* ---------- Credits ---------- */
+  .credits {
+    margin-top: var(--ds-space-16);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .credits__h {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    margin: 0 0 var(--ds-space-6);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .credits__list {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    row-gap: var(--ds-space-3);
+    column-gap: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+  }
+  .credits__role { color: var(--ds-text-muted); }
+  .credits__name { color: var(--ds-text); }
+
+  /* ---------- Related projects strip ---------- */
+  .related {
+    margin-top: var(--ds-space-16);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .related__kicker {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .related__arrow { color: var(--ds-accent); }  /* Red on the arrow only. */
+  .related__cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-8);
+    margin-top: var(--ds-space-6);
+  }
+  .related__cover {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(150deg, #383838 0%, #BFBFBF 100%);
+  }
+  .related__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: var(--ds-space-4) 0 var(--ds-space-2);
+  }
+  .related__meta {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    margin-top: var(--ds-space-16);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    padding-bottom: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 1fr;
+    gap: var(--ds-space-8);
+    font-size: var(--ds-text-sm);
+  }
+  .footer__h {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .footer p { margin: 0 0 var(--ds-space-2); }
+  .footer__copy {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-4);
+    margin-top: var(--ds-space-4);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- Nav -->
+  <header class="nav gutter">
+    <a class="nav__wordmark" href="#">Lorem/Studio</a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#">Work</a>
+      <a href="#">About</a>
+      <a href="#">News</a>
+      <a href="#">Contact</a>
+      <a href="#">Archive</a>
+    </nav>
+  </header>
+
+  <hr class="rule"/>
+
+  <!-- Hero: full-bleed image, kicker + title below -->
+  <section aria-label="Project hero" class="gutter">
+    <div class="hero__image" role="img" aria-label="Lorem project cover photograph"></div>
+    <div class="hero__caption">
+      <span class="hero__kicker">Campaign</span>
+      <span>Lorem ipsum dolor sit amet consectetur</span>
+    </div>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet adipiscing elit</h1>
+  </section>
+
+  <!-- Metadata band: hairline-ruled rows -->
+  <section aria-label="Project metadata" class="meta gutter">
+    <div class="meta__row"><div class="meta__label">Client</div><div class="meta__value">Lorem Foundation</div></div>
+    <div class="meta__row"><div class="meta__label">Partner</div><div class="meta__value">Ipsum Dolor</div></div>
+    <div class="meta__row"><div class="meta__label">Year</div><div class="meta__value">2026</div></div>
+    <div class="meta__row"><div class="meta__label">Sector</div><div class="meta__value">Arts &amp; Culture</div></div>
+    <div class="meta__row">
+      <div class="meta__label">Disciplines</div>
+      <div class="meta__value">
+        Brand Identity<span class="meta__sep">/</span>Campaigns<span class="meta__sep">/</span>Editorial Design
+      </div>
+    </div>
+    <div class="meta__row"><div class="meta__label">Office</div><div class="meta__value">Lorem, Ipsum</div></div>
+  </section>
+
+  <!-- Narrative body -->
+  <section aria-label="Project narrative" class="body gutter">
+    <div class="body__column">
+      <p class="body__lead">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua ut
+        enim ad minim veniam quis nostrud exercitation.
+      </p>
+      <p class="body__p">
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+        dolor in reprehenderit in voluptate velit esse cillum dolore eu
+        fugiat nulla pariatur.
+      </p>
+      <h2 class="body__h2">Lorem the brief</h2>
+      <p class="body__p">
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa
+        qui officia deserunt mollit anim id est laborum. Sed ut
+        perspiciatis unde omnis iste natus error sit voluptatem
+        accusantium doloremque laudantium.
+      </p>
+    </div>
+
+    <!-- Full-bleed image break -->
+    <div class="bleed" role="img" aria-label="Lorem identity application photograph"></div>
+
+    <div class="body__column">
+      <h2 class="body__h2">Lorem the system</h2>
+      <p class="body__p">
+        Totam rem aperiam eaque ipsa quae ab illo inventore veritatis et
+        quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+        ipsam voluptatem quia voluptas sit aspernatur aut odit.
+      </p>
+    </div>
+
+    <!-- Pull quote -->
+    <blockquote class="pullquote">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+      eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      <span class="pullquote__attr">Lorem Ipsum, Partner</span>
+    </blockquote>
+
+    <!-- 2-up inset grid -->
+    <div class="grid2 gutter" aria-label="Lorem identity studies">
+      <div role="img" aria-label="Lorem study one"></div>
+      <div role="img" aria-label="Lorem study two"></div>
+    </div>
+
+    <div class="body__column">
+      <h2 class="body__h2">Lorem the launch</h2>
+      <p class="body__p">
+        At vero eos et accusamus et iusto odio dignissimos ducimus qui
+        blanditiis praesentium voluptatum deleniti atque corrupti quos
+        dolores et quas molestias excepturi sint occaecati cupiditate
+        non provident.
+      </p>
+    </div>
+
+    <!-- Full-bleed image break -->
+    <div class="bleed" role="img" aria-label="Lorem environmental graphic photograph"></div>
+
+    <!-- 3-up inset grid -->
+    <div class="grid3 gutter" aria-label="Lorem typographic specimens">
+      <div role="img" aria-label="Lorem specimen one"></div>
+      <div role="img" aria-label="Lorem specimen two"></div>
+      <div role="img" aria-label="Lorem specimen three"></div>
+    </div>
+  </section>
+
+  <!-- Credits -->
+  <section class="credits gutter" aria-label="Project credits">
+    <h2 class="credits__h">Credits</h2>
+    <dl class="credits__list">
+      <dt class="credits__role">Partner</dt><dd class="credits__name">Lorem Ipsum</dd>
+      <dt class="credits__role">Project team</dt><dd class="credits__name">Lorem Dolor, Sit Amet, Consectetur Adipiscing</dd>
+      <dt class="credits__role">Photography</dt><dd class="credits__name">Eiusmod Tempor</dd>
+      <dt class="credits__role">Photography direction</dt><dd class="credits__name">Incididunt Labore</dd>
+      <dt class="credits__role">Production</dt><dd class="credits__name">Magna Aliqua</dd>
+    </dl>
+  </section>
+
+  <!-- Related projects strip -->
+  <section class="related gutter" aria-label="Related work">
+    <span class="related__kicker">Next project <span class="related__arrow">&rarr;</span></span>
+    <div class="related__cards">
+      <a href="#">
+        <div class="related__cover" role="img" aria-label="Lorem next project cover"></div>
+        <h3 class="related__title">Lorem Veritatis Quasi</h3>
+        <div class="related__meta">Brand Identity <span class="meta__sep">/</span> Editorial Design</div>
+      </a>
+      <a href="#">
+        <div class="related__cover" role="img" aria-label="Lorem alternate project cover"></div>
+        <h3 class="related__title">Dolorem Aperiam Eaque</h3>
+        <div class="related__meta">Campaigns <span class="meta__sep">/</span> Signage</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer gutter">
+    <div>
+      <h2 class="footer__h">New Business</h2>
+      <p>Lorem Office<br/>newbusiness.lorem@example.com</p>
+      <p>Ipsum Office<br/>newbusiness.ipsum@example.com</p>
+    </div>
+    <div>
+      <h2 class="footer__h">About</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua
+        veniam exercitation.
+      </p>
+    </div>
+    <div>
+      <h2 class="footer__h">Connect</h2>
+      <p><a href="#">Instagram</a></p>
+      <p><a href="#">LinkedIn</a></p>
+      <p><a href="#">Newsletter</a></p>
+      <p><a href="#">Careers</a></p>
+    </div>
+    <div class="footer__copy">&copy; 1972-2026 Lorem/Studio</div>
+  </footer>
+
+</main>
+</body>
+</html>

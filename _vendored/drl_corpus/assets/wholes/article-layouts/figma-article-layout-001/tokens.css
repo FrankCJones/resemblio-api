@@ -1,0 +1,164 @@
+/*
+ * figma-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Figma's /blog surface. Two posts
+ * sampled via WebFetch on 2026-05-20:
+ *   1. /blog/the-figma-agent-is-here/
+ *   2. /blog/what-the-design-to-code-loop-unlocks/
+ *
+ * Both posts share the same chrome: a row of plum category-tag links
+ * sitting as kicker above a large bold sans H1, a one-sentence dek
+ * lead paragraph, a byline block carrying author photos + name + role
+ * + date, a centered narrow body column, and recurring pull-quote
+ * callouts on a tinted surface band attributed to a named contributor.
+ * The pull-quote pattern is the signature article move; it carries
+ * Figma's interview-style editorial voice without leaving the
+ * marketing-page register.
+ *
+ * Tokens align with the Figma/Whyte system already established in
+ * the figma-marketing-page-001 layout: paper-white surface, near-black
+ * ink, plum/violet accent on every chromatic role (category tags,
+ * inline links, focus ring), hairline chrome between sections,
+ * soft-rounded radii (8-12px, never pill).
+ *
+ * WebFetch on Figma blog posts returns markdown without computed
+ * styles; type sizes and color tokens follow the Figma system
+ * manifest design_principles (bright-light-surface-with-plum-accent,
+ * bold-display-sans-headlines, hairline-card-chrome-no-shadows-at-rest)
+ * and the prior figma-marketing-page-001 layout extraction.
+ *
+ * Free-font analog in asset.html:
+ *   - Inter (Google Fonts) substitutes for Whyte (Figma's licensed
+ *     display sans). Both are geometric humanist sans with closed
+ *     apertures and consistent metrics across the display range.
+ *   - JetBrains Mono substitutes for Whyte Mono on the optional
+ *     category-tag mono variant.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-white canvas matching the Figma marketing surface. Near-black
+   * ink at #1E1E1E (the Figma canvas-ink convention, one step warmer
+   * than pure black). Plum/violet accent at #6E56CF is the single
+   * chromatic role across the article: category tags, inline body
+   * links, focus ring, and the vertical rule on the pull-quote
+   * callout. Tinted surface bands ($surface, $surface-2) carry the
+   * recurring pull-quote callouts.
+   */
+  --ds-bg:           #FFFFFF;   /* Paper-white page canvas. */
+  --ds-surface:      #F5F5F4;   /* Warm-paper tinted band for pull-quote callouts. */
+  --ds-surface-2:    #EFEDE9;   /* Second-step warm tint, related-post tail rail. */
+  --ds-text:         #1E1E1E;   /* Near-black reading ink, body and H1. */
+  --ds-text-muted:   #5C5C5C;   /* Byline role, date, muted dek. */
+  --ds-text-strong:  #000000;   /* Pure black, pull-quote attribution lead. */
+  --ds-border:       #E5E5E4;   /* Card and callout edges. */
+  --ds-hairline:     #E5E5E4;   /* Section break rules, byline strip. */
+  --ds-accent:       #6E56CF;   /* Figma plum-violet, category tags, inline links, focus ring. */
+  --ds-accent-2:     #F24E1E;   /* Figma orange, reserved secondary brand pop. */
+  --ds-success:      #2EBD85;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E04646;
+  --ds-info:         #3B82F6;
+  --ds-focus-ring:   #6E56CF;   /* Plum focus ring matches accent. */
+
+  /* ---------- Type families ----------
+   * Whyte is the licensed display+body family across figma.com,
+   * including the blog. Whyte Mono is reserved for the optional
+   * mono category-tag variant. Fallback chain mirrors the Figma
+   * marketing layout token set.
+   */
+  --ds-font-display: "Whyte", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Whyte", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Whyte Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Whyte", "Inter", sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Article H1 sits at 4xl (~56px). The Figma blog runs the H1 large
+   * but not as large as the marketing hero (5xl/72px). Dek paragraph
+   * reads at lg (19px), body at base (16-18px). Subhead h2 at 2xl.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono variant, date, attribution role. */
+  --ds-text-sm:   14px;   /* Category-tag pill, byline role label. */
+  --ds-text-base: 18px;   /* Body reading register, one step above marketing. */
+  --ds-text-lg:   22px;   /* Dek paragraph beneath H1. */
+  --ds-text-xl:   28px;   /* Pull-quote callout body, h3 minor heads. */
+  --ds-text-2xl:  36px;   /* Section subhead h2. */
+  --ds-text-3xl:  44px;   /* Reserved larger subhead. */
+  --ds-text-4xl:  56px;   /* Article H1 display. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * H1 holds at 1.05 to keep the 56px display compact. Body at 1.6
+   * is the editorial reading register (one step above Figma's
+   * marketing default of 1.45).
+   */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Whyte display heads pull -0.025em at the article H1 step.
+   * Category-tag kicker takes positive tracking to read as a label.
+   */
+  --ds-tracking-tight:  -0.025em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Header column ends with space-8 before body. Pull-quote
+   * callout sits inside space-10 vertical breathing. Section heads
+   * carry space-10 above and space-5 below.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Figma signature soft-round. Category-tag pills carry sm (6px),
+   * not pill; author photos take full (avatar circle); pull-quote
+   * callout band uses md (12px).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Chrome at rest is flat. Hairlines do the structural work; pull-
+   * quote callouts use a tinted surface fill, not a shadow lift.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 6px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 16px 32px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ----------
+   * Figma is standard-ease, 150ms hover.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

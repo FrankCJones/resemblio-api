@@ -1,0 +1,212 @@
+<!--
+  Asset: locomotive-hero-001
+  Class: heroes (whole)
+  Pattern: oversized-statement, no-imagery (inverted: video-bg with type on top), video-bg-hero
+  Inspired by: Locomotive
+  Notes:
+    - Native context: locomotive.ca/en opening viewport, captured via Claude
+      in Chrome devtools 2026-05-20. The hero is a 639px-tall full-bleed
+      module with a looping background video (.c-video_media inside
+      .c-home-hero_background) and an oversized white H1 sitting on top
+      (.c-home-hero_content > h1.c-heading.-h1). The H1 reads
+      "(emoji) Locomotive(R) / Digital-first Design Agency (emojis)" -
+      two lines, set in the LocomotiveNew custom face at 70px / 1.1,
+      weight 400, pure white. Decorative emoji flank the headline as
+      printers' marks (aria-hidden). On hover the H1 carries
+      data-allow-shuffle - every glyph cycles through randomized
+      characters before settling back; this asset captures the static
+      end-state but the .js-shuffle class hook and timing are
+      documented inline below.
+    - Top bar: Locomotive(R) wordmark left in HelveticaNowDisplay 26px;
+      sparse nav "Work / Agency / Careers / Store / FR / Let's talk"
+      right at 26px (the unusually-large nav size is part of the
+      studio's oversized register). Header sits transparent over the
+      video; ink color is pure black against the cream paper that
+      surrounds the cropped video frame on wider viewports.
+    - Variable: every color, type, spacing, radius, motion value via
+      tokens.css. Inline ornament: the looping background video is
+      replaced by a CSS gradient placeholder that reads as a print
+      plate against the dark canvas (no contract slot for arbitrary
+      video stand-ins); the emoji glyphs are kept verbatim as they
+      function as decorative wayfinding the same way Pentagram's red
+      hairline does.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- LocomotiveNew is the studio's custom display face; not licensed for
+     redistribution, so the fallback stack lands on Helvetica Now Display
+     and degrades to Helvetica Neue. Inter via Google Fonts stands in for
+     Helvetica Now Display where the system face is absent. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Cream paper outside the hero crop; the hero itself
+   * rides a near-black video layer with white kinetic type on top. */
+  body {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Top bar. Transparent over the video; Locomotive wordmark left,
+   * sparse oversized nav right. The "Let's talk" pill is the only
+   * radius event in the entire opening viewport. */
+  .topbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-5) var(--ds-space-6);
+  }
+  .wordmark {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .topbar__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+  }
+  .topbar__nav a {
+    color: var(--ds-text);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-accent); }
+
+  /* Hero. 100vh stage with the looping video behind and the oversized
+   * white kinetic H1 ahead. The video runs full-bleed; on wider
+   * viewports a cream margin reveals around the cropped frame. */
+  .hero {
+    position: relative;
+    height: min(100vh, 720px);
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--ds-bg);
+  }
+
+  /* The background is a video on the live site. Inline ornament:
+   * a 6-stop gradient stands in as a print plate. No contract slot
+   * for arbitrary video; this is asset-specific character. */
+  .hero__background {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 70% 30%, rgba(49, 45, 251, 0.22) 0%, transparent 40%),
+      radial-gradient(circle at 20% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 35%),
+      linear-gradient(135deg, #050505 0%, #161616 50%, #050505 100%);
+  }
+
+  /* Content layer. Caption block left-aligned, bottom-anchored on the
+   * stage so the H1 reads as the final beat as the video plays through. */
+  .hero__content {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-10);
+    color: var(--ds-text);
+    z-index: 1;
+  }
+
+  /* The kinetic statement. On the live site, .js-shuffle hook cycles
+   * each glyph through randomized characters before settling on its
+   * resolved letter (per-glyph step ~80ms; total resolve ~700-900ms).
+   * The static end-state captured here is the resolved sentence. */
+  .hero__title {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    /* Native: 70px / 77px on desktop. Scales down on narrow viewports. */
+    font-size: clamp(var(--ds-text-3xl), 6.4vw, var(--ds-text-5xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    max-width: 18ch;
+  }
+  /* Emojis flanking the title are decorative wayfinding glyphs; they
+   * read as printers' marks against the white kinetic mass. Kept as
+   * literal characters rather than tokenized so the marks survive when
+   * the asset is dropped into a per-site library. */
+  .hero__title .mark {
+    font-style: normal;
+    color: var(--ds-text);
+  }
+
+  /* Hover state simulates the kinetic shuffle by jitter-translating
+   * individual letters. The live site swaps glyph contents in JS; here,
+   * a CSS-only fallback nudges so the kinetic intent is legible. */
+  @keyframes shuffle-jitter {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(-1px, 1px); }
+    50%  { transform: translate(1px, -1px); }
+    75%  { transform: translate(-1px, -1px); }
+    100% { transform: translate(0, 0); }
+  }
+  .hero__title:hover {
+    animation: shuffle-jitter 240ms var(--ds-ease-standard) 2;
+  }
+
+  /* Focus styling. Electric blue ring reads on both the dark hero
+   * canvas and the cream paper below. */
+  a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .topbar__nav a, .hero__title { transition: none; animation: none; }
+    .hero__title:hover { animation: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar { padding: var(--ds-space-4); }
+    .topbar__nav { gap: var(--ds-space-4); font-size: var(--ds-text-base); }
+    .hero { min-height: 480px; }
+    .hero__content { padding: var(--ds-space-5); }
+  }
+</style>
+</head>
+<body>
+  <section class="hero" aria-label="Lorem ipsum studio statement">
+    <div class="hero__background" aria-hidden="true"></div>
+    <header class="topbar">
+      <a href="#" class="wordmark" aria-label="Lorem wordmark">Lorem&reg;</a>
+      <nav class="topbar__nav" aria-label="Primary">
+        <a href="#">Ipsum</a>
+        <a href="#">Dolor</a>
+        <a href="#">Sit</a>
+        <a href="#">Amet</a>
+        <a href="#">FR</a>
+        <a href="#">Consectetur</a>
+      </nav>
+    </header>
+
+    <div class="hero__content">
+      <h1 class="hero__title" data-allow-shuffle>
+        <span class="mark" aria-hidden="true">&#x1F538;</span> Lorem&reg;<br>
+        Ipsum-first Dolor Agency<span class="mark" aria-hidden="true">&#x1F37A;&#x1F51E;</span>
+      </h1>
+    </div>
+  </section>
+</body>
+</html>

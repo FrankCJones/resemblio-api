@@ -1,0 +1,644 @@
+<!--
+  Asset: vercel-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: Vercel (vercel.com/customers/<slug>)
+  Notes:
+    - Customer-story page skeleton: flush-top nav, hero (customer name as
+      title + Geist Blue customer logo lockup + mono publish meta + byline),
+      outcome-metrics band (3-up tiles with big value + small mono unit + label),
+      narrative body (lead, H2 sections, pull quotes that break the column,
+      inline figure), products-used aside (mono-labeled tag list, sits as
+      sidebar on desktop), CTA block (two-column dark inversion), related
+      stories grid (three-up), mega-footer. Reading column is ~64ch; the
+      rest of the page widens to 1280px.
+    - Variable: section sequence, page max-width, vertical rhythm,
+      typographic role per slot, color slot mapping. Inline: article-column
+      measure (64ch), page max-width (1280px), aside sidebar column ratio,
+      outcome-tile aspect ratio, customer-logo lockup geometry.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Geist and Geist Mono are the Vercel marketing faces. Faces
+  are not loaded in the asset; the fallback chains in tokens.css (Inter,
+  JetBrains Mono) carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so nav, outcome band, related-grid,
+   * and footer breathe; the reading column inside is narrower. Inline value.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Narrative reading column. The body sits at ~64ch (about 640px at
+   * 16px Geist). Page-grid character, not a contract slot, so inline.
+   */
+  .column {
+    max-width: 64ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop; bottom hairline
+   * is the rule between major customer-story page sections. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Hero. Customer-logo lockup (Geist Blue surface) sits above an
+   * editorial display title carrying the customer name; below the title,
+   * a mono date stamp and sans byline. No cover band; the lockup is the
+   * imagery moment.
+   */
+  .hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .hero { padding-top: var(--ds-space-16); padding-bottom: var(--ds-space-10); }
+  }
+  /* Customer-logo lockup: a 56x56 Geist-Blue tile beside a sans mono kicker
+   * carrying the customer name. Inline ornament; downstream consumers can
+   * swap in a real client logo SVG. */
+  .hero__lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-6);
+  }
+  .hero__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-accent);
+    border: 1px solid var(--ds-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .hero__customer {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 26ch;
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+  }
+  .byline-author {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+  }
+  /* Author avatar: 24px circle on the byline. Inline ornament. */
+  .byline-author__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  .byline-date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * Outcome-metrics band. Three tiles in a row on desktop, stacked on
+   * mobile. Each tile: oversized value, mono unit, sans label. The value
+   * carries the Geist Blue accent so the band is the page's color moment
+   * before the body returns to grayscale.
+   */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .metrics { grid-template-columns: repeat(3, 1fr); }
+  }
+  .metric {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .metric__unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-left: var(--ds-space-1);
+  }
+  .metric__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /*
+   * Narrative body, with optional aside. Desktop: 2-column grid with a
+   * narrow products-used aside on the right; mobile: aside stacks above
+   * the body.
+   */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    /* Aside ratio: ~240px aside / 1fr body. Inline. */
+    .body-grid { grid-template-columns: 1fr 240px; gap: var(--ds-space-10); align-items: start; }
+  }
+
+  /*
+   * Body column. Lead paragraph sits one step larger. Body uses Geist at
+   * 16px on 1.6 leading. H2/H3 break the column. Inline links pick up
+   * Geist Blue with a thin underline.
+   */
+  .body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); max-width: 64ch; }
+  .body > * + * { margin-top: var(--ds-space-5); }
+  .body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .body figure { margin: var(--ds-space-8) 0; }
+  .body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-top: var(--ds-space-3);
+  }
+
+  /*
+   * Pull quote. Breaks the column visually with a Geist Blue left rule and
+   * larger quote body in display sans. Speaker attribution carries name +
+   * mono role label.
+   */
+  .pull-quote {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-2) 0 var(--ds-space-2) var(--ds-space-6);
+    border-left: 3px solid var(--ds-accent);
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .pull-quote__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .pull-quote__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .pull-quote__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .pull-quote__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Aside / sidebar. Mono-uppercase label per group (Industry, Products,
+   * Use Case, Region), sans value list beneath. On desktop, sticks just
+   * below the metrics band as the body scrolls.
+   */
+  .aside {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+  }
+  @media (min-width: 1024px) {
+    .aside { position: sticky; top: var(--ds-space-8); }
+  }
+  .aside__group + .aside__group { margin-top: var(--ds-space-5); }
+  .aside__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .aside__value {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .aside__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .aside__tag {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-2);
+  }
+
+  /*
+   * CTA block. Dark inversion: near-black surface, paper-white text, Geist
+   * Blue primary pill. Two-column on desktop: headline + body on left,
+   * CTA pair on right. Stands in for vercel-cta-block-001.
+   */
+  .cta {
+    background: var(--ds-accent-2);
+    color: var(--ds-bg);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: end;
+  }
+  @media (min-width: 768px) {
+    .cta { grid-template-columns: 1.4fr 1fr; gap: var(--ds-space-10); }
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cta__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-border);
+    margin: 0;
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+  .cta__primary, .cta__secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-bg);
+  }
+  .cta__primary { background: var(--ds-bg); color: var(--ds-text-strong); }
+  .cta__secondary { background: transparent; color: var(--ds-bg); }
+
+  /*
+   * Related stories. Section heading in display sans, then three-up card
+   * grid sized to the page container (wider than the body column).
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container. Stands in
+   * for wholes/footers/dev-tool-status-footer-001 or equivalent
+   * vercel-tagged mega-footer. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a vercel-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Contact Lorem
+      </div>
+    </nav>
+
+    <!-- Section: hero. Customer logo lockup + display title + byline. -->
+    <header class="hero" aria-label="Customer story hero">
+      <div class="column">
+        <div class="hero__lockup" aria-hidden="true">
+          <span class="hero__logo">L</span>
+          <span class="hero__customer">Lorem Customer</span>
+        </div>
+        <h1 class="hero__title">Lorem ipsum dolor sit amet: How Lorem Customer scaled with Lorem Platform.</h1>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            Lorem Ipsum, Dolor Sit
+          </span>
+          <span class="byline-date">May 20, 2026 . 4 min read</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: outcome-metrics band. Three tiles in a row on desktop. -->
+    <section class="section" aria-label="Outcome metrics">
+      <div class="metrics">
+        <div class="metric">
+          <p class="metric__value">75<span class="metric__unit">%</span></p>
+          <p class="metric__label">Lorem ipsum improvement in build times.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">10<span class="metric__unit">x</span></p>
+          <p class="metric__label">Dolor sit amet performance lift.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">4.5<span class="metric__unit">m / day</span></p>
+          <p class="metric__label">Consectetur adipiscing daily throughput.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: narrative body + products-used aside. Two-column on desktop. -->
+    <section class="section" aria-label="Narrative body">
+      <div class="body-grid">
+        <article class="body">
+          <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco.
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+          </p>
+          <h2>Going lorem with ipsum</h2>
+          <p>
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+            nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+            commodo consequat.
+          </p>
+          <blockquote class="pull-quote">
+            <p class="pull-quote__body">
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. It's
+              the dolor we didn't go sooner; lorem and ipsum make our
+              consectetur happier."
+            </p>
+            <footer class="pull-quote__attribution">
+              <span class="pull-quote__avatar" aria-hidden="true"></span>
+              <span>
+                <p class="pull-quote__name">Lorem Ipsum</p>
+                <p class="pull-quote__role">Lorem Role, Lorem Customer</p>
+              </span>
+            </footer>
+          </blockquote>
+          <h2>Removing friction for better DX</h2>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </p>
+          <figure>
+            <div class="slot" style="aspect-ratio: 16 / 9;">
+              <span class="slot__label">inline-figure</span>
+              Lorem ipsum migration-path infographic
+            </div>
+            <figcaption>
+              Lorem ipsum figure caption explaining the visualization above.
+            </figcaption>
+          </figure>
+          <h2>Lorem and beyond</h2>
+          <p>
+            Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+            natus error sit voluptatem accusantium doloremque laudantium.
+          </p>
+        </article>
+
+        <!-- Aside: products-used + customer metadata. -->
+        <aside class="aside" aria-label="Customer details">
+          <div class="aside__group">
+            <p class="aside__label">Industry</p>
+            <p class="aside__value">Lorem Ipsum</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Use Case</p>
+            <p class="aside__value">Dolor sit amet</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Region</p>
+            <p class="aside__value">Consectetur</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Products</p>
+            <ul class="aside__tags">
+              <li class="aside__tag">Lorem</li>
+              <li class="aside__tag">Ipsum</li>
+              <li class="aside__tag">Dolor</li>
+              <li class="aside__tag">Sit</li>
+              <li class="aside__tag">Amet</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: CTA block. Dark inversion. Stands in for vercel-cta-block-001. -->
+    <section class="section" aria-label="Call to action">
+      <div class="cta">
+        <div>
+          <p class="cta__title">Lorem ipsum dolor sit amet.</p>
+          <p class="cta__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Ut enim ad minim veniam.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <a class="cta__primary" href="#">Start Lorem</a>
+          <a class="cta__secondary" href="#">Talk to Lorem</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related stories. Three-up grid, full page width. -->
+    <section class="section" aria-label="Related stories">
+      <h2 class="related-heading">More stories</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!--
+  Asset: a24-cinematic-pair-001
+  Class: type-pairings
+  Pattern: single-typeface-system, mono-utility-pair
+  Inspired by: A24 Films, A24 Shop
+  Notes:
+    - One humanist sans (Inter / Inter Tight as analog for A24's licensed
+      GT America / Söhne register) carries display and body. A monospace
+      handles titlecard-register section labels.
+    - Inline ornament: the small-caps mono label uses a leading bullet glyph
+      that mimics A24's section-label punctuation on the films grid. Not a
+      reusable token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-cinematic-pair-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter / Inter Tight as open-licensed analog for A24's GT America / Söhne
+     production register. JetBrains Mono for titlecard labels; chosen for
+     its even color and readable small-caps shape at 12px. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+
+  /* Titlecard register: small-caps mono label with wider tracking.
+     A24's films grid uses this register for "COMING SOON", "NOW PLAYING",
+     "IN THEATERS". */
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Inline ornament: bullet glyph echoing A24's section-label punctuation.
+     Asset-specific character moment; not a token. */
+  .label::before {
+    content: "\2022";
+    color: var(--ds-text);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* Film-title display: tight tracking, heavy weight, paper-white lift.
+     Reads as cinematic title-card rather than UI heading. */
+  .display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* Accent: serif-italic word used sparingly the way A24 occasionally drops
+     a Times Now italic into a paper-on-ink title slate. */
+  .display em {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ds-accent-2);
+  }
+
+  /* Body sits at lg (19px) for marketing reading; one notch above default
+     UI body because the surface is editorial marketing, not app chrome. */
+  .body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* Metadata row: mono at xs, tracked, muted. Used by A24 for credits,
+     release dates, runtime. */
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .meta-row b {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* Hairline below the meta row; references the films-grid hairline
+     between tiles. */
+  .rule {
+    margin: var(--ds-space-2) 0 0;
+    height: 1px;
+    background: var(--ds-hairline);
+    border: 0;
+    max-width: 56ch;
+  }
+</style>
+</head>
+<body>
+  <span class="label">Type Pairing · A24 Cinematic</span>
+  <h1 class="display">Lorem ipsum <em>dolor</em> sit amet consectetur.</h1>
+  <p class="body">Adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus.</p>
+  <hr class="rule"/>
+  <div class="meta-row">
+    <span>Display · <b>Inter Tight 600</b></span>
+    <span>Body · <b>Inter 400</b></span>
+    <span>Mono · <b>JetBrains Mono 500</b></span>
+    <span>Accent · <b>Times Now Italic</b></span>
+  </div>
+</body>
+</html>

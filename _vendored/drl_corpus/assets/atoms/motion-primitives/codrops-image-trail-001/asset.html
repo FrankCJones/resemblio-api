@@ -1,0 +1,275 @@
+<!--
+  Asset: codrops-image-trail-001
+  Class: motion-primitives
+  Pattern: cursor-affordance
+  Inspired by: Codrops (Tympanus) - "Grid Item Reveal Animation on Hover"
+  Notes:
+    - Demonstrates the hover-driven image-reveal mechanic: a card placed on a
+      10x10 grid track starts clipped to a zero-area edge polygon (right, left,
+      top, or bottom edge depending on intended entry direction) and tweens to
+      the full rectangle polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) over 950ms
+      on a power4 curve, while brightness rolls 300% to 100% and inner scale
+      rolls 1.5 to 1. Reverses with a 30ms hover-out debounce.
+    - Variables in tokens.css carry the contract values. The four directional
+      clip polygons, the 10x10 grid template, and the per-link enter direction
+      are inline character values specific to this primitive's stage.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>codrops-image-trail-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Onest is the source's display+body family; loaded from Google Fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-6) var(--ds-space-5);
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Stage frame: a fixed-aspect stage that hosts the 10x10 grid and the
+   * floating link list whose hover triggers the reveals. */
+  .stage {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: var(--ds-space-8);
+  }
+
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+  }
+
+  /* The grid track: 10x10 cells over a tall canvas, matching the source's
+   * grid-template-columns/grid-template-rows pattern (repeat(10, 1fr)). */
+  .reveal-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    overflow: hidden;
+    border: 1px solid var(--ds-hairline);
+  }
+
+  /* Each image card sits in a named grid area chosen from the source's
+   * pos-1 through pos-15. We use three so a single hover cluster paints
+   * a triptych the way the demo's first content set does. */
+  .img-card {
+    position: relative;
+    z-index: 0;
+    will-change: clip-path, filter;
+    /* Closed state: an edge polygon. Variants below pick the edge. */
+    clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%); /* right-edge default. */
+    filter: brightness(3); /* Source GSAP starts at 300%. */
+    transition:
+      clip-path var(--ds-duration-slow) var(--ds-ease-emphasize),
+      filter   var(--ds-duration-slow) var(--ds-ease-emphasize);
+  }
+
+  /* Direction variants. Each names the polygon at rest; the open state is
+   * the same full-rectangle polygon for all of them. The four polygons are
+   * copied verbatim from the source's index.js: right, left, top, bottom. */
+  .img-card.from-right  { clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%); }
+  .img-card.from-left   { clip-path: polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%); }
+  .img-card.from-top    { clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%); }
+  .img-card.from-bottom { clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%); }
+
+  /* Open state: full rectangle polygon. Matches the source 'to' value. */
+  .reveal-stage.is-open .img-card {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    filter: brightness(1);
+  }
+
+  /* Inner element carries the bitmap and runs the scale tween, mirroring the
+   * source's .content__img-inner. The scale rolls 1.5 to 1 in lockstep with
+   * the clip-path. */
+  .img-card__inner {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: 50% 0%;
+    transform: scale(1.5);
+    transition: transform var(--ds-duration-slow) var(--ds-ease-emphasize);
+  }
+  .reveal-stage.is-open .img-card__inner { transform: scale(1); }
+
+  /* Grid areas: three card positions, taken from the source's pos-1, pos-2,
+   * pos-3. The set is intentionally asymmetric. */
+  .pos-1 { grid-area: 1 / 1 / 5 / 5; }
+  .pos-2 { grid-area: 5 / 8 / 10 / 11; }
+  .pos-3 { grid-area: 8 / 3 / 11 / 5; }
+
+  /* Lorem-ipsum bitmaps. Inline data URIs of muted swatches so the asset
+   * opens standalone without a network image. The colors are intentionally
+   * subdued so the brightness tween reads clearly. */
+  .img-a { background-image: linear-gradient(135deg, #2a2a28 0%, #4a3f2b 70%, #6b5535 100%); }
+  .img-b { background-image: linear-gradient(135deg, #1f2a40 0%, #3a4663 70%, #5d6f96 100%); }
+  .img-c { background-image: linear-gradient(135deg, #3b2c1a 0%, #5e4528 70%, #8a6a3a 100%); }
+
+  /* Centered title that rides above the image grid, mirroring the source's
+   * .content__title (z-index 10, opacity 0 at rest, opacity 1 on open). */
+  .stage-title {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+    pointer-events: none;
+    text-transform: none;
+    font-weight: 400;
+    font-size: clamp(2rem, 8vw, var(--ds-text-7xl));
+    line-height: 0.9; /* Source literal. */
+    color: var(--ds-text-strong);
+    margin: 0;
+    padding: 0 var(--ds-space-6);
+    opacity: 0;
+    transition: opacity var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .reveal-stage.is-open .stage-title { opacity: 1; }
+
+  /* The trigger list. Hover any link to ignite the reveal. Reading uppercase
+   * in Onest, mustard hover state, mirroring the source's .frame__works. */
+  .trigger-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-6);
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .trigger-list a {
+    font-size: var(--ds-text-xl); /* Source's .frame__works link literal: 1.5rem. */
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    cursor: pointer;
+    padding: var(--ds-space-1) 0; /* 0.25rem 0 literal from source. */
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .trigger-list a:hover,
+  .trigger-list a:focus-visible {
+    color: var(--ds-accent); /* The demo's --color-link-works-hover mustard. */
+    outline: none;
+  }
+  .trigger-list a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+  .trigger-list a.is-current { color: var(--ds-accent-2); }
+
+  /* Bottom metadata row mirrors the source's frame__contact + frame__links. */
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    justify-content: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+  }
+  .meta-row b { color: var(--ds-text-strong); font-weight: 500; }
+
+  /* Reduced motion: instant reveal, no clip-path or filter animation. */
+  @media (prefers-reduced-motion: reduce) {
+    .img-card,
+    .img-card__inner,
+    .stage-title {
+      transition: none;
+    }
+    .reveal-stage .img-card {
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+      filter: brightness(1);
+    }
+    .reveal-stage .img-card__inner { transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+  <div class="stage" role="region" aria-label="Hover-driven image reveal demonstration">
+
+    <div class="label">motion &middot; codrops-image-trail-001</div>
+
+    <div class="reveal-stage" id="stage">
+      <div class="img-card pos-1 from-right"><div class="img-card__inner img-a"></div></div>
+      <div class="img-card pos-2 from-left"><div class="img-card__inner img-b"></div></div>
+      <div class="img-card pos-3 from-top"><div class="img-card__inner img-c"></div></div>
+      <h2 class="stage-title">Lorem Ipsum<br/>Dolor Sit</h2>
+    </div>
+
+    <ul class="trigger-list" id="triggers">
+      <li><a href="#" data-target="set-1">Consectetur</a></li>
+      <li><a href="#" data-target="set-2">Adipiscing</a></li>
+      <li><a href="#" data-target="set-3">Eiusmod Tempor</a></li>
+    </ul>
+
+    <div class="meta-row">
+      <span>ease &middot; <b>cubic-bezier(0.16, 1, 0.3, 1)</b></span>
+      <span>duration &middot; <b>950ms (slow)</b></span>
+      <span>brightness &middot; <b>3 &rarr; 1</b></span>
+      <span>scale &middot; <b>1.5 &rarr; 1</b></span>
+      <span>clip &middot; <b>edge polygon &rarr; full rect</b></span>
+    </div>
+
+  </div>
+
+  <script>
+    /* Drive the reveal on link hover. Toggling the .is-open class on the
+     * stage is enough; the transition values declared in CSS handle the
+     * curve, duration, brightness, and scale tweens.
+     * A 30ms entry debounce mirrors the source's hover delay (30ms). */
+    (function () {
+      var stage    = document.getElementById('stage');
+      var triggers = document.querySelectorAll('#triggers a');
+      var openTimer = null;
+
+      function open() {
+        clearTimeout(openTimer);
+        openTimer = setTimeout(function () {
+          stage.classList.add('is-open');
+        }, 30); /* Source's hover delay literal. */
+      }
+      function close() {
+        clearTimeout(openTimer);
+        stage.classList.remove('is-open');
+      }
+
+      triggers.forEach(function (a) {
+        a.addEventListener('mouseenter', open);
+        a.addEventListener('focus', open);
+        a.addEventListener('mouseleave', close);
+        a.addEventListener('blur', close);
+        a.addEventListener('click', function (e) { e.preventDefault(); });
+      });
+
+      /* First paint: show the reveal once so the asset is not blank on load. */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { stage.classList.add('is-open'); });
+      });
+    })();
+  </script>
+</body>
+</html>

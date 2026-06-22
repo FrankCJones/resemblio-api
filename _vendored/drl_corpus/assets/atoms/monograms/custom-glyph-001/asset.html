@@ -1,0 +1,113 @@
+<!--
+  Asset: custom-glyph-001
+  Class: monograms
+  Pattern: wordmark-with-mark
+  Inspired by: Anthropic
+  Notes:
+    - Custom illustrated mark: not a letter, not a primitive shape. A
+      radiating burst / asterisk-style glyph drawn with tapered strokes.
+    - Color and surround tokens are variables; the burst geometry is inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>custom-glyph-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .mark {
+    color: var(--ds-text-strong);
+    display: inline-block;
+  }
+  .mark svg {
+    display: block;
+    fill: currentColor;
+  }
+  .mark--favicon svg { width: 16px; height: 16px; }
+  .mark--display svg { width: 64px; height: 64px; }
+  .lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .lockup svg { width: 22px; height: 22px; fill: currentColor; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">favicon (16px)</span>
+    <span class="mark mark--favicon">
+      <!-- Custom burst: four radiating tapered strokes meeting at center, forming a
+           sparkle / asterisk silhouette. Each blade is a quadrilateral that tapers
+           from a wide outer edge to a narrow center, giving the mark optical motion
+           even at standstill. viewBox 0 0 100 100 keeps it square. -->
+      <svg viewBox="0 0 100 100" aria-label="Lorem">
+        <!-- top blade -->
+        <path d="M50 6 L56 48 L50 50 L44 48 Z"/>
+        <!-- right blade -->
+        <path d="M94 50 L52 56 L50 50 L52 44 Z"/>
+        <!-- bottom blade -->
+        <path d="M50 94 L44 52 L50 50 L56 52 Z"/>
+        <!-- left blade -->
+        <path d="M6 50 L48 44 L50 50 L48 56 Z"/>
+      </svg>
+    </span>
+  </div>
+  <div class="stage">
+    <span class="state-label">marketing (64px)</span>
+    <span class="mark mark--display">
+      <svg viewBox="0 0 100 100" aria-label="Lorem">
+        <path d="M50 6 L56 48 L50 50 L44 48 Z"/>
+        <path d="M94 50 L52 56 L50 50 L52 44 Z"/>
+        <path d="M50 94 L44 52 L50 50 L56 52 Z"/>
+        <path d="M6 50 L48 44 L50 50 L48 56 Z"/>
+      </svg>
+    </span>
+  </div>
+  <div class="stage">
+    <span class="state-label">lockup with wordmark</span>
+    <span class="lockup">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50 6 L56 48 L50 50 L44 48 Z"/>
+        <path d="M94 50 L52 56 L50 50 L52 44 Z"/>
+        <path d="M50 94 L44 52 L50 50 L56 52 Z"/>
+        <path d="M6 50 L48 44 L50 50 L48 56 Z"/>
+      </svg>
+      lorem
+    </span>
+  </div>
+</body>
+</html>

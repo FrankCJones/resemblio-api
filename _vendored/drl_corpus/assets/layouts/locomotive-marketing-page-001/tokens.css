@@ -1,0 +1,132 @@
+/*
+ * locomotive-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the Locomotive (locomotive.ca) homepage.
+ * Tokens calibrated to the same Locomotive register the system already
+ * carries: warm cream paper as the page surface, pure black as both ink
+ * and a second raised inversion surface, warm-ink secondary copy, a 1.6px
+ * solid black section rule rather than a hairline, 0px corners on every
+ * interactive element, and an electric blue (#312DFB) reserved for focus
+ * and a single info moment. LocomotiveNew (the studio's custom display
+ * face) carries hero and featured-work titles; Helvetica Now Display
+ * runs body, nav, and supporting copy.
+ *
+ * Section sequence captured verbatim via WebFetch on 2026-05-20 (nav,
+ * hero, featured-work grid, agency statement, articles, culture trips,
+ * store, footer). Numeric token values inherit the canonical Locomotive
+ * register documented in the locomotive-mono-001 color-group and the
+ * locomotive system manifest's design_principles, rather than from a
+ * fresh devtools read on this page surface.
+ *
+ * The slots that actually carry this layout are --ds-bg (cream paper),
+ * --ds-surface-2 (pure black inversion for the kinetic footer band),
+ * --ds-text (pure black ink), --ds-text-muted (warm ink #30302E for
+ * body), --ds-border (solid black for the 1.6px section rules),
+ * --ds-radius-* (all 0; hard corners are the studio's signature),
+ * --ds-font-display (LocomotiveNew for the statement hero and the
+ * featured-work tile titles), and --ds-text-5xl / --ds-text-7xl (the
+ * 70px H1 and the 140px kinetic step the case-study tiles bound to).
+ */
+:root {
+  /* Colors. Cream-paper-with-black-ink is the studio's signature; the
+   * accent is black on cream and cream on black (inversion is the
+   * mechanic). No saturated brand color appears as decoration. */
+  --ds-bg:           #FAF9F5;   /* Cream paper; observed rgb(250,249,245) on locomotive.ca body 2026-05-19. */
+  --ds-surface:      #FFFFFF;   /* Pure white; project tile fill against cream. */
+  --ds-surface-2:    #000000;   /* Pure black; the hero, footer, and kinetic-payoff inversion surface. */
+  --ds-text:         #000000;   /* Pure black ink; reading text and links across cream sections. */
+  --ds-text-muted:   #30302E;   /* Warm dark grey; observed rgb(48,48,46) on body and supporting copy. */
+  --ds-text-strong:  #141413;   /* Near-black warm ink; differentiates from pure black when both are in play. */
+  --ds-border:       #000000;   /* Section rules ship at 1.6px solid black on cream; the rule is statement, not chrome. */
+  --ds-hairline:     rgba(31, 30, 29, 0.15);  /* Quiet divider used inside the article list and store block. */
+  --ds-accent:       #000000;   /* The accent IS black against cream; inversion does the work color usually does. */
+  --ds-accent-2:     #FAF9F5;   /* Cream as the inverse accent on black footer and hero bands. */
+  --ds-success:      #1F8A4B;   /* Reserved utility green; not observed on this page, kept in harmony with the warm palette. */
+  --ds-warning:      #C77A1F;   /* Reserved utility amber; warm to match the cream-and-ink temperature. */
+  --ds-error:        #B83A2E;   /* Reserved utility brick; belongs in the palette. */
+  --ds-info:         #312DFB;   /* Observed rgb(49,45,251) saturated electric blue used as a single interactive cue. */
+  --ds-focus-ring:   #312DFB;   /* Matches info; the electric blue is the one keyboard-state shift that reveals an interactive system underneath. */
+
+  /* Type. LocomotiveNew is the studio's custom display face for the
+   * statement hero and featured-work tile titles. Helvetica Now Display
+   * carries body, nav, supporting copy. Mono is reserved for the
+   * numbered case-study labels and the address block in the footer. */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* Type scale. Body anchored at 15px; H1 hero at 70px; the kinetic
+   * featured-work title bounds to the 7xl (140px) step. Section
+   * headings sit at 2xl (34px) or 3xl (46px) depending on weight. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  46px;
+  --ds-text-4xl:  58px;
+  --ds-text-5xl:  70px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  140px;
+
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* Spacing. 4px base grid. Section rhythm runs generously: 96px
+   * between sections on desktop (--ds-space-12), 192px (--ds-space-32)
+   * for the hero's vertical breathing room. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii. Every interactive element renders at 0px; hard corners are
+   * the studio's signature commitment. The pill slot is kept available
+   * for the rare downstream override but is not used on the page. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* Shadows. The layout is flat; cream-vs-black inversion carries the
+   * elevation work shadow would do elsewhere. Steps kept conservative
+   * for downstream adopters that need them. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.10);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.14);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* Motion. Smooth-scroll is in the system manifest as a principle;
+   * tile reveal and kinetic marquee use the emphasize curve. */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

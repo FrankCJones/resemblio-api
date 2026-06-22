@@ -1,0 +1,169 @@
+/*
+ * pentagram-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Pentagram's /news/<slug> long-form posts.
+ * Pentagram paper-and-ink discipline: pure white field, near-black ink
+ * (Gray 900 #1A1A1A), one muted gray for byline and dek-secondary moments
+ * (Gray 550 #767676), one thin neutral hairline (Gray 100 #E3E4E5) doing
+ * every structural rule. Pentagram's lone chromatic role is the studio red
+ * (#E52222) reserved as punctuation; on this article surface it is held
+ * back for inline links and focus rings only. No shadows. No gradients.
+ *
+ * Type system: Pentagram ships F37 Plain (custom display + body grotesk)
+ * across both display and body, mapped here to the `--plain` token from
+ * the published stylesheet. Free-font analog in `asset.html` is Inter
+ * Tight: a humanist grotesk with a similar geometric register at display
+ * scale and screen-tuned metrics at body scale. The site uses one family
+ * across heading and body; the mono slot is reserved (Pentagram does not
+ * use mono on article surfaces).
+ *
+ * Source inspected via WebFetch on 2026-05-20:
+ *   https://www.pentagram.com/news/design-is-spiritual
+ *   https://www.pentagram.com/news/drawing-the-process
+ * Stylesheet inspected:
+ *   https://www.pentagram.com/build/main/assets/index-D6ZeMubG.css
+ * Both posts confirm the article shell: h1.f-heading-1 title,
+ * span.f-body-1.text-secondary byline ("Category — Date"), span.f-heading-4
+ * dek, div.m-richText.f-body-1 column. Token values below are the literal
+ * values read from the published stylesheet at desktop breakpoints.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pentagram paper-and-ink. The page is true #FFFFFF; ink is Gray 900
+   * (#1A1A1A) per --gray-900 in the published stylesheet. Byline and dek
+   * sit at Gray 550 (#767676) per --gray-550. Hairlines (the section
+   * break, the byline rule on this asset) use Gray 100 (#E3E4E5) per
+   * --gray-100 (the "border-primary" class). Red 500 (#E52222) is the
+   * studio accent, held back here to inline links and focus only.
+   */
+  --ds-bg:           #FFFFFF;   /* Pentagram pure white. The studio refuses to warm the page. */
+  --ds-surface:      #FFFFFF;   /* Article shell sits flush; no raised surface chrome. */
+  --ds-surface-2:    #FAFAFA;   /* Reserved; not used on this article surface. */
+  --ds-text:         #1A1A1A;   /* Gray 900; H1, dek, body ink. Single-ink discipline. */
+  --ds-text-muted:   #767676;   /* Gray 550; byline category-and-date, figure caption. */
+  --ds-text-strong:  #000000;   /* Reserved deep emphasis; rarely used on the article surface. */
+  --ds-border:       #E3E4E5;   /* Gray 100; component borders if any. */
+  --ds-hairline:     #E3E4E5;   /* Gray 100; section break rule, byline rule. */
+  --ds-accent:       #E52222;   /* Red 500; the Pentagram studio red. Inline links, focus ring. */
+  --ds-accent-2:     #B81B1B;   /* Slightly darker red for link hover; not in source palette. */
+  --ds-success:      #1A1A1A;   /* Ink, not green. Pentagram refuses state colors on the page. */
+  --ds-warning:      #1A1A1A;   /* Ink. */
+  --ds-error:        #E52222;   /* Red 500. */
+  --ds-info:         #1A1A1A;   /* Ink. */
+  --ds-focus-ring:   #E52222;   /* Red 500; the punctuation accent doubles as focus ring. */
+
+  /* ---------- Type families ----------
+   * One family across display and body. Pentagram ships F37 Plain (mapped
+   * via --plain in the source CSS to "Plain, Arial, Sans-Serif"). The
+   * free-font analog in asset.html is Inter Tight (a humanist grotesk with
+   * comparable register; Pentagram's choice of Plain is geometric-grotesk
+   * with high x-height that Inter Tight approximates on screen).
+   */
+  --ds-font-display: "Inter Tight", "Plain", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-body:    "Inter Tight", "Plain", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-mono:    ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ds-font-accent:  "Inter Tight", "Plain", "Helvetica Neue", Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Read literally from the source stylesheet at the largest breakpoint:
+   *   --f-heading-1-font-size: 3.25rem (52px) on desktop. (Mobile starts at
+   *   2.25rem = 36px.) Article H1 lands here.
+   *   --f-heading-4-font-size: 1.5rem (24px). Dek paragraph lands here at
+   *   line-height 1.2.
+   *   --f-body-1-font-size: 1rem (16px). Byline and body lands here at
+   *   line-height 1.25.
+   *   --f-caption-font-size: 0.8125rem (13px). Figure caption.
+   * Body line-height (1.25) is tighter than the SaaS 1.5 default; this is
+   * the editorial-studio reading register, not the product-reading
+   * register. The tightness is deliberate.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Reserved. */
+  --ds-text-sm:   13px;   /* f-caption; figure caption, footer caption. */
+  --ds-text-base: 16px;   /* f-body-1; byline, body, dek-prose. */
+  --ds-text-lg:   20px;   /* Reserved; between dek and body. */
+  --ds-text-xl:   24px;   /* f-heading-4; dek paragraph. */
+  --ds-text-2xl:  32px;   /* Reserved. */
+  --ds-text-3xl:  41px;   /* f-heading-1 mid-breakpoint. */
+  --ds-text-4xl:  52px;   /* f-heading-1 desktop; article H1. */
+  --ds-text-5xl:  72px;   /* Reserved; statement-display range. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * H1 holds at 1.05 (the source --f-heading-1-line-height). Dek (f-h4)
+   * holds at 1.2. Body (f-body-1) holds at 1.25; the Pentagram body
+   * register is tight - one step below the typical 1.4 reading default -
+   * which is what makes the column read as editorial-studio, not blog.
+   */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.25;
+  --ds-leading-relaxed: 1.45;
+  --ds-leading-loose:   1.7;
+
+  /* ---------- Tracking ----------
+   * H1 pulls -0.015em (the source --f-heading-1-letter-spacing at
+   * desktop). H4 dek pulls -0.01em. Body sits at 0. No tracked uppercase
+   * kicker on this surface; the byline reads as natural-case sans.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * Source --spacing-spacing-6 (1.5rem / 2rem), spacing-7 (2rem / 2.5rem /
+   * 3rem), spacing-9 (3rem / 4rem / 6rem) read at the desktop breakpoint.
+   * Mapped to the contract additive scale below. mt-64 (4rem) is the gap
+   * between header strip and body column.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;   /* spacing-6 desktop. */
+  --ds-space-6:  32px;   /* spacing-7 mid; gap between H1 and dek. */
+  --ds-space-8:  48px;   /* spacing-7 desktop; gap between dek and byline. */
+  --ds-space-10: 64px;   /* mt-64; gap between header strip and body column on stacked mobile. */
+  --ds-space-12: 96px;   /* spacing-9 desktop; section break breathing room. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Pentagram does not round article chrome. The whole surface is at
+   * radius 0; the contract scale carries the rest for any chip or button
+   * that might appear inline (the news category tag uses rounded-4 in the
+   * source = 4px = --ds-radius-sm).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Pentagram does not use shadows on the page. The scale is present for
+   * contract compliance but every shadow on this surface is `none`.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   none;
+  --ds-shadow-lg:   none;
+  --ds-shadow-2xl:  none;
+
+  /* ---------- Motion ----------
+   * Pentagram is calm. 150ms ease for hover, 240ms for state changes.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

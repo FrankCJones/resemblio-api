@@ -1,0 +1,227 @@
+<!--
+  Asset: pentagram-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav
+  Inspired by: Pentagram
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (white paper, near-black ink)
+    - type-pairings/display-distinctive-001  (custom display + sans body)
+    - wordmarks/custom-display-001           (Pentagram wordmark register)
+    - links/nav-link-underline-001           (ink-to-ink nav link register)
+    - dividers/hairline-rule-001             (foot of the bar)
+  Notes:
+    - Studio-portfolio register. Pentagram's nav is the canonical
+      paper-and-ink bar: a wordmark in a custom display face, four
+      content links (Work, About, News, Contact), a Search utility on
+      the right, and a single ink hairline at the bar's foot. No red
+      on the nav itself; red is reserved as punctuation downstream.
+    - Variable vs inline: every color, type, spacing, radius, and
+      motion value comes from the contract. Inline ornaments: the
+      80 px fixed bar height (a layout decision specific to this
+      editorial register) and the SVG search glyph (a one-off mark,
+      not a reusable atom at this scale).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Pentagram licenses F37 Plain from F37 Foundry; Inter Display stands
+     in as the closest open humanist display, and Inter carries body. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Flush-top bar on paper. Hairline ink rule at the foot is the only
+   * chrome. No shadow, no backdrop blur, no background tint. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: bar height is a layout decision specific to the
+     * editorial register, not a contract value. Pentagram's bar runs
+     * tall (around 80 px) so the wordmark can sit at display scale. */
+    height: 80px;
+  }
+
+  .nav__inner {
+    max-width: 1440px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-8);
+  }
+
+  /* Wordmark. Set in the custom display face at editorial scale on the
+   * left of the bar. From atoms/wordmarks/custom-display-001. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .nav__wordmark:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Link cluster. Four content links sit center-left of the bar,
+   * left-aligned within their grid cell. From atoms/links/
+   * nav-link-underline-001. Pentagram holds the rest-state at full ink
+   * (not muted) and demotes via underline on hover; the entire bar
+   * speaks at the same contrast register. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { display: inline-flex; align-items: center; }
+
+  .nav__link {
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    text-decoration: none;
+    line-height: 1;
+    padding: var(--ds-space-2) 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-current="page"] {
+    color: var(--ds-text-strong);
+    border-bottom-color: var(--ds-hairline);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Utility cluster on the right. Search is an icon-plus-label link
+   * sitting at the same contrast as the content links. Archive is
+   * Pentagram's secondary utility; both share the link register. */
+  .nav__utility {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__utility > li { display: inline-flex; align-items: center; }
+
+  .nav__search {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    text-decoration: none;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: var(--ds-space-2) 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__search:hover {
+    border-bottom-color: var(--ds-hairline);
+  }
+  .nav__search:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+  .nav__search svg {
+    /* Inline ornament: thin-stroke search glyph. One-off icon, not a
+     * reusable atom at this scale. */
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  /* Page stub so the bar has a surface to sit over. */
+  .page-stub {
+    max-width: 1440px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 800px) {
+    .nav__links { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-4); }
+    .nav { height: 64px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__link, .nav__search { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">Lorem</a>
+
+      <ul class="nav__links">
+        <li><a class="nav__link" href="#">Work</a></li>
+        <li><a class="nav__link" href="#">About</a></li>
+        <li><a class="nav__link" href="#">News</a></li>
+        <li><a class="nav__link" href="#">Contact</a></li>
+      </ul>
+
+      <ul class="nav__utility">
+        <li><a class="nav__link" href="#">Archive</a></li>
+        <li>
+          <button class="nav__search" type="button" aria-label="Search">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.25"/>
+              <path d="M10.7 10.7 L14 14" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+            </svg>
+            <span>Search</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum magna at suscipit lacinia, dolor mauris vehicula augue.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

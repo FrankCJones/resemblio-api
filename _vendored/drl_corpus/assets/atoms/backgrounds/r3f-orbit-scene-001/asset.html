@@ -1,0 +1,252 @@
+<!--
+  Asset: r3f-orbit-scene-001
+  Class: backgrounds
+  Pattern: mesh-gradient-bg
+  Inspired by: React Three Fiber docs (getting-started/introduction)
+  Notes:
+    - Minimal OrbitControls-driven 3D scene used as an ambient page
+      background. The configuration is the pattern: one ambient light at
+      intensity Math.PI/2, one spotLight at [10, 10, 10] with angle 0.15,
+      penumbra 1, decay 0, intensity Math.PI, one pointLight at
+      [-10, -10, -10], a single mesh with boxGeometry [1, 1, 1] and
+      meshStandardMaterial. Orange at rest, hotpink on hover - the
+      canonical R3F intro accent register.
+    - Variable vs inline: palette and the orange / hotpink hover swap live
+      in tokens.css. The light positions, intensities, penumbra, camera
+      position [3, 3, 3], OrbitControls dampingFactor 0.05, and
+      autoRotateSpeed 0.6 are inline in the script - they are the
+      character of this specific recipe.
+    - Implementation: vanilla three.js + OrbitControls via UMD CDN so the
+      file opens standalone from disk. The R3F idiom is the source; React
+      build tooling is not required to demonstrate the configuration.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>r3f-orbit-scene-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter + JetBrains Mono: the humanist-sans + mono pair the R3F docs themselves use. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Full-viewport canvas hosts the OrbitControls scene. The scene IS the background. */
+  #r3f-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+    cursor: grab;
+  }
+  #r3f-canvas:active { cursor: grabbing; }
+
+  /* Lorem ipsum demo type sits over the scene. The mechanic on display is
+   * that ambient 3D works as a page background only when the foreground
+   * type has enough contrast. We pad with a subtle white veil to keep
+   * legibility regardless of where the cube has orbited. */
+  .demo {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    z-index: 2;
+    pointer-events: none;
+    text-align: center;
+    padding: 0 var(--ds-space-8);
+  }
+  .demo h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    max-width: 18ch;
+    /* Inline ornament: a faint white halo so the type lifts off whichever face of the cube has rotated behind it. */
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 24px rgba(255, 255, 255, 0.6);
+  }
+  .demo p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 50ch;
+  }
+
+  .label {
+    position: fixed;
+    bottom: var(--ds-space-5);
+    left: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 3;
+  }
+
+  .hint {
+    position: fixed;
+    bottom: var(--ds-space-5);
+    right: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    z-index: 3;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <canvas id="r3f-canvas"></canvas>
+  <div class="demo">
+    <h1>Lorem ipsum dolor sit amet</h1>
+    <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+  </div>
+  <span class="label">r3f-orbit-scene-001 - background atom</span>
+  <span class="hint">drag to orbit · scroll to zoom</span>
+
+<!-- three.js + OrbitControls via the official jsDelivr UMD bundle. The R3F
+     idiom this asset documents is a React abstraction over exactly these
+     three.js primitives, so running the underlying library standalone
+     captures the same configuration without a build step. -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+/*
+ * Recipe mirrors the canonical R3F getting-started example verbatim in
+ * configuration:
+ *
+ *   <Canvas>
+ *     <ambientLight intensity={Math.PI / 2} />
+ *     <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1}
+ *                decay={0} intensity={Math.PI} />
+ *     <pointLight position={[-10, -10, -10]} decay={0}
+ *                 intensity={Math.PI} />
+ *     <mesh>
+ *       <boxGeometry args={[1, 1, 1]} />
+ *       <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+ *     </mesh>
+ *     <OrbitControls />
+ *   </Canvas>
+ *
+ * Below: the same scene built with vanilla three.js so the asset opens
+ * from disk. Colors come from tokens.css so the orange / hotpink swap
+ * can be retargeted at the contract level for per-site libraries.
+ */
+
+const canvas = document.getElementById('r3f-canvas');
+const css = getComputedStyle(document.documentElement);
+const bg       = css.getPropertyValue('--ds-bg').trim();
+const orange   = css.getPropertyValue('--ds-accent').trim();
+const hotpink  = css.getPropertyValue('--ds-accent-2').trim();
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(window.innerWidth, window.innerHeight, false);
+renderer.setClearColor(new THREE.Color(bg), 1.0);
+
+const scene = new THREE.Scene();
+
+// Camera position [3, 3, 3] gives the canonical three-quarter isometric
+// read of a unit cube at the origin. fov 50 matches the R3F default.
+const camera = new THREE.PerspectiveCamera(
+  50,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+camera.position.set(3, 3, 3);
+camera.lookAt(0, 0, 0);
+
+// Lights: literal R3F intro example values.
+const ambient = new THREE.AmbientLight(0xFFFFFF, Math.PI / 2);
+scene.add(ambient);
+
+const spot = new THREE.SpotLight(0xFFFFFF, Math.PI, 0, 0.15, 1, 0);
+spot.position.set(10, 10, 10);
+scene.add(spot);
+
+const point = new THREE.PointLight(0xFFFFFF, Math.PI, 0, 0);
+point.position.set(-10, -10, -10);
+scene.add(point);
+
+// Mesh: boxGeometry args [1, 1, 1] + meshStandardMaterial. Orange at
+// rest, hotpink on hover - the orange-to-hotpink swap is the signature
+// of the R3F intro example.
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(orange) });
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+// OrbitControls: dampingFactor 0.05 (drei default), autoRotate slow
+// enough to read as ambient rather than spinning.
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.enablePan = false;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.6;   /* Inline ornament: 0.6 deg/sec; slow enough that a paused user does not feel motion sickness. */
+controls.minDistance = 2;
+controls.maxDistance = 8;
+
+// Pointer hover: swap material color through the accent contract. The
+// raycaster setup matches what R3F generates internally for onPointerOver
+// / onPointerOut events on the mesh.
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2(999, 999);
+let hovered = false;
+canvas.addEventListener('pointermove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+  pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+});
+canvas.addEventListener('pointerleave', () => {
+  pointer.set(999, 999);
+});
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
+}
+window.addEventListener('resize', onResize);
+
+function tick() {
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObject(cube);
+  const nowHovered = hits.length > 0;
+  if (nowHovered !== hovered) {
+    hovered = nowHovered;
+    material.color.set(hovered ? hotpink : orange);
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

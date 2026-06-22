@@ -1,0 +1,477 @@
+<!--
+  Asset: figma-docs-page-001
+  Class: layouts
+  Pattern: three-column-docs-grid, centered-narrow-column, mono-utility-pair
+  Inspired by: Figma (help.figma.com article)
+  Notes:
+    - Help-center article skeleton: flush-top nav, then a three-column
+      grid (260px left sidebar grouping product categories under mono
+      uppercase labels / 1fr article column / 200px right "In this
+      article" rail). Main column sequence: mono breadcrumb, page
+      title, lead paragraph, body with H2/H3, an inline tip callout, a
+      "Learn more" link list, and a glossary section. Sidebar carries
+      collapsible groups with one active link in Figma blue; TOC rail
+      lists in-page headings.
+    - Variable: three-column grid widths, section sequence, sidebar
+      group labels. Inline: column gutters, sidebar width (260px), TOC
+      width (200px), article column cap (~72ch since Figma docs lean
+      prose, not code).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>figma-docs-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Whyte and Inter are the Figma marketing/help faces.
+  Faces are not loaded in the asset; the fallback chains in tokens.css
+  carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. 1440px so the three-column grid breathes on wide
+   * monitors. Inline page-grid character.
+   */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Three-column docs grid. Sidebar 260px (Figma's category groups
+   * need a wider rail than Vercel's), article 1fr, TOC 200px. Below
+   * 1200px the TOC drops; below 768px the sidebar drops to a top
+   * toggle slot.
+   */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    padding-bottom: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .docs-grid {
+      grid-template-columns: 260px 1fr;
+      gap: var(--ds-space-10);
+    }
+  }
+  @media (min-width: 1200px) {
+    .docs-grid {
+      grid-template-columns: 260px 1fr 200px;
+    }
+  }
+
+  /*
+   * Left sidebar. Sticky in viewport. Product-category groups stack
+   * under uppercase mono labels (FOR EVERYONE / FOR ADMINISTRATION).
+   * Active link picks up Figma blue with a 2px left rule.
+   */
+  .sidebar {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: var(--ds-space-4);
+    border-right: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) { .sidebar { display: block; } }
+  .sidebar__group { margin-bottom: var(--ds-space-6); }
+  .sidebar__group-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .sidebar__link {
+    display: block;
+    padding: 6px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    border-left: 2px solid transparent;
+  }
+  .sidebar__link:hover { color: var(--ds-text-strong); background: var(--ds-surface-2); }
+  .sidebar__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+    font-weight: 500;
+  }
+
+  /*
+   * Article column. Capped at ~72ch since Figma docs lean prose with
+   * fewer wide code blocks than dev-tool docs. Inline measure.
+   */
+  .main {
+    min-width: 0;
+    max-width: 72ch;
+  }
+  .breadcrumb {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .breadcrumb__sep { padding: 0 var(--ds-space-2); color: var(--ds-text-muted); }
+  .doc-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .doc-lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  .doc-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .doc-body > * + * { margin-top: var(--ds-space-5); }
+  .doc-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    scroll-margin-top: var(--ds-space-8);
+  }
+  .doc-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .doc-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .doc-body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Tip / callout. Tinted surface, hairline border, Figma blue rule
+   * on the left edge to mark "Tip!" or "Note". Figma's docs use this
+   * for inline shortcut hints.
+   */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  .callout__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .callout__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Right TOC rail ("In this article"). Sticky. Mono label, then a
+   * vertical list of in-page headings. Active heading picks up Figma
+   * blue with a 2px left rule, matching the sidebar active treatment.
+   */
+  .toc {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-left: var(--ds-space-5);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 1200px) { .toc { display: block; } }
+  .toc__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .toc__link {
+    display: block;
+    padding: 4px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-left: 2px solid transparent;
+    border-radius: var(--ds-radius-xs);
+  }
+  .toc__link:hover { color: var(--ds-text-strong); }
+  .toc__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+  }
+  .toc__link--sub { padding-left: var(--ds-space-5); }
+
+  /* Footer band: full-width, outside the page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a figma-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">help-search + nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Sign in Lorem
+      </div>
+    </nav>
+
+    <!-- Section: three-column docs grid. -->
+    <div class="docs-grid">
+
+      <!-- Left sidebar: product-category groups, one active link. -->
+      <aside class="sidebar" aria-label="Help center navigation">
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">For everyone</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem get started</a></li>
+            <li><a class="sidebar__link" href="#">Lorem design files</a></li>
+            <li><a class="sidebar__link sidebar__link--active" href="#">Lorem prototyping</a></li>
+            <li><a class="sidebar__link" href="#">Lorem dev handoff</a></li>
+            <li><a class="sidebar__link" href="#">Lorem whiteboards</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">For administration</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem billing</a></li>
+            <li><a class="sidebar__link" href="#">Lorem teams</a></li>
+            <li><a class="sidebar__link" href="#">Lorem organizations</a></li>
+            <li><a class="sidebar__link" href="#">Lorem permissions</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Find out more</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem tutorials</a></li>
+            <li><a class="sidebar__link" href="#">Lorem courses</a></li>
+            <li><a class="sidebar__link" href="#">Lorem community</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Get solutions</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem release notes</a></li>
+            <li><a class="sidebar__link" href="#">Lorem status</a></li>
+            <li><a class="sidebar__link" href="#">Lorem support</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Article column. -->
+      <main class="main">
+
+        <p class="breadcrumb">
+          <span>Help Center</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem design</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem prototyping</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem guide</span>
+        </p>
+
+        <h1 class="doc-title">Lorem ipsum dolor sit amet consectetur</h1>
+
+        <p class="doc-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+          do eiusmod tempor incididunt ut labore et dolore magna
+          aliqua across the prototyping surface.
+        </p>
+
+        <div class="doc-body">
+
+          <h2 id="before">Before you start</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            <a href="#">Sed do eiusmod tempor</a> incididunt ut labore
+            et dolore magna aliqua. Ut enim ad minim veniam, quis
+            nostrud exercitation ullamco laboris.
+          </p>
+
+          <h2 id="flows">Flows and starting points</h2>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit
+            esse cillum dolore. Use <code>Shift+E</code> to toggle the
+            ipsum overlay across your active frames.
+          </p>
+
+          <h3 id="starting">Set a starting point</h3>
+          <p>
+            Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+
+          <h2 id="connections">Create connections</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit
+            voluptatem accusantium doloremque laudantium, totam rem
+            aperiam, eaque ipsa quae ab illo inventore.
+          </p>
+
+          <aside class="callout" aria-label="Tip">
+            <p class="callout__title">Tip</p>
+            <p class="callout__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing
+              elit. Hold <code>Alt</code> while dragging to duplicate
+              the ipsum connection without breaking the flow.
+            </p>
+          </aside>
+
+          <h2 id="learn-more">Learn more</h2>
+          <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur
+            aut odit aut fugit.
+          </p>
+          <ul>
+            <li><a href="#">Lorem smart animate</a> dolor sit amet</li>
+            <li><a href="#">Lorem overlays</a> consectetur</li>
+            <li><a href="#">Lorem variables</a> adipiscing elit</li>
+            <li><a href="#">Lorem device frames</a> tempor</li>
+          </ul>
+
+          <h2 id="glossary">Glossary</h2>
+          <p>
+            At vero eos et accusamus et iusto odio dignissimos ducimus
+            qui blanditiis praesentium voluptatum deleniti atque
+            corrupti quos dolores et quas molestias.
+          </p>
+
+        </div>
+      </main>
+
+      <!-- Right TOC rail. -->
+      <aside class="toc" aria-label="In this article">
+        <p class="toc__label">In this article</p>
+        <ul class="toc__list">
+          <li><a class="toc__link" href="#before">Before you start</a></li>
+          <li><a class="toc__link toc__link--active" href="#flows">Flows and starting points</a></li>
+          <li><a class="toc__link toc__link--sub" href="#starting">Set a starting point</a></li>
+          <li><a class="toc__link" href="#connections">Create connections</a></li>
+          <li><a class="toc__link" href="#learn-more">Learn more</a></li>
+          <li><a class="toc__link" href="#glossary">Glossary</a></li>
+        </ul>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 200px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

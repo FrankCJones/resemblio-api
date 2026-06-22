@@ -1,0 +1,120 @@
+<!--
+  Asset: breadcrumb-link-001
+  Class: links
+  Pattern: (none in TAXONOMY; breadcrumb separator)
+  Inspired by: Pitch
+  Notes:
+    - Breadcrumb trail with chevron separator; non-final crumbs are interactive in muted slate, current page is ink and unlinked.
+    - Separator glyph and its color are inline; everything else uses tokens.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>breadcrumb-link-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-8); }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-3);
+  }
+  .crumbs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: 1.4;
+  }
+  .crumbs li { display: inline-flex; align-items: center; gap: var(--ds-space-2); }
+  .c-link {
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .c-link:hover,
+  .c-link.is-hover {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px; /* inline: hover-only rule */
+    text-underline-offset: 3px;     /* inline: keeps the rule clear of descenders */
+  }
+  .c-link:focus-visible,
+  .c-link.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    color: var(--ds-text);
+    border-radius: var(--ds-radius-xs);
+  }
+  .c-current {
+    color: var(--ds-text-strong);
+    font-weight: 500;
+    cursor: default;
+  }
+  .sep {
+    /* Inline: separator glyph and its color are character choices, not tokens */
+    color: var(--ds-text-muted);
+    opacity: 0.6;
+    font-weight: 400;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div>
+      <div class="state-label">rest</div>
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li><a class="c-link" href="#">Lorem</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a class="c-link" href="#">Ipsum dolor</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a class="c-link" href="#">Sit amet</a><span class="sep" aria-hidden="true">/</span></li>
+          <li aria-current="page"><span class="c-current">Adipiscing elit</span></li>
+        </ol>
+      </nav>
+    </div>
+    <div>
+      <div class="state-label">hover (second crumb)</div>
+      <nav aria-label="Breadcrumb hover">
+        <ol class="crumbs">
+          <li><a class="c-link" href="#">Lorem</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a class="c-link is-hover" href="#">Ipsum dolor</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a class="c-link" href="#">Sit amet</a><span class="sep" aria-hidden="true">/</span></li>
+          <li aria-current="page"><span class="c-current">Adipiscing elit</span></li>
+        </ol>
+      </nav>
+    </div>
+    <div>
+      <div class="state-label">focus (third crumb)</div>
+      <nav aria-label="Breadcrumb focus">
+        <ol class="crumbs">
+          <li><a class="c-link" href="#">Lorem</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a class="c-link" href="#">Ipsum dolor</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a class="c-link is-focus" href="#">Sit amet</a><span class="sep" aria-hidden="true">/</span></li>
+          <li aria-current="page"><span class="c-current">Adipiscing elit</span></li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>

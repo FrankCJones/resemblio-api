@@ -1,0 +1,433 @@
+<!--
+  Asset: loom
+  Class: alphabets
+  Pattern: display-tight, mono-eyebrow, single-typeface-system, accent-on-neutral
+  Inspired by: Loom (loom.com, loom.com/pricing)
+  Notes:
+    - The full Loom typography vocabulary as one specimen: display GT
+      Walsheim, body GT Walsheim, mono JetBrains Mono reserved for
+      product chrome moments. One face across the marketing alphabet,
+      with the rounded humanist character that warms the SaaS register.
+    - Editorial moves: sentence-case headline voice ("One video is worth
+      a thousand words" / "Choose the plan that fits your needs."),
+      uppercase Walsheim kicker labels (NEW / MOST POPULAR / BETA at
+      14px with +0.08em tracking, not mono), purple-blue #625DF5 as the
+      single chromatic accent, 18px body reading default (warm-paper-
+      productivity convention, not the 16px dev-tool default).
+    - Inline ornament: the Loom purple-blue #625DF5 used inside the
+      focus ring, the primary CTA fill, the recorder dot, and the
+      pricing tier highlight gradient. Character moments, not tokens.
+    - Web-font substitutes: GT Walsheim is a licensed Grilli Type face
+      that Loom ships; Inter is the metric-adjacent fallback when
+      Walsheim is unavailable. This specimen loads Inter from Google
+      Fonts and lets the cascade fall through if Walsheim is not
+      installed locally.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  GT Walsheim is a licensed Grilli Type face Loom ships. Inter is loaded
+  here as the metric-adjacent fallback; JetBrains Mono carries the rare
+  product-chrome metadata moment.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+  }
+
+  /* ---------- Marketing hero block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Walsheim uppercase kicker; 14px / 600 / +0.08em. Not mono - the
+       Loom voice keeps kickers in the same family as display. */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: the "NEW" pill that appears next to feature
+     announcements; Loom purple fill, white label. */
+  .eyebrow .pill {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-full);
+    padding: 2px 10px;
+    font-size: 11px;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);            /* 72px hero ceiling. */
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);     /* 1.08 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.015em */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);             /* 20px lead paragraph. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row (Loom purple primary + ghost secondary) ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; }
+  .cta {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: var(--ds-accent);            /* Loom purple-blue primary; the brand convention. */
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-md);      /* 8px; softer than Vercel's 5px. */
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+  .cta-secondary {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: transparent;
+    color: var(--ds-text);
+    border: 0;
+    box-shadow: 0 0 0 1px var(--ds-border);  /* 1px ring hairline. */
+    border-radius: var(--ds-radius-md);
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+
+  /* ---------- Pricing tier card ---------- */
+  .tier {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-10);
+  }
+  .tier-card {
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-md);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+  /* Inline ornament: the MOST POPULAR ribbon on the featured tier. */
+  .tier-card .ribbon {
+    position: absolute;
+    top: var(--ds-space-5);
+    right: var(--ds-space-6);
+    background: var(--ds-surface-2);
+    color: var(--ds-accent);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    border-radius: var(--ds-radius-full);
+    padding: 4px 10px;
+  }
+  .tier-card .tier-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);            /* 32px tier title. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .tier-card .tier-blurb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+  .tier-card .tier-price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);            /* 40px price. */
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+  .tier-card .tier-price span {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+  }
+  .tier-card .feat-list {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-base);
+  }
+  .tier-card .feat-list li {
+    color: var(--ds-text);
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: purple checkmark glyph. */
+  .tier-card .feat-list li::before {
+    content: "✓";
+    color: var(--ds-accent);
+    font-weight: 700;
+  }
+
+  /* ---------- Recorder line (the most Loom moment) ---------- */
+  .recorder {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .recorder .status {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+  }
+  /* Inline ornament: 10px purple recorder dot. */
+  .recorder .status .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--ds-accent);
+    display: inline-block;
+  }
+  .recorder .meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .recorder .meta .sep { padding: 0 0.4em; opacity: 0.5; }
+  .recorder .meta b { color: var(--ds-text); font-weight: 500; }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 112px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.label {
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+  }
+
+  /* ---------- Wordmark + technical strip ---------- */
+  .footer-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .footer-strip b { color: var(--ds-text); font-weight: 500; }
+
+  .wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-tight);
+    margin-bottom: var(--ds-space-3);
+    /* Loom's wordmark sits lowercase in the header. */
+    text-transform: lowercase;
+  }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">
+        <span class="pill">NEW</span>
+        <span>Lorem ipsum announcement</span>
+      </p>
+      <h1 class="title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit lorem dolor.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta-secondary" type="button">Dolor sit amet</button>
+      </div>
+    </header>
+
+    <section class="tier" aria-label="Pricing tier specimen">
+      <div class="tier-card">
+        <span class="ribbon">Most popular</span>
+        <h2 class="tier-name">Lorem</h2>
+        <p class="tier-blurb">Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+        <p class="tier-price">$24 <span>per user / month</span></p>
+        <ul class="feat-list">
+          <li>Lorem ipsum unlimited members</li>
+          <li>Dolor sit amet high-def videos</li>
+          <li>Consectetur adipiscing edit by transcript</li>
+          <li>Sed do eiusmod AI summaries</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="recorder" aria-label="Recorder status">
+      <span class="status"><span class="dot"></span>Recording</span>
+      <span class="meta">
+        <b>workspace_loom</b><span class="sep">·</span><span>00:12:48</span><span class="sep">·</span><span>1080p</span><span class="sep">·</span><span>2026-05-20 09:14</span>
+      </span>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">72 / 1.08 / 600</span>
+        <span class="step-sample" style="font-size:72px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl display</span>
+        <span class="step-size">56 / 1.08 / 600</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">40 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:40px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">32 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">24 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg body</span>
+        <span class="step-size">20 / 1.55 / 400</span>
+        <span class="step-sample body" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">18 / 1.55 / 400</span>
+        <span class="step-sample body" style="font-size:18px;">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm cta</span>
+        <span class="step-size">14 / 1.4 / 600</span>
+        <span class="step-sample body" style="font-size:14px; font-weight:600;">Lorem ipsum dolor sit amet.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm kicker</span>
+        <span class="step-size">14 / 1.4 / 600</span>
+        <span class="step-sample label" style="font-size:14px;">Lorem ipsum kicker label</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs footnote</span>
+        <span class="step-size">13 / 1.7 / 400</span>
+        <span class="step-sample body" style="font-size:13px; color: var(--ds-text-muted);">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+    </section>
+
+    <section class="footer-strip" aria-label="Type families">
+      <div class="wordmark">loom</div>
+      <span>display · <b>GT Walsheim, wght 600</b></span>
+      <span>body · <b>GT Walsheim, wght 400 / 500</b></span>
+      <span>mono · <b>JetBrains Mono, wght 500 (product chrome only)</b></span>
+      <span>base · <b>18px / 28px (1.55)</b></span>
+      <span>H1 · <b>72px / 78px / -1.08px / wght 600</b></span>
+      <span>cta · <b>14px / wght 600 / radius 8px</b></span>
+      <span>kicker · <b>14px Walsheim uppercase / +0.08em (not mono)</b></span>
+      <span>accent · <b>#625DF5 Loom purple-blue</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

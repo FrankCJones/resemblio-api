@@ -1,0 +1,120 @@
+/*
+ * a24-article-page-001 tokens
+ *
+ * Native token values for an A24 Notes article page, inspired by
+ * a24films.com/notes/<year>/<month>/<slug>. The Notes section inverts
+ * the films register: warm paper-cream surface, deep ink text, with a
+ * Tiempos-class display serif carrying the title-card title and a
+ * humanist sans (GT America / Söhne) carrying body reading and the
+ * mono-tracked credits aside.
+ *
+ * Provenance: WebFetch on a24films.com/notes confirmed editorial register,
+ * single-column narrow body, serif title, inline film stills positioned
+ * mid-flow, social-share row under the hero, sitemap-style footer with
+ * Films / Television / Docs / Shop / Membership / Notes / App. Chrome MCP
+ * refuses the domain; computed styles unavailable. Numeric values inherit
+ * the systems/a24/system.json design_principles ("title-card-serif-display",
+ * "near-sharp-radii-2px-not-pills", "mono-utility-for-credits-and-metadata",
+ * "editorial-restraint-on-film-marketing") and mirror the sister atoms
+ * shipped under system: a24.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Notes runs in the paper register. Bg is a warm cream (not pure white)
+   * so the page reads as letterpress program rather than tech-blog white.
+   * Text is deep ink (warm-tinted near-black). No chromatic accent; the
+   * "accent" is the inversion to ink slab for share-pill chrome and the
+   * credits-aside surface. */
+  --ds-bg:           #F2EDE3;   /* Warm paper cream; A24 Notes body field. */
+  --ds-surface:      #EAE3D5;   /* One step down in cream; credits aside, share strip. */
+  --ds-surface-2:    #E2DAC8;   /* Two steps; nested cards, callout box. */
+  --ds-text:         #1A1612;   /* Warm-tinted deep ink; reads as program-note ink. */
+  --ds-text-muted:   #6E6759;   /* Date, byline, credits metadata. */
+  --ds-text-strong:  #0A0908;   /* Reserved for the title-card serif and section heads. */
+  --ds-border:       #C9C0AD;   /* Cream-family border on credits aside and related cards. */
+  --ds-hairline:     rgba(26,22,18,0.12); /* Section rule between hero and body, body and footer. */
+  --ds-accent:       #0A0908;   /* Inverse slab; near-black share pill and footer band. */
+  --ds-accent-2:     #1A1612;   /* Secondary inverse moment; hover or pressed state. */
+  --ds-success:      #4A8A5C;
+  --ds-warning:      #C49449;
+  --ds-error:        #B24A3F;
+  --ds-info:         #1A1612;
+  --ds-focus-ring:   #0A0908;   /* Focus ring is ink-on-cream; the contrast carries it. */
+
+  /* ---------- Type families ----------
+   * Display sits in a Tiempos-class serif (A24 Notes title-card moment).
+   * Body and nav sit in a humanist grotesk (GT America register). Mono
+   * carries the credits aside and any technical metadata. */
+  --ds-font-display: "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+  --ds-font-body:    "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Söhne Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono date stamp, share label, footer link. */
+  --ds-text-sm:   14px;   /* Byline, credits row, image caption. */
+  --ds-text-base: 17px;   /* Body reading; slightly larger than dev-tool default for editorial bias. */
+  --ds-text-lg:   20px;   /* Pull-quote, lead-in. */
+  --ds-text-xl:   26px;   /* H3 / pull quote display. */
+  --ds-text-2xl:  34px;   /* H2 body section heads. */
+  --ds-text-3xl:  44px;   /* Related-articles section heading. */
+  --ds-text-4xl:  60px;   /* Article title-card serif. */
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.06;   /* Title-card serif. */
+  --ds-leading-snug:    1.22;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;   /* Body reading; editorial breathing. */
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Display serif gets only a hair of negative tracking (serif optical
+   * spacing is already correct). Mono credit labels lean to the wider end
+   * to read as program-note small-caps. */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;  /* Mono share label, credits row, footer kicker. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Editorial register leans roomy; section padding scales
+   * up at desktop. */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp corners (2px). The A24 register refuses pills on chrome;
+   * pills are reserved for the share affordance only. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;    /* Credits aside, share pill (when squared). */
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px; /* Reserved for inline social glyph buttons. */
+
+  /* ---------- Shadows ----------
+   * Editorial restraint: no cast shadow on the cream field. Slots
+   * declared for contract conformance. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(26,22,18,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(26,22,18,0.08);
+  --ds-shadow-md:   0 4px 12px rgba(26,22,18,0.10);
+  --ds-shadow-lg:   0 12px 32px rgba(26,22,18,0.14);
+  --ds-shadow-2xl:  0 32px 64px rgba(26,22,18,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

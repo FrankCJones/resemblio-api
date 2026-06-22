@@ -1,0 +1,411 @@
+<!--
+  Asset: huggingface-marketing-page-001
+  Class: layouts
+  Pattern: dual-cta-hero, story-card-grid, framework-strip, mega-footer
+  Inspired by: Hugging Face (huggingface.co homepage)
+  Notes:
+    - The page rhythm reads as a community feed surfacing into a marketing
+      page: nav, short tagline hero, a trending three-column strip of live
+      model/dataset/space cards, a four-up feature explainer, a three-row
+      commercial offers section, an org-logo trust strip, an open-source
+      grid of repo cards, and a four-column mega-footer.
+    - The card is the load-bearing atom; the page itself is unornamented
+      so model/dataset/space cards carry weight. Section sequence and copy
+      keys are captured verbatim from the live page; the trending strip's
+      three-column model/space/dataset layout is the recurring HF move.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-marketing-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Source Sans 3 is an open Google-hosted face that approximates
+  the HF platform's in-house sans register; IBM Plex Mono stands in for the
+  mono utility used on model ids and metrics.
+-->
+<style>
+  /* Reset just what the layout needs. Harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1400px to accommodate the three-column
+   * trending strip on wide displays; gutter 16px mobile, 32px desktop.
+   * Inline value: 1400px, not a contract slot.
+   */
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-6); }
+  }
+
+  /* Section recurring rhythm. 64px (--ds-space-10) padding-block desktop,
+   * 32px (--ds-space-6) mobile. Sections separate by a hairline rule. */
+  .section {
+    padding-block: var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-10); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Section heading row: large display title, optional sub-line under. */
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2) 0;
+    font-weight: 700;
+  }
+  .section__sub {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    margin: 0 0 var(--ds-space-6) 0;
+  }
+  @media (min-width: 768px) {
+    .section__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Placeholder slot. Stands in for the downstream whole. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Nav: flush-top, full-width, hairline border underneath. Wordmark left,
+   * link cluster center, CTA pair right. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: the yellow emoji-square stands in for the HF logo glyph. */
+  .nav__mark {
+    display: inline-block;
+    width: 28px; height: 28px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Hero. Short tagline, dek, primary + secondary inline CTA. */
+  .hero {
+    padding-block: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero { padding-block: var(--ds-space-12); }
+  }
+  .hero__tagline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 18ch;
+    font-weight: 800;
+  }
+  @media (min-width: 768px) {
+    .hero__tagline { font-size: var(--ds-text-5xl); }
+  }
+  .hero__dek {
+    margin: var(--ds-space-5) auto 0 auto;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta-row {
+    margin-top: var(--ds-space-6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+
+  /* Trending strip: three equal-width columns (Models / Datasets / Spaces)
+   * each containing a stack of card rows. Desktop 3-up, tablet 2-up, mobile
+   * stack. This is the signature HF homepage move. */
+  .trending-strip {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .trending-strip { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .trending-strip { grid-template-columns: repeat(3, 1fr); } }
+  .trending-col__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4) 0;
+    font-weight: 700;
+  }
+  .trending-col__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-4);
+  }
+  .trending-col__cta {
+    display: inline-block;
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border-bottom: 1px solid var(--ds-border);
+    padding-bottom: var(--ds-space-1);
+  }
+
+  /* Feature grid (The Home of Machine Learning): 2x2 four-up. */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+  .feature-card { aspect-ratio: 4 / 3; }
+
+  /* Commercial offers (Accelerate your ML): stacked rows, image-and-copy
+   * 50/50 within each row. Three rows total. */
+  .offers { display: flex; flex-direction: column; gap: var(--ds-space-6); }
+  .offer-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .offer-row { grid-template-columns: 1fr 1fr; gap: var(--ds-space-8); }
+  }
+
+  /* Trust strip: 4-up on desktop, 2-up tablet, stack mobile. 8 org cards. */
+  .trust-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-3);
+  }
+  @media (min-width: 768px) { .trust-strip { grid-template-columns: repeat(4, 1fr); } }
+  .trust-strip > .slot { aspect-ratio: 3 / 2; }
+
+  /* Open source grid: dense card grid, 4-up on desktop, 3/2/1 stepping down. */
+  .os-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 640px) { .os-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .os-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1280px) { .os-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Footer: full-width band outside .page container; 4-column link grid
+   * with a thin top rule. Plus a system-theme toggle row above. */
+  .footer-band {
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface-2);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .footer-grid { grid-template-columns: repeat(4, 1fr); } }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav (flush-top). Stands in for wholes/navigation/huggingface-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark"><span class="nav__mark" aria-hidden="true"></span>Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 560px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 180px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Lorem ipsum
+      </div>
+    </nav>
+
+    <!-- Section: hero. Pattern: dual-cta-hero, no-imagery (centered tagline). -->
+    <section class="hero" aria-label="Hero">
+      <h1 class="hero__tagline">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+        incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-row">
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">primary-cta</span>
+          Lorem ipsum
+        </div>
+        <div class="slot" style="min-width: 200px;">
+          <span class="slot__label">secondary-link</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: trending strip. Three columns: Models / Datasets / Spaces. -->
+    <section class="section" aria-label="Trending on the platform">
+      <h2 class="section__title">Lorem ipsum dolor sit</h2>
+      <div class="trending-strip">
+        <div class="trending-col">
+          <h3 class="trending-col__title">Lorem</h3>
+          <div class="trending-col__list">
+            <div class="slot"><span class="slot__label">model-card-row</span>Lorem/lorem-ipsum-7b</div>
+            <div class="slot"><span class="slot__label">model-card-row</span>Lorem/lorem-ipsum-7b</div>
+            <div class="slot"><span class="slot__label">model-card-row</span>Lorem/lorem-ipsum-7b</div>
+            <div class="slot"><span class="slot__label">model-card-row</span>Lorem/lorem-ipsum-7b</div>
+            <div class="slot"><span class="slot__label">model-card-row</span>Lorem/lorem-ipsum-7b</div>
+          </div>
+          <a class="trending-col__cta">Lorem ipsum dolor</a>
+        </div>
+        <div class="trending-col">
+          <h3 class="trending-col__title">Lorem</h3>
+          <div class="trending-col__list">
+            <div class="slot"><span class="slot__label">space-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">space-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">space-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">space-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">space-card-row</span>Lorem/lorem-ipsum</div>
+          </div>
+          <a class="trending-col__cta">Lorem ipsum dolor</a>
+        </div>
+        <div class="trending-col">
+          <h3 class="trending-col__title">Lorem</h3>
+          <div class="trending-col__list">
+            <div class="slot"><span class="slot__label">dataset-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">dataset-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">dataset-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">dataset-card-row</span>Lorem/lorem-ipsum</div>
+            <div class="slot"><span class="slot__label">dataset-card-row</span>Lorem/lorem-ipsum</div>
+          </div>
+          <a class="trending-col__cta">Lorem ipsum dolor</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: The Home of Machine Learning. 2x2 feature grid. -->
+    <section class="section" aria-label="Platform features">
+      <h2 class="section__title">Lorem ipsum dolor sit amet</h2>
+      <p class="section__sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <div class="feature-grid">
+        <div class="slot feature-card"><span class="slot__label">feature-card</span>Lorem ipsum</div>
+        <div class="slot feature-card"><span class="slot__label">feature-card</span>Lorem ipsum</div>
+        <div class="slot feature-card"><span class="slot__label">feature-card</span>Lorem ipsum</div>
+        <div class="slot feature-card"><span class="slot__label">feature-card</span>Lorem ipsum</div>
+      </div>
+    </section>
+
+    <!-- Section: Accelerate your ML. Three stacked offer rows. -->
+    <section class="section" aria-label="Commercial offers">
+      <h2 class="section__title">Lorem ipsum dolor</h2>
+      <p class="section__sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <div class="offers">
+        <div class="offer-row">
+          <div class="slot"><span class="slot__label">offer-copy</span>Lorem ipsum: team-and-enterprise</div>
+          <div class="slot" style="aspect-ratio: 4 / 3;"><span class="slot__label">offer-image</span>Lorem</div>
+        </div>
+        <div class="offer-row">
+          <div class="slot" style="aspect-ratio: 4 / 3;"><span class="slot__label">offer-image</span>Lorem</div>
+          <div class="slot"><span class="slot__label">offer-copy</span>Lorem ipsum: inference-providers</div>
+        </div>
+        <div class="offer-row">
+          <div class="slot"><span class="slot__label">offer-copy</span>Lorem ipsum: compute</div>
+          <div class="slot" style="aspect-ratio: 4 / 3;"><span class="slot__label">offer-image</span>Lorem</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: 50,000 organizations trust strip. 8 org-logo cards. -->
+    <section class="section" aria-label="Organizations using the platform">
+      <h2 class="section__title">Lorem ipsum dolor sit amet consectetur</h2>
+      <div class="trust-strip">
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">org-card</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: Our Open Source. Dense 4-up grid of repo cards. -->
+    <section class="section" aria-label="Open source projects">
+      <h2 class="section__title">Lorem ipsum dolor</h2>
+      <p class="section__sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <div class="os-grid">
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+        <div class="slot"><span class="slot__label">repo-card</span>lorem</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width band outside .page container. 4-column link grid. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">footer-col-website</span>Lorem</div>
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">footer-col-company</span>Lorem</div>
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">footer-col-resources</span>Lorem</div>
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">footer-col-social</span>Lorem</div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

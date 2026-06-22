@@ -1,0 +1,96 @@
+/*
+ * linear-about-page-001 tokens
+ *
+ * Page-level layout skeleton for the Linear /about page.
+ * Tokens calibrated to the Linear system's canonical register documented
+ * in systems/linear/system.json: near-black dark surface, off-white text,
+ * a single saturated indigo accent, hairline chrome (no shadows), and a
+ * mono utility face for kickers and metadata. Chrome MCP was not used
+ * this session; WebFetch returned section structure but stripped inline
+ * computed styles, so grid, gutter, and padding values are mapped to the
+ * closest contract slot from the observed character (dark page, indigo
+ * accent, hairline rhythm, restrained chrome) rather than copied from
+ * devtools.
+ *
+ * The slots that carry this layout are --ds-bg (near-black page surface),
+ * --ds-text (off-white reading color), --ds-accent (the single indigo),
+ * --ds-hairline (between-section rules), and --ds-space-12 / --ds-space-16
+ * (the recurring section padding rhythm). Other slots fill the contract
+ * for downstream override.
+ */
+:root {
+  /* Colors. Near-black page, off-white ink, indigo accent. The about page
+   * inherits the same monochrome surface system as the marketing page;
+   * no tinted band variation, only hairline rules between sections. */
+  --ds-bg:           #08090A;   /* Near-black page surface; carries the entire vertical column. */
+  --ds-surface:      #101113;   /* Raised surface for team cards and CTA buttons. */
+  --ds-surface-2:    #16181B;   /* Second-level surface for nested cards or modal-equivalents. */
+  --ds-text:         #F7F8F8;   /* Cool off-white body text; reads as paper against near-black. */
+  --ds-text-muted:   #8A8F98;   /* Secondary text; metadata, role labels, member titles. */
+  --ds-text-strong:  #FFFFFF;   /* Wordmark, mission statement, section titles. */
+  --ds-border:       #26282C;   /* Card and feature-block edges. */
+  --ds-hairline:     #1C1E22;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #5E6AD2;   /* Linear indigo; the one saturated color in the chrome. */
+  --ds-accent-2:     #7B8AF5;   /* Lifted indigo for hover and secondary emphasis. */
+  --ds-success:      #4CB782;
+  --ds-warning:      #F2C94C;
+  --ds-error:        #EB5757;
+  --ds-info:         #5E6AD2;
+  --ds-focus-ring:   #B5BDFB;   /* Higher-contrast indigo for keyboard focus. */
+
+  /* Type. Inter family for display, body, and UI; JetBrains Mono for the
+   * kickers and numerical metadata that mark sections. Linear ships its
+   * own Inter Display variant; Inter is the open substitute. */
+  --ds-font-display: "Inter Display", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Berkeley Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Display", "Inter", system-ui, sans-serif;
+
+  /* Type scale. Mission statement at 5xl on desktop; section titles
+   * at 2xl; body at base. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 96px;  --ds-text-7xl: 128px;
+
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  --ds-tracking-tight:  -0.022em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;
+
+  /* Spacing. The about-page rhythm matches the marketing page: --ds-space-12
+   * (96px) between sections on desktop, --ds-space-8 (48px) on mobile.
+   * Mission band gets --ds-space-16 (128px) for theatrical breathing room. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Linear is hairline-as-chrome: no shadows on rest surfaces.
+   * Reserved values exist for downstream override but the layout itself
+   * relies on borders, not elevation. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:  0 8px 24px rgba(0,0,0,0.5);
+  --ds-shadow-lg:  0 16px 40px rgba(0,0,0,0.55);
+  --ds-shadow-2xl: 0 32px 64px rgba(0,0,0,0.6);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

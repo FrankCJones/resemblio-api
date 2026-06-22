@@ -1,0 +1,127 @@
+/*
+ * anthropic-news-list-001 tokens
+ *
+ * Whole feature-grid composing the Anthropic newsroom index. Native tokens
+ * here mirror the system: warm-paper field, ink with brown undertone, a
+ * single clay-crimson accent, and the anthropicSerif / anthropicSans /
+ * anthropicMono triad. Values calibrated against the anthropic alphabet and
+ * library (assets/alphabets/anthropic, assets/libraries/anthropic) and the
+ * system-tagged atoms backgrounds/subtle-noise-001 and
+ * body-text/callout-warm-001 (devtools captures from 2026-05-19).
+ *
+ * The pattern this whole expresses: news index as a vertical list of
+ * hairline-separated rows. Each row is a single tab stop: small mono
+ * date and uppercase sans category eyebrow stacked on top of a serif
+ * headline. No card chrome, no image bed per row, no borders other than
+ * the rules between rows. The hero entry above the list carries an image
+ * and a larger display headline; the secondary featured trio sits as a
+ * three-up beneath the hero. The list itself is what the asset is about.
+ *
+ * Composition_atoms in meta.json names the system-tagged atoms this whole
+ * references: badges/anthropic-category-mono-001,
+ * badges/anthropic-date-mono-001, cards/anthropic-news-hero-001,
+ * cards/anthropic-news-listing-001, headings/editorial-newspaper-001,
+ * dividers/hairline-rule-001.
+ */
+:root {
+  /* ---------- Colors ----------
+   * The full anthropic warm-paper palette. The accent is reserved for the
+   * featured category label and the hover state on row headlines.
+   */
+  --ds-bg:           #FAF9F5;   /* Warm paper rgb(250,249,245). The Anthropic field. */
+  --ds-surface:      #FFFFFF;   /* Hero image bed only. */
+  --ds-surface-2:    #F2EFE3;   /* Recessed surface; image placeholder. */
+  --ds-text:         #141413;   /* Ink rgb(20,20,19); near-black brown-undertone. */
+  --ds-text-muted:   #6B6963;   /* Date stamps, secondary metadata. */
+  --ds-text-strong:  #0A0A09;   /* Article headlines at full ink. */
+  --ds-border:       #D9D5C7;
+  --ds-hairline:     #E5E1D2;   /* The rules between list rows. */
+  --ds-accent:       #C6613F;   /* Clay-crimson rgb(198,97,63). Featured kicker, hover. */
+  --ds-accent-2:     #D97757;
+  --ds-success:      #5F8A4E;
+  --ds-warning:      #B0801F;
+  --ds-error:        #B33A2F;
+  --ds-info:         #C6613F;
+  --ds-focus-ring:   #C6613F;
+
+  /* ---------- Type families ----------
+   * The asset.html font-face declarations fall back to open-source
+   * substitutes so this file renders standalone without an Anthropic
+   * font license. anthropicSerif → Source Serif 4; anthropicSans →
+   * Inter; anthropicMono → JetBrains Mono.
+   */
+  --ds-font-display: "anthropicSerif", "Source Serif 4", "Tiempos Headline", Georgia, serif;
+  --ds-font-body:    "anthropicSerif", "Source Serif 4", "Tiempos Text", Georgia, serif;
+  --ds-font-mono:    "anthropicMono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "anthropicSans", "Inter", "Söhne", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Base 17px (editorial register). Hero headline at 52-64px matches
+   * the news article H1 measurement; list-row headlines step down to
+   * 26px so eight rows can be scanned without scrolling.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Category eyebrow + date stamp. */
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   20px;   /* Hero dek; tertiary featured headlines. */
+  --ds-text-xl:   26px;   /* List-row headline. */
+  --ds-text-2xl:  32px;   /* Page title. */
+  --ds-text-3xl:  40px;   /* Featured trio headlines. */
+  --ds-text-4xl:  52px;   /* Hero article headline. */
+  --ds-text-5xl:  64px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.55;
+  --ds-leading-loose:   1.75;
+
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;   /* Uppercase sans category eyebrow. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Row vertical padding lands at space-5 (24px) which
+   * gives the list the breathing room a reader expects from an editorial
+   * index. Page outer padding scales with viewport.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Restrained. Hero image bed at md (8px); list rows have no radius.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Anthropic uses shadow almost never on the news index. The list rows
+   * sit flush on paper; only the hero image bed carries a faint shadow.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(60,40,20,0.06);
+  --ds-shadow-sm:   0 2px 4px rgba(60,40,20,0.08);
+  --ds-shadow-md:   0 6px 14px rgba(60,40,20,0.10);
+  --ds-shadow-lg:   0 14px 30px rgba(60,40,20,0.14);
+  --ds-shadow-2xl:  0 24px 56px rgba(60,40,20,0.20);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

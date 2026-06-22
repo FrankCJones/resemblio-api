@@ -1,0 +1,111 @@
+/*
+ * codrops-text-reveal-motion-001 tokens
+ *
+ * Clip-path text reveal primitive inspired by the Codrops (Tympanus) playground
+ * demo "A Playful Clip Menu with GSAP's easeReverse" (April 2026). The native
+ * mechanic clips a display block from a zero-area centered polygon out to a
+ * full-viewport polygon over 0.8s on an exponential curve, then reverses with
+ * an elastic ease on close. Colors and type chosen to honor the source's dark
+ * arcade register (near-black bg, off-white type, pixel display face).
+ */
+:root {
+  /* Colors - source register: dark arcade, white type, indigo accent furniture */
+  --ds-bg:          #090909;            /* Page background; the demo's --color-bg literal. */
+  --ds-surface:     #161616;            /* One step above page; for the stage frame. */
+  --ds-surface-2:   #1F2A40;            /* Deep indigo-tinted second tier; relates to toggle bg. */
+  --ds-text:        #FFFFFF;            /* Pure white; the demo's --color-text literal. */
+  --ds-text-muted:  #8A8FA0;            /* Quiet UI metadata grey. */
+  --ds-text-strong: #FFFFFF;            /* Display type stays pure white. */
+  --ds-border:      #23385B;            /* The demo's --color-toggle-border indigo. */
+  --ds-hairline:    #1C1C22;            /* Quieter divider for stage rules. */
+  --ds-accent:      #41629A;            /* The demo's --color-toggle-bg muted indigo accent. */
+  --ds-accent-2:    #5F7BAA;            /* A brighter indigo for hover / focus moments. */
+  --ds-success:     #2E8B57;
+  --ds-warning:     #E0A500;
+  --ds-error:       #C92A2A;
+  --ds-info:        #41629A;
+  --ds-focus-ring:  #5F7BAA;            /* Brighter indigo for keyboard focus. */
+
+  /* Type - pixel/lores display, system sans body, system mono labels
+   * The source uses 'lores-12' (Adobe Fonts) for display; we list it first and
+   * fall back to system fonts so the asset opens standalone without the kit. */
+  --ds-font-display: "lores-12", "VT323", "Courier New", ui-monospace, monospace;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "Menlo", monospace;
+  --ds-font-accent:  "lores-12", "VT323", "Courier New", ui-monospace, monospace;
+
+  /* Type sizes - source uses clamp(1.5rem, 7vw, 5rem) at root 13px;
+   * we map the reveal display moment to 5xl (the demo's upper bound ~ 65px). */
+  --ds-text-2xs: 10px;
+  --ds-text-xs:  12px;
+  --ds-text-sm:  14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:  20px;
+  --ds-text-xl:  26px;
+  --ds-text-2xl: 34px;
+  --ds-text-3xl: 44px;
+  --ds-text-4xl: 58px;
+  --ds-text-5xl: 72px;                  /* Reveal display target; matches the demo's clamp upper bound. */
+  --ds-text-6xl: 96px;
+  --ds-text-7xl: 128px;
+
+  /* Line heights - source sets line-height: 1 on menu items */
+  --ds-leading-tight:   1;              /* Display reveal lines hug. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* Tracking */
+  --ds-tracking-tight:  -0.01em;        /* Pixel display does not need negative tracking. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.16em;         /* Mono labels and footer rows. */
+
+  /* Spacing - source --page-padding is 1.5rem (19.5px at 13px root) */
+  --ds-space-0: 0;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 24px;
+  --ds-space-6: 32px;
+  --ds-space-8: 48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii - source toggle uses 14px when border-image is unsupported */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   3px;                /* The demo's range/label border-radius. */
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   14px;               /* The demo's @supports radius for the toggle. */
+  --ds-radius-full: 9999px;
+
+  /* Shadows - source uses text-shadow 2px 2px 1px rgba(0,0,0,0.1)
+   * and an inset -4px -4px #ffffff29 on the toggle; honored as md/lg. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 1px 1px rgba(0,0,0,0.1);
+  --ds-shadow-sm:  0 2px 6px rgba(0,0,0,0.18);
+  --ds-shadow-md:  0 6px 18px rgba(0,0,0,0.28);
+  --ds-shadow-lg:  0 18px 40px rgba(0,0,0,0.4);
+  --ds-shadow-2xl: 0 32px 80px rgba(0,0,0,0.5);
+
+  /* Motion - clip-path text reveal pairing
+   * The source uses GSAP 'expo' for the open clip-path tween at duration 0.8s,
+   * and 'elastic.out(0.3)' as the easeReverse for full closes. CSS equivalents:
+   * exponential ease-out is cubic-bezier(0.16, 1, 0.3, 1); we map that onto
+   * --ds-ease-emphasize, which is the slot reserved for hero / theatrical
+   * moments. duration-slow (800ms) matches the source's 0.8s tween length.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.16, 1, 0.3, 1);   /* Native 'expo.out'; the curve this primitive demonstrates. */
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    800ms;          /* The clip-reveal duration this primitive uses; matches GSAP duration 0.8. */
+}

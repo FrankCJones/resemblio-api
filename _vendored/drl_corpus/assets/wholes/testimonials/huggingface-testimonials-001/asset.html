@@ -1,0 +1,476 @@
+<!--
+  Asset: huggingface-testimonials-001
+  Class: testimonials (whole)
+  Pattern: paper-and-ink, mono-eyebrow, hairline-as-chrome
+  Inspired by: Hugging Face (home page "50,000 organizations" roster, /enterprise extended roster)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (white surface + near-black ink, HF tints in tokens.css)
+    - type-pairings/grotesk-mono-001          (sans display+body paired with mono for metadata + counts)
+    - cards/hairline-flat-001                 (1px ring chrome, no drop shadow at rest)
+    - kickers/mono-eyebrow-001                (Source Code Pro uppercase "OUR COMMUNITY" eyebrow)
+    - dividers/hairline-rule-001              (subtle rule between header and roster)
+    - avatars/initials-placeholder-001        (square monogram tile inside a hard-round container)
+  Notes:
+    - Native context: Hugging Face does not ship traditional headshot +
+      pull-quote testimonial cards. Their social-proof equivalent is a
+      roster of organizations: avatar + sentence-case org name + tier
+      chip (PRO / Team / Enterprise) + mono metadata row "x models, y
+      followers". The thesis is community participation rendered as
+      platform metadata. Captured via WebFetch on 2026-05-20 on the home
+      ("More than 50,000 organizations are using Hugging Face" with
+      Ai2, AI at Meta, Amazon, Google, Intel, Microsoft, Grammarly,
+      Writer) and on /enterprise (extended roster: NVIDIA, Salesforce,
+      Google, Microsoft, OpenAI, Meta, Apple). Both pages render the
+      same atom in the same chrome at the same scale.
+    - Variable: every color, type, spacing, radius, motion value via
+      tokens.css. Counter headline "More than 50,000" is one of the
+      few HF marketing moments where the number does the talking.
+    - Inline ornament: the avatar monogram glyphs (one capital letter
+      sitting in a tinted square) and the trailing "View all" arrow
+      SVG path. Tier-chip background uses the accent-2 orange shoulder
+      from tokens.css and is reserved for the recommended-tier badge,
+      matching the way HF tints the PRO badge against the muted
+      "company" subtitle row.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-testimonials-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Sans 3 stands in for the licensed Adobe family that HF uses
+     on huggingface.co; Source Code Pro is the canonical HF mono. Inter
+     and JetBrains Mono are CSS fallbacks declared in tokens.css. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White HF canvas; roster sits centered with generous side gutters. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .section { max-width: 1180px; margin: 0 auto; }
+
+  /* Section header. Sentence-case Source Sans display. The number is the
+   * star: "More than 50,000 organizations". */
+  .section__head {
+    margin: 0 0 var(--ds-space-8);
+    text-align: center;
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* The numeric counter inside the title; subtle yellow underline draws
+   * the eye without breaking the sentence flow. */
+  .section__count {
+    background-image: linear-gradient(to top, var(--ds-accent) 0, var(--ds-accent) 6px, transparent 6px);
+    padding: 0 2px;
+  }
+  .section__lede {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 56ch;
+    margin: var(--ds-space-3) auto 0;
+  }
+  .section__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: var(--ds-space-8) 0;
+  }
+
+  /* The roster grid. Four-up at >=1080px, three at >=760px, two at >=520px,
+   * single column below. HF lists are denser than the Linear/Vercel
+   * register; the cards sit close together. */
+  .org-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-3);
+  }
+  @media (min-width: 520px) {
+    .org-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 760px) {
+    .org-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1080px) {
+    .org-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* Org card. White surface with a 1px Border-default ring; 8px radius;
+   * flat at rest. Hover engages a sub-pixel lift and a subtle yellow
+   * focus ring on keyboard focus. */
+  .org-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform  var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .org-card:hover {
+    box-shadow: var(--ds-shadow-sm);
+    transform: translateY(-1px);
+    border-color: rgba(17,24,39,0.12);
+  }
+  .org-card:focus-visible {
+    outline: none;
+    border-color: var(--ds-focus-ring);
+    box-shadow: 0 0 0 3px rgba(255,210,30,0.35);
+  }
+
+  /* Card head: avatar + org-name + subtitle. The avatar is a hard-rounded
+   * tile carrying a monogram glyph; HF uses a circular avatar in the live
+   * roster but the wash + initial pattern transfers. */
+  .org-card__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    min-width: 0;
+  }
+  .org-card__avatar {
+    width: var(--ds-space-8);
+    height: var(--ds-space-8);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+    /* Inline ornament: a 1px inner ring so the monogram reads cleanly
+       against the page when the wash matches the card surface. */
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+  }
+  .org-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .org-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .org-card__subtitle {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Tier chip. HF's PRO / Team / Enterprise badge in mono lowercase
+   * (the live site uses sentence-case but the mono register reads as
+   * platform metadata, not a CTA). 6px hard-pill radius, not 9999px. */
+  .org-card__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-1);
+  }
+  .org-card__chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: 2px var(--ds-space-2);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+  }
+  .org-card__chip--pro {
+    background: rgba(255,157,0,0.12);
+    color: var(--ds-accent-2);
+  }
+
+  /* Count row. Mono numerals + sans labels; the model and follower
+   * counts are how HF measures community participation. The "x" between
+   * "models" and "followers" sits in muted ink so the count is the
+   * load-bearing token, not the noun. */
+  .org-card__counts {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: auto;
+    padding-top: var(--ds-space-3);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    flex-wrap: wrap;
+  }
+  .org-card__count-num {
+    color: var(--ds-info);
+    font-weight: 500;
+  }
+  .org-card__count-sep {
+    color: var(--ds-text-muted);
+    opacity: 0.6;
+  }
+
+  /* Trailing CTA: "View all 50,000 organizations" link. The arrow is
+   * the only chromatic moment outside the counter underline. */
+  .section__foot {
+    margin-top: var(--ds-space-8);
+    display: flex;
+    justify-content: center;
+  }
+  .section__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color     var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .section__cta:hover {
+    background: var(--ds-surface-2);
+    border-color: rgba(17,24,39,0.18);
+  }
+  .section__cta svg {
+    width: 14px; height: 14px; display: block;
+    transition: transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .section__cta:hover svg { transform: translateX(2px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .org-card,
+    .section__cta,
+    .section__cta svg { transition: none; }
+    .org-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-label="Lorem ipsum community organizations">
+
+    <header class="section__head">
+      <p class="section__kicker">Our Community</p>
+      <h2 class="section__title">
+        Lorem ipsum dolor sit
+        <span class="section__count">50,000+</span>
+        organizations consectetur adipiscing
+      </h2>
+      <p class="section__lede">
+        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+    </header>
+
+    <hr class="section__rule" aria-hidden="true"/>
+
+    <div class="org-grid">
+
+      <a href="#" class="org-card" aria-label="Lorem organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">L</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Lorem Research</span>
+            <span class="org-card__subtitle">Team, non-profit</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip">Team</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">948</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">5.94k</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Ipsum AI organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">I</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Ipsum AI</span>
+            <span class="org-card__subtitle">Team, company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip">Team</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">2.34k</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">12.9k</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Dolor organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">D</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Dolor Cloud</span>
+            <span class="org-card__subtitle">Enterprise, company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip org-card__chip--pro">Enterprise</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">36</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">4.04k</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Sit Compute organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">S</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Sit Compute</span>
+            <span class="org-card__subtitle">Enterprise, company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip org-card__chip--pro">Enterprise</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">1.1k</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">55.7k</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Amet Labs organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">A</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Amet Labs</span>
+            <span class="org-card__subtitle">Company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip">Company</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">244</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">3.89k</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Consectetur organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">C</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Consectetur Soft</span>
+            <span class="org-card__subtitle">Enterprise, company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip org-card__chip--pro">Enterprise</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">513</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">19.9k</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Adipiscing organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">A</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Adipiscing</span>
+            <span class="org-card__subtitle">Team, company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip">Team</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">11</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">223</span><span>followers</span>
+        </div>
+      </a>
+
+      <a href="#" class="org-card" aria-label="Elit Writer organization page">
+        <div class="org-card__head">
+          <span class="org-card__avatar" aria-hidden="true">E</span>
+          <span class="org-card__person">
+            <span class="org-card__name">Elit Writer</span>
+            <span class="org-card__subtitle">Enterprise, company</span>
+          </span>
+        </div>
+        <div class="org-card__chips">
+          <span class="org-card__chip org-card__chip--pro">Enterprise</span>
+        </div>
+        <div class="org-card__counts">
+          <span class="org-card__count-num">33</span><span>models</span>
+          <span class="org-card__count-sep">/</span>
+          <span class="org-card__count-num">393</span><span>followers</span>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="section__foot">
+      <a href="#" class="section__cta">
+        Lorem all 50,000 organizations
+        <!-- Inline ornament: trailing arrow on the catalog CTA, matching the
+             dataset / model index "View all" affordance HF uses elsewhere. -->
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+  </section>
+</body>
+</html>

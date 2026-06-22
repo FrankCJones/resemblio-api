@@ -1,0 +1,99 @@
+/*
+ * airtable-pricing-table-001 tokens
+ *
+ * Whole pricing-tables asset modelled on Airtable's /pricing page: four
+ * tier cards in an equal row (Free, Team, Business, Enterprise Scale)
+ * with a "Most popular" badge on Business, above a category-grouped
+ * comparison table. Light surface with subtle warm tint, hairline card
+ * chrome, near-black text, and a single coral-pink accent that carries
+ * the primary CTA and the highlighted-tier indicator.
+ *
+ * Composition_atoms in meta.json:
+ *   color-groups/paper-ink-zero-001       (light surface, near-black text baseline)
+ *   type-pairings/sans-system-modern-001  (Inter-class humanist sans, single-family)
+ *   cards/hairline-flat-001               (tier card frame: 1px border, soft radius, no shadow at rest)
+ *   buttons/primary-square-001            (small-radius primary CTA on Business tier)
+ *   buttons/ghost-bordered-001            (secondary CTAs on Free, Team, Enterprise)
+ *   badges/status-pill-001                (the "Most popular" pill on the featured card)
+ *   tables/docs-comparison-table-001      (the feature-comparison table layout)
+ *   headings/display-tight-001            (tier name + price display)
+ *   kickers/mono-eyebrow-001              (mono category band kickers inside the table)
+ *   icons/stroke-line-uniform-001         (check / dash glyphs in comparison rows)
+ *   dividers/hairline-rule-001            (category-group separator inside the table)
+ */
+:root {
+  /* Colors. Airtable pricing surface reads as warm off-white; card chrome is
+   * a clean white with hairline borders; text sits at near-black. The
+   * coral-pink accent is Airtable's signature brand color and appears on
+   * the recommended-tier badge and the primary CTA. */
+  --ds-bg:           #FBFAF8;   /* Airtable pricing body background; warm off-white with faint cream cast. */
+  --ds-surface:      #FFFFFF;   /* Tier cards sit a half-step above the page so hairline borders read. */
+  --ds-surface-2:    #F4F2EE;   /* Comparison-table category band; subtle warm zebra against page bg. */
+  --ds-text:         #1D1F25;   /* Near-black with a slight cool cast; body and price values. */
+  --ds-text-muted:   #6B6E7A;   /* Captions, "per user / month" suffix, table value text. */
+  --ds-text-strong:  #0E1015;   /* Tier names, headline emphasis; stronger than body. */
+  --ds-border:       #E5E1DA;   /* Card outlines; warm hairline that matches the cream surface. */
+  --ds-hairline:     rgba(20,22,28,0.08); /* Comparison-table row rule; barely-there separator. */
+  --ds-accent:       #FC4A1A;   /* Airtable coral-pink-red; the single distinctive brand color. */
+  --ds-accent-2:     #FFE6DE;   /* Coral wash for the featured-tier soft halo and badge backing. */
+  --ds-success:      #1F9D55;   /* Check-glyph color for included features in the comparison rows. */
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #2D7FF9;   /* Airtable's secondary brand blue; reserved for inline info states. */
+  --ds-focus-ring:   #FC4A1A;   /* Accent at full saturation for keyboard focus. */
+
+  /* Type. Single-family humanist sans (Inter / Söhne register). Airtable
+   * uses a custom sans display through their marketing; system fallback
+   * lands on Inter so this asset opens standalone without a webfont call.
+   * Mono is reserved for the comparison-table category kicker rows. */
+  --ds-font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --ds-font-accent:  "Inter Tight", "Inter", sans-serif;
+
+  /* Modular scale. Tier name lands at xl; price at 4xl; table cells at sm. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 18px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 40px;  --ds-text-4xl: 52px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 92px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.08;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.85;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.06em;
+  --ds-tracking-wider: 0.14em;
+
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii: Airtable's card chrome is a soft-but-not-pill radius (10-12px);
+   * CTAs land slightly tighter; the badge runs as a full pill. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 12px;  --ds-radius-lg: 20px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Airtable pricing cards do not elevate at rest; the hairline
+   * border carries definition. sm is reserved for the featured card's
+   * subtle hover lift. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(20,22,28,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(20,22,28,0.05);
+  --ds-shadow-md:  0 6px 18px rgba(20,22,28,0.08);
+  --ds-shadow-lg:  0 14px 36px rgba(20,22,28,0.12);
+  --ds-shadow-2xl: 0 32px 64px rgba(20,22,28,0.18);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

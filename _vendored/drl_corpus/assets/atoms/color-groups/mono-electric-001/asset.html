@@ -1,0 +1,138 @@
+<!--
+  Asset: mono-electric-001
+  Class: color-groups
+  Pattern: monochrome-palette, electric-accent
+  Inspired by: Vercel, Linear
+  Notes:
+    - Inversion of paper-and-ink: pure-black surface, off-white text, single saturated accent.
+    - All color values are variables (contract). Only the swatch demo grid uses
+      one inline layout choice (the radial fade behind the accent swatch) which is
+      asset-specific ornament documented inline.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mono-electric-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  /* Asset-local reset. We assume nothing about the iframe parent. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-5);
+    /* The palette demo is a single row; aligns the swatches to the top so
+     * the iframe height variable in harness can size to content. */
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    min-height: 100vh;
+  }
+
+  /* Eyebrow above the palette demo identifies the asset class in a way the
+   * card render area cannot. Type uses the mono family per the palette's
+   * documented type pairing. */
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* The grid: one swatch per role. Auto-flow keeps the row dense; the
+   * minmax bound ensures swatches do not collapse below readable size. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--ds-space-2);
+  }
+
+  .swatch {
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3);
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--ds-hairline);
+  }
+  .swatch__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .swatch__hex {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: 0;
+  }
+
+  /* Each swatch carries its color via a single inline custom property
+   * (--c) consumed by background. We do this rather than 15 separate rules
+   * because the swatch component is uniform and the per-instance value is
+   * the only thing that varies. */
+  .swatch { background: var(--c); }
+  .swatch--on-light { color: #111; }
+  .swatch--on-dark  { color: #f7f7f8; }
+
+  /* Accent swatch carries an inline radial fade. This is asset-specific
+   * ornament: a one-time character moment that documents how the accent
+   * reads as energy in this palette. Not a token. */
+  .swatch--accent {
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 60%),
+      var(--c);
+  }
+</style>
+</head>
+<body>
+  <div class="label">mono-electric-001 · palette of {twelve} roles</div>
+  <div class="grid">
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-bg);">
+      <span class="swatch__role">bg</span>
+      <span class="swatch__hex">#000000</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-surface);">
+      <span class="swatch__role">surface</span>
+      <span class="swatch__hex">#0A0A0A</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-surface-2);">
+      <span class="swatch__role">surface-2</span>
+      <span class="swatch__hex">#141414</span>
+    </div>
+    <div class="swatch swatch--on-light" style="--c: var(--ds-text);">
+      <span class="swatch__role">text</span>
+      <span class="swatch__hex">#FFFFFF</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-text-muted);">
+      <span class="swatch__role">muted</span>
+      <span class="swatch__hex">#A1A1A1</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-border);">
+      <span class="swatch__role">border</span>
+      <span class="swatch__hex">#2E2E2E</span>
+    </div>
+    <div class="swatch swatch--accent swatch--on-dark" style="--c: var(--ds-accent);">
+      <span class="swatch__role">accent</span>
+      <span class="swatch__hex">#5E6AD2</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-success);">
+      <span class="swatch__role">success</span>
+      <span class="swatch__hex">#4CB782</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-error);">
+      <span class="swatch__role">error</span>
+      <span class="swatch__hex">#E5484D</span>
+    </div>
+  </div>
+</body>
+</html>

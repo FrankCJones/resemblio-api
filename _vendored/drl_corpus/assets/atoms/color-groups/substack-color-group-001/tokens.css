@@ -1,0 +1,137 @@
+/*
+ * substack alphabet tokens
+ *
+ * Substack's complete typography expression captured for the marketing
+ * surface. Off-white page field with near-black ink and one signature
+ * orange (#FF6719) that lives on the brand mark and the primary CTA.
+ * Serif display (Spectral-class) pairs with humanist sans body (Source
+ * Sans Pro-class); the pairing is deliberately the same stack Substack
+ * ships to publications by default, so the marketing surface looks
+ * continuous with the writing surface.
+ *
+ * Token values composed from the system-tagged libraries/substack atoms
+ * (captured 2026-05-20 via WebFetch at score B) and corroborated by a
+ * fresh WebFetch sweep on 2026-05-20 of substack.com (homepage nav and
+ * primary CTA) and substack.com/going-paid (writer-card and serif lead
+ * register). WebFetch returns processed markdown that strips computed
+ * styles; this asset adopts the previously-captured B-grade tokens and
+ * does not invent new values.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Clean white field; near-black body ink; warm-cream subtle surface for
+   * nested testimonial fields. The orange is the single chromatic voice
+   * and is reserved for the wordmark mark and primary CTA.
+   */
+  --ds-bg:           #FFFFFF;            /* Marketing page bg; clean white. */
+  --ds-surface:      #FFFFFF;            /* Writer cards on white. */
+  --ds-surface-2:    #F8F7F4;            /* Subtle warm-cream nested fields. */
+  --ds-text:         #1A1A1A;            /* Near-black body ink. */
+  --ds-text-muted:   #6B6B6B;            /* Metadata, dek, footer link rest. */
+  --ds-text-strong:  #000000;            /* Display headlines. */
+  --ds-border:       rgba(0,0,0,0.12);   /* Writer-card hairline edge. */
+  --ds-hairline:     rgba(0,0,0,0.08);   /* Section divider, footer rule. */
+  --ds-accent:       #FF6719;            /* Substack orange; wordmark mark + primary CTA. */
+  --ds-accent-2:     #FFB672;            /* Tinted accent; hover and washed bg. */
+  --ds-success:      #1F8F4E;            /* Subscriber-count green. */
+  --ds-warning:      #FF6719;            /* Reuses brand orange. */
+  --ds-error:        #C92A2A;            /* Destructive; rare on marketing. */
+  --ds-info:         #1A1A1A;            /* Neutral; no separate info hue. */
+  --ds-focus-ring:   #FF6719;            /* Orange focus ring. */
+
+  /* ---------- Type families ----------
+   * The pair mirrors the writing-surface stack. Spectral (Production Type)
+   * is a modern editorial serif at display register; Source Sans Pro is
+   * the workhorse humanist sans at body. Mono is reserved for the rare
+   * technical kicker; it does not appear in reading.
+   */
+  --ds-font-display: "Spectral", "GT Super", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Source Sans Pro", "Helvetica Neue", Helvetica, system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Spectral", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Hero serif headline lands around 56-72px; section heads around 32-44px;
+   * body sans reads at 17px (well above the 14-15px SaaS default, in
+   * keeping with the editorial register). Mono kickers sit at 11-13px.
+   */
+  --ds-text-2xs:  11px;                  /* Mono legal; finest captions. */
+  --ds-text-xs:   13px;                  /* Mono uppercase kicker; metadata. */
+  --ds-text-sm:   14px;                  /* Nav links; footer; button labels. */
+  --ds-text-base: 17px;                  /* Body sans reading default. */
+  --ds-text-lg:   20px;                  /* Lead paragraph / dek (serif italic). */
+  --ds-text-xl:   24px;                  /* Subhead H3. */
+  --ds-text-2xl:  32px;                  /* Section heading H2. */
+  --ds-text-3xl:  44px;                  /* Page title. */
+  --ds-text-4xl:  56px;                  /* Hero secondary. */
+  --ds-text-5xl:  72px;                  /* Hero primary serif display. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Display tightens to 1.05; sans body sits at 1.45 (loose enough to
+   * carry 17px reading without crowding); serif lead breathes at 1.6.
+   */
+  --ds-leading-tight:   1.05;            /* Serif display. */
+  --ds-leading-snug:    1.2;             /* Subheads. */
+  --ds-leading-normal:  1.45;            /* Sans body. */
+  --ds-leading-relaxed: 1.6;             /* Serif lead paragraph. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Negative tracking on the serif display (modern serif convention);
+   * zero on body; positive on the rare uppercase mono kicker.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;          /* Footer link / small uppercase. */
+  --ds-tracking-wider:  0.16em;          /* Mono uppercase kicker. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid; marketing-page rhythm leans on 24/32/48 between blocks.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Small-radius register; not a pill platform. Primary CTA sits at 4px;
+   * writer cards at 6px; larger panels at 12px.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;                 /* Primary CTA. */
+  --ds-radius-md:   6px;                 /* Writer-card frame. */
+  --ds-radius-lg:   12px;                /* Larger panel. */
+  --ds-radius-full: 9999px;              /* Avatars only. */
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome system. Shadows are reserved for raised states
+   * (hover lift, dropdowns); cards at rest carry only the 1px border.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 2px 6px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 6px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 16px 40px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 32px 60px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

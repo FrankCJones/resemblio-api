@@ -1,0 +1,112 @@
+/*
+ * mailchimp-about-page-001 tokens
+ *
+ * Page-level layout skeleton for the Mailchimp /about page. Tokens reflect
+ * the Mailchimp register documented in systems/mailchimp/system.json:
+ * Cavendish Yellow as the single signature accent (#FFE01B); paper-white
+ * page surface; near-black neutral ink; subtle rounded corners (not pills);
+ * sentence-case conversational tone; hand-illustration vocabulary that
+ * carries the brand more than chrome does. The about page itself is the
+ * narrative surface where founder-story prose and culture copy run in a
+ * narrow single column, then transitions to a three-up learn-more card
+ * grid and a six-column mega-footer.
+ *
+ * WebFetch returned the section sequence verbatim (hero with About
+ * Mailchimp headline, founder story, culture, corporate citizenship,
+ * three-up cards, related links list, mega-footer) but stripped inline
+ * computed styles. Type and color values are mapped from the system
+ * manifest's design_principles and the brand's published Cavendish Yellow
+ * token rather than from devtools. Section padding, container width, and
+ * grid shape track the system's feature-tile-density-with-warm-whitespace
+ * principle.
+ *
+ * The slots that carry this layout are --ds-bg (paper white), --ds-text
+ * (near-black ink), --ds-accent (Cavendish Yellow), --ds-radius-md
+ * (subtle rounded corners on cards), and --ds-space-12 / --ds-space-16
+ * (section padding-block rhythm with warm whitespace).
+ */
+:root {
+  /* Colors. Paper-white page surface; near-black neutral ink; Cavendish
+   * Yellow as the one signature accent; warm light-gray surfaces for
+   * raised cards. The about page never tints whole sections; section
+   * separation is whitespace rhythm and a hairline rule, not color
+   * banding. */
+  --ds-bg:           #FFFFFF;   /* Paper white; carries the narrative column and section bands. */
+  --ds-surface:      #F6F6F4;   /* Warm light surface for learn-more cards. */
+  --ds-surface-2:    #EFEFEC;   /* Second-level surface for nested chips or hovered cards. */
+  --ds-text:         #241C15;   /* Near-black warm neutral; reads as ink on paper. */
+  --ds-text-muted:   #6E6259;   /* Secondary text for metadata, captions, footer-quiet links. */
+  --ds-text-strong:  #000000;   /* Headlines, mission statement, section titles. */
+  --ds-border:       #E5E2DC;   /* Card edges and feature-block outlines. */
+  --ds-hairline:     #EBE8E2;   /* Between-section dividers; warm not cool. */
+  --ds-accent:       #FFE01B;   /* Cavendish Yellow; the one signature color in the chrome. */
+  --ds-accent-2:     #007C89;   /* Peppercorn teal; the historical Mailchimp secondary used sparingly. */
+  --ds-success:      #2B6E4A;
+  --ds-warning:      #FFA000;
+  --ds-error:        #B5341A;
+  --ds-info:         #007C89;
+  --ds-focus-ring:   #FFE01B;   /* Cavendish Yellow on focus; outline lives behind the swatch. */
+
+  /* Type. Mailchimp ships a humanist sans for body and a heavier weighted
+   * cut for display (the brand has used custom Cooper-derived display
+   * cuts and humanist sans pairs over time). The system register reads
+   * as warm humanist; mono is reserved for technical surfaces. */
+  --ds-font-display: "Helvetica Neue", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Helvetica Neue", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Georgia", "Cooper", "Times New Roman", serif;
+
+  /* Type scale. About headline at 4xl on desktop; section titles at 2xl;
+   * body at base with relaxed leading for the narrative column. The
+   * scale steps down a notch from a dev-tool register: Mailchimp's
+   * voice is conversational, not theatrical. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* Spacing. About-page rhythm: --ds-space-12 (96px) between sections on
+   * desktop, --ds-space-8 (48px) on mobile. The hero band gets
+   * --ds-space-16 (128px) of breathing room above. Warm whitespace is
+   * the load-bearing rhythm. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Mailchimp uses subtle rounded corners (not pills) on cards:
+   * 8-12px on the learn-more card grid; 4px on small chips. The full
+   * slot stays available for the rare pill (newsletter button etc.). */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 10px;  --ds-radius-lg: 20px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Cards rest on subtle elevation, not hairlines. Mailchimp's
+   * card register carries a soft drop shadow that reads as warm paper,
+   * not glass. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 1px 1px rgba(36, 28, 21, 0.04);
+  --ds-shadow-sm:  0 2px 6px rgba(36, 28, 21, 0.06);
+  --ds-shadow-md:  0 8px 24px rgba(36, 28, 21, 0.08);
+  --ds-shadow-lg:  0 16px 40px rgba(36, 28, 21, 0.10);
+  --ds-shadow-2xl: 0 32px 64px rgba(36, 28, 21, 0.14);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

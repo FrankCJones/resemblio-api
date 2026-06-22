@@ -1,0 +1,140 @@
+/*
+ * quanta-cta-block-001 tokens
+ *
+ * Quanta Magazine podcast CTA: an inverted deep-violet surface card that
+ * promotes the Quanta Podcast / The Joy of Why episodes. The block recurs
+ * across the site - homepage mid-page placement and the /tag/the-joy-of-why
+ * landing page both ship the same pattern: a serif headline naming the
+ * episode, a short sans dek of the episode subject, a duration stamp, and a
+ * row of uppercase platform buttons (APPLE, SPOTIFY, sometimes RSS and
+ * AMAZON MUSIC). The block sits on Quanta's signature deep violet, which
+ * inverts the paper-and-ink article surface and reads as "this is the
+ * audio register, not the reading register."
+ *
+ * Sources inspected via WebFetch 2026-05-20: quantamagazine.org (homepage
+ * Quanta Podcast section and The Joy of Why section) and
+ * quantamagazine.org/tag/the-joy-of-why (podcast landing page with the
+ * platform-button row underneath the show description). WebFetch returned
+ * processed markdown without computed-style hex values; Chrome MCP refuses
+ * the quantamagazine.org domain (precedent recorded against
+ * kickers/quanta-section-001 and newsletter-bands/editorial-band-001). Color
+ * and font values reflect Quanta's published brand identity per those
+ * precedent atoms (deep violet circa #4A2D7E, Tiempos Headline/Text serif
+ * pair, GT America sans). Score B per AGENT_BRIEFING rules.
+ *
+ * The asset is the audio counterpart of editorial-band-001's newsletter
+ * band: same publication, different register. Where the newsletter band
+ * sits on paper with a violet square submit, this CTA inverts and the type
+ * goes paper on violet.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Inverted deep violet surface. Type is paper-white on violet; the
+   * "accent" inverts too - the platform buttons read as paper slabs with
+   * violet labels. Quanta refuses a second chromatic hue on this card; the
+   * whole block is one violet decision plus contrast. */
+  --ds-bg:           #4A2D7E;   /* Quanta signature deep violet; the card field. */
+  --ds-surface:      #5B3B96;   /* One step up; reserved for nested hover. */
+  --ds-surface-2:    #6E4DB1;   /* Two steps; nested overlay. */
+  --ds-text:         #FFFFFF;   /* Paper-white on violet; the headline and dek color. */
+  --ds-text-muted:   #D7C8EE;   /* Lifted violet-tinted off-white; duration stamp, byline. */
+  --ds-text-strong:  #FFFFFF;   /* Same as text; reserved for the headline. */
+  --ds-border:       #6E4DB1;   /* Hairline frame for platform-button outlines. */
+  --ds-hairline:     #5B3B96;   /* The thinnest divider inside the card. */
+  --ds-accent:       #FFFFFF;   /* The inverse slab: paper button on violet field. The accent IS the contrast. */
+  --ds-accent-2:     #F2EAFB;   /* Hover shift; paper warms by a single violet-tinted step. */
+  --ds-success:      #2E8540;   /* Reserved; rarely used on Quanta. */
+  --ds-warning:      #C77700;   /* Reserved; editorial amber. */
+  --ds-error:        #B3261E;   /* Reserved; destructive red. */
+  --ds-info:         #FFFFFF;   /* Info collapses to paper-text on the violet field. */
+  --ds-focus-ring:   #FFFFFF;   /* Paper outline reads against the violet field. */
+
+  /* ---------- Type families ----------
+   * Tiempos Headline for the episode title (the editorial serif Quanta
+   * uses across the site); GT America (sans) for the short dek and the
+   * uppercase platform-button labels. JetBrains Mono stands in as the
+   * mono register for the duration stamp.
+   */
+  --ds-font-display: "Tiempos Headline", "Charter", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Tiempos Text", "Charter", Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Headline sits at 2xl on desktop (the podcast card stays smaller than a
+   * hero; it is one of many cards in the Latest Articles river). Dek at
+   * base; platform-button labels at xs uppercase. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Headline goes slightly negative. Platform-button labels (uppercase
+   * sans) carry positive 0.14em tracking so the row reads as platform
+   * row, not heading. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * 2px near-sharp on the platform buttons. Quanta uses sharp corners
+   * everywhere outside avatars; the 2px is the "this is a button"
+   * affordance without softening the editorial register. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * The card sits flat; no elevation. Slots present for contract
+   * conformance only. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.18);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.22);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.28);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.36);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

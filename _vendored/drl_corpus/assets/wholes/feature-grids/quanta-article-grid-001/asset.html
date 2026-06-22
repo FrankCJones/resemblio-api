@@ -1,0 +1,254 @@
+<!--
+  Asset: quanta-article-grid-001
+  Class: feature-grids (whole)
+  Pattern: story-card-grid, kicker-with-rule
+  Inspired by: Quanta Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (paper-and-ink with one accent)
+    - type-pairings/quanta-science-pair-001  (Tiempos serif + GT America sans)
+    - kickers/quanta-section-001             (lowercase violet topic kicker)
+    - headings/editorial-newspaper-001       (serif story headline)
+    - cards/hairline-flat-001                (hairline-bordered card frame)
+    - dividers/hairline-rule-001             (inter-row hairline rhythm)
+  Notes:
+    - Quanta's recurring story tile lives on the homepage and on every
+      topic-index page. Composition is constant: illustration thumb,
+      lowercase deep-violet topic kicker, serif title, sans byline plus
+      date. The kicker is the single colored signal in an otherwise
+      paper-and-ink grid.
+    - Tokens carry the editorial palette and type families; one-off
+      ornaments (the placeholder thumbnail hatch, the kicker hover
+      lift) stay inline with comments explaining intent.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-article-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Tiempos Headline / Tiempos Text and GT America are commercial faces.
+     The asset relies on Source Serif 4 and Inter as the open-source
+     analogs so the file renders standalone without a license. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The grid section. Centered measure, generous outer padding. */
+  .grid-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  /* Section head. Lowercase violet topic kicker above a serif section
+   * title, with a hairline rule beneath. The same kicker register
+   * recurs inside each card. */
+  .grid-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-6);
+    padding-bottom: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .grid-section__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-transform: lowercase;
+  }
+  .grid-section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Three-up grid. One column on narrow viewports, two at tablet,
+   * three at desktop. The gap reads as channel, not crowding. */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8) var(--ds-space-6);
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Card. No frame at rest; the hairline lives beneath the thumbnail
+   * to separate image from text without boxing the card. The whole
+   * card is a link target. */
+  .story-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    color: inherit;
+    text-decoration: none;
+  }
+  .story-card:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Illustration thumbnail. 16:9 placeholder; production carries the
+   * commissioned article illustration. The inline diagonal hatch is
+   * a one-off ornament that signals the placeholder state without
+   * competing with real imagery. */
+  .story-card__thumb {
+    aspect-ratio: 16 / 9;
+    background-color: var(--ds-surface-2);
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 14px,
+        rgba(74, 45, 126, 0.06) 14px,
+        rgba(74, 45, 126, 0.06) 15px);
+    margin-bottom: var(--ds-space-2);
+  }
+
+  /* Lowercase violet topic kicker. The kicker is the single colored
+   * signal in the card; everything else stays ink-on-paper. The
+   * underline animates in on hover to telegraph the link. */
+  .story-card__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-transform: lowercase;
+  }
+  .story-card:hover .story-card__kicker {
+    color: var(--ds-accent-2);
+  }
+
+  /* Serif story headline. Tiempos Headline (Source Serif 4 fallback)
+   * at xl; negative tracking on display weight; balanced wrapping to
+   * keep two- and three-line titles even. */
+  .story-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .story-card:hover .story-card__title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* Byline + date strip. Sans, xs, muted; the "By" is muted, the
+   * author name sits at body-text color to lift slightly. Date and
+   * author are separated by a single mid-dot. */
+  .story-card__meta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .story-card__meta-author {
+    color: var(--ds-text);
+  }
+
+  /* Inter-row hairline rhythm. On wide viewports the hairline is
+   * suppressed; on narrow viewports a hairline sits beneath each
+   * card to keep the rhythm legible when the grid collapses to one
+   * column. */
+  @media (max-width: 719px) {
+    .story-card {
+      padding-bottom: var(--ds-space-6);
+      border-bottom: 1px solid var(--ds-hairline);
+    }
+    .story-card:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story-card,
+    .story-card__title,
+    .story-card__kicker {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="grid-section" aria-labelledby="grid-title">
+    <header class="grid-section__head">
+      <span class="grid-section__kicker">latest research</span>
+      <h2 class="grid-section__title" id="grid-title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+    </header>
+
+    <div class="grid">
+      <a class="story-card" href="#one">
+        <div class="story-card__thumb" aria-hidden="true"></div>
+        <span class="story-card__kicker">mathematics</span>
+        <h3 class="story-card__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do.</h3>
+        <p class="story-card__meta">By <span class="story-card__meta-author">Lorem Ipsum</span> &middot; March 9, 2026</p>
+      </a>
+
+      <a class="story-card" href="#two">
+        <div class="story-card__thumb" aria-hidden="true"></div>
+        <span class="story-card__kicker">physics</span>
+        <h3 class="story-card__title">Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</h3>
+        <p class="story-card__meta">By <span class="story-card__meta-author">Dolor Sit</span> &middot; February 22, 2026</p>
+      </a>
+
+      <a class="story-card" href="#three">
+        <div class="story-card__thumb" aria-hidden="true"></div>
+        <span class="story-card__kicker">biology</span>
+        <h3 class="story-card__title">At vero eos et accusamus et iusto odio dignissimos ducimus.</h3>
+        <p class="story-card__meta">By <span class="story-card__meta-author">Amet Consectetur</span> &middot; January 5, 2026</p>
+      </a>
+
+      <a class="story-card" href="#four">
+        <div class="story-card__thumb" aria-hidden="true"></div>
+        <span class="story-card__kicker">computer science</span>
+        <h3 class="story-card__title">Temporibus autem quibusdam et aut officiis debitis aut rerum.</h3>
+        <p class="story-card__meta">By <span class="story-card__meta-author">Magna Aliqua</span> &middot; December 14, 2025</p>
+      </a>
+
+      <a class="story-card" href="#five">
+        <div class="story-card__thumb" aria-hidden="true"></div>
+        <span class="story-card__kicker">cosmology</span>
+        <h3 class="story-card__title">Nam libero tempore cum soluta nobis est eligendi optio cumque.</h3>
+        <p class="story-card__meta">By <span class="story-card__meta-author">Ut Labore</span> &middot; November 30, 2025</p>
+      </a>
+
+      <a class="story-card" href="#six">
+        <div class="story-card__thumb" aria-hidden="true"></div>
+        <span class="story-card__kicker">quantum</span>
+        <h3 class="story-card__title">Excepteur sint occaecat cupidatat non proident sunt in culpa.</h3>
+        <p class="story-card__meta">By <span class="story-card__meta-author">Quis Nostrud</span> &middot; November 12, 2025</p>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

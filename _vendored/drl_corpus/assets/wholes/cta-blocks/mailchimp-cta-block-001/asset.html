@@ -1,0 +1,155 @@
+<!--
+  Asset: mailchimp-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: cta-block; paper-and-ink + single-cta-hero (closing variant) + primary-square + accent-on-neutral
+  Inspired by: Mailchimp (mailchimp.com/, mailchimp.com/features/, mailchimp.com/pricing/marketing/)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (paper-white bg, near-black ink)
+    - type-pairings/sans-system-modern-001   (humanist sans across the block)
+    - headings/display-tight-001             (sans display, mild negative tracking)
+    - buttons/primary-square-001             (Cavendish Yellow primary, black ink label, 4px radius)
+  Notes:
+    - The block sits flush on the white page surface, centered. No
+      card, no tinted band, no shadow. The Cavendish Yellow primary is
+      the only saturated moment; the rest is ink on paper.
+    - Headline is sentence-case, single line, declarative trust framing
+      ("Millions of users trust us with their email marketing. You can
+      too."). Single primary button; no secondary. The closing CTA is
+      deliberately one-action, routing to /pricing/marketing/.
+    - Inline ornament: the 4px button radius (rounded but not pill),
+      the yellow-on-black inversion of the typical primary (label is
+      black ink rather than white), and the generous space-12 vertical
+      padding that lets the band breathe against the dense footer.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for the Mailchimp marketing sans. Open-license
+     substitute; Mailchimp ships a custom humanist sans on production
+     marketing surfaces. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: paper white. The closing CTA sits flush on the page
+   * surface; no separator above it, just generous whitespace before
+   * the footer. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container holding a centered content
+   * column. Mailchimp closing CTAs are centered and narrow; the dense
+   * feature grid above usually runs wider. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  /* Content column: centered, narrow measure for the headline, then a
+   * single centered button below. No supporting paragraph on the
+   * canonical closing band; the headline carries the trust framing
+   * alone. */
+  .cta__content {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Display headline: sentence case, mild negative tracking, sans
+   * display. Two declarative sentences ("Millions of users trust us
+   * with their email marketing. You can too."). */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4.5vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+    /* Inline ornament: 20ch max-width keeps the second sentence ("You
+     * can too.") on its own line, where it reads as the answer to the
+     * first. */
+  }
+
+  /* Single primary button: Cavendish Yellow fill, black ink label,
+   * 4px radius. The signature Mailchimp moment. */
+  .cta__actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: var(--ds-space-2);
+  }
+
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: the label is BLACK ink on yellow, not white on
+     * accent. The inversion is the Mailchimp signature; white-on-
+     * yellow would fail contrast and break the brand cue. */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+    transform: translateY(-1px);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary { transition: none; }
+    .cta__btn--primary:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur. Adipiscing elit too.</h2>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Start free trial</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

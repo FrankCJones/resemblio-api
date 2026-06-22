@@ -1,0 +1,432 @@
+<!--
+  Asset: comparison-detailed-pricing-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-cards-plus-comparison-table
+  Inspired by: Vercel /pricing
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (light surface, near-black text)
+    - type-pairings/grotesk-mono-001        (Geist-like sans + mono kickers)
+    - cards/hairline-flat-001               (tier cards with hairline borders)
+    - buttons/primary-square-001            (featured-tier primary CTA)
+    - buttons/ghost-bordered-001            (secondary tier CTAs)
+    - badges/status-pill-001                ("Most popular" pill on the featured card)
+    - tables/docs-comparison-table-001      (the dense comparison table layout)
+    - headings/display-tight-001            (tier name + price)
+    - kickers/mono-eyebrow-001              (mono category kickers in the table)
+    - icons/stroke-line-uniform-001         (check / dash glyphs in rows)
+    - dividers/hairline-rule-001            (category-group separators)
+  Notes:
+    - The pattern is two layers: three tier cards (Hobby / Pro / Enterprise
+      shape) above a long feature-comparison table grouped by category.
+      Cards sell the decision; the table answers "but does it have X."
+    - Variable: every named role (tier card frame, CTA chrome, price size,
+      table row layout, category kicker) lives in a token. Inline: the
+      "Most popular" pill's offset above the featured card and the
+      category-kicker sticky behaviour are hero-specific tuning.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>comparison-detailed-pricing-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  .pricing {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  /* Section header. Display-tight pattern; balanced wrap. */
+  .pricing__header {
+    text-align: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .pricing__eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .pricing__h1 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: var(--ds-space-3) auto 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* Tier-card row. Three equal cards; the middle (featured) sits in the
+   * accent-2 inverse: near-black surface, white text. */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-5);
+    margin-bottom: var(--ds-space-12);
+  }
+  @media (max-width: 880px) {
+    .tiers { grid-template-columns: 1fr; }
+  }
+
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    position: relative;
+  }
+
+  .tier--featured {
+    background: var(--ds-accent-2);    /* near-black inversion */
+    color: #FAFAFA;
+    border-color: var(--ds-accent-2);
+  }
+  /* Inline ornament: pill offset above the featured card. The translate
+   * value is calibrated to the pill height and is asset-specific tuning. */
+  .tier__popular {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .tier__pitch {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier--featured .tier__pitch { color: rgba(250,250,250,0.7); }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+  }
+  .tier__amount {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .tier__period {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier--featured .tier__period { color: rgba(250,250,250,0.6); }
+
+  /* CTAs. Square primary (Geist square-radius pattern) on featured;
+   * ghost-bordered on unfeatured tiers. */
+  .tier__cta {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+    margin-top: auto;
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover { background: var(--ds-surface-2); }
+  .tier__cta--primary {
+    background: #FFFFFF;
+    color: var(--ds-text);
+    border: 1px solid #FFFFFF;
+  }
+  .tier__cta--primary:hover {
+    box-shadow: var(--ds-shadow-md);
+  }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Highlights list inside each tier card. Small text, check glyph. */
+  .tier__highlights {
+    list-style: none;
+    padding: 0;
+    margin: var(--ds-space-3) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier__highlights li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+  }
+  .check {
+    width: 16px; height: 16px;
+    color: var(--ds-success);
+    flex-shrink: 0;
+  }
+  .tier--featured .check { color: #34D399; /* lifted green for dark surface */ }
+
+  /* Comparison table. Bordered grid; mono category kickers above each
+   * group; rows are sans label + three columns of values. */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    text-align: left;
+  }
+  .compare thead th {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text);
+    padding: var(--ds-space-4) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    position: sticky;
+    top: 0;
+    background: var(--ds-bg);
+  }
+  .compare thead th:first-child { color: var(--ds-text-muted); font-weight: 500; }
+  .compare tbody td,
+  .compare tbody th {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+    text-align: left;
+  }
+  .compare tbody td {
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .compare tbody tr:hover td,
+  .compare tbody tr:hover th { background: var(--ds-surface-2); }
+
+  /* Category-group row. Mono kicker styling; the row spans all columns
+   * and sits visually separate from data rows. */
+  .compare .group td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+
+  .compare .check-cell { color: var(--ds-success); }
+  .compare .dash-cell  { color: var(--ds-text-muted); }
+</style>
+</head>
+<body>
+  <section class="pricing">
+    <header class="pricing__header">
+      <div class="pricing__eyebrow">Lorem ipsum dolor</div>
+      <h1 class="pricing__h1">Sit amet consectetur, adipiscing elit pricing.</h1>
+      <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+    </header>
+
+    <div class="tiers">
+      <!-- Tier 1: starter -->
+      <article class="tier">
+        <h2 class="tier__name">Lorem</h2>
+        <p class="tier__pitch">Curabitur nec libero non nisi convallis fringilla, for solo lorem ipsum.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$0</span>
+          <span class="tier__period">per month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lorem ipsum dolor sit amet</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Consectetur adipiscing elit, sed do</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Eiusmod tempor incididunt</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ut labore et dolore magna</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Start free</button>
+      </article>
+
+      <!-- Tier 2: featured / popular -->
+      <article class="tier tier--featured">
+        <span class="tier__popular">Most popular</span>
+        <h2 class="tier__name">Ipsum</h2>
+        <p class="tier__pitch">Aliqua ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+        <div class="tier__price">
+          <span class="tier__amount">$20</span>
+          <span class="tier__period">per user / month</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Lorem, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Laboris nisi ut aliquip ex ea</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Commodo consequat duis aute</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Irure dolor in reprehenderit</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Voluptate velit esse cillum</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--primary">Get started</button>
+      </article>
+
+      <!-- Tier 3: enterprise -->
+      <article class="tier">
+        <h2 class="tier__name">Dolor</h2>
+        <p class="tier__pitch">Excepteur sint occaecat cupidatat non proident sunt in culpa qui.</p>
+        <div class="tier__price">
+          <span class="tier__amount">Custom</span>
+          <span class="tier__period">contact sales</span>
+        </div>
+        <ul class="tier__highlights">
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Ipsum, plus</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Officia deserunt mollit anim</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Id est laborum sed perspiciatis</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unde omnis iste natus error</span></li>
+          <li><svg class="check" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sit voluptatem accusantium</span></li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+      </article>
+    </div>
+
+    <!-- Comparison table. Dense, grouped by category. -->
+    <table class="compare" aria-label="Detailed feature comparison">
+      <thead>
+        <tr>
+          <th scope="col">Compare plans</th>
+          <th scope="col">Lorem</th>
+          <th scope="col">Ipsum</th>
+          <th scope="col">Dolor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="4">Lorem delivery network</td></tr>
+        <tr>
+          <th scope="row">Bandwidth included</th>
+          <td>100 GB</td><td>1 TB</td><td>Custom</td>
+        </tr>
+        <tr>
+          <th scope="row">Edge requests per month</th>
+          <td>1M</td><td>10M</td><td>Unlimited</td>
+        </tr>
+        <tr>
+          <th scope="row">Image optimisation</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Custom domains</th>
+          <td>1</td><td>50</td><td>Unlimited</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Ipsum firewall</td></tr>
+        <tr>
+          <th scope="row">DDoS mitigation</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Bot protection</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Custom rules</th>
+          <td>0</td><td>40</td><td>Unlimited</td>
+        </tr>
+        <tr>
+          <th scope="row">IP allow lists</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Dolor collaboration</td></tr>
+        <tr>
+          <th scope="row">Team members</th>
+          <td>1</td><td>10</td><td>Unlimited</td>
+        </tr>
+        <tr>
+          <th scope="row">Role-based access</th>
+          <td class="dash-cell">—</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Audit logs</th>
+          <td class="dash-cell">—</td><td>30 day</td><td>1 year</td>
+        </tr>
+        <tr>
+          <th scope="row">SSO / SAML</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Sit support</td></tr>
+        <tr>
+          <th scope="row">Community forum</th>
+          <td class="check-cell">Included</td><td class="check-cell">Included</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">Email support</th>
+          <td class="dash-cell">—</td><td class="check-cell">Standard</td><td class="check-cell">Priority</td>
+        </tr>
+        <tr>
+          <th scope="row">Dedicated CSM</th>
+          <td class="dash-cell">—</td><td class="dash-cell">—</td><td class="check-cell">Included</td>
+        </tr>
+        <tr>
+          <th scope="row">SLA</th>
+          <td class="dash-cell">—</td><td>99.9%</td><td>99.99%</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

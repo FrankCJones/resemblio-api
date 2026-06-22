@@ -1,0 +1,138 @@
+<!--
+  Asset: soft-pill-pink-001
+  Class: buttons
+  Pattern: primary-pill
+  Inspired by: Olipop
+  Notes:
+    - Consumer-DTC pill: deep forest-green button on a soft peach-pink page.
+    - Renders four states (rest, hover, focus, disabled) plus a secondary
+      mint-with-outline variant that the source uses as the "Shop" affordance.
+    - Variables: every color, type size, spacing, radius, and motion value.
+    - Inline ornament: the secondary button's 1.5px green ring (Olipop uses
+      this exact thickness as a brand quirk) and the small lift offset on
+      active press are asset-specific tuning, not tokens.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>soft-pill-pink-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Tight is the closest open-licensed approximation of Olipop's
+     custom "Ano" sans; it carries the same warm, slightly condensed feel
+     without a license fee. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-6);
+    flex-wrap: wrap;
+  }
+
+  /* Primary pill: forest-green fill on the soft pink surface. Padding is
+   * the Olipop "Add to Cart" 8px 32px proportion; label uses display family
+   * at 700 weight to read as friendly-bold, not corporate-sharp. */
+  .btn {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: var(--ds-space-2) var(--ds-space-6);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-none);
+    transition:
+      background var(--ds-duration-normal) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn:hover {
+    background: var(--ds-accent-2);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .btn:active {
+    /* Active translate: 1px is asset-specific spatial cue for press; not a token. */
+    transform: translateY(1px);
+  }
+  /* Focus ring: same green as fill, but offset so it sits OUTSIDE the pill
+   * and shows against the pink surface. 2px offset is one-off geometric
+   * tuning; not a contract slot. */
+  .btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .btn[disabled] {
+    background: var(--ds-border);
+    color: var(--ds-text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Secondary pill: mint surface with a hairline green ring, Olipop's
+   * "Shop" affordance. The 1.5px ring is rendered with box-shadow inset 0
+   * so the radius stays clean. */
+  .btn-secondary {
+    background: var(--ds-success);
+    color: var(--ds-text-strong);
+    /* 1.5px inset green ring is an Olipop brand quirk; documented inline. */
+    box-shadow: 0 0 0 1.5px var(--ds-text-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--ds-success);
+    box-shadow: 0 0 0 1.5px var(--ds-text-strong), var(--ds-shadow-sm);
+  }
+
+  /* State labels for the demo specimen. */
+  .group { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); }
+  .state-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="group">
+    <span class="state-label">rest</span>
+    <button type="button" class="btn">Lorem ipsum</button>
+  </div>
+  <div class="group">
+    <span class="state-label">hover</span>
+    <button type="button" class="btn" style="background: var(--ds-accent-2); box-shadow: var(--ds-shadow-sm);">Lorem ipsum</button>
+  </div>
+  <div class="group">
+    <span class="state-label">focus</span>
+    <button type="button" class="btn" style="outline: 2px solid var(--ds-focus-ring); outline-offset: 2px;">Lorem ipsum</button>
+  </div>
+  <div class="group">
+    <span class="state-label">disabled</span>
+    <button type="button" class="btn" disabled>Lorem ipsum</button>
+  </div>
+  <div class="group">
+    <span class="state-label">secondary</span>
+    <button type="button" class="btn btn-secondary">Dolor sit</button>
+  </div>
+</body>
+</html>

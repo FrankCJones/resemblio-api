@@ -1,0 +1,520 @@
+<!--
+  Asset: cloudflare-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, story-card-grid, mega-footer
+  Inspired by: Cloudflare Blog (blog.cloudflare.com/claude-managed-agents/)
+  Notes:
+    - Single-article page skeleton for Cloudflare's engineering-blog
+      register: flush-top white nav with orange primary CTA, article
+      hero (uppercase mono topic-tag cluster as kicker, large sans
+      display title, byline + date + duration row, full-width feature
+      image with hairline frame), narrow ~720px body column with code
+      blocks (mono surface), inline figures and a left-rule pull quote,
+      three-up related-posts grid, tinted subscribe band, dark
+      charcoal mega-footer.
+    - Variable: section sequence, container max-widths, vertical
+      rhythm, type role per slot. Inline: article-column measure
+      (720px), page max-width (1200px), the byline avatar circle,
+      feature image aspect ratio (1600x900).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-article-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter is Cloudflare's working sans across blog and
+  marketing; JetBrains Mono carries the mono utility role on code
+  blocks and topic-tag kickers. System fallbacks approximate the
+  register when the web fonts are unavailable.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px so nav, related-grid, subscribe,
+   * and footer breathe; article body inside is narrower. Inline value
+   * (page grid character, not a contract slot).
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. The reading rhythm sits near 720px (a ~70ch Inter
+   * body measure typical of Cloudflare's blog). Inline because the
+   * measure is article-page character, not a contract slot.
+   */
+  .column {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__cluster {
+    display: flex;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+  }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid rgba(0,0,0,0.10);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Article hero. Topic-tag cluster (uppercase mono pills, signature
+   * orange) sits above the title as kicker. Display title in sans
+   * 4xl, byline row with avatar + name + date + reading-duration.
+   * Below: full-width feature image framed in lg radius with hairline.
+   */
+  .article-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-6); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-8); }
+  }
+  .topic-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .topic-tag {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    background: var(--ds-bg);
+  }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .byline-author {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Author avatar: 32px circle on the byline. Inline ornament. */
+  .byline-author__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  .byline-author__name { color: var(--ds-text); font-weight: 600; }
+  .byline-meta { color: var(--ds-text-muted); }
+  .byline-sep { margin: 0 var(--ds-space-2); color: var(--ds-border); }
+
+  /* Feature image: framed inside the page container (not the column),
+   * lg radius, 1600x900 aspect. Soft orange-to-paper wash stands in
+   * for the OG image; inline because it is illustration, not a token. */
+  .feature-image {
+    margin-top: var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    aspect-ratio: 1600 / 900;
+    background:
+      linear-gradient(135deg, #F6821F 0%, #FBB034 55%, #FFF2D6 100%);  /* signature orange wash, inline */
+    border: 1px solid var(--ds-border);
+    position: relative;
+  }
+  .feature-image__caption {
+    position: absolute;
+    inset: auto var(--ds-space-5) var(--ds-space-5) var(--ds-space-5);
+    color: rgba(10,10,10,0.85);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /*
+   * Article body. Lead paragraph one step larger. Body uses Inter at
+   * 16px / 1.6. H2 / H3 break the column. Inline links pick up the
+   * Cloudflare cool blue.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body figure { margin: var(--ds-space-8) 0; }
+
+  /* Code block. Surface-tinted, mono, sm radius, hairline border. */
+  .code-block {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Inline diagram placeholder; Cloudflare blog posts often include
+   * architecture diagrams between paragraphs. Hairline frame, surface
+   * tint, mono caption. */
+  .diagram {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Pull-quote breakout. Sits inside the narrow column with a
+   * left-orange rule and larger display. */
+  .pull-quote {
+    border-left: 4px solid var(--ds-accent);
+    padding: var(--ds-space-3) 0 var(--ds-space-3) var(--ds-space-5);
+    margin: var(--ds-space-8) 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    font-style: italic;
+  }
+
+  /*
+   * Related posts. Section heading in display sans, then three-up
+   * card grid: desktop 3 columns, tablet 2, mobile 1. Sits in the
+   * page container, not the article column.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Subscribe band. Surface-tinted, sits inside the page container
+   * with generous padding. Single-row input + orange CTA. */
+  .subscribe {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    margin-top: var(--ds-space-10);
+  }
+  .subscribe__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .subscribe__body {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 60ch;
+  }
+  .subscribe__row {
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+  .subscribe__input {
+    flex: 1 1 280px;
+    background: #FFFFFF;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .subscribe__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid rgba(0,0,0,0.10);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width charcoal band, sits outside .page container.
+   * Stands in for wholes/footers/cloudflare-footer-001. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    background: #0A0A0A;          /* Near-black charcoal footer surface. Inline ornament. */
+    color: #B1B5BA;               /* Muted footer text. Inline ornament. */
+    border-top: 1px solid #1A1A1A; /* Footer top divider. Inline ornament. */
+  }
+  .footer-band .slot {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.70);
+  }
+  .footer-band .slot__label { color: rgba(255,255,255,0.92); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/cloudflare-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="nav__cluster">
+        <span>Lorem</span>
+        <span>Ipsum</span>
+        <span>Dolor</span>
+        <span>Sit</span>
+        <a class="nav__cta" href="#">Sign up</a>
+      </div>
+    </nav>
+
+    <!-- Section: article-hero. Topic-tag kicker + title + byline + feature image. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <div class="topic-tags" aria-label="Topic tags">
+          <span class="topic-tag">Lorem</span>
+          <span class="topic-tag">Ipsum</span>
+          <span class="topic-tag">Dolor</span>
+          <span class="topic-tag">Sit Amet</span>
+        </div>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod.</h1>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            <span class="byline-author__name">Lorem Ipsum</span>
+          </span>
+          <span class="byline-meta">
+            May 19, 2026
+            <span class="byline-sep">·</span>
+            7 min read
+          </span>
+        </div>
+      </div>
+      <figure class="feature-image" aria-label="Feature image placeholder">
+        <figcaption class="feature-image__caption">feature-image · 1600 × 900</figcaption>
+      </figure>
+    </header>
+
+    <!-- Section: article-body. Narrow ~720px reading column. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+        <pre class="code-block">$ lorem ipsum --dolor sit
+&gt; consectetur adipiscing elit
+&gt; sed do eiusmod tempor incididunt</pre>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur.
+        </p>
+        <figure>
+          <div class="diagram" aria-label="Architecture diagram placeholder">
+            diagram · lorem ipsum architecture
+          </div>
+        </figure>
+        <blockquote class="pull-quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </blockquote>
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.
+        </p>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Three-up grid, full page width. -->
+    <section class="section" aria-label="Related posts">
+      <h2 class="related-heading">Lorem ipsum related reading</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: subscribe band. Tinted card with input + orange CTA. -->
+    <section aria-label="Subscribe">
+      <div class="subscribe">
+        <h2 class="subscribe__title">Lorem ipsum subscribe</h2>
+        <p class="subscribe__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <form class="subscribe__row" onsubmit="return false;">
+          <input class="subscribe__input" type="email" placeholder="lorem@ipsum.dolor" aria-label="Email"/>
+          <button class="subscribe__cta" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for wholes/footers/cloudflare-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 260px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

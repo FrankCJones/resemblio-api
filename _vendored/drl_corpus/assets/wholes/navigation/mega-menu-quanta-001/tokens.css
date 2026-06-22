@@ -1,0 +1,154 @@
+/*
+ * mega-menu-quanta-001 tokens
+ *
+ * Quanta Magazine's primary navigation surface: a paper-and-ink top bar
+ * with the wordmark anchoring the left, four subject anchors as primary
+ * tabs (Physics / Mathematics / Biology / Computer Science), a "Topics"
+ * trigger opening a mega-menu panel of additional categories, and a
+ * thin secondary row carrying format anchors (Blog / Columns /
+ * Interviews / Podcasts / Puzzles / Multimedia / Videos / About). Lower
+ * right of the menu carries a search input and a newsletter subscribe
+ * affordance.
+ *
+ * The transferable system is the SPLIT BAR: subject categories own the
+ * upper rank in serif-display register, formats and utilities live in
+ * the secondary register, and the mega-menu inverts the standard
+ * convention by rendering category labels in lowercase humanist sans
+ * colored in the signature deep violet. The lowercase-on-paper plus
+ * one-violet recipe is the entire visual identity of the surface.
+ *
+ * Sources inspected via WebFetch 2026-05-19: quantamagazine.org root.
+ * Live computed styles unavailable: quantamagazine.org is documented
+ * blocked from Claude in Chrome MCP (precedent across
+ * kickers/quanta-section-001, type-pairings/quanta-science-pair-001,
+ * spacing-scales/modular-quarter-spacing-001 logged in
+ * `_INBOX/issues_observed.md`). Font names and the violet hex reflect
+ * Quanta's published brand identity per those precedents; nav structure
+ * (dual-row primary + format secondary + Topics gateway + search +
+ * newsletter) confirmed from WebFetch HTML inspection of the homepage.
+ *
+ * Free-font analog used in `asset.html`:
+ *   - Source Serif 4 substitutes for Tiempos Headline and Tiempos Text.
+ *   - Inter substitutes for GT America.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-and-ink with one editorial accent. The violet is the only
+   * non-neutral color and it shows up only on sans-side category
+   * signals (kickers, mega-menu topic links, hover states).
+   */
+  --ds-bg:           #FFFFFF;   /* Paper. The nav surface itself sits on white. */
+  --ds-surface:      #FAFAFA;   /* Mega-menu panel background; one half-step off paper. */
+  --ds-surface-2:    #F2F2F2;   /* Secondary row tint; deepens the rank distinction. */
+  --ds-text:         #1A1A1A;   /* Wordmark and serif subject anchors; near-black. */
+  --ds-text-muted:   #6B6B6B;   /* Secondary row format anchors, search placeholder. */
+  --ds-text-strong:  #000000;   /* Hover state on a serif subject anchor. */
+  --ds-border:       #E5E5E5;   /* Input border; mega-menu card edges. */
+  --ds-hairline:     #EDEDED;   /* The thin rule that separates the two nav rows. */
+  --ds-accent:       #4A2D7E;   /* Quanta signature deep violet; lowercase topic links. */
+  --ds-accent-2:     #7B4FB7;   /* Lifted violet; hover on topic links and focus ring. */
+  --ds-success:      #2E8540;
+  --ds-warning:      #C77700;
+  --ds-error:        #B3261E;
+  --ds-info:         #4A2D7E;
+  --ds-focus-ring:   #7B4FB7;   /* Lifted violet, visible against paper. */
+
+  /* ---------- Type families ----------
+   * Three families, three jobs. Serif for the wordmark and subject
+   * anchors; sans for everything functional (format anchors, topic
+   * links, search, subscribe); mono reserved for the rare technical
+   * label not used in this whole.
+   */
+  --ds-font-display: "Tiempos Headline", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-body:    "Tiempos Text", "Source Serif 4", Charter, Georgia, serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "GT America", "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * The wordmark sits at xl; subject anchors at lg in serif; format
+   * anchors and topic links at xs in sans. The size compression in the
+   * secondary register is what reads as "rank below" without needing a
+   * color shift.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   13px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 17px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  42px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Display serif gets a touch of negative tracking. The lowercase
+   * sans topic links carry positive 0.04em to compensate for losing
+   * the structural rhythm uppercase would provide.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Editorial spacing scale. Mega-menu column gap pulls from space-8;
+   * the gap between wordmark and anchor row pulls from space-6.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Sharp corners almost everywhere; only the subscribe button takes
+   * a small radius and only the focus ring is fully rounded.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial pages prefer hairlines to shadow; the mega-menu panel
+   * takes a soft md elevation only to lift it off the underlying page.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 0 rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.16);
+
+  /* ---------- Motion ----------
+   * Standard easing for the panel reveal; instant duration for hover
+   * state changes on links.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

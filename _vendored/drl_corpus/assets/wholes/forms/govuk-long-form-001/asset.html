@@ -1,0 +1,412 @@
+<!--
+  Asset: govuk-long-form-001
+  Class: forms (whole)
+  Pattern: label-above, bordered-text-input, required-marker-accent
+  Inspired by: GOV.UK Design System
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (palette context: paper + ink, no chrome)
+    - type-pairings/sans-system-modern-001   (single humanist sans across the document)
+    - buttons/gov-start-001                  (the bottle-green submit button)
+    - inputs/text-bordered-001               (text input chrome reference)
+    - labels/form-label-required-001         (label + required-marker pattern)
+    - form-groups/label-input-help-001       (label + input + hint composition)
+  Notes:
+    - Multi-section government question form: page-heading h1, error
+      summary inset at top, two grouped fieldsets (your-details,
+      eligibility), one with a visible error state, single primary
+      submit. The 2px solid ink border on every input is the entire
+      input chrome. The error summary uses a 4px red left-rule and a
+      bulleted list of jump-links; this is the canonical GDS error
+      pattern.
+    - Variables: every color, type size, label scale, spacing step.
+      Inline: the 4px red left-rule on the error summary (specific to
+      this whole, not a contract concern), the visually-hidden "Error:"
+      span (accessibility convention, not visual), the 2px error-border
+      inflation, and the inset 50%-width input variants for postcode /
+      date-day fields.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>govuk-long-form-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* GDS Transport is licensed and not webfont-hosted; fallback is Arial,
+     which is what GOV.UK serves to most browsers without the licensed
+     font. No font import. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);            /* 19px; the canonical GDS body size. */
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-8) var(--ds-space-5);
+  }
+
+  /* Page column. GOV.UK uses a two-thirds column on a 12-grid; the
+   * effective measure is ~640px at desktop. The narrow measure keeps
+   * the form scannable; no field stretches across the whole viewport. */
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* Back link. Sits above the h1, blue link colour, leading caret. The
+   * caret is an inline pseudo-element; the geometry is GDS-specific. */
+  .back-link {
+    display: inline-block;
+    margin-bottom: var(--ds-space-5);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-info);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .back-link::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: var(--ds-space-2);
+    border-top: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+    transform: rotate(-45deg) translateY(2px);
+  }
+
+  /* Page heading. govuk-heading-xl: 48px bold on mobile collapses to 36
+   * on small viewports; the form uses 36px (--ds-text-3xl) by default
+   * because long-form pages aren't hero pages. */
+  .page-heading {
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    margin: 0 0 var(--ds-space-6) 0;
+    color: var(--ds-text-strong);
+  }
+
+  /* Error summary. Sits at the very top of the form on submit-with-errors.
+   * 4px red left-rule (inline ornament; specific to this whole), bold
+   * red title, bulleted list of jump-links to the offending fields. */
+  .error-summary {
+    border: 4px solid var(--ds-error);
+    padding: var(--ds-space-5);
+    margin-bottom: var(--ds-space-6);
+  }
+  .error-summary__title {
+    margin: 0 0 var(--ds-space-3) 0;
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    color: var(--ds-text);
+  }
+  .error-summary__list { margin: 0; padding-left: var(--ds-space-5); }
+  .error-summary__list li { margin-bottom: var(--ds-space-1); }
+  .error-summary__list a {
+    color: var(--ds-error);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 700;
+  }
+
+  /* Section. A fieldset with a legend that reads as an h2. The visible
+   * rule below the legend mirrors GOV.UK section-break-l usage between
+   * grouped question sets. */
+  .section {
+    border: 0;
+    padding: 0;
+    margin: 0 0 var(--ds-space-8) 0;
+  }
+  .section__legend {
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    padding: 0;
+    margin: 0 0 var(--ds-space-5) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: var(--ds-space-3);
+    width: 100%;
+  }
+
+  /* Form group: the canonical label + hint + input stack. Margin-bottom
+   * is govuk-spacing(6) between groups (mapped to --ds-space-6 here). */
+  .form-group {
+    margin-bottom: var(--ds-space-6);
+  }
+
+  /* Label. govuk-label sits above the input, no float, 19px regular
+   * weight by default; required marker is the accent asterisk. */
+  .label {
+    display: block;
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-2);
+  }
+  .label__required {
+    color: var(--ds-error);          /* GDS marks required with red asterisk on optional fields; civic convention. */
+    margin-left: 2px;
+  }
+
+  /* Hint. Sits between label and input; mid-grey, same size as body,
+   * 5px breathing below before the field. */
+  .hint {
+    display: block;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    margin-bottom: var(--ds-space-2);
+  }
+
+  /* Input. 2px solid ink border, 5px padding, 40px min-height, full
+   * width by default. The 2px solid is the entire input chrome; no
+   * background tint, no radius, no hairline. */
+  .input {
+    display: block;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: var(--ds-space-1) var(--ds-space-2);
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-none);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    appearance: none;
+  }
+  .input:focus {
+    outline: 3px solid var(--ds-focus-ring);
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 2px var(--ds-text);  /* Inner ink border survives the yellow ring; canonical GDS focus stack. */
+  }
+  .input--width-10 { width: 11em; }   /* Postcode / phone width. Inline value; GDS width modifier. */
+  .input--width-5  { width: 5.5em; }  /* Date-day / date-month width. Inline value; GDS width modifier. */
+
+  /* Date input row. Three narrow inputs side by side; day / month / year. */
+  .date-input { display: flex; gap: var(--ds-space-3); }
+  .date-input__item label { font-size: var(--ds-text-lg); margin-bottom: var(--ds-space-1); }
+
+  /* Textarea. Same border treatment as input; vertical resize only. */
+  .textarea {
+    display: block;
+    width: 100%;
+    min-height: 160px;
+    margin: 0;
+    padding: var(--ds-space-2);
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-none);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    resize: vertical;
+  }
+  .textarea:focus {
+    outline: 3px solid var(--ds-focus-ring);
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 2px var(--ds-text);
+  }
+
+  /* Error state. Border picks up the red; label and hint pick up an
+   * extra red message slot. The 4px left-rule on the form-group itself
+   * is the visual anchor that ties the offending field back to the
+   * summary entry above. */
+  .form-group--error {
+    border-left: 4px solid var(--ds-error);
+    padding-left: var(--ds-space-3);
+  }
+  .form-group--error .input,
+  .form-group--error .textarea {
+    border-color: var(--ds-error);
+  }
+  .error-message {
+    display: block;
+    color: var(--ds-error);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  /* Visually-hidden Error: prefix. GDS accessibility convention; screen
+   * readers announce "Error:" before the message. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: 0; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Radios. Stacked, with a 40px square outer box and a 20px filled
+   * inner dot on selection. The radio control is custom-rendered; the
+   * native input is visually hidden but receives focus. */
+  .radios { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .radio { position: relative; display: block; padding: 8px 0 8px 50px; min-height: 40px; cursor: pointer; }
+  .radio input { position: absolute; opacity: 0; width: 40px; height: 40px; left: 0; top: 0; cursor: pointer; }
+  .radio__pseudo {
+    position: absolute;
+    left: 0; top: 0;
+    width: 40px; height: 40px;
+    border: 2px solid var(--ds-text);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-bg);
+  }
+  .radio__pseudo::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-text);
+    opacity: 0;
+  }
+  .radio input:checked ~ .radio__pseudo::after { opacity: 1; }
+  .radio input:focus ~ .radio__pseudo {
+    outline: 3px solid var(--ds-focus-ring);
+    box-shadow: 0 0 0 4px var(--ds-text);  /* The yellow ring with a 4px black halo; GDS focus stack on radios. */
+  }
+  .radio__text { font-size: var(--ds-text-lg); }
+
+  /* Primary submit button. From buttons/gov-start-001. Bottle-green,
+   * square corners, hard 2px under-shadow. The :active press is a
+   * top-offset, not a transform; the shadow visually collapses. */
+  .button {
+    position: relative;
+    display: inline-block;
+    appearance: none;
+    border: 2px solid transparent;
+    background: var(--ds-accent);
+    color: #ffffff;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    line-height: 1;
+    padding: 8px 10px 7px 10px;     /* GOV.UK computed padding; bottom 1px short to seat the shadow. */
+    border-radius: var(--ds-radius-none);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-sm);
+    text-decoration: none;
+  }
+  .button:hover { background: var(--ds-accent-2); }
+  .button:active { top: 2px; box-shadow: none; }
+  .button:focus-visible {
+    outline: 3px solid transparent;
+    background: var(--ds-focus-ring);
+    color: var(--ds-text);
+    box-shadow: 0 -2px var(--ds-focus-ring), 0 4px var(--ds-text);
+  }
+
+  /* Reduced motion: GDS has no motion to disable; preference left as
+   * a no-op safety. */
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <a href="#" class="back-link">Back</a>
+
+    <h1 class="page-heading">Lorem ipsum dolor sit amet consectetur</h1>
+
+    <!-- Error summary. Renders at the top of the page on submit-with-errors.
+         Lists jump-links to each offending field; the user can press
+         enter from any link to focus the field. -->
+    <div class="error-summary" role="alert" aria-labelledby="error-summary-title">
+      <h2 class="error-summary__title" id="error-summary-title">There is a problem</h2>
+      <ul class="error-summary__list">
+        <li><a href="#email">Enter a valid email address</a></li>
+        <li><a href="#eligibility">Select whether you are a resident</a></li>
+      </ul>
+    </div>
+
+    <form action="#" method="post" novalidate>
+
+      <!-- Section 1: contact details -->
+      <fieldset class="section">
+        <legend class="section__legend">Your details</legend>
+
+        <div class="form-group">
+          <label class="label" for="full-name">Full name</label>
+          <span class="hint" id="full-name-hint">Lorem ipsum as it appears on official documents.</span>
+          <input class="input" id="full-name" name="full-name" type="text" autocomplete="name" aria-describedby="full-name-hint"/>
+        </div>
+
+        <div class="form-group form-group--error">
+          <label class="label" for="email">Email address<span class="label__required" aria-hidden="true">*</span></label>
+          <span class="hint" id="email-hint">Lorem ipsum dolor sit amet, consectetur adipiscing.</span>
+          <p class="error-message" id="email-error">
+            <span class="visually-hidden">Error:</span>
+            Enter a valid email address
+          </p>
+          <input class="input" id="email" name="email" type="email" autocomplete="email" aria-describedby="email-hint email-error" aria-invalid="true" value="lorem.ipsum@"/>
+        </div>
+
+        <div class="form-group">
+          <label class="label" for="postcode">Postcode</label>
+          <span class="hint" id="postcode-hint">Lorem ipsum, for example AB1 2CD.</span>
+          <input class="input input--width-10" id="postcode" name="postcode" type="text" autocomplete="postal-code" aria-describedby="postcode-hint"/>
+        </div>
+
+        <div class="form-group">
+          <span class="label">Date of birth</span>
+          <span class="hint" id="dob-hint">Lorem ipsum, for example 27 3 1990.</span>
+          <div class="date-input" aria-describedby="dob-hint">
+            <div class="date-input__item">
+              <label class="label" for="dob-day">Day</label>
+              <input class="input input--width-5" id="dob-day" name="dob-day" type="text" inputmode="numeric"/>
+            </div>
+            <div class="date-input__item">
+              <label class="label" for="dob-month">Month</label>
+              <input class="input input--width-5" id="dob-month" name="dob-month" type="text" inputmode="numeric"/>
+            </div>
+            <div class="date-input__item">
+              <label class="label" for="dob-year">Year</label>
+              <input class="input input--width-5" id="dob-year" name="dob-year" type="text" inputmode="numeric"/>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section 2: eligibility -->
+      <fieldset class="section">
+        <legend class="section__legend">Eligibility</legend>
+
+        <div class="form-group" id="eligibility">
+          <span class="label">Are you a resident of Lorem County?<span class="label__required" aria-hidden="true">*</span></span>
+          <span class="hint">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+          <div class="radios">
+            <label class="radio">
+              <input type="radio" name="resident" value="yes"/>
+              <span class="radio__pseudo" aria-hidden="true"></span>
+              <span class="radio__text">Yes</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="resident" value="no"/>
+              <span class="radio__pseudo" aria-hidden="true"></span>
+              <span class="radio__text">No</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="resident" value="unsure"/>
+              <span class="radio__pseudo" aria-hidden="true"></span>
+              <span class="radio__text">I am not sure</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label" for="notes">Anything else we should know?</label>
+          <span class="hint" id="notes-hint">Lorem ipsum dolor sit amet. Optional.</span>
+          <textarea class="textarea" id="notes" name="notes" rows="5" aria-describedby="notes-hint"></textarea>
+        </div>
+      </fieldset>
+
+      <button type="submit" class="button">Continue</button>
+    </form>
+
+  </div>
+</body>
+</html>

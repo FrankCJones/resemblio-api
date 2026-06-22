@@ -1,0 +1,508 @@
+<!--
+  Asset: a24-marketing-page-001
+  Class: layouts
+  Pattern: editorial-hero, hamburger-only-nav, story-card-grid, image-bleed, mega-footer
+  Inspired by: A24 (a24films.com)
+  Notes:
+    - Marketing homepage skeleton: hamburger-only top nav cluster
+      (Films, Television, Docs, Shop, Membership, Notes, App, Search),
+      top newsletter band ("Want More A24?"), full-bleed film-spotlight
+      hero, four-up upcoming-films grid (year-stamped tiles), alternating
+      film/shop/podcast cards (WATCH NOW / SHOP NOW / LISTEN NOW), bottom
+      newsletter band, compact four-column footer (Jobs/Shop/App/
+      Membership · Legal · Social · Newsletter).
+    - Variable: section sequence, container width, vertical rhythm,
+      number of tile rows. Inline: 1440px container, 16x9 hero aspect,
+      film-tile 2:3 portrait aspect, mono titlecard tracking 0.18em.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: A24 ships GT America / Söhne; this asset opens standalone
+  on the Inter Tight / Inter fallback chain in tokens.css so the
+  warm-cinema-paper register survives without a license.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1440px max so the four-up film grid breathes; A24
+   * runs wider than dev-tool sites because the imagery does the work. */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav cluster: hamburger-style; nav links sit as compact row at top.
+   * No persistent top bar with brand chrome; the A24 wordmark serves as
+   * the only fixed mark and the menu items are typographic, no boxes. */
+  .nav-band {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    padding-block: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__links {
+    display: none;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+  }
+  @media (min-width: 900px) {
+    .nav__links { display: inline-flex; }
+  }
+  .nav__hamburger {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* Newsletter band. A24 ships this twice on the page; same copy top
+   * and bottom. Cinema-black field; inline form on dark hairline rule. */
+  .newsletter {
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .newsletter { grid-template-columns: 1fr 1fr; align-items: center; }
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .newsletter__sub {
+    color: var(--ds-text-muted);
+    margin: 0;
+    font-size: var(--ds-text-base);
+  }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-2);
+  }
+  .newsletter__input {
+    flex: 1;
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Recurring section. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 28ch;
+  }
+
+  /* Hero: full-bleed film spotlight. 16x9 still tile with the film
+   * title set as a title-card. Stands in for the
+   * wholes/heroes/a24-film-spotlight-hero-001 whole. */
+  .hero {
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-12);
+  }
+  .hero__tile {
+    position: relative;
+    aspect-ratio: 16 / 9;    /* Inline: A24 hero is 16x9 by canon. */
+    background: linear-gradient(135deg, #14110F 0%, #1E1A17 50%, #0A0908 100%);
+    border-radius: var(--ds-radius-xs);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: var(--ds-space-8);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-5xl); }
+  }
+  .hero__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Upcoming-films grid: four-up portrait tiles, year-stamped. */
+  .film-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .film-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .film-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .film-tile__poster {
+    aspect-ratio: 2 / 3;     /* Inline: portrait poster aspect, A24 canon. */
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+  }
+  .film-tile__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+    margin: 0;
+  }
+  .film-tile__year {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /* Alternating content tiles: film / shop / podcast. Wide rectangular
+   * tiles, each with a title-card label (WATCH NOW / SHOP NOW / LISTEN
+   * NOW). One per row on mobile; two-up on tablet+. */
+  .feature-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .feature-stack { grid-template-columns: repeat(2, 1fr); }
+  }
+  .feature-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .feature-tile__image {
+    aspect-ratio: 4 / 5;     /* Inline: A24 content tiles run slightly portrait. */
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+  }
+  .feature-tile__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .feature-tile__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .feature-tile__cta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+    border-bottom: 1px solid var(--ds-text-strong);
+    align-self: flex-start;
+    padding-bottom: 2px;
+  }
+
+  /* Slot placeholders for downstream wholes. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: four columns of typographic links, no chrome. Stands
+   * in for the wholes/footers/sitemap-grid-footer-001 system whole. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .footer-col__head {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .footer-col__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Hamburger-editorial cluster. Stands in for
+         a system-tagged navigation/hamburger-editorial-001 whole. -->
+    <div class="nav-band">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">LOREM24</span>
+        <div class="nav__links" role="list">
+          <a href="#" role="listitem">Lorem</a>
+          <a href="#" role="listitem">Ipsum</a>
+          <a href="#" role="listitem">Dolor</a>
+          <a href="#" role="listitem">Sit</a>
+          <a href="#" role="listitem">Amet</a>
+          <a href="#" role="listitem">Adipiscing</a>
+          <a href="#" role="listitem">Elit</a>
+        </div>
+        <button class="nav__hamburger" aria-label="Open menu">Menu</button>
+      </nav>
+    </div>
+
+    <!-- Section: top newsletter band. A24 ships this above the hero. -->
+    <section class="newsletter" aria-label="Newsletter signup">
+      <div>
+        <h2 class="newsletter__title">Lorem ipsum dolor sit?</h2>
+        <p class="newsletter__sub">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt.
+        </p>
+      </div>
+      <form class="newsletter__form" onsubmit="return false;">
+        <input type="email" class="newsletter__input" placeholder="lorem@ipsum.dolor" aria-label="Email"/>
+        <button class="nav__hamburger" type="submit">Subscribe</button>
+      </form>
+    </section>
+
+    <!-- Section: hero. Full-bleed film-spotlight. Stands in for the
+         a24-film-spotlight-hero-001 whole. -->
+    <header class="hero" aria-label="Hero film spotlight">
+      <div class="hero__tile">
+        <div>
+          <span class="hero__label">Lorem Ipsum . 2026</span>
+          <h1 class="hero__title">Lorem ipsum dolor sit amet.</h1>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: upcoming-films grid. Four-up year-stamped portrait
+         posters. -->
+    <section class="section" aria-label="Upcoming films">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+      <div class="film-grid" role="list">
+        <article class="film-tile" role="listitem">
+          <div class="film-tile__poster"></div>
+          <h3 class="film-tile__title">Lorem Ipsum</h3>
+          <span class="film-tile__year">2026</span>
+        </article>
+        <article class="film-tile" role="listitem">
+          <div class="film-tile__poster"></div>
+          <h3 class="film-tile__title">Dolor Sit</h3>
+          <span class="film-tile__year">2026</span>
+        </article>
+        <article class="film-tile" role="listitem">
+          <div class="film-tile__poster"></div>
+          <h3 class="film-tile__title">Consectetur Elit</h3>
+          <span class="film-tile__year">2026</span>
+        </article>
+        <article class="film-tile" role="listitem">
+          <div class="film-tile__poster"></div>
+          <h3 class="film-tile__title">Eiusmod Tempor</h3>
+          <span class="film-tile__year">2026</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: alternating feature tiles. Film / shop / podcast
+         cycle. A24 ships these as a vertical interleave; each carries
+         a mono titlecard CTA (WATCH NOW / SHOP NOW / LISTEN NOW). -->
+    <section class="section" aria-label="Featured content">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor consectetur.</h2>
+      <div class="feature-stack" role="list">
+        <article class="feature-tile" role="listitem">
+          <div class="feature-tile__image"></div>
+          <span class="feature-tile__label">Film . Now Streaming</span>
+          <h3 class="feature-tile__title">Lorem Ipsum Dolor</h3>
+          <a href="#" class="feature-tile__cta">Watch Now</a>
+        </article>
+        <article class="feature-tile" role="listitem">
+          <div class="feature-tile__image"></div>
+          <span class="feature-tile__label">Shop . Available</span>
+          <h3 class="feature-tile__title">Sit Amet Tee</h3>
+          <a href="#" class="feature-tile__cta">Shop Now</a>
+        </article>
+        <article class="feature-tile" role="listitem">
+          <div class="feature-tile__image"></div>
+          <span class="feature-tile__label">Podcast . Episode 042</span>
+          <h3 class="feature-tile__title">Consectetur Adipiscing</h3>
+          <a href="#" class="feature-tile__cta">Listen Now</a>
+        </article>
+        <article class="feature-tile" role="listitem">
+          <div class="feature-tile__image"></div>
+          <span class="feature-tile__label">Film . In Theaters</span>
+          <h3 class="feature-tile__title">Eiusmod Tempor</h3>
+          <a href="#" class="feature-tile__cta">Watch Now</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: bottom newsletter band. A24 ships the same form twice;
+         once above the hero, once before the footer. Same copy. -->
+    <section class="newsletter" aria-label="Newsletter signup repeat">
+      <div>
+        <h2 class="newsletter__title">Lorem ipsum dolor sit?</h2>
+        <p class="newsletter__sub">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore.
+        </p>
+      </div>
+      <form class="newsletter__form" onsubmit="return false;">
+        <input type="email" class="newsletter__input" placeholder="lorem@ipsum.dolor" aria-label="Email"/>
+        <button class="nav__hamburger" type="submit">Subscribe</button>
+      </form>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for
+       the wholes/footers/sitemap-grid-footer-001 system whole. Four
+       compact columns: site links · legal · social · newsletter. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div>
+          <h3 class="footer-col__head">Lorem</h3>
+          <ul class="footer-col__list">
+            <li><a href="#">Jobs</a></li>
+            <li><a href="#">Shop</a></li>
+            <li><a href="#">App</a></li>
+            <li><a href="#">Membership</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__head">Ipsum</h3>
+          <ul class="footer-col__list">
+            <li><a href="#">Terms of Use</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Privacy Preferences</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__head">Dolor</h3>
+          <ul class="footer-col__list">
+            <li><a href="#">Lorem</a></li>
+            <li><a href="#">Ipsum</a></li>
+            <li><a href="#">Dolor</a></li>
+            <li><a href="#">Sit</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__head">Amet</h3>
+          <ul class="footer-col__list">
+            <li>Lorem ipsum dolor sit amet, consectetur.</li>
+            <li><a href="#">Subscribe</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

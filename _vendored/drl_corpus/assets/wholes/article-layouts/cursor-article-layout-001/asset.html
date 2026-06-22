@@ -1,0 +1,460 @@
+<!--
+  Asset: cursor-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, sans-display-sans-body, hairline-as-chrome, breadcrumb-trail
+  Inspired by: Cursor blog post (/blog/composer-2-5 on cursor.com)
+  Notes:
+    - Mechanic: dev-tool research-post reading register on a warm-leaning
+      off-white surface. One chromatic role (Cursor blue #2667FF) carries
+      breadcrumb first segment, inline links, focus ring. Hairlines do
+      all structural chrome (metadata-strip rule, section breaks). Inter
+      owns display and body; JetBrains Mono surfaces only in the
+      read-time chip and code blocks (the Cursor technical-eyebrow move).
+      A related-posts rail of three cards closes the article above the
+      site footer, the Cursor-specific tail that Linear's blog does not.
+    - Variable: the off-white bg, near-black ink, Cursor-blue accent,
+      Inter family, 18px body at 1.65 leading, 40px H1, 720px measure.
+    - Inline ornament: the slash separator in the breadcrumb, the dot
+      between byline segments, the read-time chip's mono register, the
+      figure caption's quiet italics, the 3-card related-rail grid.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-article-layout-001 / Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter + JetBrains Mono (Google Fonts) substitute for the Cursor system. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure throughout.
+   * Cursor's blog runs figures at a wider breakout (the column widens
+   * for paired light/dark images); the asset holds the body at 720px
+   * and lets figures escape to 920px.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Breadcrumb kicker (slash separator), sans h1 at 3xl, optional dek,
+   * hairline metadata strip with dot-separated byline + date + mono
+   * read-time chip. Order follows live cursor.com/blog chrome.
+   */
+  .article__header {
+    max-width: 720px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Breadcrumb kicker. Cursor renders 'Blog / research' as inline
+   * navigation; the first segment carries the brand blue, the second
+   * sits muted. Slash glyph separates the two. */
+  .article__kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-6);
+  }
+  .article__kicker a {
+    color: var(--ds-accent);
+    text-decoration: none;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__kicker a + a { color: var(--ds-text-muted); }
+  .article__kicker a:hover { color: var(--ds-accent-2); }
+  .article__kicker .sep {
+    color: var(--ds-text-muted);
+    /* Inline ornament: slash glyph used as breadcrumb separator;
+     * single-purpose, not a contract slot. */
+  }
+
+  /* Feature headline. Inter Tight at 3xl (40px), tight leading, negative
+   * tracking. The Cursor H1 sits one step below editorial publications. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek. Optional one-line subtitle, muted, regular weight. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Hairline metadata strip. Dot-separated date + category, plus the
+   * mono read-time chip on the right. Sits above a hairline rule that
+   * separates header from body. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__meta-left {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+  }
+  .article__meta a {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .article__meta a:hover { color: var(--ds-accent); }
+  .article__meta .dot {
+    color: var(--ds-text-muted);
+    /* Inline ornament: middle-dot separator between metadata items. */
+  }
+  .article__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+  .article__meta-read {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+    padding: 4px 8px;
+    /* Inline ornament: mono read-time chip is the Cursor-specific
+     * detail; technical-eyebrow register surfacing the dev-tool tone. */
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px. Reading register at 18px / 1.65;
+   * one step above SaaS default and the move that says reading.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    padding-top: var(--ds-space-8);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - Cursor blue, hairline underline at rest. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside body. H2 at xl, generous gap above. Cursor research
+   * posts use Inter Tight at a smaller display step for section heads. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+
+  /* Inline code register. Mono on the surface-2 recess; the Cursor
+   * default for inline code inside prose. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.92em;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+    padding: 1px 6px;
+    color: var(--ds-text);
+  }
+
+  /* ---------------- Figure ----------------
+   * Cursor research posts run paired light/dark images framed by a
+   * hairline border, with a muted italic caption below. The figure
+   * breaks out to a wider measure than the body column.
+   */
+  .article__figure {
+    max-width: 920px;
+    margin: var(--ds-space-8) auto;
+    padding: 0;
+  }
+  .article__figure .frame {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__figure figcaption {
+    margin-top: var(--ds-space-3);
+    font-style: italic;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-align: center;
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* ---------------- Section break ----------------
+   * Hairline rule between major sections, short and centered.
+   */
+  .article__sectionbreak {
+    display: block;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) auto;
+    max-width: 200px;
+    /* Inline ornament: 200px max width constrains the rule to a centered
+     * short hairline rather than running the full measure. */
+  }
+
+  /* ---------------- Related posts rail ----------------
+   * Three-card grid above the site footer. Cursor-specific tail that
+   * Linear's blog skips. Each card carries a thumbnail surface, a tight
+   * title, a date, and a muted read-time chip.
+   */
+  .article__related {
+    max-width: 1080px;
+    margin: var(--ds-space-16) auto 0;
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .article__related-label {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .article__related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-5);
+  }
+  .related-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .related-card:hover {
+    border-color: var(--ds-text-muted);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .related-card__thumb {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+  }
+  .related-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .related-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .related-card__read {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 880px) {
+    .article__related-grid { grid-template-columns: 1fr; }
+    .article__figure { max-width: 100%; }
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-2xl); }
+    .article__meta { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__kicker a,
+    .article__meta a,
+    .related-card { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <nav class="article__kicker" aria-label="Breadcrumb">
+        <a href="#">Lorem</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="#">Ipsum</a>
+      </nav>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum.</p>
+      <div class="article__meta">
+        <div class="article__meta-left">
+          <time datetime="2026-05-18">May 18, 2026</time>
+          <span class="dot" aria-hidden="true">&middot;</span>
+          <a href="#">Lorem</a>
+        </div>
+        <span class="article__meta-read">7 min read</span>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti et <code>lorem.ipsum()</code> in hac habitasse platea dictumst.</p>
+
+      <figure class="article__figure">
+        <div class="frame" aria-hidden="true">[ figure placeholder ]</div>
+        <figcaption>Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula benchmark.</figcaption>
+      </figure>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. <a href="#">Nemo enim ipsam voluptatem</a> quia voluptas sit aspernatur aut odit aut fugit.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+
+      <figure class="article__figure">
+        <div class="frame" aria-hidden="true">[ figure placeholder ]</div>
+        <figcaption>Lorem ipsum effort curves dolor sit amet consectetur.</figcaption>
+      </figure>
+
+      <h2>Pellentesque habitant morbi</h2>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias.</p>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet consectetur adipiscing elit per saecula.</p>
+
+    </div>
+
+    <section class="article__related" aria-label="Related posts">
+      <p class="article__related-label">Related posts</p>
+      <div class="article__related-grid">
+
+        <a class="related-card" href="#">
+          <div class="related-card__thumb" aria-hidden="true"></div>
+          <h3 class="related-card__title">Lorem ipsum dolor sit amet consectetur</h3>
+          <div class="related-card__meta">
+            <time datetime="2026-05-06">May 6, 2026</time>
+            <span class="related-card__read">5 min</span>
+          </div>
+        </a>
+
+        <a class="related-card" href="#">
+          <div class="related-card__thumb" aria-hidden="true"></div>
+          <h3 class="related-card__title">Phasellus consequat sapien ultrices</h3>
+          <div class="related-card__meta">
+            <time datetime="2026-04-30">Apr 30, 2026</time>
+            <span class="related-card__read">8 min</span>
+          </div>
+        </a>
+
+        <a class="related-card" href="#">
+          <div class="related-card__thumb" aria-hidden="true"></div>
+          <h3 class="related-card__title">Mauris vitae diam in tortor cursus</h3>
+          <div class="related-card__meta">
+            <time datetime="2026-04-15">Apr 15, 2026</time>
+            <span class="related-card__read">4 min</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </article>
+</body>
+</html>

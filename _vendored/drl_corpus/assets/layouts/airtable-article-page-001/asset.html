@@ -1,0 +1,541 @@
+<!--
+  Asset: airtable-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, lead-paragraph, story-card-grid, mega-footer
+  Inspired by: Airtable (www.airtable.com/newsroom/<post>)
+  Notes:
+    - Newsroom single-article page skeleton: flush-top nav with wordmark and
+      pill CTAs, article hero (breadcrumb, sentence-case sans H1, byline row
+      with mono read time and filed-under tag, hero image), narrow-column
+      body with H2 / H3 hierarchy and a tinted callout, author-bio card,
+      two-up related-posts grid, press-contact CTA band, mega-footer.
+    - Variable: section sequence, page max-width, typographic role per slot,
+      accent. Inline: article-column measure (64ch), page max-width
+      (1200px), three-stop sunrise gradient on the press CTA band, avatar
+      circles, hero-image aspect ratio.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Airtable's marketing surface uses a humanist sans bundled via
+  its Next.js build; faces are not loaded in this asset. The fallback chain
+  in tokens.css (Inter, system-ui) carries the register so the file opens
+  standalone without licensed faces.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Airtable's marketing surface holds at ~1200px so the
+   * mega-footer, related-card grid, and nav breathe; the article column
+   * inside is narrower. Inline value, not promoted to the contract.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. The reading rhythm sits at ~64ch (about 680px at 17px
+   * sans). Article-specific character, not a contract slot, so inline.
+   */
+  .column {
+    max-width: 64ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, hairline rule below, wordmark left, link cluster center,
+   * CTA pills right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  /* CTA pill: Airtable's marketing default is a fully-rounded primary
+   * button on the brand blue. The pill itself is the recognisable shape. */
+  .nav__cta {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop; bottom hairline
+   * is the rule between major page sections. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--no-rule { border-bottom: 0; }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Breadcrumb. Mono utility metadata in muted color above the H1; muted
+   * separator glyph between hops. Airtable surfaces "Home > Newsroom > <post>".
+   */
+  .breadcrumb {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-5);
+  }
+  .breadcrumb__sep { margin-inline: var(--ds-space-2); opacity: 0.6; }
+
+  /*
+   * Article hero. Sentence-case display sans H1 at 4xl with tight tracking
+   * and an upper bound at 24ch, then a metadata row (mono read time,
+   * filed-under pill, avatar + author byline, posted date). Hero image
+   * (16:9) follows the metadata row in this skeleton.
+   */
+  .article-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-16); padding-bottom: var(--ds-space-10); }
+  }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 24ch;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-8);
+  }
+  .meta-date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .meta-read {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  /* Filed-under: small pill that names the post category. Sits inline in
+   * the meta row, hairline border on tinted surface. */
+  .meta-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+  }
+  .meta-author {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+  }
+  .meta-author__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  /* Hero image. 16:9 aspect, md radius, hairline border. The newsroom
+   * post leads with a wide promotional image after the metadata row. */
+  .article-hero__image {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    margin-top: var(--ds-space-6);
+  }
+
+  /*
+   * Article body. Lead paragraph one step larger than body. Body at 17px
+   * on 1.6 leading. H2 / H3 break the column with named hierarchy. Inline
+   * links pick up Airtable Blue with a thin underline; the underline is
+   * the affordance.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body ul { padding-left: var(--ds-space-5); }
+  .article-body ul li + li { margin-top: var(--ds-space-3); }
+  .article-body figure { margin: var(--ds-space-8) 0; }
+  .article-body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-top: var(--ds-space-3);
+  }
+
+  /*
+   * Callout. Airtable's longform posts close mid-section with a tinted
+   * highlight: H3 head, smaller body, warm-paper surface with a hairline
+   * border. Sits inside the article column.
+   */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    margin-top: var(--ds-space-10);
+  }
+  .callout__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .callout__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /*
+   * Author bio. Single tinted card. Avatar on the left, name + bio prose
+   * on the right. Airtable's newsroom posts end with a one-paragraph CEO
+   * or team bio in this slot.
+   */
+  .author-bio {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: var(--ds-space-5);
+    align-items: start;
+  }
+  .author-bio__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .author-bio__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-1);
+  }
+  .author-bio__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .author-bio__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /*
+   * Related posts. Section heading in display sans, then a two-up card
+   * grid (Airtable's newsroom default). Sits in the page container, not
+   * the narrow article column, so it breathes wider.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /*
+   * Press CTA band. Airtable's newsroom closes with a media-inquiries
+   * block: large sentence-case headline, mailto link. Sits on a three-stop
+   * sunrise gradient that the manifest names as a band recipe (warm coral
+   * to warm yellow, kept inline since it is brand character, not a slot).
+   */
+  .press-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    /* Inline character: Airtable's documented three-stop sunrise band -
+     * coral, peach, soft yellow. Promoted to inline because gradients are
+     * one-off ornament. */
+    background: linear-gradient(135deg, #FFE3D2 0%, #FFCEB7 45%, #FFE7B0 100%);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .press-band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    max-width: 28ch;
+    margin: 0 0 var(--ds-space-5);
+  }
+  .press-band__link {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Slot placeholders for downstream wholes. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page; stands in for a wholes/footers
+   * airtable-tagged mega-footer asset. */
+  .footer-band {
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for an airtable-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem ipsum</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem, ipsum, dolor, sit, amet
+      </div>
+      <a class="nav__cta" href="#">Lorem ipsum</a>
+    </nav>
+
+    <!-- Section: article-hero. Breadcrumb, sentence-case H1, meta row, hero image. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="breadcrumb">
+          <span>Lorem</span><span class="breadcrumb__sep">&gt;</span>
+          <span>Ipsum</span><span class="breadcrumb__sep">&gt;</span>
+          <span>Dolor sit amet</span>
+        </p>
+        <h1 class="article-title">Lorem ipsum dolor sit amet, consectetur adipiscing.</h1>
+        <div class="meta-row">
+          <span class="meta-date">Jan 27, 2026</span>
+          <span class="meta-read">5 MIN</span>
+          <span class="meta-author">
+            <span class="meta-author__avatar" aria-hidden="true"></span>
+            Lorem Ipsum
+          </span>
+          <span class="meta-tag">Lorem</span>
+        </div>
+        <div class="article-hero__image" role="img" aria-label="Hero illustration placeholder"></div>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Narrow reading column with H2/H3, list, callout. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore. <a href="#">In voluptate
+          velit esse cillum dolore</a> eu fugiat nulla pariatur. Excepteur
+          sint occaecat cupidatat non proident.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+        <h3>Lorem ipsum subsection</h3>
+        <ul>
+          <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+          <li>Sed do eiusmod tempor incididunt ut labore et dolore magna.</li>
+          <li>Duis aute irure dolor in reprehenderit in voluptate velit.</li>
+        </ul>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium.
+        </p>
+        <figure>
+          <div class="slot" style="aspect-ratio: 16 / 9;">
+            <span class="slot__label">inline-product-shot</span>
+            Lorem ipsum product screenshot
+          </div>
+          <figcaption>
+            Lorem ipsum figure caption explaining the screenshot above.
+          </figcaption>
+        </figure>
+        <h2>Lorem ipsum dolor</h2>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.
+        </p>
+        <aside class="callout" aria-label="Inline callout">
+          <p class="callout__title">Lorem ipsum dolor sit</p>
+          <p class="callout__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: author-bio. Single tinted card, narrow column. -->
+    <section class="section" aria-label="Author bio">
+      <div class="column">
+        <div class="author-bio">
+          <div class="author-bio__avatar" aria-hidden="true"></div>
+          <div>
+            <p class="author-bio__name">Lorem Ipsum</p>
+            <p class="author-bio__role">Lorem Role, Lorem Company</p>
+            <p class="author-bio__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+              do eiusmod tempor incididunt ut labore et dolore magna. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Two-up grid, full page width. -->
+    <section class="section section--no-rule" aria-label="Related posts">
+      <h2 class="related-heading">Lorem ipsum dolor sit</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Press CTA band. Full-width, three-stop sunrise gradient, outside .page. -->
+  <section class="press-band" aria-label="Press contact">
+    <div class="page">
+      <h2 class="press-band__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      <a class="press-band__link" href="#">lorem@ipsum.lorem</a>
+    </div>
+  </section>
+
+  <!-- Footer band, full-width, outside .page. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

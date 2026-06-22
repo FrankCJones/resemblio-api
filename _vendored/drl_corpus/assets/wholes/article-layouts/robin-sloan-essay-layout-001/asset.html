@@ -1,0 +1,286 @@
+<!--
+  Asset: robin-sloan-essay-layout-001
+  Class: article-layouts
+  Pattern: centered-narrow-column
+  Inspired by: Robin Sloan (robinsloan.com, terracotta era)
+  Notes:
+    - Newsletter-style essay layout on a saturated terracotta field rather
+      than the paper register most longform sites default to. Narrow
+      reading column (32em), serif body at 21px, small-caps lead-in
+      opening the first paragraph, asterism dividers between sections,
+      and an editorial-arrow next-essay link at the foot. The layout is
+      doing the work; there is no card, no chrome, no rule beyond the
+      asterism and one hairline above the footer block.
+    - Variable: every color, every font, every type step (all --ds-*).
+      Inline: the 32em measure on the article (specific to this layout's
+      narrow-letter character), the small-caps tracking on the lead-in
+      (.16em is one-off character, not the global tracking-wider step),
+      and the asterism's tracked spacing (a band-specific decorative
+      rhythm, not a typography-system value).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan-essay-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font import. The token contract names Kyrios + Filosofia + Trade
+  Gothic Next as the licensed stack; the fallback chain (Georgia, Times,
+  Vollkorn, system serif) carries the editorial register on systems
+  without the licensed faces.
+-->
+<style>
+  /* Reset only what this layout needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; }
+
+  /* Narrow reading column. 32em is specific to this layout's letter
+     character; it sits below the 34em a newsletter band would use to
+     keep the line measure under 65 characters at 21px Filosofia. */
+  .essay {
+    max-width: 32em;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-10);
+  }
+
+  /* Article header. Kicker, title, byline-and-date row. No image, no
+     dek bar. The kicker carries the section signal; Kyrios carries the
+     statement. */
+  .essay header { margin: 0 0 var(--ds-space-10); }
+
+  .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  .essay h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Byline-and-date row. Trade Gothic small caps, muted ink, single
+     line, separated by a middle dot. */
+  .meta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .meta .sep {
+    margin: 0 var(--ds-space-2);
+    opacity: 0.55;
+  }
+
+  /* Body paragraphs. Filosofia at 21/28; first paragraph carries the
+     small-caps lead-in via a <span class="lead-in">. */
+  .essay article p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  .lead-in {
+    /* Small-caps opening clause. Tracking value is one-off character
+       specific to this lead-in moment, not the global tracking-wider
+       step (which would be too loose on Filosofia). */
+    font-variant: small-caps;
+    letter-spacing: 0.16em;
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    margin-right: 0.15em;
+  }
+
+  /* Inline links inside body prose. Underline at rest, cocoa on hover;
+     the underline thickness is intentional craft so the underline reads
+     as a hand-set rule, not a browser default. */
+  .essay article a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .essay article a:hover { color: var(--ds-accent); }
+
+  /* Pull quote. Larger Filosofia italic, no rules, indented one step,
+     surrounded by extra vertical breathing. */
+  .essay article blockquote {
+    margin: var(--ds-space-8) 0;
+    padding: 0 0 0 var(--ds-space-5);
+    font-style: italic;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+
+  /* Asterism divider. Three centered asterisks with one-off tracked
+     spacing (0.7em is the visual gap Sloan's site lands on; tighter
+     than the wider tracking step which would read as numerals). */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    letter-spacing: 0.7em;
+    margin: var(--ds-space-10) 0 var(--ds-space-10) 0.7em;
+    user-select: none;
+  }
+
+  /* Section subhead. Smaller-step Kyrios, modest weight, breathing room
+     above it from the asterism gap. */
+  .essay article h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-5);
+  }
+
+  /* Footer block. Hairline above, then an editorial-arrow next-essay
+     link and a quiet caption underneath. The hairline is the only rule
+     in the entire layout besides the asterism; it earns its place by
+     marking the end of reading. */
+  .essay > footer {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  .next {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .next .arrow {
+    font-family: var(--ds-font-accent);
+    color: var(--ds-accent);
+    transition: transform var(--ds-duration-normal) var(--ds-ease-emphasize),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+    display: inline-block;
+  }
+  .next:hover { color: var(--ds-accent); }
+  .next:hover .arrow {
+    transform: translateX(0.25em);
+    color: var(--ds-accent-2);
+  }
+
+  .colophon {
+    margin: var(--ds-space-5) 0 0;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+  <main class="essay">
+    <header>
+      <p class="kicker">Lorem ipsum, no. 47</p>
+      <h1>De peregrinatione et lectione, brevis epistula ad lectores</h1>
+      <p class="meta">
+        <span>Lorem Auctor</span>
+        <span class="sep">&middot;</span>
+        <span>Kal. Maias MMXXVI</span>
+        <span class="sep">&middot;</span>
+        <span>Lectio septem minuta</span>
+      </p>
+    </header>
+
+    <article>
+      <p>
+        <span class="lead-in">Lorem ipsum dolor sit amet,</span>
+        consectetur adipiscing elit. Curabitur in nisl ac mauris vehicula
+        commodo. Sed faucibus, libero a posuere fringilla, sapien justo
+        blandit eros, quis interdum nibh ipsum nec lectus. Vivamus
+        euismod, justo a egestas tincidunt, augue lectus sollicitudin
+        lorem, eu fermentum velit ipsum at libero.
+      </p>
+
+      <p>
+        Donec a ornare nibh. Aliquam erat volutpat. Nullam vel sapien
+        nec arcu efficitur tincidunt. Aenean sit amet
+        <a href="#">lorem ipsum exemplum</a> in dignissim. Phasellus
+        bibendum, justo non rutrum efficitur, mi dolor commodo erat, ac
+        cursus turpis sem at ipsum. Mauris ac sapien vel risus tempus
+        commodo non ut nibh.
+      </p>
+
+      <blockquote>
+        Lorem ipsum non est de itinere, sed de itinerantibus; non de
+        lectione, sed de legentibus.
+      </blockquote>
+
+      <p>
+        Suspendisse a metus sit amet justo facilisis cursus. Cras
+        consequat, augue ut tincidunt feugiat, nibh nunc tempor sapien,
+        a sodales eros lorem id sapien. Fusce vitae lorem ipsum tortor.
+      </p>
+
+      <div class="asterism" aria-hidden="true">* * *</div>
+
+      <h2>Pars secunda: de epistulis</h2>
+
+      <p>
+        Nam in epistulis longioribus, lorem ipsum saepius reperitur quam
+        in libris. Quae res mihi videtur dignior consideratione quam
+        plerique putant. Aliquam erat volutpat, sed donec lorem ipsum
+        consectetur a malesuada.
+      </p>
+
+      <p>
+        Et quoniam de hac re scripsi alibi, hic tantum addam unum verbum:
+        <a href="#">lorem in lectione est ipsum</a>, et nihil aliud.
+        Cras tincidunt, mauris a ornare cursus, lorem ipsum justo
+        blandit nibh.
+      </p>
+
+      <div class="asterism" aria-hidden="true">* * *</div>
+
+      <p>
+        Vale, lector benevole. Lorem ipsum vale et vale iterum. Si haec
+        epistula tibi placuit, te invito ut sequentem legas; eam infra
+        invenies.
+      </p>
+    </article>
+
+    <footer>
+      <a class="next" href="#">
+        <span>Sequens epistula: De lectoribus tacitis</span>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <p class="colophon">Lorem newsletter, no. 48 &middot; Kal. Iunias</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!--
+  Asset: anthropic-marketing-page-001
+  Class: layouts
+  Pattern: editorial-hero, story-card-grid, mega-footer
+  Inspired by: Anthropic (anthropic.com homepage)
+  Notes:
+    - The page rhythm is the load-bearing decision: a single warm cream
+      column with hairline rules between long-padded sections; no chrome,
+      no full-bleed imagery, no chromatic accent in the structure itself.
+    - Section blocks here are placeholders for downstream wholes; the
+      max-width container, gutter, padding rhythm, and section sequence
+      are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-marketing-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos Headline and Styrene B are licensed faces inspected
+  on the source. Fallbacks (Source Serif Pro, Inter) are open substitutes
+  that approximate the register when the licensed faces are unavailable.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px; gutter 24px on mobile, 48px on
+   * desktop. Content blocks inside the page sit on a 12-column grid
+   * with a 24px gap. The container itself is centered with auto margins.
+   * Inline value: 1280px; not a contract slot.
+   */
+  .page {
+    max-width: 1280px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Section block. The recurring vertical rhythm: padding-block 96px
+   * on desktop (--ds-space-12), 48px on mobile (--ds-space-8). Hero
+   * gets one extra step (128px / --ds-space-16) for emphasis.
+   * Each section ends with a hairline rule into the next.
+   */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero gets the extra vertical breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder block styling. Each block names the whole it stands in
+   * for; downstream the block is replaced by the real whole render. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Nav is flush against the viewport top, no detached pill shell,
+   * sits inside the page container but with a thinner padding-block
+   * than other sections.
+   */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero statement. Display serif at 5xl; tight leading; max-measure
+   * around 16 characters so the line breaks at a serif-display rhythm. */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin-top: var(--ds-space-6);
+    max-width: 48ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Feature block: 50/50 two-column on desktop, stack on mobile.
+   * The recurring "Project X" mid-page feature highlight pattern. */
+  .feature {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .feature { grid-template-columns: 1fr 1fr; gap: var(--ds-space-10); }
+  }
+
+  /* Three-up release card grid. Desktop 3 columns, tablet 2, mobile 1. */
+  .release-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .release-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .release-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Mission line: oversized single line, centered, ample padding above
+   * and below. The breathing room is the affordance. */
+  .mission {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    max-width: 32ch;
+    margin: 0 auto;
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .mission { font-size: var(--ds-text-4xl); }
+  }
+
+  /* Content hub grid: bento-style 5-cell layout. Desktop is an asymmetric
+   * 12-col grid (one large 6-col card, four 3-col cards in two rows). */
+  .hub-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 1024px) {
+    .hub-grid {
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: minmax(180px, auto);
+    }
+    .hub-grid > .slot:nth-child(1) { grid-column: span 6; grid-row: span 2; }
+    .hub-grid > .slot:nth-child(2),
+    .hub-grid > .slot:nth-child(3) { grid-column: span 3; }
+    .hub-grid > .slot:nth-child(4),
+    .hub-grid > .slot:nth-child(5) { grid-column: span 3; }
+  }
+
+  /* Footer: full-width mega-footer band. No border-bottom on last section. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav (flush-top). Stands in for wholes/navigation/anthropic-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Try Lorem
+      </div>
+    </nav>
+
+    <!-- Section: hero (editorial statement). Pattern: editorial-hero, no-imagery. -->
+    <section class="section section--hero" aria-label="Hero">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </section>
+
+    <!-- Section: feature-block (Project Glasswing slot). Two-column 50/50. -->
+    <section class="section" aria-label="Feature highlight">
+      <div class="feature">
+        <div class="slot">
+          <span class="slot__label">feature-copy</span>
+          Lorem ipsum dolor sit amet consectetur adipiscing elit sed do.
+        </div>
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">feature-image</span>
+          Lorem ipsum
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: latest-releases (three-up card grid). Pattern: story-card-grid. -->
+    <section class="section" aria-label="Latest releases">
+      <div class="slot" style="background: transparent; border: 0; padding: 0; margin-bottom: var(--ds-space-6); color: var(--ds-text);">
+        <span class="slot__label">section-heading</span>
+      </div>
+      <div class="release-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">release-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">release-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">release-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: mission line. Centered oversized statement. -->
+    <section class="section" aria-label="Mission">
+      <p class="mission">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do.
+      </p>
+    </section>
+
+    <!-- Section: content-hub bento. Five-cell asymmetric grid. -->
+    <section class="section" aria-label="Content hub">
+      <div class="hub-grid">
+        <div class="slot"><span class="slot__label">hub-card-large</span>Lorem</div>
+        <div class="slot"><span class="slot__label">hub-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">hub-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">hub-card</span>Lorem</div>
+        <div class="slot"><span class="slot__label">hub-card</span>Lorem</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for wholes/footers/anthropic-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

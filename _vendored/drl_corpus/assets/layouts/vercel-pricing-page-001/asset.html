@@ -1,0 +1,591 @@
+<!--
+  Asset: vercel-pricing-page-001
+  Class: layouts
+  Pattern: tiered-pricing-grid, comparison-feature-table, faq-accordion, mega-footer, monochrome-palette
+  Inspired by: Vercel (vercel.com/pricing)
+  Notes:
+    - Pricing-page skeleton: nav (flush-top), pricing-hero (H1 + dek
+      only, no imagery), tiered-pricing-grid (three equal cards Hobby /
+      Pro / Enterprise with the Pro card inverted to near-black as the
+      recommended tier), comparison-feature-table (sticky tier-header
+      row over nine category-banded sections), faq-accordion (ten-item
+      FAQ), mega-footer. The page rides at 1280px; tier cards are equal
+      width on desktop; the comparison table is full container-width.
+    - Variable: section sequence, page max-width, tier card structure,
+      comparison-table category banding, typographic role per slot.
+      Inline: page max-width (1280px), three-column tier grid, sticky
+      comparison-header offset, Pro card inversion (near-black surface
+      with paper-white text), CTA pill geometry, comparison-cell
+      included/not_available glyph.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-pricing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Geist and Geist Mono are the Vercel marketing faces. Faces
+  are not loaded in the asset; the fallback chains in tokens.css (Inter,
+  JetBrains Mono) carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so the tier grid, comparison
+   * table, and FAQ all breathe on the same gutter. Inline value, not a
+   * contract slot, because it is page-grid character.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Pricing hero. H1 alone, no imagery, no kicker. A short dek under
+   * the H1 names the audience. The hero sits centered with a soft
+   * max-width on both the H1 and the dek so the tier grid below is the
+   * page's first wide moment.
+   */
+  .pricing-hero { text-align: center; padding-block: var(--ds-space-12) var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .pricing-hero { padding-block: var(--ds-space-16) var(--ds-space-12); }
+  }
+  .pricing-hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 18ch;
+  }
+  .pricing-hero__dek {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin: 0 auto;
+    max-width: 56ch;
+  }
+
+  /*
+   * Tier grid. Three equal cards on desktop, stacks single-column on
+   * mobile. The middle card is the recommended tier and inverts to a
+   * near-black surface with paper-white text; the inversion is the
+   * hierarchy move, not a colored border or a "Most popular" badge.
+   * Three-column inline value, not a contract slot.
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .tier-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .tier-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier-card--featured {
+    /* Pro card inversion: paper-white text on near-black surface. The
+       single non-grayscale moment beyond the CTA accent. */
+    background: var(--ds-accent-2);
+    color: #FAFAFA;
+    border-color: var(--ds-accent-2);
+  }
+  .tier-card__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .tier-card--featured .tier-card__label {
+    color: #BBBBBB; /* Muted off-white on inverted card. Inline ornament. */
+  }
+  .tier-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .tier-card--featured .tier-card__name { color: #FFFFFF; }
+
+  .tier-card__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier-card--featured .tier-card__price { color: #FFFFFF; }
+  .tier-card__price-unit {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+  }
+  .tier-card--featured .tier-card__price-unit { color: #BBBBBB; }
+
+  .tier-card__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier-card__feature::before {
+    content: "+ ";
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-muted);
+  }
+
+  /* CTA pill. Full radius. Inverted relationship per card: the Pro
+     card uses a paper-white pill on near-black; the other two use a
+     near-black pill on paper-white. Geometry is inline. */
+  .cta-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: var(--ds-text-strong);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-text-strong);
+    align-self: stretch;
+    text-align: center;
+  }
+  .tier-card--featured .cta-pill {
+    background: #FFFFFF;
+    color: var(--ds-text-strong);
+    border-color: #FFFFFF;
+  }
+
+  /*
+   * Comparison feature table. Full container-width, hairline-bordered.
+   * A sticky tier-header row sits at the top so the Hobby / Pro /
+   * Enterprise labels persist while the user scrolls long category
+   * groupings. The table is grouped by nine named feature categories
+   * (Delivery Network, Firewall, Caching, Compute, AI, Build, Observ-
+   * ability, Security, Compliance); each category leads with a tinted
+   * mono-uppercase band heading. Cells render check (included),
+   * em-marker (not_available), numeric usage limits, or "Custom" for
+   * Enterprise.
+   */
+  .compare-section { padding-top: var(--ds-space-10); }
+  .compare-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .compare-table-wrap {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  /* Sticky tier-header row. Inline value: top offset is 0; the table
+     wrap is the scroll container in practice on long screens. */
+  .compare-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    text-align: left;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .compare-table tbody tr.category-band td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody td {
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare-table tbody tr:first-child td { border-top: 0; }
+  .compare-table .feature-cell { color: var(--ds-text); }
+  .compare-table .cell-tier {
+    color: var(--ds-text);
+    width: 18%;
+  }
+  .compare-table .glyph-included { color: var(--ds-success); font-family: var(--ds-font-mono); }
+  .compare-table .glyph-na { color: var(--ds-text-muted); font-family: var(--ds-font-mono); }
+  .compare-table .cell-unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * FAQ accordion. Single column. Each item is a hairline-divided row
+   * with a sans question on the left and a mono "+ / -" affordance on
+   * the right. Open items reveal a smaller muted answer beneath.
+   */
+  .faq-list { border-top: 1px solid var(--ds-hairline); }
+  .faq-item {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--ds-space-5) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+  }
+  .faq-item[open] summary::after { content: "-"; }
+  .faq-item__body {
+    padding-bottom: var(--ds-space-6);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+  }
+  .faq-item__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /* Footer band: full-width, sits outside the .page container. Stands
+     in for wholes/footers/dev-tool-status-footer-001. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a vercel-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Contact Lorem
+      </div>
+    </nav>
+
+    <!-- Section: pricing-hero. Title + dek only, no imagery. -->
+    <header class="pricing-hero" aria-label="Pricing hero">
+      <h1 class="pricing-hero__title">Lorem ipsum dolor pricing.</h1>
+      <p class="pricing-hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </header>
+
+    <!-- Section: tiered-pricing-grid. Three equal cards; middle is inverted. -->
+    <section class="section" aria-label="Pricing tiers">
+      <div class="tier-grid">
+
+        <article class="tier-card" aria-label="Hobby tier">
+          <span class="tier-card__label">Tier 01</span>
+          <h2 class="tier-card__name">Lorem Hobby</h2>
+          <p class="tier-card__price">
+            $0
+            <span class="tier-card__price-unit">/ lorem forever</span>
+          </p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-pill" href="#">Start lorem</a>
+        </article>
+
+        <article class="tier-card tier-card--featured" aria-label="Pro tier (recommended)">
+          <span class="tier-card__label">Tier 02 / Recommended</span>
+          <h2 class="tier-card__name">Lorem Pro</h2>
+          <p class="tier-card__price">
+            $20
+            <span class="tier-card__price-unit">/ user / month</span>
+          </p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-pill" href="#">Upgrade to lorem</a>
+        </article>
+
+        <article class="tier-card" aria-label="Enterprise tier">
+          <span class="tier-card__label">Tier 03</span>
+          <h2 class="tier-card__name">Lorem Enterprise</h2>
+          <p class="tier-card__price">
+            Custom
+            <span class="tier-card__price-unit">/ contact sales</span>
+          </p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-pill" href="#">Contact lorem</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: comparison-feature-table. Sticky tier row over banded categories. -->
+    <section class="section compare-section" aria-label="Compare plans">
+      <h2 class="compare-heading">Compare lorem plans</h2>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Hobby</th>
+              <th scope="col">Pro</th>
+              <th scope="col">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="category-band">
+              <td colspan="4">Lorem Delivery Network</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Lorem ipsum dolor sit amet</td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Consectetur adipiscing elit</td>
+              <td class="cell-tier"><span class="cell-unit">100 GB</span></td>
+              <td class="cell-tier"><span class="cell-unit">1 TB</span></td>
+              <td class="cell-tier"><span class="cell-unit">Custom</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="4">Lorem Firewall</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Sed do eiusmod tempor</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Incididunt ut labore</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="4">Lorem Compute</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Et dolore magna aliqua</td>
+              <td class="cell-tier"><span class="cell-unit">100k req</span></td>
+              <td class="cell-tier"><span class="cell-unit">1M req</span></td>
+              <td class="cell-tier"><span class="cell-unit">Custom</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="4">Lorem Observability</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Ut enim ad minim veniam</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="cell-unit">30 days</span></td>
+              <td class="cell-tier"><span class="cell-unit">1 year</span></td>
+            </tr>
+
+            <tr class="category-band">
+              <td colspan="4">Lorem Compliance</td>
+            </tr>
+            <tr>
+              <td class="feature-cell">Quis nostrud exercitation</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section: faq-accordion. Ten-item FAQ; hairline-divided rows. -->
+    <section class="section" aria-label="Pricing FAQ">
+      <h2 class="compare-heading">Lorem ipsum questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>Lorem ipsum dolor sit amet?</summary>
+          <div class="faq-item__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. <a href="#">Lorem ipsum link</a>
+            for further reading.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Consectetur adipiscing elit?</summary>
+          <div class="faq-item__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Sed do eiusmod tempor incididunt?</summary>
+          <div class="faq-item__body">
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+            aute irure dolor in reprehenderit in voluptate velit esse.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Ut labore et dolore magna?</summary>
+          <div class="faq-item__body">
+            Cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width band outside .page. Stands in for the
+       dev-tool-status mega-footer whole. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

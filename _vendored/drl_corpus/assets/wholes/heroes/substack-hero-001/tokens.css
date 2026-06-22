@@ -1,0 +1,143 @@
+/*
+ * substack-hero-001 tokens
+ *
+ * Native token values for the Substack marketing hero, captured via
+ * WebFetch on https://substack.com/about and https://substack.com
+ * 2026-05-20. White canvas, near-black ink, the canonical Substack
+ * orange (#FF6719) as the one chromatic moment, an editorial serif
+ * carrying the display headline ("Make money doing the work you
+ * believe in") and a humanist sans for body and UI. The hero seats a
+ * featured-publication card grid ("Who's here") directly beneath the
+ * CTA pair.
+ *
+ * Substack's type stack referenced via the /about page source includes
+ * Soehne (UI sans) and an editorial display serif (Spectral / Charter /
+ * Untitled Serif family) used on marketing display moments. The orange
+ * #FF6719 is the documented Substack brand color (substack.com/brand)
+ * used on the wordmark, primary CTAs, and accent dots.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Substack runs a paper-and-ink palette: a white canvas, near-black
+   * primary ink, mid-gray muted copy, hairline borders ruling cards,
+   * and exactly one chromatic accent (signature orange #FF6719). The
+   * orange is reserved for the wordmark, the primary CTA fill, and the
+   * accent dots on writer-card subscribe states. */
+  --ds-bg:           #FFFFFF;   /* The canvas. */
+  --ds-surface:      #FAFAF7;   /* Off-white card wash for the publication grid. */
+  --ds-surface-2:    #F4F4F1;   /* Nested card chrome inside featured-publication tiles. */
+  --ds-text:         #1A1A1A;   /* Near-black; H1 and body ink. */
+  --ds-text-muted:   #5C5C5C;   /* Mid-gray; the dek paragraph and writer-card meta. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for the wordmark and the deepest emphasis. */
+  --ds-border:       #E6E6E6;   /* Hairline border around writer cards and the CTA secondary. */
+  --ds-hairline:     #EDEDED;   /* Section-rule hairline below the topbar. */
+  --ds-accent:       #FF6719;   /* Substack orange; documented brand color, the only chromatic moment. */
+  --ds-accent-2:     #E55A12;   /* Darker orange; hover lift on the primary CTA. */
+  --ds-success:      #1A8917;   /* Green carries paid-subscriber confirmation states. */
+  --ds-warning:      #F5A623;
+  --ds-error:        #D9382F;
+  --ds-info:         #1A1A1A;   /* Info uses near-black in Substack's restrained palette. */
+  --ds-focus-ring:   #FF6719;   /* Orange focus ring; brand color carries the accessibility moment. */
+
+  /* ---------- Type families ----------
+   * Substack's marketing register is a serif-display / sans-body pair.
+   * The editorial serif (Spectral on the live page, fallback to other
+   * humanist serifs in the woff2 chain) carries the display headline
+   * and the publication-card title. Soehne (UI sans) carries body, dek,
+   * CTA labels, and writer-card meta. Mono is used sparingly for
+   * technical labels and pricing units. */
+  --ds-font-display: "Spectral", "Charter", "Untitled Serif", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Soehne", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Berkeley Mono", "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Spectral", "Charter", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Substack marketing H1 sets at roughly 56-72px display on the
+   * widest viewport, scaling down to 40-48px on narrower screens. The
+   * dek reads at 18-20px; CTA labels at 14-15px; writer-card titles
+   * at 18-20px serif; writer-card descriptions at 14-15px sans. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Writer-card metadata, paid-subscriber pills. */
+  --ds-text-sm:   14px;   /* CTA labels, topbar nav, writer-card description. */
+  --ds-text-base: 16px;   /* Body default. */
+  --ds-text-lg:   20px;   /* Dek paragraph; writer-card publication title. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;   /* Hero H1 mobile baseline. */
+  --ds-text-4xl:  56px;   /* Hero H1 desktop baseline. */
+  --ds-text-5xl:  72px;   /* Wide-viewport ceiling for the editorial display H1. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * The editorial serif H1 sets a touch looser than dev-tool sans-
+   * display heroes; 1.1 holds the two-line shape without the lines
+   * touching. */
+  --ds-leading-tight:   1.1;     /* Editorial serif H1. */
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.5;     /* Dek paragraph and body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * The serif display takes a small negative tracking step to hold the
+   * marketing H1 tight at 56-72px. Body sans is near-normal. */
+  --ds-tracking-tight:  -0.02em;   /* Editorial serif display H1. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;    /* Optional mono uppercase eyebrow. */
+
+  /* ---------- Spacing ----------
+   * Substack marketing rhythm: 24px between hero column elements,
+   * 80-96px vertical padding above the headline, 24-32px between dek
+   * and CTA row, 64-96px between the headline column and the
+   * publication-card grid below. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;    /* Inter-element gap inside the hero column. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;    /* Dek to CTA row. */
+  --ds-space-10: 64px;    /* Headline column to publication grid. */
+  --ds-space-12: 96px;    /* Top padding above the H1. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Substack signature: 4-6px on buttons, 8px on writer cards. The
+   * primary CTA is a small-radius rectangle rather than a pill, which
+   * reads as editorial-restrained next to the heavier serif headline. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Topbar CTA chip. */
+  --ds-radius-md:   6px;     /* Primary CTA rectangle. */
+  --ds-radius-lg:   8px;     /* Publication-card chrome. */
+  --ds-radius-full: 9999px;  /* Avatar circles in writer cards. */
+
+  /* ---------- Shadows ----------
+   * Substack at rest uses hairline borders, not box shadows, on
+   * publication cards. A very-light shadow rises on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 8px rgba(0,0,0,0.06);    /* Writer-card hover lift. */
+  --ds-shadow-lg:   0 0 0 4px rgba(255,103,25,0.20);   /* Orange focus glow on the primary CTA. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Substack transitions are quiet; 150ms ease on hover, 240ms on
+   * card lift. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

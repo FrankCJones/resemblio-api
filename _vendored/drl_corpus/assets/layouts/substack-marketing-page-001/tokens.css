@@ -1,0 +1,110 @@
+/*
+ * substack-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the Substack marketing homepage. The
+ * Substack marketing surface runs paper-white ground with near-black ink
+ * and a single signature accent: Substack Orange. The typographic
+ * register mirrors the writing surface readers see in the app: an
+ * editorial serif for display moments and a humanist sans for body and
+ * UI. The page voice is "warm conversational," not "saas-grotesque."
+ *
+ * WebFetch returned the marketing homepage and the /about page section
+ * sequences verbatim (headline "Make money doing the work you believe
+ * in", testimonial quotes from Hunter Harris, Ted Gioia, and Melinda
+ * Wenner Moyer, the "Free to start / 90% goes to you" pricing copy, the
+ * five-tile feature section: Editor and writing tools, Multimedia,
+ * Built-in growth, Community, Revenue tools) but stripped the
+ * Substack-design-tokens CSS the site ships. Hex values are mapped from
+ * systems/substack/system.json design_principles (Substack Orange
+ * signature accent, paper-white ground, editorial serif/sans pair) and
+ * from publicly canonical Substack brand colors (the orange wordmark
+ * runs ~#FF6719). The slots that carry this layout are --ds-bg (paper
+ * white), --ds-text (near-black warm), --ds-accent (Substack Orange CTA),
+ * --ds-text-strong (display headlines), --ds-border / --ds-hairline
+ * (the soft chrome that separates cards and bands), --ds-space-10 /
+ * --ds-space-12 (section rhythm), and --ds-radius-md (the small rounded
+ * corners Substack uses on cards and pills).
+ */
+:root {
+  /* Colors. Paper-white ground, near-black warm ink, Substack Orange
+   * accent as the single distinctive color. Substack uses hairlines and
+   * soft warm surfaces for chrome; shadows are restrained at rest. */
+  --ds-bg:           #FFFFFF;   /* Paper-white page surface; Substack default ground. */
+  --ds-surface:      #F7F5EF;   /* Warm-cream off-white; testimonial card and band fills. */
+  --ds-surface-2:    #EFECE3;   /* Second-level warm surface; trending-newsletter strip ground. */
+  --ds-text:         #1A1A1A;   /* Near-black warm ink; body reading. */
+  --ds-text-muted:   #757575;   /* Warm-gray secondary; metadata, supporting copy. */
+  --ds-text-strong:  #1A1A1A;   /* Same as body for the homepage; statement headlines lean on size. */
+  --ds-border:       #E6E1D7;   /* Card edges in a warm-gray. */
+  --ds-hairline:     #ECE7DC;   /* Subtle section divider. */
+  --ds-accent:       #FF6719;   /* Substack Orange; primary CTA fill, the signature brand moment. */
+  --ds-accent-2:     #FFFFFF;   /* Inverted white for CTA text contrast on the orange ground. */
+  --ds-success:      #2E7D5B;   /* Forest green for paid-subscriber affordances. */
+  --ds-warning:      #C9711E;   /* Amber adjacent to the brand orange. */
+  --ds-error:        #B43A3A;   /* Editorial red. */
+  --ds-info:         #2F5BD0;   /* Reader-blue for link state. */
+  --ds-focus-ring:   #1A1A1A;   /* Hard black focus ring on the orange CTA. */
+
+  /* Type. Substack runs an editorial serif for the writing surface and
+   * a humanist sans for UI; the marketing homepage uses the same pair.
+   * Display moments lean serif; nav and CTAs lean sans. Fallback chains
+   * carry humanist-sans and transitional-serif registers so the asset
+   * opens standalone without the licensed Substack faces. */
+  --ds-font-display: "Spectral", "Source Serif Pro", "Charter", Georgia, serif;
+  --ds-font-body:    "Inter", "Helvetica Neue", -apple-system, system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Spectral", "Source Serif Pro", "Charter", Georgia, serif;
+
+  /* Type scale. Hero statement sits in the 4xl-5xl range (52-72px desktop);
+   * section headings at 2xl-3xl; lead support at lg; body at base. The
+   * Substack homepage runs a serif hero that wears the size; the scale
+   * mirrors editorial display conventions. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 40px;  --ds-text-4xl: 52px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 96px;  --ds-text-7xl: 128px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.85;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide: 0.05em;
+  --ds-tracking-wider: 0.14em;
+
+  /* Spacing. Section rhythm: 96px between bands on desktop
+   * (--ds-space-12), 64px tablet (--ds-space-10), 48px mobile
+   * (--ds-space-8). Hero takes one extra step. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Substack uses small rounded corners on CTAs and cards; the
+   * primary CTA pill runs a higher radius (24-32px) while feature cards
+   * sit at 8-12px. Never sharp corners on the marketing surface. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;  --ds-radius-lg: 20px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Marketing homepage is mostly flat; warm hairlines and
+   * cream surfaces carry separation. A single soft shadow on hover for
+   * trending-newsletter cards. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(26,26,26,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(26,26,26,0.06);
+  --ds-shadow-md:  0 4px 12px rgba(26,26,26,0.06);
+  --ds-shadow-lg:  0 12px 24px rgba(26,26,26,0.08);
+  --ds-shadow-2xl: 0 24px 48px rgba(26,26,26,0.1);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

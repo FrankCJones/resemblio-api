@@ -1,0 +1,403 @@
+<!--
+  Asset: linear
+  Class: alphabets
+  Pattern: single-typeface-system, mono-utility-pair, mono-eyebrow, numbered-section, display-tight, display-italic-accent, property-value-row
+  Inspired by: Linear (linear.app, /features, /pricing, /blog)
+  Notes:
+    - The full Linear typography vocabulary as one specimen: display Inter
+      Variable, body Inter Variable, mono for byline metadata and numbered
+      section eyebrows. One family does the whole document; weight 510 is
+      the signature.
+    - Editorial moves on display: tight tracking (-0.022em), italic accent
+      word lifted in indigo, numbered section eyebrow (1.0 / 2.0 / 3.0)
+      in mono uppercase, mid-dot byline separator.
+    - Inline ornament: the indigo italic accent color, the numbered-section
+      mono-uppercase geometry, and the off-white CTA pill are character
+      moments specific to this specimen; they are not tokens.
+    - Web-font substitutes: Inter Variable is open-license (rsms.me / Google
+      Fonts) and is the actual face Linear ships; Berkeley Mono is
+      proprietary, substituted here with JetBrains Mono.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Inter Variable is open-license and is the actual face Linear ships.
+  JetBrains Mono substitutes for proprietary Berkeley Mono.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    /* Inter's variable-weight axis lets us hit the 510 signature stop. */
+    font-variation-settings: "wght" 400;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Marketing hero header block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Mono uppercase kicker. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);            /* 64px, measured. */
+    font-weight: 500;
+    /* Variable-axis 510 is the Linear signature stop. */
+    font-variation-settings: "wght" 510;
+    line-height: var(--ds-leading-tight);     /* 1.0 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.022em */
+    color: var(--ds-text);
+    margin: 0;
+  }
+  /* Italic accent word lifted in indigo; the display-italic-accent move. */
+  .title em {
+    font-style: italic;
+    color: var(--ds-accent);
+    font-variation-settings: "wght" 510;
+  }
+
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA pill (off-white on near-black) ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; }
+  .cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);             /* 13px measured. */
+    font-weight: 500;
+    font-variation-settings: "wght" 510;
+    /* Inline ornament: off-white pill rgb(229,229,230). Character moment;
+       not the same as --ds-text or --ds-surface. */
+    background: #E5E5E6;
+    color: var(--ds-bg);
+    border: 0;
+    border-radius: var(--ds-radius-full);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .cta-secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    font-variation-settings: "wght" 510;
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+
+  /* ---------- Numbered feature sections (1.0 / 2.0 / 3.0) ---------- */
+  .features {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+  .feature {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+  }
+  .feature .num {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+  .feature h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    font-variation-settings: "wght" 510;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: -0.01em;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .feature p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Blog byline (mid-dot separator) ---------- */
+  .byline {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .byline .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .byline h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    font-variation-settings: "wght" 510;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .byline .meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  /* Inline ornament: mid-dot separator between author and date. */
+  .byline .meta .sep { padding: 0 0.4em; opacity: 0.6; }
+
+  /* ---------- Property-value rows (dashboard register) ---------- */
+  .props {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .props .row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: var(--ds-space-4);
+    align-items: baseline;
+    font-size: var(--ds-text-sm);
+  }
+  .props .key {
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .props .val {
+    font-family: var(--ds-font-body);
+    color: var(--ds-text);
+    font-variation-settings: "wght" 510;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 112px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-variation-settings: "wght" 510;
+    line-height: 1.0;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-variation-settings: "wght" 400;
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-variation-settings: normal;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">1.0 &nbsp;·&nbsp; Lorem ipsum</p>
+      <h1 class="title">Lorem ipsum dolor <em>sit amet</em>, consectetur adipiscing elit.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla aenean fermentum.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta-secondary" type="button">Dolor sit amet</button>
+      </div>
+    </header>
+
+    <section class="features" aria-label="Numbered feature sections">
+      <div class="feature">
+        <span class="num">1.0</span>
+        <div>
+          <h2>Lorem ipsum dolor sit amet</h2>
+          <p>Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <span class="num">2.0</span>
+        <div>
+          <h2>Consectetur adipiscing elit</h2>
+          <p>Vivamus sit amet sapien velit. Praesent nec elementum nibh sapien at lorem fermentum vivamus.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <span class="num">3.0</span>
+        <div>
+          <h2>Aenean fermentum magna</h2>
+          <p>Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="byline" aria-label="Blog byline specimen">
+      <span class="kicker">Customer story</span>
+      <h3>Lorem ipsum dolor sit amet consectetur adipiscing elit</h3>
+      <span class="meta">
+        <span>Lorem Ipsum</span><span class="sep">·</span><span>May 14, 2026</span>
+      </span>
+    </section>
+
+    <section class="props" aria-label="Property-value row specimen">
+      <div class="row">
+        <span class="key">priority</span>
+        <span class="val">Lorem</span>
+      </div>
+      <div class="row">
+        <span class="key">assignee</span>
+        <span class="val">Ipsum Dolor</span>
+      </div>
+      <div class="row">
+        <span class="key">due_date</span>
+        <span class="val">2026-05-20</span>
+      </div>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">64 / 1.0 / 510</span>
+        <span class="step-sample" style="font-size:64px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl display</span>
+        <span class="step-size">48 / 1.05 / 510</span>
+        <span class="step-sample" style="font-size:48px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">28 / 1.15 / 510</span>
+        <span class="step-sample" style="font-size:28px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">22 / 1.20 / 510</span>
+        <span class="step-sample" style="font-size:22px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg body</span>
+        <span class="step-size">18 / 1.50 / 400</span>
+        <span class="step-sample body" style="font-size:18px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">16 / 1.50 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm cta</span>
+        <span class="step-size">13 / 1.40 / 510</span>
+        <span class="step-sample body" style="font-size:13px; font-variation-settings:'wght' 510;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono·u</span>
+        <span class="step-size">12 / 1.40 / 500</span>
+        <span class="step-sample mono" style="font-size:12px;">Lorem ipsum kicker eyebrow</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Inter Variable, wght 510</b></span>
+      <span>body · <b>Inter Variable, wght 400 / 510</b></span>
+      <span>mono · <b>Berkeley Mono / JetBrains Mono, wght 500</b></span>
+      <span>base · <b>16px / 24px (1.50)</b></span>
+      <span>H1 · <b>64px / 64px / -1.408px / wght 510</b></span>
+      <span>cta · <b>13px / wght 510 / radius full</b></span>
+      <span>scale · <b>~1.25 ratio; tight 1.0 leading at display</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

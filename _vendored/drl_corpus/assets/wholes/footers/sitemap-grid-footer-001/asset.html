@@ -1,0 +1,353 @@
+<!--
+  Asset: sitemap-grid-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, paper-and-ink, mono-utility-pair
+  Inspired by: A24 Films
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/a24-cinematic-palette-001 (palette: cinema-black field, paper-white type)
+    - type-pairings/a24-cinematic-pair-001   (sans body, mono kickers, titlecard register)
+    - wordmarks/mono-uppercase-001           (the footer mark)
+    - links/footer-link-mono-001             (column link rest/hover state)
+    - kickers/mono-eyebrow-001               (column header kicker)
+    - dividers/hairline-rule-001             (band-separating rule)
+    - inputs/text-underline-001              (newsletter signup field)
+  Notes:
+    - The footer composes the patterns of each constituent atom rather than
+      importing their files; this keeps the renderable self-contained while
+      the composition_atoms list serves as the per-site assembly manifest.
+    - Variable rhythm: column-header kicker, four columns of footer links,
+      wordmark + newsletter + social row, hairline, legal disclaimer. The
+      legal disclaimer is the only inline ornament; everything else maps
+      to a documented atom pattern.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>sitemap-grid-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (display + body) and JetBrains Mono (kicker + legal); the open-
+     licensed analogs the type-pairing atom names. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* The page bg matches the footer band so the asset reads as the lower
+   * tail of a cinema-black page; demo only. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* The footer band. Wide horizontal padding contains the sitemap grid;
+   * vertical padding sets the breathing room above and below. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    color: var(--ds-text);
+  }
+
+  .footer__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Upper grid: four link columns sit side by side. Auto-fit collapses
+   * to a 2-up at narrow widths. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-8);
+  }
+  @media (max-width: 880px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Column header kicker: pattern from atoms/kickers/mono-eyebrow-001.
+   * Uppercase mono with wider tracking; titlecard register, not nav UI. */
+  .footer__col-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  /* Footer link: pattern from atoms/links/footer-link-mono-001. Muted at
+   * rest, lifts to paper-white on hover. No underline; the lift IS the
+   * affordance. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-text); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  /* Middle band: wordmark on the left, newsletter on the right. The
+   * newsletter heading uses display sans at xl; the form is a borderless
+   * underline-input from atoms/inputs/text-underline-001. */
+  .footer__middle {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: var(--ds-space-10);
+    align-items: end;
+  }
+  @media (max-width: 880px) {
+    .footer__middle { grid-template-columns: 1fr; }
+  }
+
+  /* Wordmark: pattern from atoms/wordmarks/mono-uppercase-001. Compact
+   * uppercase mono mark; the geometry-as-mark approach (Vercel/Supabase
+   * register) reused here in editorial-cinema voice. */
+  .footer__mark {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .footer__news h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-2) 0;
+  }
+  .footer__news p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0 0 var(--ds-space-5) 0;
+    max-width: 52ch;
+  }
+
+  /* Newsletter form: pattern from atoms/inputs/text-underline-001.
+   * Borderless on three sides; the bottom edge is a hairline that
+   * thickens on focus. The submit sits as a paper-white link-button to
+   * the right of the input. */
+  .footer__news-form {
+    display: flex;
+    align-items: stretch;
+    gap: var(--ds-space-4);
+    max-width: 480px;
+  }
+  .footer__news-input {
+    flex: 1;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--ds-border);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    padding: var(--ds-space-3) 0;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__news-input::placeholder { color: var(--ds-text-muted); }
+  .footer__news-input:focus {
+    outline: none;
+    border-bottom-color: var(--ds-text);
+  }
+  .footer__news-submit {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: var(--ds-space-3) 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__news-submit:hover { color: var(--ds-accent-2); }
+  .footer__news-submit:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Hairline: pattern from atoms/dividers/hairline-rule-001. The single
+   * rule that splits the sitemap and newsletter band from the legal band. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Legal band: social row on the left, legal disclaimer on the right.
+   * The disclaimer uses mono small-caps at 2xs; titlecard register applied
+   * to legal copy reads as editorial restraint rather than fine-print
+   * shame. */
+  .footer__legal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: var(--ds-space-8);
+    align-items: start;
+  }
+  @media (max-width: 880px) {
+    .footer__legal { grid-template-columns: 1fr; }
+  }
+
+  .footer__social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--ds-space-5);
+  }
+  .footer__social a {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__social a:hover { color: var(--ds-text); }
+
+  .footer__disclaimer {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+    /* Inline ornament: the disclaimer leans into the titlecard register
+     * rather than apologizing in italic serif. The all-caps mono treatment
+     * is the editorial choice that ties the legal line to the rest of the
+     * footer's voice. */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link,
+    .footer__news-input,
+    .footer__news-submit,
+    .footer__social a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <div class="footer__grid">
+        <nav aria-label="Lorem catalog">
+          <p class="footer__col-kicker">Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Lorem ipsum</a></li>
+            <li><a class="footer__link" href="#">Dolor sit</a></li>
+            <li><a class="footer__link" href="#">Amet consectetur</a></li>
+            <li><a class="footer__link" href="#">Adipiscing elit</a></li>
+            <li><a class="footer__link" href="#">Sed do eiusmod</a></li>
+            <li><a class="footer__link" href="#">Tempor incididunt</a></li>
+            <li><a class="footer__link" href="#">Ut labore</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Ipsum actions">
+          <p class="footer__col-kicker">Ipsum</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Veniam quis</a></li>
+            <li><a class="footer__link" href="#">Nostrud exercitation</a></li>
+            <li><a class="footer__link" href="#">Ullamco laboris</a></li>
+            <li><a class="footer__link" href="#">Aliquip ex ea</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Dolor legal">
+          <p class="footer__col-kicker">Dolor</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Duis aute irure</a></li>
+            <li><a class="footer__link" href="#">Reprehenderit voluptate</a></li>
+            <li><a class="footer__link" href="#">Velit esse cillum</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Sit amet social">
+          <p class="footer__col-kicker">Amet</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Excepteur sint</a></li>
+            <li><a class="footer__link" href="#">Occaecat cupidatat</a></li>
+            <li><a class="footer__link" href="#">Non proident sunt</a></li>
+            <li><a class="footer__link" href="#">In culpa qui</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer__middle">
+        <a class="footer__mark" href="#" aria-label="Lorem ipsum home">LOREM/24</a>
+
+        <section class="footer__news" aria-labelledby="news-heading">
+          <h3 id="news-heading">Get our emails.</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore. Not too often, just enough.</p>
+          <form class="footer__news-form" action="#" method="post" novalidate>
+            <label class="visually-hidden" for="news-email" style="position:absolute;left:-9999px;">Email address</label>
+            <input class="footer__news-input" id="news-email" type="email" inputmode="email" placeholder="email@lorem.ipsum" autocomplete="email"/>
+            <button class="footer__news-submit" type="submit">Submit</button>
+          </form>
+        </section>
+      </div>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__legal">
+        <ul class="footer__social" aria-label="Social">
+          <li><a href="#">Lorem</a></li>
+          <li><a href="#">Ipsum</a></li>
+          <li><a href="#">Dolor</a></li>
+          <li><a href="#">Amet</a></li>
+        </ul>
+
+        <p class="footer__disclaimer">
+          This website is not endorsed or approved by, and is not in any way affiliated with, the lorem ipsum dolor sit amet consectetur adipiscing elit association inc. (LIDSA).
+        </p>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

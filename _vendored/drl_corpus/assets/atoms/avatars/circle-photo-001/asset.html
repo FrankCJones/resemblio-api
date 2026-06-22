@@ -1,0 +1,133 @@
+<!--
+  Asset: circle-photo-001
+  Class: avatars
+  Pattern: (none)
+  Inspired by: Linear
+  Notes:
+    - 40px circle avatar with a hairline border that reads as a subtle ring on the dark Linear surface.
+    - Status dot is absolutely positioned bottom-right with a 2px ring matched to the page bg so the dot reads as cut into the avatar.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>circle-photo-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Variable is Linear's body face; system fallbacks via tokens. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 560px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-8);
+    align-items: end;
+  }
+  .row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .label {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  /* Avatar shell - 40px circle with hairline border matched to Linear's 0.8px solid rgb(28,28,31). */
+  .avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border); /* inline: rounded to 1px from Linear's 0.8px hairline */
+    background: var(--ds-surface-2);
+    overflow: visible;
+  }
+  .avatar .photo {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--ds-radius-full);
+    background-image: linear-gradient(135deg, #5E6AD2 0%, #C8B6FF 100%);
+    /* inline gradient stands in for a portrait; the variable parts are size, radius, and border */
+  }
+  /* Status dot - 12px filled circle with a 2px ring matched to body bg so it reads cut-in. */
+  .status-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: var(--ds-radius-full);
+    bottom: -2px;
+    right: -2px;
+    box-shadow: 0 0 0 2px var(--ds-bg); /* inline: ring uses bg color to fence the dot */
+  }
+  .status-online { background: var(--ds-success); }
+  .status-away { background: var(--ds-warning); }
+  .status-offline { background: #393A3B; } /* inline: matches Linear's offline gray rgb(57,58,59) */
+
+  /* Size variants on the same circle pattern */
+  .avatar-sm { width: 24px; height: 24px; }
+  .avatar-sm .status-dot { width: 8px; height: 8px; box-shadow: 0 0 0 1.5px var(--ds-bg); }
+  .avatar-lg { width: 56px; height: 56px; }
+  .avatar-lg .status-dot { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="row">
+      <div class="avatar avatar-sm">
+        <div class="photo"></div>
+      </div>
+      <span class="label">24px</span>
+    </div>
+    <div class="row">
+      <div class="avatar">
+        <div class="photo"></div>
+        <span class="status-dot status-online" aria-label="Online"></span>
+      </div>
+      <span class="label">40px with dot</span>
+    </div>
+    <div class="row">
+      <div class="avatar avatar-lg">
+        <div class="photo"></div>
+        <span class="status-dot status-away" aria-label="Away"></span>
+      </div>
+      <span class="label">56px away</span>
+    </div>
+
+    <div class="row">
+      <div class="avatar">
+        <div class="photo"></div>
+      </div>
+      <span class="label">no status</span>
+    </div>
+    <div class="row">
+      <div class="avatar">
+        <div class="photo"></div>
+        <span class="status-dot status-offline" aria-label="Offline"></span>
+      </div>
+      <span class="label">offline</span>
+    </div>
+    <div class="row">
+      <div class="avatar">
+        <div class="photo"></div>
+        <span class="status-dot status-online" aria-label="Online"></span>
+      </div>
+      <span class="label">online</span>
+    </div>
+  </div>
+</body>
+</html>

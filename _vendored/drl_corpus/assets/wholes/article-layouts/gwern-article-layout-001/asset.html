@@ -1,0 +1,70 @@
+<!--
+  Asset: gwern-article-layout-001
+  Class: article-layouts
+  Pattern: centered-narrow-column, marginalia, drop-cap, small-caps-lead-in, pull-quote-breakout
+  Inspired by: Gwern (https://gwern.net/scaling-hypothesis)
+  Notes:
+    - Body sets at 20px desktop / 18px mobile with 1.45 leading in Source Serif 4 Text Basic; measure runs ~720px.
+    - First paragraph opens with a drop cap (Kanzlei or de Zs CSS-extension) plus small-caps lead-in on the first phrase.
+    - .marginnote and .sidenote position-anchor to the source paragraph in the right margin above 1497px; collapse to an inline .margin-notes-block bulleted set at narrow widths.
+    - Footnotes carry substantial content and are linked bi-directionally; hover popups surface abstracts for outbound links.
+    - .epigraph block sits before major sections with attribution; .abstract block opens essays.
+    - Hard-corner tables with hairline rules; figures float left/right and carry .invert for dark-mode.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>gwern-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+.al { max-width: 720px; margin: 0 auto; padding: 64px 32px 96px;
+      background: var(--ds-bg); color: var(--ds-text); }
+.al__head { margin-bottom: 48px; padding-bottom: 32px;
+            border-bottom: 1px solid var(--ds-hairline); }
+.al__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+              text-transform: uppercase; letter-spacing: 0.08em;
+              color: var(--ds-text-muted); }
+.al__title { font-family: var(--ds-font-display); font-size: var(--ds-text-4xl);
+             line-height: 1.1; margin: 16px 0 16px; letter-spacing: -0.018em; }
+.al__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+           line-height: 1.5; color: var(--ds-text-muted); margin: 0 0 24px; }
+.al__byline { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+              color: var(--ds-text-muted); display: flex; gap: 8px; }
+.al__body { font-family: var(--ds-font-body); font-size: var(--ds-text-base);
+            line-height: var(--ds-leading-relaxed, 1.7); }
+.al__body p { margin: 0 0 24px; }
+.al__body h2 { font-family: var(--ds-font-display); font-size: var(--ds-text-2xl);
+               margin: 48px 0 16px; line-height: 1.2; }
+.al__pull { margin: 48px 0; padding-left: 24px;
+            border-left: 3px solid var(--ds-accent);
+            font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
+            font-style: italic; color: var(--ds-text); }
+
+</style>
+</head>
+<body>
+<article class="al">
+  <header class="al__head">
+    <span class="al__kicker">New</span>
+    <h1 class="al__title">Lorem ipsum dolor sit amet consectetur</h1>
+    <p class="al__dek">Adipiscing elit sed do eiusmod tempor incididunt.</p>
+    <div class="al__byline">
+      <span>Lorem</span>
+      <span>·</span>
+      <time>Lorem</time>
+    </div>
+  </header>
+  <div class="al__body">
+    <p>Lorem</p>
+    <h2>Lorem</h2>
+    <p>Lorem</p>
+    <blockquote class="al__pull">Lorem</blockquote>
+    <h2>Lorem</h2>
+    <p>Lorem</p>
+  </div>
+</article>
+
+</body>
+</html>

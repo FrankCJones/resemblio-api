@@ -1,0 +1,116 @@
+/*
+ * cloudflare-docs-page-001 tokens
+ *
+ * Native token values for the Cloudflare developer-docs page skeleton,
+ * inspired by developers.cloudflare.com/workers/get-started/guide/. The
+ * docs surface rides the same Cloudflare marketing chrome documented in
+ * systems/cloudflare/system.json: paper-white body, near-black text,
+ * signature Cloudflare orange (#F6821F) reserved as the link / active
+ * indicator accent, mono utility for breadcrumb and code-tab labels,
+ * hairline-as-chrome with small radii. The developer-docs property runs
+ * on Starlight (Astro); WebFetch returned page structure, section
+ * sequence, code-tab labels (npm/yarn/pnpm), and breadcrumb taxonomy
+ * via JSON-LD but stripped inline computed styles. Numeric values
+ * follow the Cloudflare system design_principles rather than devtools
+ * reads.
+ *
+ * Layout-specific notes: the three-column grid (260px sidebar / 1fr
+ * content / 220px TOC rail) is inline page-grid character, not a
+ * contract slot. The reading column inside the content cell is capped
+ * at ~78ch so code-blocks render without horizontal scroll.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body surface; Cloudflare docs default. */
+  --ds-surface:      #F8F8F8;   /* Code-block surface; half-step above body. */
+  --ds-surface-2:    #F2F2F2;   /* Callout tint, sidebar-group label rest. */
+  --ds-text:         #1D1D1D;   /* Near-black body reading; Cloudflare docs prose. */
+  --ds-text-muted:   #6B6B6B;   /* Sidebar inactive item, TOC inactive, captions. */
+  --ds-text-strong:  #0E0E0E;   /* Doc title, H2 heads, active sidebar item. */
+  --ds-border:       #E3E3E3;   /* Card edges, code-block chrome, sidebar rules. */
+  --ds-hairline:     rgba(0,0,0,0.08);  /* Column dividers, section rule, nav underline. */
+  --ds-accent:       #F6821F;   /* Cloudflare orange; inline links, active nav indicator, focus ring. */
+  --ds-accent-2:     #0051C3;   /* Cloudflare blue secondary; status info, occasional secondary link. */
+  --ds-success:      #1F9D55;
+  --ds-warning:      #F5A623;
+  --ds-error:        #D7373F;
+  --ds-info:         #0051C3;
+  --ds-focus-ring:   #F6821F;   /* Cloudflare orange at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Cloudflare's docs typeface is a system humanist sans (the Workers
+   * docs use the platform default with Inter as the marketing primary).
+   * Mono carries breadcrumb, inline-code, code-tab labels, and TOC tags.
+   * Open fallbacks so the asset renders standalone.
+   */
+  --ds-font-display: "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono breadcrumb, TOC heading tag, code-tab label. */
+  --ds-text-sm:   14px;   /* Sidebar links, TOC links, code-block content, callout body. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   18px;   /* Lead paragraph. */
+  --ds-text-xl:   22px;   /* Body H3. */
+  --ds-text-2xl:  30px;   /* Body H2 section heads. */
+  --ds-text-3xl:  36px;
+  --ds-text-4xl:  44px;   /* Doc title; docs lead with utility, not display. */
+  --ds-text-5xl:  60px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.15;   /* Doc title. */
+  --ds-leading-snug:    1.25;   /* Body H2 / H3. */
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;    /* Body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono breadcrumb / TOC tag / code-tab label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cloudflare uses subtle rounded corners (not pills) across docs.
+   * Code-blocks and callouts read at sm/md; nothing past lg.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;   /* Code-block, sidebar item hover. */
+  --ds-radius-md:   6px;   /* Callout surface, prev/next nav cards. */
+  --ds-radius-lg:   10px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadows suppressed at rest. Code-
+   * blocks and callouts lift via 1px border on tinted surface. Values
+   * declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,221 @@
+<!--
+  Asset: scroll-driven-reveal-002
+  Class: motion-primitives
+  Pattern: scroll-driven-reveal
+  Inspired by: The Pudding (pudding.cool)
+  Notes:
+    - Demonstrates the editorial scrollytelling reveal: each text block fades
+      and translates up as it intersects a trigger line in the viewport.
+      Driven by IntersectionObserver, motion uses ds-ease-decelerate at
+      ds-duration-normal (320ms).
+    - Variables in tokens.css carry the contract values. The 12% trigger
+      offset and the translate distance (16px) are inline character values
+      tuned to this demo stage.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>scroll-driven-reveal-002 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Editorial pairing: sans for display, serif for reading; mono for data labels. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-6) var(--ds-space-5) var(--ds-space-12);
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  /* Label header in the same voice as the other motion-primitive assets. */
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .stage-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  .deck {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-10);
+    max-width: 60ch;
+  }
+
+  /* Each reveal block: starts shifted down 16px and at zero opacity.
+   * The 16px translate is an inline character value: small enough to read
+   * as a "settle" rather than a slide. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--ds-duration-normal) var(--ds-ease-decelerate),
+      transform var(--ds-duration-normal) var(--ds-ease-decelerate);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .reveal.is-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .reveal .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .reveal p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Sticky-viz frame: a placeholder rectangle that would, in a real Pudding
+   * piece, hold the visualization staying in view while text scrolls past. */
+  .sticky-viz {
+    position: sticky;
+    top: var(--ds-space-5);
+    height: 220px;
+    margin-bottom: var(--ds-space-10);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .sticky-viz .mark {
+    width: 64px;
+    height: 64px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    box-shadow: var(--ds-shadow-md);
+  }
+
+  .meta-row {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: 0.04em;
+    margin-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+  }
+  .meta-row b { color: var(--ds-text); font-weight: 500; }
+
+  /* Reduced motion: no translate, no opacity dance. Content is visible from
+   * first paint and stays put. */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="label">motion · scroll-driven-reveal-002</div>
+
+  <h1 class="stage-title">Lorem ipsum dolor sit amet, consectetur</h1>
+  <p class="deck">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+
+  <div class="sticky-viz" aria-hidden="true">
+    <div class="mark"></div>
+  </div>
+
+  <section class="reveal">
+    <p class="kicker">Chapter 01</p>
+    <h2>Quis nostrud exercitation</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="kicker">Chapter 02</p>
+    <h2>Duis aute irure dolor</h2>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="kicker">Chapter 03</p>
+    <h2>Sed ut perspiciatis unde omnis</h2>
+    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="kicker">Chapter 04</p>
+    <h2>Nemo enim ipsam voluptatem</h2>
+    <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+  </section>
+
+  <div class="meta-row">
+    <span>ease &middot; <b>cubic-bezier(0, 0, 0.2, 1)</b></span>
+    <span>duration &middot; <b>320ms (normal)</b></span>
+    <span>trigger &middot; <b>IntersectionObserver, 12% offset</b></span>
+  </div>
+
+  <script>
+    /* IntersectionObserver-driven reveal. Each .reveal block flips to .is-in
+     * when its top edge crosses 88% of the viewport (rootMargin -12% bottom).
+     * Unobserve after first reveal so re-scrolling does not retrigger. */
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var blocks = document.querySelectorAll('.reveal');
+      if (reduce || !('IntersectionObserver' in window)) {
+        blocks.forEach(function (el) { el.classList.add('is-in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0 });
+      blocks.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

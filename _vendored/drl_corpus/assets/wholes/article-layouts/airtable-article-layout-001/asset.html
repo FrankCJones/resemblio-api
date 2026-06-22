@@ -1,0 +1,394 @@
+<!--
+  Asset: airtable-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, sans-display-serif-body, accent-on-neutral
+  Inspired by: Airtable For The Record blog (blog.airtable.com)
+  Notes:
+    - Mechanic: dual-family editorial register on a white canvas. GT Eesti
+      Display owns the H1 and any kicker; Copernicus serif owns the long-form
+      body. One chromatic role (Airtable Blue #2D7FF9) does inline links and
+      focus. Featured image runs at .rounded-big (16px) corners above the
+      title; date and share icons sit on a single row below the H1.
+    - Variable: the white bg, pure-black ink, brand blue accent, two-family
+      pairing, 19px body at 1.6 leading, 45px H1.
+    - Inline ornament: the 768px article shell, the 16px rounded image frame,
+      the inline social-share SVG cluster, and the centered hairline section
+      break inside the body.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for Airtable's GT Eesti Display on the
+     H1, kicker, and UI labels. Source Serif 4 substitutes for Copernicus on
+     the body and the dek excerpt. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Airtable's article container is .max-width-3 (48rem = 768px) centered
+   * with generous side padding. The header column constrains further to
+   * lg-col-8 inside that shell; the body widens back to the full 768px.
+   */
+  .article {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-5) var(--ds-space-16);
+  }
+
+  /* ---------------- Featured image ----------------
+   * The hero image sits above the header at .rounded-big (16px) corners.
+   * On the live post it overflows the column to the left edge via negative
+   * margin utilities; this asset holds it flush to the column for the
+   * reusable case.
+   */
+  .article__hero {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, #2D7FF9 0%, #18BFFF 60%, #8B46FF 100%);
+    /* Inline ornament: a three-stop Airtable-vocabulary gradient stands in
+     * for the post's real featured image; the gradient lives only in the
+     * asset and is not a contract token. */
+    border-radius: var(--ds-radius-lg);
+    margin-bottom: var(--ds-space-6);
+  }
+
+  /* ---------------- Header ----------------
+   * Order on the live Airtable post: featured image, H1 (no kicker on the
+   * specific posts inspected; the asset surfaces the optional kicker as
+   * the canonical chrome for tag-grouped posts), then the meta row with
+   * date and social share icons.
+   */
+  .article__header {
+    margin-bottom: var(--ds-space-6);
+  }
+
+  /* Tag kicker - GT-Eesti uppercase tracked label, surfaces the optional
+   * tag chrome from /tag/stories or /tag/product-updates on the live blog. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-4);
+  }
+
+  /* Article headline - GT Eesti Display at the .huge h1 step (2.8rem = ~45px),
+   * weight 700 ("display strong huge" on the live class chain). Tight
+   * leading and a small negative tracking lock the shape. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-4xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Meta row - date on the left, social share icons on the right. On the
+   * live post the row sits flush, no rule, with the date in .quieter gray
+   * and the share icons in .text-blue. */
+  .article__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .article__date {
+    font-variant-numeric: tabular-nums;
+  }
+  .article__share {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .article__share a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--ds-accent);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__share a:hover,
+  .article__share a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+  .article__share svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  /* ---------------- Body ----------------
+   * Body is .serif line-height-5 on the live post - Copernicus / Source
+   * Serif 4 at 19px / 1.6. The dek excerpt sits at a larger step in the
+   * same serif voice.
+   */
+  .article__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+
+  /* Excerpt / dek - serif at lg, slightly muted, sits as the lead. */
+  .article__excerpt {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    font-style: italic;
+  }
+
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - Airtable Blue, hairline underline at rest,
+   * cyan lift on hover. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* H2 subhead inside body - GT Eesti Display sans (Airtable's editorial
+   * pattern: serif body, sans subheads). Generous gap above. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* H3 deeper subhead - same family, smaller step. */
+  .article__body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: var(--ds-space-6) 0 var(--ds-space-3);
+  }
+
+  /* Ordered + unordered lists - Airtable posts run dense bullet/number lists
+   * (the ProductCentral post has a numbered four-item list). Serif voice,
+   * generous left padding. */
+  .article__body ol,
+  .article__body ul {
+    margin: 0 0 var(--ds-space-5);
+    padding-left: var(--ds-space-6);
+  }
+  .article__body li {
+    margin-bottom: var(--ds-space-3);
+  }
+  .article__body li strong {
+    font-weight: 700;
+  }
+
+  /* Inline code - serif body keeps code in Menlo on a faint inset chip. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.88em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.06em 0.32em;
+  }
+
+  /* ---------------- Section break ----------------
+   * Short centered hairline, used sparingly between major sections.
+   */
+  .article__sectionbreak {
+    display: block;
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: var(--ds-space-10) auto;
+    max-width: 120px;
+    /* Inline ornament: the short centered rule is a single-purpose
+     * decoration, not a contract slot. */
+  }
+
+  /* ---------------- Tail CTA band ----------------
+   * Airtable's blog ends every post with a sign-up band: large sans display
+   * ("Power your team with Airtable.") and a pill-rounded inline form.
+   */
+  .article__cta {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    text-align: center;
+  }
+  .article__cta h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article__cta form {
+    display: inline-flex;
+    align-items: stretch;
+    gap: var(--ds-space-2);
+    width: 100%;
+    max-width: 480px;
+  }
+  .article__cta input[type="email"] {
+    flex: 1;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 2px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    outline: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__cta input[type="email"]:focus {
+    border-color: var(--ds-accent);
+  }
+  .article__cta input[type="submit"] {
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: #fff;
+    background: var(--ds-accent);
+    border: 2px solid var(--ds-accent);
+    border-radius: var(--ds-radius-lg);
+    cursor: pointer;
+    transition: background-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__cta input[type="submit"]:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-6) var(--ds-space-4) var(--ds-space-10); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__excerpt { font-size: var(--ds-text-base); }
+    .article__cta form { flex-direction: column; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__share a,
+    .article__cta input { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <figure class="article__hero" role="img" aria-label="Lorem ipsum placeholder image"></figure>
+
+    <header class="article__header">
+      <span class="article__kicker">Lorem Ipsum</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet. Introducing, ProductCentral consectetur.</h1>
+      <div class="article__meta">
+        <time class="article__date" datetime="2024-10-15">October 15, 2024</time>
+        <div class="article__share" aria-label="Share this post">
+          <a href="#" aria-label="Share on Facebook">
+            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M11 15h3a1 1 0 0 0 1-1l-.2-12a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h6.8V10H6.9V7.8h1.9V6.1c0-1.9 1.1-3 2.8-3 .8 0 1.5.1 1.7.1v2H12c-.9 0-1 .4-1 1v1.4h2.2L13 10H11v5z"/></svg>
+          </a>
+          <a href="#" aria-label="Share on Twitter">
+            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.4 4.2c.6-.4 1-1 1.2-1.6-.5.3-1.2.5-1.8.7C12.3 2.7 11.5 2.3 10.7 2.3c-1.6 0-2.9 1.3-2.9 2.9 0 .2 0 .5.1.7C5.5 5.8 3.4 4.6 2 2.9c-.3.4-.4.9-.4 1.5 0 1 .5 1.9 1.3 2.4-.5 0-.9-.1-1.3-.3v0c0 1.4 1 2.6 2.3 2.8-.2.1-.5.1-.8.1-.2 0-.4 0-.5 0 .4 1.1 1.4 2 2.7 2-1 .8-2.2 1.3-3.6 1.3H1.4c1.3.8 2.8 1.3 4.4 1.3 5.3 0 8.2-4.4 8.2-8.3v-.4c.6-.4 1.1-.9 1.5-1.5-.5.2-1.1.4-1.6.5z"/></svg>
+          </a>
+          <a href="#" aria-label="Share on LinkedIn">
+            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.6 13.7h-2.4V9.9c0-.9 0-2.1-1.3-2.1-1.3 0-1.4 1-1.4 2v3.8H6.1V5.9h2.3v1h.1c.3-.6 1.1-1.3 2.3-1.3 2.4 0 2.9 1.6 2.9 3.7v4.4zM3.4 4.8c-.8 0-1.4-.6-1.4-1.4S2.6 2 3.4 2c.8 0 1.4.6 1.4 1.4S4.2 4.8 3.4 4.8zM2.2 13.7h2.4V5.9H2.2v7.8z"/></svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p class="article__excerpt">Today, we lorem ipsum dolor sit amet, the unified solution to managing your entire consectetur adipiscing elit development process.</p>
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <a href="#">Duis aute irure dolor</a> in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+
+      <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore. The token <code>--ds-accent</code> carries the single chromatic role on the article surface.</p>
+
+      <h2>Introducing, ProductCentral</h2>
+
+      <p>Sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.</p>
+
+      <p>Ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, <a href="#">nisi ut aliquid ex ea</a> commodi consequatur. What makes Lorem Ipsum different from competing solutions?</p>
+
+      <ol>
+        <li><strong>It manages the entire org:</strong> Lorem ipsum dolor sit amet consectetur adipiscing elit ut labore et dolore magna aliqua per saecula.</li>
+        <li><strong>It infuses AI across operations:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</li>
+        <li><strong>It integrates with critical systems:</strong> Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.</li>
+        <li><strong>It is infinitely customizable:</strong> Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit.</li>
+      </ol>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <hr class="article__sectionbreak" aria-hidden="true"/>
+
+      <h3>How can you leverage this to lead transformation?</h3>
+
+      <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. <a href="#">Nam libero tempore</a>, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.</p>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias.</p>
+
+    </div>
+
+    <section class="article__cta">
+      <h2>Power your team with Lorem Ipsum.</h2>
+      <form action="#" method="get" onsubmit="return false;">
+        <input type="email" name="email" placeholder="Enter your email" aria-label="Email address"/>
+        <input type="submit" value="Sign up for free"/>
+      </form>
+    </section>
+
+  </article>
+</body>
+</html>

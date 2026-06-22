@@ -1,0 +1,461 @@
+<!--
+  Asset: mailchimp-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, editorial-hero, story-card-grid, mega-footer
+  Inspired by: Mailchimp (mailchimp.com/about)
+  Notes:
+    - About-page skeleton in the Mailchimp register: flush top-bar nav
+      with the lowercase wordmark, split editorial hero ("About
+      Mailchimp" headline plus mission paragraph beside a hand-illustration
+      slot), three narrative bands stacked in a narrow single column
+      (Founder story, Culture, Corporate citizenship), a three-up
+      learn-more card grid (Press, Why Mailchimp, What's New), a related-
+      links bulleted list, a six-column mega-footer with social and app-
+      store strip and a legal/language bar. The page reads as warm
+      narrative rather than evidence-of-credibility: the load-bearing
+      block is the founder story and the values, not investor proof.
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, gutter, narrative measure, padding rhythm,
+      and section sequence are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Mailchimp historically shipped a humanist sans pair plus a
+  Cooper-derived display cut for the wordmark. Helvetica Neue and Inter
+  are the closest cross-platform fallbacks; Georgia stands in for the
+  occasional serif accent.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px; gutter 24px on mobile, 48px on
+   * desktop. Inline value: 1200px; not a contract slot. Mailchimp runs
+   * slightly narrower than dev-tool sites because the narrative column
+   * inside this container is the load-bearing element.
+   */
+  .page {
+    max-width: 1200px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero gets the extra vertical breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Sits flush at the top with a hairline rule beneath.
+   * Mailchimp canonical: lowercase wordmark left, link cluster center,
+   * search and language selector and auth controls right. Inline
+   * values: the 64px height and the sticky top offset are inline
+   * ornament specific to this nav shell, not contract slots.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 64px;                                        /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    text-transform: lowercase;                            /* Mailchimp lowercase wordmark convention */
+  }
+
+  /* Split editorial hero. Two-column on desktop: text left, hand-
+   * illustration slot right; stacks on mobile. The headline is a
+   * single conversational line at 4xl; the support paragraph runs
+   * at lg with relaxed leading. */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .hero { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+  }
+  .hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 14ch;
+  }
+  @media (min-width: 768px) {
+    .hero__headline { font-size: var(--ds-text-4xl); }
+  }
+  .hero__support {
+    margin: 0;
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 48ch;
+  }
+  .hero__illustration {
+    aspect-ratio: 4 / 3;
+    background: var(--ds-accent);                         /* Cavendish Yellow plate behind hero illustration */
+    border-radius: var(--ds-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Narrative band. Single column, narrow measure for readable prose.
+   * Used by Founder story, Culture, Corporate citizenship. */
+  .narrative {
+    max-width: 64ch;
+  }
+  .narrative__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .narrative__body {
+    margin: 0 0 var(--ds-space-4);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .narrative__body:last-child { margin-bottom: 0; }
+
+  /* Three-up learn-more card grid. Three columns on desktop, one on
+   * mobile. Cards sit on warm light surface with subtle rounded
+   * corners and a soft drop shadow on hover (rest is flat). */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .card-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-6); }
+  }
+  .card {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .card__body {
+    margin: 0;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+
+  /* Related-links list. A small bulleted list of cross-promotional
+   * destinations, narrow measure, sits below the card grid. */
+  .related {
+    max-width: 48ch;
+  }
+  .related__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .related ul {
+    margin: 0;
+    padding-left: var(--ds-space-5);
+  }
+  .related li {
+    margin-bottom: var(--ds-space-2);
+    font-size: var(--ds-text-base);
+  }
+
+  /* Section heading for grid bands: small mono kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+
+  /* Footer band: full-width, sits outside .page container. Six link
+   * columns plus social/app-store strip plus legal/language bar. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .footer-cols { grid-template-columns: repeat(6, 1fr); }
+  }
+  .footer-strip {
+    margin-top: var(--ds-space-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-legal {
+    margin-top: var(--ds-space-6);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-4);
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/mailchimp-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">lorem</span>
+        <div class="slot" style="flex: 1; max-width: 560px;">
+          <span class="slot__label">nav-link-cluster</span>
+          Lorem / Ipsum / Dolor / Sit / Amet
+        </div>
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">auth-controls</span>
+          Log in / Sign up free
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: hero. Split layout: headline + mission paragraph left; hand-illustration slot right on Cavendish Yellow plate. -->
+    <section class="section section--hero" aria-label="Hero">
+      <div class="hero">
+        <div class="hero__copy">
+          <h1 class="hero__headline">Lorem ipsum dolor sit amet.</h1>
+          <p class="hero__support">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+          </p>
+        </div>
+        <div class="hero__illustration" aria-hidden="true">
+          <div class="slot" style="background: transparent; border-color: rgba(0,0,0,0.15);">
+            <span class="slot__label">hand-illustration</span>
+            Lorem ipsum
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: founder story. Narrative band, single narrow column. -->
+    <section class="section" aria-label="Founder story">
+      <div class="narrative">
+        <h2 class="narrative__title">Lorem ipsum dolor sit.</h2>
+        <p class="narrative__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p class="narrative__body">
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt mollit.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: culture. Narrative band, single narrow column. -->
+    <section class="section" aria-label="Culture">
+      <div class="narrative">
+        <h2 class="narrative__title">Lorem ipsum.</h2>
+        <p class="narrative__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: corporate citizenship. Narrative band, single narrow column. -->
+    <section class="section" aria-label="Corporate citizenship">
+      <div class="narrative">
+        <h2 class="narrative__title">Lorem ipsum dolor.</h2>
+        <p class="narrative__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: learn-more card grid. Three-up grid of cross-promotional cards. -->
+    <section class="section" aria-label="Learn more">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 / Learn more</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="card-grid">
+        <article class="card">
+          <span class="card__kicker">Lorem</span>
+          <h3 class="card__title">Lorem ipsum dolor.</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="card">
+          <span class="card__kicker">Ipsum</span>
+          <h3 class="card__title">Dolor sit amet.</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+        <article class="card">
+          <span class="card__kicker">Dolor</span>
+          <h3 class="card__title">Sit amet consectetur.</h3>
+          <p class="card__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: related links. Small bulleted list. -->
+    <section class="section" aria-label="Related links">
+      <div class="related">
+        <h2 class="related__title">Lorem ipsum.</h2>
+        <ul>
+          <li>Lorem ipsum dolor</li>
+          <li>Sit amet consectetur</li>
+          <li>Adipiscing elit</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Six link columns + social/app-store strip + legal/language bar. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-cols">
+        <div class="slot"><span class="slot__label">products</span>Lorem ipsum</div>
+        <div class="slot"><span class="slot__label">resources</span>Lorem ipsum</div>
+        <div class="slot"><span class="slot__label">community</span>Lorem ipsum</div>
+        <div class="slot"><span class="slot__label">company</span>Lorem ipsum</div>
+        <div class="slot"><span class="slot__label">help</span>Lorem ipsum</div>
+        <div class="slot"><span class="slot__label">presents</span>Lorem ipsum</div>
+      </div>
+      <div class="footer-strip">
+        <div class="slot" style="min-width: 220px;">
+          <span class="slot__label">app-store-badges</span>
+          iOS / Android
+        </div>
+        <div class="slot" style="min-width: 220px;">
+          <span class="slot__label">social-icons</span>
+          Lorem ipsum dolor sit
+        </div>
+      </div>
+      <div class="footer-legal">
+        <span>Lorem ipsum &copy; 2001-2026 Lorem.</span>
+        <span>Privacy / Terms / Legal / Cookies / EN ES FR DE IT</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

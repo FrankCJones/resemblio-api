@@ -1,0 +1,378 @@
+<!--
+  Asset: a24-about-page-001
+  Class: layouts
+  Pattern: hamburger-only-nav, no-imagery (page treats the masthead image AS the
+           identity statement), mega-footer
+  Inspired by: A24 (a24films.com/about)
+  Notes:
+    - About-page skeleton: a top hamburger-only primary nav, a full-bleed
+      foliage masthead carrying the entire brand statement (no oversized
+      headline; identity rides the image), a single small caption line
+      ("Established 2012. New York, NY."), a newsletter band, a utility
+      link cluster (Jobs, Shop, App, Membership), a social row, an AAA
+      disclaimer line, and a footer-nav strip. The page reads as
+      editorial restraint applied to a film studio's company surface:
+      the studio refuses to explain itself in copy, letting the image
+      and the catalogue do the work.
+    - Section blocks (nav, masthead, newsletter, utility-cluster,
+      social-row, disclaimer, footer-nav) are placeholders for
+      downstream wholes. The max-width container, gutter, padding-block
+      rhythm, masthead aspect ratio, and section sequence are the
+      variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: GT America and Söhne are A24's marketing-surface humanist
+  sans pair. Inter is the substitute when neither license is available.
+  Times Now is the title-card serif reserved for editorial display
+  moments; the about page does not use it but the slot is declared so
+  downstream overrides can swap the masthead caption into the serif.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px (A24 runs slightly wider than a
+   * dev-tool marketing site to let the masthead breathe). Gutter 24px
+   * mobile, 48px desktop. Inline ornament: 1280px is not a contract
+   * slot.
+   */
+  .page {
+    max-width: 1280px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /*
+   * Top-bar nav. A24 ships a hamburger-only primary nav on every
+   * surface; the wordmark sits left, a tiny ALL-CAPS link cluster
+   * shows on desktop, and the hamburger swallows the rest on mobile.
+   * The bar sits flush with a hairline rule beneath, no glass, no
+   * shadow. Inline values: 60px height is inline ornament specific
+   * to this shell, not a contract slot.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 60px;                                        /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__cluster {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .nav__cluster {
+      display: flex;
+      align-items: center;
+      gap: var(--ds-space-5);
+      font-family: var(--ds-font-mono);
+      font-size: var(--ds-text-xs);
+      letter-spacing: var(--ds-tracking-wider);
+      text-transform: uppercase;
+      color: var(--ds-text);
+    }
+  }
+
+  /*
+   * Masthead. The load-bearing block: a full-bleed foliage (or studio
+   * image) hero with a 5/3 aspect ratio on desktop, square on mobile.
+   * No headline overlays the image; the image is the statement. A
+   * single small caption sits below at the page margin: "Established
+   * <year>. <city>." That caption is the entire copy budget of the
+   * page above the utility band.
+   */
+  .masthead {
+    margin-top: var(--ds-space-8);
+    aspect-ratio: 1 / 1;                                 /* masthead aspect on mobile, inline */
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  @media (min-width: 768px) {
+    .masthead { aspect-ratio: 5 / 3; margin-top: var(--ds-space-10); }
+  }
+  .masthead-caption {
+    margin: var(--ds-space-5) 0 0;
+    padding-bottom: var(--ds-space-16);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Newsletter band. Single-line label + supporting copy + email input
+   * pill. Sits on the cream surface a step down from the page field;
+   * inline border-only chrome, no shadow. */
+  .newsletter {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-8);
+    display: grid;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .newsletter {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--ds-space-10);
+      padding: var(--ds-space-10);
+    }
+  }
+  .newsletter__label {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .newsletter__support {
+    margin: 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 44ch;
+  }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+
+  /* Utility cluster. Two link rows side-by-side on desktop, stacked on
+   * mobile. Left row: Jobs, Shop, App, Membership. Right row: Terms,
+   * Privacy, Privacy Preferences. Mono register, small size, muted ink. */
+  .utility-cluster {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .utility-cluster { grid-template-columns: 1fr 1fr; gap: var(--ds-space-10); }
+  }
+  .utility-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text);
+  }
+
+  /* Social row. Four-up grid of platform links, mono register. */
+  .social-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  @media (min-width: 640px) { .social-row { grid-template-columns: repeat(4, 1fr); } }
+
+  /* AAA disclaimer line. Small muted block; one of the most A24 things
+   * on the page (a film studio felt the need to clarify it is not the
+   * automobile association). */
+  .disclaimer {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 72ch;
+  }
+
+  /* Footer nav strip. Primary content links on a single-line row at
+   * the bottom of the page; uses the display sans, not the mono
+   * register; sits flush against the bottom margin. */
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/hamburger-editorial-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem24</span>
+        <div class="nav__cluster" aria-label="Primary cluster">
+          <span>Lorem</span>
+          <span>Ipsum</span>
+          <span>Dolor</span>
+          <span>Sit</span>
+          <span>Amet</span>
+        </div>
+        <div class="slot" style="min-width: 80px; text-align: center;">
+          <span class="slot__label">menu</span>
+          =
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: masthead. A full-bleed foliage image carries the whole identity statement; a single mono caption sits below. -->
+    <section aria-label="Masthead">
+      <div class="masthead" role="img" aria-label="Foliage masthead">
+        Lorem ipsum masthead image
+      </div>
+      <p class="masthead-caption">&copy; Lorem ipsum &middot; Established Lorem &middot; Ipsum Dolor, NY</p>
+    </section>
+
+    <!-- Section: newsletter band. Label + supporting copy + email form. -->
+    <section class="section" aria-label="Newsletter">
+      <div class="newsletter">
+        <div>
+          <h2 class="newsletter__label">Lorem ipsum dolor sit amet?</h2>
+          <p class="newsletter__support">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+            do eiusmod tempor incididunt. Ut labore et dolore magna
+            aliqua.
+          </p>
+        </div>
+        <div class="newsletter__form">
+          <div class="slot" style="flex: 1; min-width: 200px;">
+            <span class="slot__label">email-input</span>
+            lorem@ipsum.dolor
+          </div>
+          <div class="slot" style="min-width: 120px;">
+            <span class="slot__label">submit-cta</span>
+            Sign up
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: utility-link cluster. Two mono-uppercase link rows side-by-side. -->
+    <section class="section" aria-label="Utility links">
+      <div class="utility-cluster">
+        <div class="utility-row" aria-label="Studio links">
+          <span>Lorem</span>
+          <span>Ipsum</span>
+          <span>Dolor</span>
+          <span>Sit</span>
+        </div>
+        <div class="utility-row" aria-label="Legal links">
+          <span>Terms of Use</span>
+          <span>Privacy Policy</span>
+          <span>Privacy Preferences</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: social row. Four-up mono-uppercase platform links. -->
+    <section class="section" aria-label="Social">
+      <div class="social-row">
+        <span>Lorem</span>
+        <span>Ipsum</span>
+        <span>Dolor</span>
+        <span>Amet</span>
+      </div>
+    </section>
+
+    <!-- Section: AAA disclaimer line. Small muted body sans paragraph. -->
+    <section class="section" aria-label="Disclaimer">
+      <p class="disclaimer">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. This
+        site is not affiliated with Lorem Ipsum Dolor Sit Amet or any
+        organization of similar name. Sed do eiusmod tempor incididunt
+        ut labore et dolore magna aliqua.
+      </p>
+    </section>
+
+    <!-- Section: footer nav. Primary content link strip, sans display register. Stands in for wholes/footers/sitemap-grid-footer-001. -->
+    <nav class="footer-nav" aria-label="Footer primary">
+      <span>Films</span>
+      <span>Television</span>
+      <span>Docs</span>
+      <span>Shop</span>
+      <span>Membership</span>
+      <span>Notes</span>
+      <span>App</span>
+    </nav>
+
+  </div>
+</body>
+</html>

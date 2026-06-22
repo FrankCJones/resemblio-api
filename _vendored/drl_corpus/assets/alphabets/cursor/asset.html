@@ -1,0 +1,431 @@
+<!--
+  Asset: cursor
+  Class: alphabets
+  Pattern: mono-utility-pair, mono-eyebrow, kbd-chip-mono, code-editor-inline, display-tight, hairline-as-chrome
+  Inspired by: Cursor (cursor.com, /pricing, /blog, /features)
+  Notes:
+    - The full Cursor typography vocabulary on one specimen: display
+      Inter Tight, body Inter, mono JetBrains Mono. The mono is the
+      dev-tool signature: every keyboard shortcut chip (Cmd+K, ⌘K, F3),
+      every command-palette hint (/ for commands, @ for files, ! shell),
+      every file path (~/cursor/cursor-web), every component name
+      (Dashboard.tsx, MenuBar.tsx, MissionControlView.tsx), and every
+      install line (curl https://cursor.com/install -fsS | bash) sits in
+      JetBrains Mono. Code-editor screenshots themselves carry the same
+      face inside the product surface.
+    - Editorial moves: blog list format 'May 18, 2026·research' where
+      a muted-grey date is followed by an uppercase tracked category
+      eyebrow; closing CTA pattern is one short imperative headline
+      followed by one filled primary plus two ghost arrow-link
+      secondaries on a single row, flush on the warm off-white page
+      surface with no card.
+    - Inline ornament: the cursor-blue #2667FF used inside arrow links
+      and the primary CTA, the inline code background (#F5F5F4 tile
+      surface) for code mentions in body copy, and the 1px hairline
+      border on every tile. Character moments, not tokens.
+    - Web-font substitutes: Inter and JetBrains Mono are both open-
+      license and loaded here via Google Fonts. Inter Tight covers the
+      hero; Inter handles body; JetBrains Mono handles all utility.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Marketing hero block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);            /* 72px hero ceiling. */
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);     /* 1.08 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.02em */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .lede {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);             /* 18px lede. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; flex-wrap: wrap; }
+  .cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: var(--ds-accent);             /* Cursor-blue primary. */
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-md);        /* 8px. */
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .cta-ghost {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: transparent;
+    color: var(--ds-text);
+    border: 0;
+    padding: 10px 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cta-ghost .arrow { color: var(--ds-accent); }
+
+  /* ---------- Keyboard shortcut chip row ---------- */
+  .kbd-row {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .kbd-row .label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .kbd-row .chips { display: flex; gap: var(--ds-space-2); flex-wrap: wrap; align-items: center; }
+  .kbd {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: var(--ds-surface);
+    /* Inline ornament: 1px hairline ring + faint inset. The kbd chip is
+       the most-photographed Cursor moment. */
+    box-shadow: inset 0 -1px 0 rgba(17,17,19,0.06), 0 0 0 1px var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 2px 6px;
+    line-height: 1.4;
+  }
+
+  /* ---------- Inline code in body copy ---------- */
+  .prose {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .prose p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 64ch;
+  }
+  code.inline {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    color: var(--ds-text);
+    padding: 1px 6px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* ---------- Code-editor sample block ---------- */
+  .editor {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ds-text);
+    overflow-x: auto;
+  }
+  .editor .ln { color: var(--ds-text-muted); display: inline-block; width: 1.6em; user-select: none; }
+  .editor .kw { color: var(--ds-accent); }
+  .editor .str { color: var(--ds-success); }
+  .editor .cm { color: var(--ds-text-muted); font-style: italic; }
+
+  /* ---------- Dev-tool metadata strip ---------- */
+  .devstrip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .devstrip b { color: var(--ds-text); font-weight: 500; }
+  .devstrip .sep { padding: 0 0.4em; opacity: 0.5; }
+
+  /* ---------- Blog list row (date · category) ---------- */
+  .bloglist {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .blogitem { display: flex; flex-direction: column; gap: 4px; }
+  .blogitem .crumb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .blogitem .crumb .cat {
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+  }
+  .blogitem .title-s {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 112px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ---------- Family strip ---------- */
+  .family-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .family-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">Lorem ipsum kicker</p>
+      <h1 class="title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="lede">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit lorem.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta-ghost" type="button">Dolor sit amet <span class="arrow">&rarr;</span></button>
+        <button class="cta-ghost" type="button">Consectetur adipiscing <span class="arrow">&rarr;</span></button>
+      </div>
+    </header>
+
+    <section class="kbd-row" aria-label="Keyboard shortcut chips">
+      <p class="label">Lorem ipsum mono utility chips for the command palette and editor surface:</p>
+      <div class="chips">
+        <span class="kbd">Cmd</span>
+        <span class="kbd">K</span>
+        <span class="kbd">&#x2318;K</span>
+        <span class="kbd">F3</span>
+        <span class="kbd">/</span>
+        <span class="kbd">&#64;</span>
+        <span class="kbd">!</span>
+        <span class="kbd">Shift</span>
+        <span class="kbd">Tab</span>
+        <span class="kbd">Esc</span>
+      </div>
+    </section>
+
+    <section class="prose" aria-label="Inline code in body">
+      <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Run <code class="inline">curl https://lorem.ipsum/install -fsS | bash</code> to install. The component lives at <code class="inline">~/lorem/ipsum-web</code> and is rendered by <code class="inline">Dashboard.tsx</code>.</p>
+      <p>Curabitur nec libero non nisi convallis fringilla. Press <code class="inline">/</code> for commands, <code class="inline">@</code> for files, <code class="inline">!</code> for shell. Aenean fermentum magna at suscipit lorem.</p>
+    </section>
+
+    <section class="editor" aria-label="Code editor specimen">
+      <div><span class="ln">1</span><span class="cm">// Lorem ipsum dolor sit amet</span></div>
+      <div><span class="ln">2</span><span class="kw">import</span> { Dashboard } <span class="kw">from</span> <span class="str">'./Dashboard'</span>;</div>
+      <div><span class="ln">3</span><span class="kw">import</span> { Navigation } <span class="kw">from</span> <span class="str">'./Navigation'</span>;</div>
+      <div><span class="ln">4</span>&nbsp;</div>
+      <div><span class="ln">5</span><span class="kw">export function</span> App() {</div>
+      <div><span class="ln">6</span>&nbsp;&nbsp;<span class="kw">return</span> &lt;Dashboard /&gt;;</div>
+      <div><span class="ln">7</span>}</div>
+    </section>
+
+    <section class="devstrip" aria-label="Dev-tool metadata strip">
+      <span><b>region</b><span class="sep">·</span>iad1<span class="sep">·</span><b>commit</b><span class="sep">·</span>a1b2c3d<span class="sep">·</span><b>built</b><span class="sep">·</span>24s</span>
+      <span><b>agent</b><span class="sep">·</span>composer-2.5<span class="sep">·</span><b>tokens</b><span class="sep">·</span>1,284 in / 412 out</span>
+      <span><b>file</b><span class="sep">·</span>~/lorem/ipsum-web/src/Dashboard.tsx<span class="sep">·</span>L42</span>
+    </section>
+
+    <section class="bloglist" aria-label="Blog list rows">
+      <div class="blogitem">
+        <p class="crumb">May 18, 2026 &middot; <span class="cat">Research</span></p>
+        <h3 class="title-s">Lorem ipsum dolor sit amet consectetur.</h3>
+      </div>
+      <div class="blogitem">
+        <p class="crumb">Apr 2, 2026 &middot; <span class="cat">Product</span></p>
+        <h3 class="title-s">Vivamus sit amet sapien velit.</h3>
+      </div>
+      <div class="blogitem">
+        <p class="crumb">Feb 26, 2026 &middot; <span class="cat">Company</span></p>
+        <h3 class="title-s">Curabitur nec libero non nisi.</h3>
+      </div>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">6xl display</span>
+        <span class="step-size">72 / 1.08 / 600</span>
+        <span class="step-sample" style="font-size:72px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">64 / 1.08 / 600</span>
+        <span class="step-sample" style="font-size:64px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl section</span>
+        <span class="step-size">48 / 1.1 / 600</span>
+        <span class="step-sample" style="font-size:48px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl section</span>
+        <span class="step-size">36 / 1.2 / 600</span>
+        <span class="step-sample" style="font-size:36px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl tile</span>
+        <span class="step-size">28 / 1.22 / 600</span>
+        <span class="step-sample" style="font-size:28px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl subhead</span>
+        <span class="step-size">22 / 1.3 / 600</span>
+        <span class="step-sample" style="font-size:22px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg lede</span>
+        <span class="step-size">18 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:18px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">16 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm cta</span>
+        <span class="step-size">14 / 1.4 / 500</span>
+        <span class="step-sample body" style="font-size:14px; font-weight:500;">Lorem ipsum dolor sit amet.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs eyebrow</span>
+        <span class="step-size">12 / 1.4 / 600</span>
+        <span class="step-sample mono" style="font-size:12px; font-family: var(--ds-font-body);">Lorem ipsum kicker label</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs kbd</span>
+        <span class="step-size">12 / 1.4 / 500</span>
+        <span class="step-sample mono" style="font-size:12px; text-transform:none; letter-spacing:0;">Cmd+K &middot; ~/lorem/ipsum</span>
+      </div>
+    </section>
+
+    <section class="family-strip" aria-label="Type families">
+      <span>display &middot; <b>Inter Tight, wght 600</b></span>
+      <span>body &middot; <b>Inter, wght 400 / 500 / 600</b></span>
+      <span>mono &middot; <b>JetBrains Mono, wght 400 / 500</b></span>
+      <span>base &middot; <b>16px / 24px (1.50)</b></span>
+      <span>H1 &middot; <b>72px / 78px / -1.44px / wght 600</b></span>
+      <span>cta &middot; <b>14px / wght 500 / radius 8px / fill #2667FF</b></span>
+      <span>kbd &middot; <b>12px JetBrains Mono / 1px hairline ring / radius 4px</b></span>
+      <span>scale &middot; <b>~1.25 ratio through body, wider at display tier (28 to 36 to 48 to 64 to 72)</b></span>
+      <span>chrome &middot; <b>1px hairline #E5E5E2; no drop shadow at rest</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

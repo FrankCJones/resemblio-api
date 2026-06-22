@@ -1,0 +1,99 @@
+<!--
+  Asset: lowercase-glyph-001
+  Class: monograms
+  Pattern: wordmark-with-mark
+  Inspired by: Pitch
+  Notes:
+    - Lowercase glyph monogram: a single lowercase letter with its descender,
+      bowl, or distinctive stroke functioning as the compact mark.
+    - Letter, color, and font are tokens; the descender length is inline character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>lowercase-glyph-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-12);
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .mark {
+    color: var(--ds-text-strong);
+    display: inline-block;
+  }
+  .mark svg {
+    display: block;
+    fill: currentColor;
+  }
+  .mark--favicon svg { width: 16px; height: 16px; }
+  .mark--display svg { width: 64px; height: 64px; }
+  .lockup {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    text-transform: lowercase;
+  }
+  .lockup svg { width: 24px; height: 24px; fill: currentColor; align-self: center; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="state-label">favicon (16px)</span>
+    <span class="mark mark--favicon">
+      <!-- Lowercase p with a wide bowl, drawn as a filled silhouette. viewBox 0 0 24 24 keeps
+           the glyph centered so it crops cleanly to a square at any output size. -->
+      <svg viewBox="0 0 24 24" aria-label="Lorem">
+        <path d="M3 22 L3 4 L11 4 C15.4 4 18 7 18 11 C18 15 15.4 18 11 18 L6 18 L6 22 Z M6 7 L6 15 L11 15 C13.2 15 15 13.2 15 11 C15 8.8 13.2 7 11 7 Z"/>
+      </svg>
+    </span>
+  </div>
+  <div class="stage">
+    <span class="state-label">marketing (64px)</span>
+    <span class="mark mark--display">
+      <svg viewBox="0 0 24 24" aria-label="Lorem">
+        <path d="M3 22 L3 4 L11 4 C15.4 4 18 7 18 11 C18 15 15.4 18 11 18 L6 18 L6 22 Z M6 7 L6 15 L11 15 C13.2 15 15 13.2 15 11 C15 8.8 13.2 7 11 7 Z"/>
+      </svg>
+    </span>
+  </div>
+  <div class="stage">
+    <span class="state-label">lockup with wordmark</span>
+    <span class="lockup">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 22 L3 4 L11 4 C15.4 4 18 7 18 11 C18 15 15.4 18 11 18 L6 18 L6 22 Z M6 7 L6 15 L11 15 C13.2 15 15 13.2 15 11 C15 8.8 13.2 7 11 7 Z"/>
+      </svg>
+      lorem
+    </span>
+  </div>
+</body>
+</html>

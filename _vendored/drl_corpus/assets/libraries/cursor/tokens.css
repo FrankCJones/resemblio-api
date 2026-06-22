@@ -1,0 +1,136 @@
+/*
+ * Cursor library tokens
+ *
+ * Cursor's complete component vocabulary as one coherent system.
+ * Light-mode native marketing surface: a near-white bg #FAFAFA carrying
+ * near-black ink #0B0C0E, with a single saturated cyan #3DD9D6 doing all
+ * the chromatic punctuation work. Hairline #E5E7EB does all chrome work;
+ * shadows are reserved for elevated card states. Type pair is Inter
+ * Variable for everything sans-shaped, JetBrains Mono for everything
+ * structural: keyboard shortcuts, model pills, metadata labels, dev-tool
+ * voice. The signature mechanic is restraint: a near-white surface that
+ * makes a code-editor screenshot the room's brightest object and a
+ * cyan pill the loudest punctuation.
+ *
+ * Token values cross-referenced from system-tagged sibling atoms:
+ * - atoms/kickers/ai-frontier-eyebrow-001 (cyan accent #3DD9D6 captured
+ *   from cursor.com/blog category labels; tracking +0.14em on Inter
+ *   uppercase 12px sans).
+ * - atoms/tooltips/cursor-ui-tooltip-001 (radius scale, mono stack,
+ *   inter sans stack, motion durations - inverted from dark surface to
+ *   light surface to match the marketing canonical principle).
+ * - systems/cursor/system.json design_principles (near-white-surface-
+ *   with-cyan-accent, hairline-chrome-no-shadows, mono-utility-for-
+ *   metadata-and-shortcuts).
+ * Component structure cross-checked against cursor.com (homepage),
+ * cursor.com/pricing, cursor.com/features via WebFetch 2026-05-20.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Near-white marketing surface with near-black ink. Cyan is the sole
+   * chromatic punctuation outside the status family; brand pills (model
+   * names, version chips) carry the cyan, secondary chrome stays mono.
+   */
+  --ds-bg:           #FAFAFA;   /* Marketing body bg; cool near-white. */
+  --ds-surface:      #FFFFFF;   /* Card surface; one step above bg. */
+  --ds-surface-2:    #F4F4F5;   /* Nested panel / hovered surface. */
+  --ds-text:         #0B0C0E;   /* Near-black ink; chosen over pure #000. */
+  --ds-text-muted:   #6B7280;   /* Metadata, dates, secondary copy. */
+  --ds-text-strong:  #000000;   /* Hero H1 emphasis. */
+  --ds-border:       #E5E7EB;   /* Card and component borders. */
+  --ds-hairline:     #EFF1F4;   /* Subtler still; section breaks. */
+  --ds-accent:       #3DD9D6;   /* Cursor cyan; the brand's signature accent. */
+  --ds-accent-2:     #21B8B5;   /* Pressed / hover state of accent. */
+  --ds-success:      #16A34A;   /* Operational green. */
+  --ds-warning:      #F59E0B;   /* Amber. */
+  --ds-error:        #DC2626;   /* Vivid red. */
+  --ds-info:         #3DD9D6;   /* Matches accent. */
+  --ds-focus-ring:   #3DD9D6;   /* Cyan at full strength on :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Inter Variable across display and body. JetBrains Mono for kbd
+   * shortcuts, model pills, code-editor screenshot frames, mono
+   * metadata labels. The mono is functional, not ornamental.
+   */
+  --ds-font-display: "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Berkeley Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "JetBrains Mono", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * Base 16px. Marketing hero ceiling at 72px; Cursor never reaches
+   * the editorial display steps. Mono kbd / pill labels sit at 12px.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono kbd pills, model badges, metadata labels. */
+  --ds-text-sm:   13px;   /* Secondary UI, nav links. */
+  --ds-text-base: 15px;   /* Body reading default. */
+  --ds-text-lg:   18px;   /* Lead paragraph. */
+  --ds-text-xl:   22px;   /* Subheads (H3). */
+  --ds-text-2xl:  30px;   /* Section heads (H2). */
+  --ds-text-3xl:  40px;   /* Pricing tier headline. */
+  --ds-text-4xl:  56px;   /* Marketing hero H1 lower bound. */
+  --ds-text-5xl:  72px;   /* Marketing hero H1 upper bound. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.45;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.025em;  /* Hero H1, H2. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;    /* Uppercase mono kicker / status. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cards at 12px (lg), CTAs at 8px (md), kbd pills at 4px (sm).
+   * Avatars and status dots use full. The brand never goes brutalist
+   * at 0 nor full-pill on buttons.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Kbd pills, small chips. */
+  --ds-radius-md:   8px;     /* CTA buttons, inputs. */
+  --ds-radius-lg:   12px;    /* Card corners. */
+  --ds-radius-full: 9999px;  /* Avatars, status dots. */
+
+  /* ---------- Shadows ----------
+   * Hairline border is the dominant chrome; shadows reserved for
+   * elevated states (hover, popovers, tooltips, theatrical card lift).
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(11,12,14,0.04);
+  --ds-shadow-md:   0 4px 12px rgba(11,12,14,0.06);
+  --ds-shadow-lg:   0 12px 32px rgba(11,12,14,0.10);
+  --ds-shadow-2xl:  0 24px 56px rgba(11,12,14,0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

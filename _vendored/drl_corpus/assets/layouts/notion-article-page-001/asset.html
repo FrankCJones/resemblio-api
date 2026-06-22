@@ -1,0 +1,596 @@
+<!--
+  Asset: notion-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, lead-paragraph, story-card-grid, mega-footer
+  Inspired by: Notion (notion.com/blog/<post>)
+  Notes:
+    - Single-article page skeleton: nav (flush-top, mega-menu cluster
+      with right-side demo + get-free + log-in cluster), article-hero
+      (category kicker linking back to the topic, display sans title,
+      "Published <date> in <topic>" meta line, byline pair with author
+      names and department, share-this-post row, framed cover image),
+      narrow-column article-body with H2 / H3 hierarchy and inline
+      figures with italic captions, closing share-this-post row, a
+      tinted try-it-now CTA band (Notion does not show an author bio or
+      related grid on every post; the CTA band is the canonical close),
+      a three-up related-posts grid, a newsletter band, and a five-
+      column mega-footer with social row and legal strip. The reading
+      column sits at ~68ch; the rest of the page widens to 1200px.
+    - Variable: section sequence, page max-width, vertical rhythm,
+      typographic role per slot. Inline: article-column measure (68ch),
+      page max-width (1200px), avatar circle, cover aspect ratio, share
+      icon circle.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: NotionInter (an Inter variant) is the Notion marketing
+  face. Faces are not loaded; the fallback chain in tokens.css (Inter,
+  system-ui) carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px so nav, related-posts grid, and
+   * footer breathe; the article-column inside is narrower. Inline value.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. The reading rhythm sits at ~68ch (about 680px at
+   * 16px sans). Slightly wider than Vercel's 64ch because Notion's
+   * editorial voice runs longer paragraphs and breathes more.
+   */
+  .column {
+    max-width: 68ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-transform: lowercase;
+  }
+
+  /* Recurring section. Padding-block scales up on desktop; the bottom
+   * hairline is the rule between major article-page sections. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Article hero. Category kicker as an inline link, then display sans
+   * title at 4xl with tight tracking, a meta line in muted warm grey
+   * pairing the publish date with the topic link, an author byline
+   * row, and a share row. A framed cover image sits below.
+   */
+  .article-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-10); }
+  }
+  .kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .kicker a { color: var(--ds-accent); text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  .meta-line {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .meta-line a { color: var(--ds-accent); text-decoration: underline; text-underline-offset: 2px; }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-6);
+  }
+  .byline-author {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+  }
+  /* Author avatar: 28px circle. Inline ornament. */
+  .byline-author__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  .byline-dept {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  /* Share row: small label + three icon circles. Sits inside the column. */
+  .share-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-5);
+    margin-bottom: var(--ds-space-8);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .share-row__label { font-family: var(--ds-font-body); }
+  .share-row__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  /* Cover frame: subtle-rounded, soft warm shadow, hairline edge. */
+  .cover {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    margin-top: var(--ds-space-6);
+    /* The cover frame is a slot; the slot label sits inside as
+     * placeholder for the downstream image. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /*
+   * Article body. Lead paragraph sits one step larger than body. Body
+   * uses NotionInter at 16px on 1.65 leading. H2 and H3 break the
+   * column with named hierarchy. Inline links pick up charcoal accent
+   * with a thin underline; underline is the affordance.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body figure {
+    margin: var(--ds-space-8) 0;
+  }
+  .article-body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-top: var(--ds-space-3);
+  }
+  /* Inline callout: tinted warm surface with hairline border. Used for
+   * the rare aside that interrupts the article column. */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    margin: var(--ds-space-6) 0;
+    color: var(--ds-text);
+  }
+
+  /*
+   * Try-it-now CTA band. Notion closes most blog posts with a tinted
+   * warm-surface block promoting the product. Title + body + a pill
+   * CTA, on a Lift-One surface. Sits inside the article column.
+   */
+  .try-it {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+    margin-top: var(--ds-space-10);
+    text-align: center;
+  }
+  .try-it__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .try-it__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .try-it__cta {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-weight: 500;
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+  }
+
+  /*
+   * Related posts. Section heading in display sans, then three-up card
+   * grid: desktop 3 columns, tablet 2, mobile 1. The grid sits inside
+   * the page container (not the article column) so it breathes wider.
+   * Each card carries a cover slot, a category kicker, a title, and a
+   * date.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .related-card__cover {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 4 / 3;
+  }
+  .related-card__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .related-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .related-card__date {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * Newsletter band. Two-column on desktop: title + dek on the left,
+   * inline form (email + submit pill) on the right. Tinted warm
+   * surface, lg radius, sits inside the page container.
+   */
+  .newsletter {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .newsletter { grid-template-columns: 1.4fr 1fr; gap: var(--ds-space-8); }
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .newsletter__dek {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-2);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-2);
+  }
+  .newsletter__input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    padding-inline: var(--ds-space-3);
+    font: inherit;
+    color: var(--ds-text);
+    outline: none;
+  }
+  .newsletter__submit {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-2) var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container. Stands
+   * in for the mega-footer whole (five columns + social row + legal
+   * row). */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a notion-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster (mega-menus)</span>
+        Lorem Product Solutions Resources Developers Enterprise Pricing
+      </div>
+      <div class="slot" style="min-width: 240px;">
+        <span class="slot__label">cta-cluster</span>
+        Request demo / Get free / Log in
+      </div>
+    </nav>
+
+    <!--
+      Section: article-hero. Category kicker + title + meta line + byline
+      row + share row + cover frame. No author-bio block; Notion shows
+      authors as bylines only.
+    -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="kicker">
+          <a href="#">All posts</a>
+        </p>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+        <p class="meta-line">
+          Published April 9, 2026 in <a href="#">Lorem Topic</a>
+        </p>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            Lorem Ipsum, Dolor Sit
+          </span>
+          <span class="byline-dept">Engineering, Lorem</span>
+        </div>
+        <div class="share-row" aria-label="Share this post">
+          <span class="share-row__label">Share this post</span>
+          <span class="share-row__icon" aria-hidden="true"></span>
+          <span class="share-row__icon" aria-hidden="true"></span>
+          <span class="share-row__icon" aria-hidden="true"></span>
+        </div>
+        <div class="cover" aria-label="Cover image">
+          <div class="slot" style="border: 0; background: transparent;">
+            <span class="slot__label">cover-image</span>
+            Lorem decorative cube graphic
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Narrow reading column with figures, callouts, and the try-it CTA close. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+        <figure>
+          <div class="slot" style="aspect-ratio: 16 / 9;">
+            <span class="slot__label">inline-diagram</span>
+            Lorem ipsum regional data lake diagram
+          </div>
+          <figcaption>
+            Lorem ipsum figure caption explaining the diagram above.
+          </figcaption>
+        </figure>
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt.
+        </p>
+        <aside class="callout" aria-label="Inline callout">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. A
+          tinted warm-surface callout for an aside or note.
+        </aside>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium.
+        </p>
+        <!-- Closing share-row mirrors the hero share-row. -->
+        <div class="share-row" aria-label="Share this post (closing)">
+          <span class="share-row__label">Share this post</span>
+          <span class="share-row__icon" aria-hidden="true"></span>
+          <span class="share-row__icon" aria-hidden="true"></span>
+          <span class="share-row__icon" aria-hidden="true"></span>
+        </div>
+        <!-- Try-it-now CTA, the canonical Notion post close. -->
+        <aside class="try-it" aria-label="Try it now CTA">
+          <p class="try-it__title">Try Lorem ipsum free</p>
+          <p class="try-it__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </p>
+          <a class="try-it__cta" href="#">Get Lorem free</a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Three-up grid, full page width. -->
+    <section class="section" aria-label="Related posts">
+      <h2 class="related-heading">More from the blog</h2>
+      <div class="related-grid">
+        <article class="related-card">
+          <div class="related-card__cover" aria-hidden="true"></div>
+          <span class="related-card__kicker">Lorem Topic</span>
+          <h3 class="related-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+          <span class="related-card__date">April 2, 2026</span>
+        </article>
+        <article class="related-card">
+          <div class="related-card__cover" aria-hidden="true"></div>
+          <span class="related-card__kicker">Lorem Topic</span>
+          <h3 class="related-card__title">Sed do eiusmod tempor incididunt ut labore.</h3>
+          <span class="related-card__date">March 26, 2026</span>
+        </article>
+        <article class="related-card">
+          <div class="related-card__cover" aria-hidden="true"></div>
+          <span class="related-card__kicker">Lorem Topic</span>
+          <h3 class="related-card__title">Ut enim ad minim veniam quis nostrud.</h3>
+          <span class="related-card__date">March 19, 2026</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: newsletter band. Tinted lift surface inside page container. -->
+    <section class="section" aria-label="Newsletter signup">
+      <div class="newsletter">
+        <div>
+          <h2 class="newsletter__title">Lorem ipsum, in your inbox.</h2>
+          <p class="newsletter__dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <form class="newsletter__form" onsubmit="return false;">
+          <input class="newsletter__input" type="email" placeholder="you@lorem.ipsum" aria-label="Email"/>
+          <button class="newsletter__submit" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (5 columns + social row + legal)</span>
+        Company / Download / Resources / Notion for / Social
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!--
+  Asset: dotted-editorial-divider-001
+  Class: dividers
+  Pattern: (none - decorative section break)
+  Inspired by: Cabinet Magazine (warm-paper editorial palette and serif-body register)
+  Notes:
+    - Section break built from a row of low-contrast dots; the print-tradition
+      leader-dot pattern repurposed as a between-sections divider.
+    - Dot color, dot gap, and dot diameter live inline as ornamental character;
+      surrounding palette and type are variable.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>dotted-editorial-divider-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Newsreader: a contemporary text serif with a print-magazine register; pairs with a workhorse sans. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Longform measure - one editorial column. */
+  .column {
+    max-width: 58ch;
+    width: 100%;
+  }
+
+  .kicker {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .essay {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /*
+    The dotted divider itself.
+
+    A row of evenly-spaced low-contrast dots, built as a repeating radial
+    gradient so a single element renders an arbitrary-length dotted line
+    that scales with its container.
+
+    Inline ornament values:
+      - dot diameter 2px, dot pitch 10px: gives an open, airy rhythm
+        appropriate for an editorial column; tighter pitch reads as a
+        dashed rule rather than a leader pattern.
+      - vertical centering via background-position 50% 50%.
+      - height 2px so the band sits exactly on the dot diameter.
+  */
+  .dotted-divider {
+    width: 100%;
+    height: 2px;
+    border: 0;
+    margin: var(--ds-space-8) auto;
+    background-image: radial-gradient(
+      circle,
+      var(--ds-text-muted) 1px,         /* dot color comes from a token; the dot SIZE is inline character */
+      transparent 1.25px
+    );
+    background-size: 10px 2px;            /* 10px pitch is the ornament; do not tokenize */
+    background-repeat: repeat-x;
+    background-position: 50% 50%;
+    opacity: 0.75;                        /* slight knock-back so the dots read as paper texture not chrome */
+  }
+
+  /* A narrower divider variant for inset use; demonstrated alongside the standard. */
+  .dotted-divider.short {
+    max-width: 12ch;
+    margin: var(--ds-space-6) auto;
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+  <article class="column">
+    <p class="kicker">Section i</p>
+    <p class="essay">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Praesent rutrum risus eget metus interdum, vitae aliquet nisl pretium. Donec at convallis felis, ac dignissim leo.</p>
+
+    <!-- Full-measure dotted divider between sections. -->
+    <hr class="dotted-divider" aria-hidden="true"/>
+
+    <p class="kicker">Section ii</p>
+    <p class="essay">Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, ut tincidunt augue justo eget sapien. Curabitur ac lobortis ipsum, sed convallis erat. Integer porttitor velit at libero scelerisque, vitae luctus orci porttitor.</p>
+
+    <!-- Short inset dotted divider for in-section pauses. -->
+    <hr class="dotted-divider short" aria-hidden="true"/>
+
+    <p class="essay">Sed feugiat, augue at fringilla volutpat, dolor purus tempus arcu, ut pellentesque ligula augue eget elit. Suspendisse potenti. Maecenas vitae interdum sapien, vel facilisis libero.</p>
+  </article>
+</body>
+</html>

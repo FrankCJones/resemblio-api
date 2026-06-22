@@ -1,0 +1,128 @@
+/*
+ * substack-testimonials-001 tokens
+ *
+ * Writer-quote card grid inspired by Substack's marketing testimonial
+ * blocks. Quote text in a humanist sans at lead-reading scale, attribution
+ * lockup of circular headshot + writer name + linked publication, on a
+ * near-white card with a hairline edge and no drop shadow at rest. The
+ * single accent is Substack's signature orange, reserved for the
+ * publication link.
+ *
+ * Source extraction:
+ *   - substack.com/going-paid (2026-05-20, webfetch): page exposes multiple
+ *     writer-quote cards with the canonical lockup (avatar + writer name +
+ *     publication + sentence-case quote). Quotes confirmed verbatim:
+ *     Ted Gioia / The Honest Broker, Lenny Rachitsky / Lenny's Newsletter,
+ *     Emily Atkin / Heated, Conor Mac / Investment Talk, Violet Witchel.
+ *   - substack.com/about (2026-05-20, webfetch): same lockup repeats with
+ *     Hunter Harris / Hung Up, Ted Gioia / The Honest Broker, Melinda
+ *     Wenner Moyer / Now What. Publication logo chip is square-rounded
+ *     (~6px); headshot is circular at ~50-64px.
+ *
+ * Substack orange (#FF6719) is the platform's documented signature accent;
+ * confirmed against the on-site subscribe-button color present on every
+ * publication surface. Reserved here for the publication link only.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;          /* Substack marketing page background. Pure paper. */
+  --ds-surface:      #FFFFFF;          /* Quote card body; same as page (the hairline carries the edge). */
+  --ds-surface-2:    #FAFAF9;          /* Inner chip surface; barely warmer than card. */
+  --ds-text:         #1A1A1A;          /* Quote body color; Substack near-black. */
+  --ds-text-muted:   #6B6B6B;          /* Publication line and secondary metadata. */
+  --ds-text-strong:  #000000;          /* Writer name in attribution. */
+  --ds-border:       rgba(0, 0, 0, 0.1);  /* Card hairline edge. */
+  --ds-hairline:     rgba(0, 0, 0, 0.06); /* Internal divider above attribution row. */
+  --ds-accent:       #FF6719;          /* Substack orange; the platform's signature accent. */
+  --ds-accent-2:     #E0590F;          /* Hover-darken on the publication link. */
+  --ds-success:      #2E7D5B;
+  --ds-warning:      #B58A1F;
+  --ds-error:        #B23A2C;
+  --ds-info:         #2A6FB5;
+  --ds-focus-ring:   #FF6719;          /* Accent doubles as focus ring. */
+
+  /* ---------- Type families ----------
+   * Substack pairs an editorial serif on display surfaces with a humanist
+   * sans for reading. The testimonial cards live on the marketing register
+   * where sans carries the quote body and the section heading often uses
+   * the serif accent.
+   */
+  --ds-font-display: "Spectral", "Source Serif Pro", Georgia, serif;
+  --ds-font-body:    "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Spectral", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;        /* Quote body sits here. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;        /* Section heading "What writers say". */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;   /* Quote body rhythm. */
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;       /* Section heading; serif at display scale. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;         /* Card inner padding. */
+  --ds-space-6:  32px;         /* Card outer gap in the grid. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Substack cards sit at a modest 8px corner; the publication logo chip
+   * is similarly modest (~6px). Headshots and the subscribe pill use full
+   * radius.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;       /* Publication logo chip. */
+  --ds-radius-md:   8px;       /* Quote card frame. */
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;    /* Headshot circle; subscribe pill. */
+
+  /* ---------- Shadows ----------
+   * Substack holds the card with a hairline; no drop shadow at rest. The
+   * hover lifts to a very soft drop.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;      /* Card at rest. */
+  --ds-shadow-md:   0 2px 10px rgba(0, 0, 0, 0.05);  /* Card on hover. */
+  --ds-shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.08);
+  --ds-shadow-2xl:  0 24px 48px rgba(0, 0, 0, 0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

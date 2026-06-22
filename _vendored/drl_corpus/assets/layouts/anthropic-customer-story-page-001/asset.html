@@ -1,0 +1,455 @@
+<!--
+  Asset: anthropic-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, metrics-band, narrative-body, quote-callout, story-card-grid
+  Inspired by: Anthropic (claude.com/customers/<slug> case-study template)
+  Notes:
+    - The page is an article template wearing marketing clothes: narrow
+      reading measure for the body, mono kicker plus metadata tag pills
+      above a serif display headline, a four-up metrics band right under
+      the hero, and a related-stories grid (always four cards) sitting
+      above the CTA and footer.
+    - Variable: max-width on the body column, metric count, related-card
+      count. Inline ornament: the clay-colored quote glyph on the pull
+      quote and the metric numeral display size (4xl serif).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-customer-story-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos Headline and Styrene B are licensed faces inspected
+  on the source. Fallbacks (Source Serif Pro, Inter) are open substitutes
+  that approximate the register when the licensed faces are unavailable.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Outer max-width 1280px for grid sections (metrics
+   * band, related-stories grid). Inner reading column max-width 720px
+   * so body paragraphs stay at a comfortable measure (~70 characters).
+   * Inline values; not contract slots.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+  .reading-column {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Section block. Same recurring rhythm as the marketing-page sibling,
+   * with one hairline between sections; story-hero and metrics-band do
+   * NOT carry a bottom hairline so they read as one opening unit. */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--no-rule { border-bottom: 0; }
+
+  /* Nav. Same flush-top, hairline-bottom register as the marketing page. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Story hero. Mono kicker label, metadata tag pills row, serif display
+   * headline, supporting paragraph, byline / share row. */
+  .story-hero {
+    padding-top: var(--ds-space-16);
+    padding-bottom: var(--ds-space-10);
+  }
+  .story-hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .story-hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .story-hero__headline { font-size: var(--ds-text-4xl); }
+  }
+  .story-hero__lede {
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 56ch;
+    margin: 0 0 var(--ds-space-8);
+  }
+  .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-6);
+  }
+  .meta-tag {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Metrics band. Four-up grid (1 col mobile, 2 col tablet, 4 col
+   * desktop). Each metric is a serif display numeral over a muted label. */
+  .metrics {
+    background: var(--ds-surface-2);
+    border-block: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-10);
+  }
+  .metrics__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .metrics__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .metrics__grid { grid-template-columns: repeat(4, 1fr); } }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .metric__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+  }
+
+  /* Narrative body. Section subheads at 2xl serif, body paragraphs at
+   * lg sans with relaxed leading. Reading column is the constrained width. */
+  .narrative h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+  .narrative h2:first-child { margin-top: 0; }
+  .narrative p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Quote callout. Full-bleed within the reading column; clay quote
+   * glyph as inline ornament; serif italic body. */
+  .quote {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-8) var(--ds-space-6);
+    background: var(--ds-surface-2);
+    border-left: 3px solid var(--ds-accent-2);   /* clay rule; inline ornament, not a contract slot */
+    border-radius: var(--ds-radius-sm);
+  }
+  .quote__body {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .quote__attrib {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Related stories. Four-card grid; cards are white surfaces with a
+   * single hairline border, no shadow. Mono kicker + serif title. */
+  .related h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .related__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .related__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related__grid { grid-template-columns: repeat(4, 1fr); } }
+  .story-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    aspect-ratio: 3 / 4;
+  }
+  .story-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .story-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* CTA block. Centered, oversized serif statement plus two buttons.
+   * Sits between related-stories and footer. */
+  .cta {
+    text-align: center;
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    max-width: 24ch;
+    margin: 0 auto var(--ds-space-6);
+  }
+  .cta__actions {
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
+  .btn--ghost { background: transparent; color: var(--ds-text); }
+
+  /* Slot. Used in the placeholder body section to stand in for a
+   * downstream narrative whole when this layout is used as a composition
+   * scaffold rather than rendered alone. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band. Full-width, hairline-top, mega-footer placeholder. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/anthropic-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Try Lorem
+      </div>
+    </nav>
+
+    <!-- Section: story-hero. Kicker + metadata tags + serif headline + lede. -->
+    <section class="section section--no-rule story-hero" aria-label="Story hero">
+      <div class="reading-column">
+        <p class="story-hero__kicker">Customer story / Lorem ipsum</p>
+        <h1 class="story-hero__headline">
+          Lorem ipsum dolor sit amet consectetur adipiscing elit.
+        </h1>
+        <ul class="meta-tags" aria-label="Story metadata">
+          <li class="meta-tag">Industry / Lorem</li>
+          <li class="meta-tag">Size / Ipsum</li>
+          <li class="meta-tag">Product / Dolor</li>
+          <li class="meta-tag">Region / Sit amet</li>
+        </ul>
+        <p class="story-hero__lede">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua ut
+          enim ad minim veniam quis nostrud.
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Section: metrics-band. Full-width tinted strip, four-up grid. -->
+  <section class="metrics" aria-label="Key results">
+    <div class="page">
+      <div class="metrics__grid">
+        <div>
+          <p class="metric__value">30+</p>
+          <p class="metric__label">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div>
+          <p class="metric__value">12h</p>
+          <p class="metric__label">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div>
+          <p class="metric__value">4x</p>
+          <p class="metric__label">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div>
+          <p class="metric__value">98%</p>
+          <p class="metric__label">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page">
+
+    <!-- Section: narrative-body. Subheads + reading-column paragraphs + mid-body quote. -->
+    <section class="section narrative" aria-label="Narrative body">
+      <div class="reading-column">
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt
+          mollit anim id est laborum.
+        </p>
+
+        <!-- Quote callout. Inline ornament: clay left rule. -->
+        <blockquote class="quote">
+          <p class="quote__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p class="quote__attrib">Lorem Ipsum / Dolor Sit Amet</p>
+        </blockquote>
+
+        <h2>Consectetur adipiscing elit</h2>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque
+          ipsa quae ab illo inventore veritatis et quasi architecto beatae
+          vitae dicta sunt explicabo.
+        </p>
+        <p>
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+          aut fugit, sed quia consequuntur magni dolores eos qui ratione
+          voluptatem sequi nesciunt.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: related-stories. Four-card grid; constant count. -->
+    <section class="section related" aria-label="Related stories">
+      <h2>Lorem ipsum dolor</h2>
+      <div class="related__grid">
+        <article class="story-card">
+          <span class="story-card__kicker">Customer story</span>
+          <h3 class="story-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+        <article class="story-card">
+          <span class="story-card__kicker">Customer story</span>
+          <h3 class="story-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+        <article class="story-card">
+          <span class="story-card__kicker">Customer story</span>
+          <h3 class="story-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+        <article class="story-card">
+          <span class="story-card__kicker">Customer story</span>
+          <h3 class="story-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: cta-block. Centered statement + two buttons. -->
+    <section class="section section--no-rule cta" aria-label="Call to action">
+      <p class="cta__title">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+      <div class="cta__actions">
+        <a href="#" class="btn btn--primary">Try Lorem</a>
+        <a href="#" class="btn btn--ghost">Contact ipsum</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width band, stands in for wholes/footers/anthropic-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

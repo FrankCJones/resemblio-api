@@ -1,0 +1,777 @@
+<!--
+  Asset: notion-marketing-page-001
+  Class: layouts
+  Pattern: dual-cta-hero, product-shot-hero, flush-top-nav, bento-grid, mega-footer, accent-on-neutral
+  Inspired by: Notion (notion.com)
+  Notes:
+    - Marketing homepage skeleton on warm paper: flush-top nav with
+      lowercase wordmark, dual-CTA hero with app-integration icon cluster,
+      Forbes Cloud 100 logo strip, four-up AI agent feature card section,
+      three sequential product-screenshot-in-frame feature sections
+      (agents, search, meeting notes), four-up core feature grid with
+      screenshots (Docs, Knowledge Base, Projects, AI), ROI calculator
+      band, OpenAI pull-quote testimonial with customer grid, social-proof
+      stat band, mega-footer with five column groups. Container caps at
+      1200px; full-bleed bands stretch beyond.
+    - Variable: section sequence, container width, vertical rhythm,
+      typographic role per slot. Inline: container max-width (1200px),
+      screenshot-frame aspect ratio, app-icon cluster grid (8-up desktop),
+      ROI calculator placeholder dimensions.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>notion-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter stands in for Notion's marketing sans (the site ships
+  a tuned humanist sans across the whole marketing surface). The fallback
+  chains in tokens.css carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1200px; Notion runs narrower than Vercel,
+   * which keeps the paper register breathing. Inline value. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, no rule below (the paper
+   * background carries the separation; nav rules would be too hard for
+   * this register). Lowercase wordmark on the left, link cluster centered
+   * or near-center, auth-CTA cluster on the right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    /* Lowercase wordmark; the lowercase choice is the named pattern. */
+    text-transform: lowercase;
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--tinted { background: var(--ds-surface-2); }
+
+  /* Hero. Dual-CTA, type-led with an integration-icon cluster as the
+   * visual anchor (stand-in for the 16 app icons on the live page). */
+  .hero {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-12);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--ds-space-12);
+      padding-bottom: var(--ds-space-16);
+    }
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 16ch;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-5xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 56ch;
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    margin-bottom: var(--ds-space-10);
+  }
+  .cta--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-accent);
+  }
+  .cta--ghost {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-border);
+  }
+
+  /* App icon cluster. 8 small rounded squares in a centered grid; stands
+   * in for the 16 integration icons on the live page (Gmail, Slack,
+   * GitHub, HubSpot, etc.). Inline 64px square. */
+  .app-cluster {
+    display: grid;
+    grid-template-columns: repeat(4, 64px);
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+  @media (min-width: 640px) {
+    .app-cluster { grid-template-columns: repeat(8, 64px); }
+  }
+  .app-tile {
+    width: 64px;
+    height: 64px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    box-shadow: var(--ds-shadow-xs);
+  }
+
+  /* Forbes Cloud 100 logo strip. Centered headline above a five-up logo
+   * row. Quiet, no frame. */
+  .logo-strip {
+    text-align: center;
+  }
+  .logo-strip__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .logo-strip__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-items: center;
+  }
+  @media (min-width: 768px) {
+    .logo-strip__row { grid-template-columns: repeat(6, 1fr); }
+  }
+  .logo-strip__cell {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* Section heading register. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    max-width: 24ch;
+  }
+  .section-sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-10);
+    max-width: 60ch;
+  }
+  .section-heading--centered {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  .section-sub--centered {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  /* Four-up agent feature cards. Soft white cards on tinted band. */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .agent-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .agent-grid { grid-template-columns: repeat(4, 1fr); } }
+  .agent-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    box-shadow: var(--ds-shadow-sm);
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .agent-card__emoji {
+    /* Inline 32px square stands in for the emoji or illustration icon
+     * Notion uses to label each agent card. */
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+  }
+  .agent-card__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .agent-card__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+
+  /* Product screenshot feature row. Alternating heading + screenshot
+   * frame. Screenshot frame is the system's signature: white card on
+   * soft drop shadow, rounded 16px. */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .feature-row { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+  }
+  .feature-row__copy {
+    max-width: 44ch;
+  }
+  .feature-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  @media (min-width: 1024px) {
+    .feature-row__title { font-size: var(--ds-text-3xl); }
+  }
+  .feature-row__body {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+  .screenshot-frame {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-lg);
+    aspect-ratio: 16 / 10;
+    /* Inline aspect-ratio; the screenshot frame is a one-off ornament
+     * (not a contract slot). */
+    overflow: hidden;
+    position: relative;
+  }
+  .screenshot-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, var(--ds-surface-2) 0 36px, var(--ds-surface) 36px 100%);
+    /* Quiet stand-in: a top bar over a body fill, mimicking a window
+     * chrome above the product screenshot region. */
+  }
+
+  /* Core feature grid. Four cards with screenshot above and copy below. */
+  .core-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .core-grid { grid-template-columns: repeat(2, 1fr); } }
+  .core-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .core-card__shot {
+    aspect-ratio: 16 / 9;
+    background:
+      linear-gradient(180deg, var(--ds-surface-2) 0 28px, var(--ds-surface) 28px 100%);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .core-card__copy {
+    padding: var(--ds-space-6);
+  }
+  .core-card__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .core-card__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+
+  /* ROI calculator placeholder. Soft white card with tool-list grid. */
+  .calc-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-8);
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .calc-grid { grid-template-columns: repeat(4, 1fr); } }
+  .calc-tool {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+  }
+
+  /* Testimonial pull quote. Large quote on tinted band. */
+  .testimonial {
+    text-align: center;
+    max-width: 64ch;
+    margin: 0 auto;
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  @media (min-width: 1024px) {
+    .testimonial__quote { font-size: var(--ds-text-3xl); }
+  }
+  .testimonial__attribution {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-10);
+  }
+  @media (min-width: 768px) { .testimonial-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Social proof stats. Four-up grid of large figures and labels. */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-8);
+    text-align: center;
+  }
+  @media (min-width: 768px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
+  .stat__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .stat__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /* End CTA band. Soft tinted card with centered headline and dual CTA. */
+  .end-cta {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-12) var(--ds-space-8);
+    text-align: center;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, sits outside the .page container in the
+   * markup but uses an inner .page to align with the body grid. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a notion-tagged navigation/* whole.
+         Lowercase wordmark left, primary link cluster middle, auth CTA
+         pair right. No rule below; the paper carries separation. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem / Ipsum / Dolor
+      </div>
+      <div class="slot" style="min-width: 240px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Log in / Get free
+      </div>
+    </nav>
+
+    <!-- Section: hero. Type-led headline + sub + dual CTA + 8-up
+         integration-icon cluster as the visual anchor. -->
+    <header class="hero" aria-label="Hero">
+      <h1 class="hero__title">Lorem ipsum dolor sit amet.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Lorem ipsum</a>
+        <a href="#" class="cta--ghost">Dolor sit amet</a>
+      </div>
+      <div class="app-cluster" aria-label="Integrations">
+        <div class="app-tile">Lo</div>
+        <div class="app-tile">Ip</div>
+        <div class="app-tile">Do</div>
+        <div class="app-tile">Si</div>
+        <div class="app-tile">Am</div>
+        <div class="app-tile">Co</div>
+        <div class="app-tile">Ad</div>
+        <div class="app-tile">El</div>
+      </div>
+    </header>
+
+    <!-- Section: logo strip. Forbes Cloud 100 stand-in. -->
+    <section class="section logo-strip" aria-label="Customer logos">
+      <p class="logo-strip__kicker">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+      <div class="logo-strip__row">
+        <span class="logo-strip__cell">Lorem</span>
+        <span class="logo-strip__cell">Ipsum</span>
+        <span class="logo-strip__cell">Dolor</span>
+        <span class="logo-strip__cell">Sit</span>
+        <span class="logo-strip__cell">Amet</span>
+        <span class="logo-strip__cell">Adipisc</span>
+      </div>
+    </section>
+
+    <!-- Section: AI agent feature band. Tinted band with four-up agent
+         cards; stand-in for the "Custom Agents" feature section. -->
+    <section class="section section--tinted" aria-label="AI agents">
+      <h2 class="section-heading section-heading--centered">Lorem ipsum dolor sit amet.</h2>
+      <p class="section-sub section-sub--centered">
+        Consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+      </p>
+      <div class="agent-grid" role="list">
+        <article class="agent-card" role="listitem">
+          <span class="agent-card__emoji" aria-hidden="true"></span>
+          <h3 class="agent-card__head">Lorem ipsum</h3>
+          <p class="agent-card__body">
+            Dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+            tempor incididunt ut labore.
+          </p>
+        </article>
+        <article class="agent-card" role="listitem">
+          <span class="agent-card__emoji" aria-hidden="true"></span>
+          <h3 class="agent-card__head">Dolor sit amet</h3>
+          <p class="agent-card__body">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip.
+          </p>
+        </article>
+        <article class="agent-card" role="listitem">
+          <span class="agent-card__emoji" aria-hidden="true"></span>
+          <h3 class="agent-card__head">Consectetur elit</h3>
+          <p class="agent-card__body">
+            Duis aute irure dolor in reprehenderit in voluptate velit
+            esse cillum dolore eu fugiat.
+          </p>
+        </article>
+        <article class="agent-card" role="listitem">
+          <span class="agent-card__emoji" aria-hidden="true"></span>
+          <h3 class="agent-card__head">Eiusmod tempor</h3>
+          <p class="agent-card__body">
+            Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: agent product feature row. Heading + screenshot frame. -->
+    <section class="section" aria-label="Agent product feature">
+      <div class="feature-row">
+        <div class="feature-row__copy">
+          <h2 class="feature-row__title">Lorem ipsum dolor sit amet consectetur.</h2>
+          <p class="feature-row__body">
+            Adipiscing elit, sed do eiusmod tempor incididunt ut labore
+            et dolore magna aliqua. Ut enim ad minim veniam.
+          </p>
+        </div>
+        <div class="screenshot-frame" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- Section: enterprise search feature row. Reverse order on desktop;
+         markup order keeps the copy first for accessibility. -->
+    <section class="section section--tinted" aria-label="Enterprise search feature">
+      <div class="feature-row">
+        <div class="screenshot-frame" aria-hidden="true"></div>
+        <div class="feature-row__copy">
+          <h2 class="feature-row__title">Dolor sit amet consectetur.</h2>
+          <p class="feature-row__body">
+            Quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat duis aute irure dolor.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: AI meeting notes feature row. -->
+    <section class="section" aria-label="Meeting notes feature">
+      <div class="feature-row">
+        <div class="feature-row__copy">
+          <h2 class="feature-row__title">Consectetur adipiscing elit.</h2>
+          <p class="feature-row__body">
+            In voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur excepteur sint occaecat cupidatat non proident.
+          </p>
+        </div>
+        <div class="screenshot-frame" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- Section: core feature grid. Docs / Knowledge Base / Projects /
+         AI stand-in. Each card has a screenshot region on top and copy
+         below. -->
+    <section class="section" aria-label="Core features">
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+      <p class="section-sub">
+        Consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+      </p>
+      <div class="core-grid" role="list">
+        <article class="core-card" role="listitem">
+          <div class="core-card__shot" aria-hidden="true"></div>
+          <div class="core-card__copy">
+            <h3 class="core-card__head">Lorem ipsum</h3>
+            <p class="core-card__body">
+              Dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt.
+            </p>
+          </div>
+        </article>
+        <article class="core-card" role="listitem">
+          <div class="core-card__shot" aria-hidden="true"></div>
+          <div class="core-card__copy">
+            <h3 class="core-card__head">Dolor sit amet</h3>
+            <p class="core-card__body">
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip.
+            </p>
+          </div>
+        </article>
+        <article class="core-card" role="listitem">
+          <div class="core-card__shot" aria-hidden="true"></div>
+          <div class="core-card__copy">
+            <h3 class="core-card__head">Consectetur elit</h3>
+            <p class="core-card__body">
+              Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore.
+            </p>
+          </div>
+        </article>
+        <article class="core-card" role="listitem">
+          <div class="core-card__shot" aria-hidden="true"></div>
+          <div class="core-card__copy">
+            <h3 class="core-card__head">Eiusmod tempor</h3>
+            <p class="core-card__body">
+              Excepteur sint occaecat cupidatat non proident, sunt in
+              culpa qui officia deserunt.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: ROI calculator band. Stand-in for the "Bring all your
+         tools under one roof" tool-list calculator. -->
+    <section class="section section--tinted" aria-label="ROI calculator">
+      <h2 class="section-heading section-heading--centered">Lorem ipsum dolor sit amet.</h2>
+      <p class="section-sub section-sub--centered">
+        Consectetur adipiscing elit. Calculate savings below.
+      </p>
+      <div class="calc-card">
+        <div class="calc-grid" role="list">
+          <div class="calc-tool" role="listitem"><span>Lorem</span><span>$12</span></div>
+          <div class="calc-tool" role="listitem"><span>Ipsum</span><span>$8</span></div>
+          <div class="calc-tool" role="listitem"><span>Dolor</span><span>$15</span></div>
+          <div class="calc-tool" role="listitem"><span>Sit</span><span>$10</span></div>
+          <div class="calc-tool" role="listitem"><span>Amet</span><span>$22</span></div>
+          <div class="calc-tool" role="listitem"><span>Adip</span><span>$6</span></div>
+          <div class="calc-tool" role="listitem"><span>Elit</span><span>$14</span></div>
+          <div class="calc-tool" role="listitem"><span>Sed do</span><span>$9</span></div>
+        </div>
+        <div style="text-align: center;">
+          <a href="#" class="cta--primary">Lorem ipsum</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: testimonials. Large pull quote + customer grid. -->
+    <section class="section" aria-label="Testimonials">
+      <div class="testimonial">
+        <p class="testimonial__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+          do eiusmod tempor incididunt ut labore.
+        </p>
+        <p class="testimonial__attribution">Lorem Ipsum, Dolor Sit Amet</p>
+      </div>
+      <div class="testimonial-grid" role="list">
+        <div class="slot" role="listitem" style="min-height: 120px;">
+          <span class="slot__label">customer-card</span>
+          Lorem ipsum
+        </div>
+        <div class="slot" role="listitem" style="min-height: 120px;">
+          <span class="slot__label">customer-card</span>
+          Dolor sit amet
+        </div>
+        <div class="slot" role="listitem" style="min-height: 120px;">
+          <span class="slot__label">customer-card</span>
+          Consectetur elit
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: social-proof stat band. Four large figures. -->
+    <section class="section section--tinted" aria-label="Social proof statistics">
+      <div class="stat-grid">
+        <div>
+          <span class="stat__value">100M+</span>
+          <span class="stat__label">Lorem ipsum users</span>
+        </div>
+        <div>
+          <span class="stat__value">62%</span>
+          <span class="stat__label">Dolor sit amet</span>
+        </div>
+        <div>
+          <span class="stat__value">#1</span>
+          <span class="stat__label">Consectetur adipiscing</span>
+        </div>
+        <div>
+          <span class="stat__value">1.4M+</span>
+          <span class="stat__label">Eiusmod tempor</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: end CTA. Card-style band with centered headline + dual
+         CTA. Stands in for the newsletter / signup invitation. -->
+    <section class="section" aria-label="Final CTA">
+      <div class="end-cta">
+        <h2 class="section-heading section-heading--centered" style="max-width: 28ch;">
+          Lorem ipsum dolor sit amet consectetur.
+        </h2>
+        <p class="section-sub section-sub--centered" style="margin-bottom: var(--ds-space-6);">
+          Adipiscing elit, sed do eiusmod tempor incididunt.
+        </p>
+        <div class="hero__cta-row" style="margin-bottom: 0;">
+          <a href="#" class="cta--primary">Lorem ipsum</a>
+          <a href="#" class="cta--ghost">Dolor sit amet</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for a
+       notion-tagged footers/* whole (mega-footer with five column
+       groups, social row, language selector, copyright). -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

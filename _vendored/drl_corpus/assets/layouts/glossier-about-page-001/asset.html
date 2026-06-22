@@ -1,0 +1,434 @@
+<!--
+  Asset: glossier-about-page-001
+  Class: layouts
+  Pattern: flush-top-nav, editorial-hero, mega-footer
+  Inspired by: Glossier (glossier.com/pages/about)
+  Notes:
+    - About-page skeleton: shipping-promo announcement bar, flush-top
+      nav with sentence-case categories, paper-white hero with the
+      "You look good" mission statement, founder narrative band
+      (origin in Into The Gloss, "Skin First. Makeup Second" philosophy),
+      pink-tinted values band, press strip, dusty-pink explore CTA, and
+      a four-column mega footer (Help / About / Stores / Social). The
+      page reads as brand-philosophy first, product second: the
+      load-bearing content is the founder voice and the values phrase,
+      not SKUs.
+    - Paper-and-ink layout carries the rhythm; the single signature
+      dusty millennial pink appears on the announcement bar, the
+      values surface, and the closing CTA band. Section padding-block
+      and max-width container are the variables; product imagery
+      placeholders stand in for downstream wholes.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>glossier-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Söhne is Glossier's display and body register (Klim Type
+  Foundry, licensed). Inter is the closest free substitute and runs in
+  the same humanist-sans register without disrupting the brand voice.
+  No web-font CDN is imported here; the fallback chain in tokens.css
+  carries the asset standalone.
+-->
+<style>
+  /* Reset just what the layout needs. Cross-asset reset lives in the harness. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Glossier runs a generous editorial max-width on
+   * the about page; ~1200px container with 20px gutter on mobile and
+   * 48px on desktop. Inline values — not contract slots.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 1024px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Announcement bar. Dusty-pink strip across the very top above the
+   * nav, centered sentence-case copy. ~40px on desktop. */
+  .announcement {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    text-align: center;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: 10px var(--ds-space-5);              /* inline ornament; ~40px band */
+  }
+  .announcement a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Top-bar nav. Paper-white surface, lowercase wordmark left, sentence-
+   * case category links centered, account / bag affordances right. */
+  .nav-wrap {
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 64px;                                  /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-transform: lowercase;                    /* Glossier wordmark is set lowercase */
+  }
+  .nav__links {
+    display: none;
+    gap: var(--ds-space-5);
+    font-weight: 400;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  @media (min-width: 1024px) {
+    .nav__links { display: flex; align-items: center; }
+  }
+  .nav__utility {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+
+  /* Mission hero. Paper-white surface, oversized sentence-case
+   * statement headline ("You look good"), tagline beneath, generous
+   * vertical air. Centered on desktop. */
+  .section--hero {
+    padding-block: var(--ds-space-12) var(--ds-space-12);
+  }
+  @media (min-width: 1024px) {
+    .section--hero { padding-block: var(--ds-space-16) var(--ds-space-16); }
+  }
+  .hero {
+    text-align: center;
+    max-width: 24ch;
+    margin: 0 auto;
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-transform: none;
+  }
+  @media (min-width: 1024px) {
+    .hero__statement { font-size: var(--ds-text-6xl); }
+  }
+  .hero__tagline {
+    margin: var(--ds-space-5) auto 0;
+    max-width: 36ch;
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Founder narrative band. Paper-white continues; centered headline
+   * "Welcome to Glossier" with origin story copy, optional supporting
+   * editorial image right or below. */
+  .band {
+    padding-block: var(--ds-space-12);
+  }
+  @media (min-width: 1024px) {
+    .band { padding-block: var(--ds-space-16); }
+  }
+  .band--paper { background: var(--ds-bg); }
+  .band--pink  { background: var(--ds-surface); }
+
+  .band__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+    text-align: center;
+  }
+  .band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    text-align: center;
+  }
+  @media (min-width: 1024px) {
+    .band__title { font-size: var(--ds-text-4xl); }
+  }
+  .band__copy {
+    max-width: 56ch;
+    margin: 0 auto;
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    text-align: center;
+  }
+  .band__copy p { margin: 0 0 var(--ds-space-4); }
+
+  /* Values triptych on the pink band. Three principle blocks; the
+   * brand's "Skin First. Makeup Second." sits as the load-bearing
+   * line. Two-up or three-up grid on desktop. */
+  .values {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    .values { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-10); }
+  }
+  .values__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .values__body {
+    color: var(--ds-text);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+
+  /* Press strip (publication quote band). Single-line statement
+   * with publication name in muted small caps below. */
+  .press {
+    background: var(--ds-bg);
+    padding-block: var(--ds-space-12);
+    text-align: center;
+  }
+  .press__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 40ch;
+  }
+  .press__source {
+    margin-top: var(--ds-space-4);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Closing CTA band ("Explore Glossier"). Dusty-pink surface with
+   * paper-white "Shop bestsellers" pill button. */
+  .cta {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    padding-block: var(--ds-space-12);
+    text-align: center;
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  @media (min-width: 1024px) {
+    .cta__title { font-size: var(--ds-text-4xl); }
+  }
+  .cta__button {
+    display: inline-flex;
+    align-items: center;
+    background: var(--ds-bg);
+    color: var(--ds-text-strong);
+    padding: 14px 28px;
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-weight: 500;
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Footer band: paper-white with hairline rule above; four columns
+   * (Help / About / Stores / Social) plus legal row beneath. */
+  .footer-band {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Placeholder slot styling. Each slot names the whole or atom it
+   * stands in for downstream. */
+  .slot {
+    background: rgba(0, 0, 0, 0.03);              /* inline; differs band-to-band */
+    border: 1px dashed var(--ds-text);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot--portrait { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .slot--photo    { aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .slot--invert   { background: rgba(255, 255, 255, 0.5); border-color: var(--ds-text-strong); color: var(--ds-text-strong); }
+  .slot__label    { display: block; color: inherit; margin-bottom: var(--ds-space-2); opacity: 0.7; }
+</style>
+</head>
+<body>
+
+  <!-- Section: announcement bar. Dusty-pink strip above the nav. -->
+  <div class="announcement" role="region" aria-label="Announcement">
+    Lorem ipsum dolor sit amet consectetur. <a href="#">Lorem ipsum</a>
+  </div>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/glossier-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">lorem</span>
+        <div class="nav__links">
+          <a href="#">Lorem</a>
+          <a href="#">Ipsum</a>
+          <a href="#">Dolor</a>
+          <a href="#">Sit</a>
+          <a href="#">Amet</a>
+        </div>
+        <div class="nav__utility">
+          <a href="#">Stores</a>
+          <a href="#">Log in</a>
+          <a href="#">Bag (0)</a>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div>
+
+    <!-- Section: mission hero. Centered oversized statement headline, tagline beneath. -->
+    <section class="section--hero" aria-label="Mission hero">
+      <div class="page">
+        <div class="hero">
+          <h1 class="hero__statement">Lorem ipsum dolor sit amet.</h1>
+          <p class="hero__tagline">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: founder narrative band. Paper-white surface, origin story copy. -->
+    <section class="band band--paper" aria-label="Founder narrative">
+      <div class="page">
+        <p class="band__kicker">Lorem ipsum</p>
+        <h2 class="band__title">Lorem ipsum dolor sit amet</h2>
+        <div class="band__copy">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris
+            nisi ut aliquip ex ea commodo consequat.
+          </p>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: values band on pink surface. Three principle blocks. -->
+    <section class="band band--pink" aria-label="Values">
+      <div class="page">
+        <p class="band__kicker">Lorem ipsum</p>
+        <h2 class="band__title">Lorem ipsum dolor sit amet</h2>
+        <div class="values">
+          <div>
+            <h3 class="values__name">Lorem One.</h3>
+            <p class="values__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+              do eiusmod tempor incididunt ut labore et dolore magna.
+            </p>
+          </div>
+          <div>
+            <h3 class="values__name">Lorem Two.</h3>
+            <p class="values__body">
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+          </div>
+          <div>
+            <h3 class="values__name">Lorem Three.</h3>
+            <p class="values__body">
+              Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: press strip. Single-line publication quote on paper. -->
+    <section class="press" aria-label="Press strip">
+      <div class="page">
+        <p class="press__quote">"Lorem ipsum dolor sit amet, consectetur adipiscing elit."</p>
+        <p class="press__source">Lorem Publication</p>
+      </div>
+    </section>
+
+    <!-- Section: closing CTA band on dusty pink. -->
+    <section class="cta" aria-label="Explore CTA">
+      <div class="page">
+        <h2 class="cta__title">Lorem ipsum dolor sit amet</h2>
+        <a href="#" class="cta__button">Shop Lorem</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; four-column mega footer. Stands in for wholes/footers/glossier-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (wordmark + Help + About + Stores + Social + legal row)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

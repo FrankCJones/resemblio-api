@@ -1,0 +1,177 @@
+<!--
+  Asset: olipop-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses retro-soda-display + candy-bright-palette + forest-green-cta-on-peach-cream + soft-pill-pink)
+  Inspired by: Olipop (drinkolipop.com homepage bands, drinkolipop.com blog newsletter band)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/peach-forest-001              (peach-cream surface with forest-green ink)
+    - type-pairings/serif-display-with-sans-001  (WindsorEF display over Ano body)
+    - headings/retro-soda-001                    (WindsorEF chunky retro headline)
+    - body-text/lead-paragraph-001               (Ano supporting line)
+    - buttons/soft-pill-pink-001                 (forest-green pill on candy surface)
+  Notes:
+    - The block is a full-width candy-bright band. The surface color does
+      the heavy lifting (peach by default; mint-teal alt via accent-2);
+      the CTA pill stays at the brand forest green so the action stays
+      calm against the loud surface. This inversion (loud surface, calm
+      button) is the Olipop signature.
+    - Centered narrow column inside the band. Headline in WindsorEF at
+      48px sets at 1.05 leading, one chunky retro-soda statement, body
+      in Ano at 20px, single forest-green pill CTA at 50px radius. No
+      card, no border, no shadow at rest.
+    - Inline ornament: the 50px pill radius (the brand's signature), the
+      cream-on-forest label color combination on the CTA, and the text-
+      wrap balance keeping the headline from orphaning. The yellow focus
+      halo is the only chromatic event on focus.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- WindsorEF is the licensed 1970s Windsor revival Olipop uses for
+     display. Open-license substitutes do not match exactly; Cooper Std
+     and Georgia in the fallback chain hold the chunky-soft register.
+     Ano (Schick Toikka) is the licensed body face; Inter and Helvetica
+     Neue substitute in the fallback chain. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page frame: place the band against a neutral cream backdrop so the
+   * surface color reads in context. On a real page the band sits flush
+   * between two sibling sections; here a touch of cream gives breathing
+   * room without competing. */
+  body {
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-5);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full bleed within the demo frame. The surface fill is
+   * the personality; no card, no border, no shadow. Padding matches the
+   * measured 54-56px top/bottom on the live pink band. */
+  .cta {
+    width: 100%;
+    max-width: 1200px;
+    background: var(--ds-bg);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    /* Inline ornament: 12px outer radius softens the band corners on the
+     * demo card; live bands run flush edge-to-edge. */
+  }
+
+  /* Content column: centered, narrow measure. Olipop's bands all center
+   * the column; this is the closing-band convention. */
+  .cta__content {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Display headline: from headings/retro-soda-001. WindsorEF at 4xl
+   * (48px) sets at 1.05 leading, near-zero tracking; one chunky-statement
+   * line, balance-wrapped to avoid orphans. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-4xl));
+    font-weight: 800;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 16ch;
+    text-wrap: balance;
+    /* Inline ornament: 800-weight Windsor reads as the Olipop display
+     * register; the lower weight (600) would feel like a different brand. */
+  }
+
+  /* Supporting line: from body-text/lead-paragraph-001. Ano at lg (20px),
+   * normal leading, body forest-green ink. One sentence, never a
+   * paragraph. */
+  .cta__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  /* Button row: a single forest-green pill is the canonical Olipop CTA.
+   * The block can carry a paired secondary outline but the default is
+   * one button to keep the action unambiguous. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Primary: from buttons/soft-pill-pink-001 (Olipop forest pill). Forest-
+   * green fill, cream label, 50px radius (effectively full at this
+   * height). Ano bold, 18-20px label. Padding 10px 32px matches the
+   * homepage mint-teal band sample. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-surface);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    padding: 10px 32px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 10px/32px padding matches the measured Olipop
+     * homepage band; the 50px radius (--ds-radius-full) is the brand
+     * signature pill shape. */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-text-strong);
+    transform: translateY(-1px);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 3px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary { transition: none; }
+    .cta__btn--primary:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet.</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

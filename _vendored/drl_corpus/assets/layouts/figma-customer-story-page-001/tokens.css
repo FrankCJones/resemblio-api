@@ -1,0 +1,123 @@
+/*
+ * figma-customer-story-page-001 tokens
+ *
+ * Native token values for the Figma customer-story skeleton, inspired by
+ * figma.com/customers/from-silos-to-speed-how-plaid-unified-product-and-
+ * brand-design-in-figma/. WebFetch returned the section order, headline,
+ * H2 sequence, pull-quote attribution structure, sidebar metadata roles
+ * (industry / scale / products used), embedded canvas-screenshot rhythm,
+ * end-of-page lead-capture CTA, and mega-footer column structure. Inline
+ * computed styles were stripped by WebFetch, so the numeric values below
+ * mirror the Figma system manifest (systems/figma/system.json) design
+ * principles: bright light surface with a plum accent, bold display sans
+ * headlines, hairline card chrome with no shadows at rest, subtle rounded
+ * corners (not pills), color-pop band sections for rhythm, sentence-case
+ * conversational copy.
+ *
+ * Layout-specific notes: the narrative reading column sits at ~68ch
+ * (inline rule in asset.html). The hero, color-pop metrics band, embedded
+ * canvas screenshots, products-used aside, related-stories grid, and CTA
+ * lead-capture block all widen to the 1200px page container. The plum
+ * accent carries the brand moment; H2 headings and pull-quote rules return
+ * to near-black to keep the column grayscale-by-default.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Figma's marketing chrome runs a bright off-white body (close to pure
+   * paper) with one saturated plum accent, plus a soft plum tint on the
+   * color-pop band that sets the page rhythm. Inline links pick up the
+   * plum at full saturation.
+   */
+  --ds-bg:           #FFFFFF;            /* Paper-white body surface; Figma customers default. */
+  --ds-surface:      #FAF7F5;            /* Warm off-white tile; outcome-band tiles, products aside. */
+  --ds-surface-2:    #F3ECFB;            /* Plum-tinted soft surface; color-pop band, related-card placeholders. */
+  --ds-text:         #1E1E1E;            /* Figma near-black body reading. */
+  --ds-text-muted:   #6B6B6B;            /* Byline, date, products labels, metric units. */
+  --ds-text-strong:  #0D0D0D;            /* Hero display title; one step heavier than body. */
+  --ds-border:       #E6E1E5;            /* Card edges, outcome-tile chrome, aside chrome. */
+  --ds-hairline:     rgba(0,0,0,0.08);   /* Section rule alpha; nav underline, footer top. */
+  --ds-accent:       #7C3FFA;            /* Figma plum/violet; inline links, focus, accent moments. */
+  --ds-accent-2:     #0D0D0D;            /* Inversion accent; dark CTA cards when used in contrast. */
+  --ds-success:      #15A34A;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #7C3FFA;
+  --ds-focus-ring:   #7C3FFA;            /* Plum at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Figma marketing uses a bold display sans for headlines and a humanist
+   * sans for body. Mono carries utility metadata (date stamps, mono kicker
+   * labels, products tag list). Open fallbacks so the asset renders
+   * standalone without licensed faces.
+   */
+  --ds-font-display: "Whyte Inktrap", "Inter Display", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Whyte", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Whyte Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Whyte", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono kicker, products-used label, metric unit. */
+  --ds-text-sm:   14px;   /* Author byline, related-card meta, image caption. */
+  --ds-text-base: 17px;   /* Body reading; one notch larger than 16px to match Figma's generous default. */
+  --ds-text-lg:   20px;   /* Lead paragraph, pull-quote attribution name. */
+  --ds-text-xl:   26px;   /* Pull-quote body, body H3. */
+  --ds-text-2xl:  34px;   /* Body H2 section heads. */
+  --ds-text-3xl:  44px;   /* CTA block heading. */
+  --ds-text-4xl:  60px;   /* Hero H1 display. */
+  --ds-text-5xl:  76px;   /* Outcome-metric value. */
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;   /* Hero title, outcome-metric value. */
+  --ds-leading-snug:    1.2;    /* Pull quote, body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Article body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Figma display squeeze; lighter than Geist. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono kicker / metric unit / aside label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Figma's subtle-rounded-corners principle: 12-16px on cards and the
+   * color-pop band, pills only for status dots and CTAs.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;   /* Outcome-metric tile, aside, related-card, canvas screenshot frame. */
+  --ds-radius-lg:   20px;   /* Color-pop band container, CTA lead-capture card. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-card-chrome principle: no shadows at rest. Tiles lift via
+   * 1px border on tinted surface. Values declared for contract
+   * completeness only.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.05);
+  --ds-shadow-md:   0 4px 16px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.10);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

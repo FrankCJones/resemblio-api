@@ -1,0 +1,360 @@
+<!--
+  Asset: linear-about-team-001
+  Class: about-team (whole)
+  Pattern: monochrome-palette, electric-accent, mono-utility-pair, sans-display-serif-body
+  Inspired by: Linear (linear.app/about)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001         (palette discipline)
+    - type-pairings/sans-system-modern-001   (Inter display + body, mono utility)
+    - headings/display-tight-001             (hero display headline)
+    - body-text/lead-paragraph-001           (purpose-statement dek)
+    - cards/soft-elevation-001               (leadership card frame)
+    - dividers/hairline-rule-001             (section breaks)
+    - kickers/mono-eyebrow-001               (section kicker above grid)
+    - labels/section-label-numbered-001      (mono role labels on cards)
+  Notes:
+    - Two-tier team display: 4x2 leadership grid (8 portraits with role + name)
+      followed by a dense single-column roster of 150+ names. The leadership
+      tier carries identity; the roster carries scale.
+    - Variable parts: every --ds-* token, including the indigo accent.
+      Inline ornament: the precise 0.8px hairline border on portrait
+      thumbnails (rounded rectangles, not circles) and the column-count
+      multi-column flow on the roster block; both noted with comments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-about-team-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter Variable is Linear's canonical face. We load the variable Inter
+     from Google Fonts; if unavailable the system stack in tokens.css
+     (system-ui, -apple-system, sans-serif) renders a faithful substitute. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-16);
+  }
+
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-16);
+  }
+
+  /* ---------- Hero ----------
+   * Single-CTA hero. The headline is the only oversized element; the dek
+   * sits at lg with muted color to read as supporting copy. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 760px;
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    font-weight: 600;
+    margin: 0;
+  }
+  .hero__dek {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 620px;
+  }
+
+  /* ---------- Section kicker ----------
+   * Mono uppercase eyebrow with wide tracking and a trailing hairline; the
+   * pattern Linear uses to introduce every minor section on this page. */
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-8);
+  }
+  .section-head__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .section-head__kicker::after {
+    content: "";
+    display: block;
+    width: var(--ds-space-6);
+    height: 1px;
+    background: var(--ds-hairline);
+    margin-top: var(--ds-space-3);
+    /* Inline ornament: trailing rule is page chrome, not a separate atom. */
+  }
+  .section-head__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  /* ---------- Leadership grid ----------
+   * 4x2 grid. Each card carries a rounded-rect portrait (md radius, not
+   * a circle — Linear's canonical leadership treatment), a mono role
+   * label, a name, and a quiet LinkedIn link. */
+  .leadership {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-5);
+  }
+  @media (max-width: 920px) { .leadership { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .leadership { grid-template-columns: 1fr; } }
+
+  .leader {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .leader:hover {
+    background: var(--ds-surface-2);
+    border-color: var(--ds-accent);
+  }
+  .leader__portrait {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border-radius: var(--ds-radius-md);
+    /* Inline ornament: 0.8px hairline ring matches Linear's leadership
+       portrait border observed via the system-tagged avatar atom. */
+    border: 0.8px solid var(--ds-border);
+    background:
+      radial-gradient(circle at 30% 30%, rgba(94,106,210,0.18), transparent 60%),
+      linear-gradient(135deg, #1F2024 0%, #141517 60%, #08090A 100%);
+    /* Placeholder mesh stands in for the actual headshot image. */
+  }
+  .leader__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-2) 0 0;
+  }
+  .leader__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    font-weight: 500;
+    margin: 0;
+  }
+  .leader__link {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    margin-top: var(--ds-space-1);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .leader__link:hover { color: var(--ds-accent); }
+  .leader__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* ---------- Roster ----------
+   * Dense single-typographic-block listing of 150+ names. Multi-column
+   * flow keeps the page short; each name reads as quiet metadata, not as
+   * a card. The roster is the "scale signal" of the company. */
+  .roster {
+    column-count: 4;
+    column-gap: var(--ds-space-6);
+    column-rule: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-sm);
+    line-height: 1.9;
+    color: var(--ds-text-muted);
+  }
+  @media (max-width: 920px) { .roster { column-count: 3; } }
+  @media (max-width: 620px) { .roster { column-count: 2; } }
+  @media (max-width: 380px) { .roster { column-count: 1; } }
+  .roster span {
+    display: block;
+    break-inside: avoid;
+  }
+
+  /* ---------- Hiring CTA ----------
+   * Linear's closing affordance: link-button styled "We're hiring →"
+   * with accent color and a trailing arrow. No primary pill on this page;
+   * the editorial register prefers a quiet link. */
+  .hiring {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-base);
+    color: var(--ds-accent);
+    text-decoration: none;
+    font-weight: 500;
+    align-self: flex-start;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hiring:hover { color: var(--ds-accent-2); }
+  .hiring:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+  .hiring__arrow {
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hiring:hover .hiring__arrow { transform: translateX(2px); }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do.</h1>
+      <p class="hero__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.</p>
+    </section>
+
+    <section aria-labelledby="leadership-title">
+      <header class="section-head">
+        <p class="section-head__kicker">Leadership</p>
+        <h2 id="leadership-title" class="section-head__title">Lorem ipsum dolor sit amet consectetur</h2>
+      </header>
+
+      <div class="leadership" role="list">
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Chief Executive</p>
+          <h3 class="leader__name">Aenean Tristique</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Chief Product</p>
+          <h3 class="leader__name">Vivamus Lacinia</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Chief Technology</p>
+          <h3 class="leader__name">Curabitur Mollis</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Chief Operating</p>
+          <h3 class="leader__name">Phasellus Iaculis</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Head of Product</p>
+          <h3 class="leader__name">Maecenas Sapien</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Head of Engineering</p>
+          <h3 class="leader__name">Suspendisse Auctor</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Head of Sales</p>
+          <h3 class="leader__name">Praesent Volutpat</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+        <article class="leader" role="listitem">
+          <div class="leader__portrait" aria-hidden="true"></div>
+          <p class="leader__role">Head of Security</p>
+          <h3 class="leader__name">Quisque Faucibus</h3>
+          <a class="leader__link" href="#">LinkedIn</a>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="team-title">
+      <header class="section-head">
+        <p class="section-head__kicker">Team</p>
+        <h2 id="team-title" class="section-head__title">Lorem ipsum dolor sit amet</h2>
+      </header>
+
+      <div class="roster" aria-label="Full team roster">
+        <span>Adipiscing Elit</span><span>Aenean Sollicitudin</span><span>Aliquam Lobortis</span><span>Aliquet Magna</span>
+        <span>Arcu Vehicula</span><span>Augue Tellus</span><span>Bibendum Lacus</span><span>Blandit Pretium</span>
+        <span>Cras Volutpat</span><span>Curabitur Aliquet</span><span>Donec Posuere</span><span>Eget Mauris</span>
+        <span>Eros Lacinia</span><span>Etiam Porta</span><span>Faucibus Orci</span><span>Felis Donec</span>
+        <span>Fermentum Massa</span><span>Fringilla Vehicula</span><span>Fusce Dapibus</span><span>Gravida Eget</span>
+        <span>Hendrerit Risus</span><span>Iaculis Nunc</span><span>Imperdiet Sapien</span><span>Integer Posuere</span>
+        <span>Justo Odio</span><span>Lacus Vestibulum</span><span>Lectus Augue</span><span>Ligula Porta</span>
+        <span>Lobortis Nisl</span><span>Lorem Ipsum</span><span>Magna Mollis</span><span>Malesuada Fames</span>
+        <span>Maximus Risus</span><span>Mauris Blandit</span><span>Mollis Interdum</span><span>Morbi Leo</span>
+        <span>Nam Quam</span><span>Nec Ullamcorper</span><span>Neque Penatibus</span><span>Nullam Quis</span>
+        <span>Nulla Vitae</span><span>Odio Operae</span><span>Ornare Eros</span><span>Pellentesque Posuere</span>
+        <span>Phasellus Tempus</span><span>Placerat Massa</span><span>Porta Semper</span><span>Praesent Sodales</span>
+        <span>Pretium Augue</span><span>Proin Eget</span><span>Pulvinar Tempor</span><span>Quam Felis</span>
+        <span>Quisque Velit</span><span>Risus Cras</span><span>Rutrum Egestas</span><span>Sagittis Lacus</span>
+        <span>Sapien Auctor</span><span>Sed Cursus</span><span>Sem Vulputate</span><span>Semper Auctor</span>
+        <span>Sit Amet</span><span>Sollicitudin Aenean</span><span>Suspendisse Pulvinar</span><span>Tellus Mauris</span>
+        <span>Tempor Mauris</span><span>Tincidunt Fermentum</span><span>Tortor Velit</span><span>Tristique Senectus</span>
+        <span>Ullamcorper Egestas</span><span>Ultrices Auctor</span><span>Ultricies Cras</span><span>Urna Mollis</span>
+        <span>Varius Natoque</span><span>Vehicula Felis</span><span>Velit Aliquet</span><span>Venenatis Lectus</span>
+        <span>Vestibulum Ante</span><span>Vitae Sapien</span><span>Viverra Justo</span><span>Volutpat Diam</span>
+        <span>Vulputate Eros</span><span>Adipiscing Quam</span><span>Aenean Felis</span><span>Aliquam Mauris</span>
+        <span>Arcu Ligula</span><span>Augue Quam</span><span>Bibendum Velit</span><span>Blandit Sapien</span>
+        <span>Cras Mauris</span><span>Curabitur Lectus</span><span>Donec Velit</span><span>Eget Justo</span>
+        <span>Eros Tellus</span><span>Etiam Lectus</span><span>Faucibus Sapien</span><span>Felis Mollis</span>
+        <span>Fermentum Risus</span><span>Fringilla Auctor</span><span>Fusce Cras</span><span>Gravida Sapien</span>
+        <span>Hendrerit Quam</span><span>Iaculis Velit</span><span>Imperdiet Lectus</span><span>Integer Mauris</span>
+        <span>Justo Sodales</span><span>Lacus Mauris</span><span>Lectus Quam</span><span>Ligula Auctor</span>
+        <span>Lobortis Mauris</span><span>Lorem Velit</span><span>Magna Tellus</span><span>Malesuada Quam</span>
+        <span>Maximus Mauris</span><span>Mauris Quam</span><span>Mollis Sapien</span><span>Morbi Auctor</span>
+        <span>Nam Tellus</span><span>Nec Velit</span><span>Neque Mauris</span><span>Nullam Lectus</span>
+        <span>Nulla Quam</span><span>Odio Mauris</span><span>Ornare Quam</span><span>Pellentesque Velit</span>
+        <span>Phasellus Quam</span><span>Placerat Velit</span><span>Porta Mauris</span><span>Praesent Tellus</span>
+        <span>Pretium Quam</span><span>Proin Mauris</span><span>Pulvinar Velit</span><span>Quam Sapien</span>
+        <span>Quisque Auctor</span><span>Risus Quam</span><span>Rutrum Mauris</span><span>Sagittis Velit</span>
+        <span>Sapien Quam</span><span>Sed Mauris</span><span>Sem Velit</span><span>Semper Quam</span>
+        <span>Sit Mauris</span><span>Sollicitudin Velit</span><span>Suspendisse Quam</span><span>Tellus Velit</span>
+        <span>Tempor Quam</span><span>Tincidunt Mauris</span><span>Tortor Quam</span><span>Tristique Mauris</span>
+        <span>Ullamcorper Velit</span><span>Ultrices Quam</span><span>Ultricies Mauris</span><span>Urna Velit</span>
+      </div>
+    </section>
+
+    <a class="hiring" href="#">
+      <span>Lorem ipsum hiring</span>
+      <span class="hiring__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+
+  </main>
+</body>
+</html>

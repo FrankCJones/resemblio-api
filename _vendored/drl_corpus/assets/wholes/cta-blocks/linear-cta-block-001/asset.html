@@ -1,0 +1,183 @@
+<!--
+  Asset: linear-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses mono-electric + display-tight-sans + primary-fill + ghost-button)
+  Inspired by: Linear (linear.app, linear.app/features)
+  Notes:
+    - Closing CTA at the bottom of Linear marketing pages. Sits flush on
+      the near-black page surface; no card, no contrasting band, no
+      shadow. A two-line declarative headline at display-tight, centered,
+      with an indigo primary CTA and a ghost secondary at matched
+      dimensions on the row below.
+    - The indigo (#5E6AD2) is the only saturated color in the block; it
+      is reserved for the primary fill and the focus ring. The ghost
+      secondary stays in the neutral chrome.
+    - Inline ornament: the 8px button radius (Linear-system signature,
+      between the SaaS pill and the brutalist square) and the centered
+      column. Both are Linear-system traits, not portable contract slots.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Open-license substitute for Inter Variable (the face Linear ships).
+     Inter from Google Fonts matches the register closely enough for
+     library use. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: near-black surface. The CTA sits inline on the page
+   * with generous vertical padding; on the live site this band closes
+   * the marketing surface immediately above the footer. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container. No chrome above the block; the
+   * surface change from the prior section is the only separator. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    padding: var(--ds-space-12) 0;
+  }
+
+  /* Content column: centered, narrow column. Linear's closing CTA is
+   * center-aligned (unlike the left-aligned editorial register Anthropic
+   * uses); the eye stops at one column on axis. */
+  .cta__content {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-8);
+  }
+
+  /* Display headline: Inter at display-tight, around 56px on desktop and
+   * fluid down on narrow widths. The two-part declarative ("Built for
+   * the future. Available today.") wants tight leading and a slight
+   * negative track. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 6vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the two-clause headline
+     * breaking on the period rather than orphaning the closing word. */
+  }
+
+  /* Button row: indigo primary + neutral ghost. The pair lives on one
+   * row at desktop and wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Primary: indigo fill, white label, 8px radius. The fill is the only
+   * place indigo carries weight on the surface. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 8px radius is the Linear-system signature; sits
+     * between the SaaS pill and the brutalist square corner. */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+    color: var(--ds-bg);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: no fill, neutral border, 8px radius. Matched
+   * dimensions with the primary so the pair reads as a deliberate
+   * two-action set rather than primary-plus-link. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-surface);
+    border-color: var(--ds-text-muted);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet. Consectetur adipiscing elit.</h2>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+        <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!--
+  Asset: github-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: GitHub (github.com/customer-stories/general-motors)
+  Notes:
+    - GitHub customer-story skeleton: flush-top nav with breadcrumb plus
+      green Start-a-free-trial pill; dark hero band on near-black canvas
+      (#0d1117) carrying customer wordmark + display title + plan / industry /
+      location / seats mono-label metadata row; four-up outcome-metrics band
+      on white (oversized green value + mono unit + sans label); narrative
+      body in a centered ~68ch column with H2 section heads, inline body
+      code samples, screenshot figures, and full-width pull quotes attributed
+      to named speakers with role mono-uppercase; products-used aside on
+      desktop (mono labels + sans values + product chips); dark CTA block
+      with green primary pill + ghost secondary; "Explore more" three-up
+      related-content grid; four-column mega-footer (Platform, Ecosystem,
+      Support, Company) plus social row.
+    - Variable: section sequence, page max-width, vertical rhythm, color
+      slot mapping, metric tile count. Inline: hero photo aspect ratio
+      (3 / 2), reading column measure (68ch), aside sidebar width
+      (260px), customer-logo lockup geometry, code-block scroller.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Mona Sans and Mona Sans Mono are GitHub's marketing faces.
+  Faces are not loaded in the asset; the fallback chains in tokens.css
+  (system sans, ui-monospace) carry the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so nav, hero band, metrics row, and
+   * footer share one rhythm; the reading column inside narrows further.
+   * Inline value, not a contract slot.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Reading column inside the body, ~68ch. Page-grid character, inline. */
+  .column { max-width: 68ch; margin: 0 auto; }
+
+  /* Nav: flush-top, hairline rule beneath. Breadcrumb left, CTA right. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__primary {
+    display: none;
+    gap: var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  @media (min-width: 1024px) { .nav__primary { display: inline-flex; } }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: #ffffff;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid rgba(31, 35, 40, 0.15);
+  }
+
+  /* Breadcrumb row sits under the nav, before the dark hero. */
+  .breadcrumb {
+    padding-block: var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .breadcrumb__sep { padding-inline: var(--ds-space-2); color: var(--ds-border); }
+  .breadcrumb a { color: var(--ds-accent-2); }
+
+  /*
+   * Hero band. The signature GitHub move: a full-bleed near-black surface
+   * carrying display title, customer wordmark, and a mono-labeled meta
+   * row (plan / industry / location / seats). On desktop the hero pairs
+   * the title block with a 3:2 product photo. Inline values for max-width
+   * inversion: the band breaks the page container.
+   */
+  .hero-band {
+    background: var(--ds-surface-2);
+    color: #ffffff;
+    margin-inline: calc(-1 * var(--ds-space-5));
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .hero-band { margin-inline: calc(-1 * var(--ds-space-8)); padding-inline: var(--ds-space-8); }
+  }
+  .hero {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-block: var(--ds-space-12);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .hero { grid-template-columns: 1.1fr 1fr; gap: var(--ds-space-10); }
+  }
+  .hero__customer {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: #ffffff;
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+  }
+  .hero__meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-4) var(--ds-space-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: var(--ds-space-5);
+    margin-top: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .hero__meta { grid-template-columns: repeat(4, 1fr); }
+  }
+  .hero__meta-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 var(--ds-space-1);
+  }
+  .hero__meta-value {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: #ffffff;
+    margin: 0;
+  }
+  /* Hero product photo frame. 3:2 ratio; inline geometry. */
+  .hero__photo {
+    aspect-ratio: 3 / 2;
+    border-radius: var(--ds-radius-lg);
+    background: linear-gradient(135deg, #1f2328, #59636e);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Recurring section. Vertical rhythm scales up at desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-of-type { border-bottom: 0; }
+
+  /*
+   * Outcome-metrics band. Four tiles on desktop. Oversized green value,
+   * mono unit, sans label. This is the page's color moment outside the
+   * dark hero.
+   */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 640px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .metrics { grid-template-columns: repeat(4, 1fr); } }
+  .metric {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .metric__unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin-left: var(--ds-space-1);
+  }
+  .metric__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Narrative body + products-used aside. Desktop: 2-col with 260px aside;
+   * mobile: aside stacks below.
+   */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    /* Aside ratio: 1fr body + 260px aside. Inline. */
+    .body-grid { grid-template-columns: 1fr 260px; gap: var(--ds-space-10); align-items: start; }
+  }
+  .body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); max-width: 68ch; }
+  .body > * + * { margin-top: var(--ds-space-5); }
+  .body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .body a { color: var(--ds-accent-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    padding: 2px 6px;
+  }
+  .body figure { margin: var(--ds-space-8) 0; }
+  .body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Code-sample block. Mono on canvas-subtle, scroller overflow-x. */
+  .code-block {
+    background: var(--ds-surface-2);
+    color: #e6edf3;
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    overflow-x: auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .code-block .tok-kw { color: #ff7b72; }
+  .code-block .tok-fn { color: #d2a8ff; }
+  .code-block .tok-str { color: #a5d6ff; }
+  .code-block .tok-com { color: #8b949e; font-style: italic; }
+
+  /* Pull-quote: full-width column break, green left rule. */
+  .pull-quote {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-2) 0 var(--ds-space-2) var(--ds-space-6);
+    border-left: 3px solid var(--ds-accent);
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .pull-quote__attribution { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .pull-quote__avatar {
+    width: 36px; height: 36px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+  }
+  .pull-quote__name { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600; color: var(--ds-text); margin: 0; }
+  .pull-quote__role { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); margin: 0; }
+
+  /* Products-used aside. Mono labels + sans values + product chips. */
+  .aside {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+  }
+  @media (min-width: 1024px) {
+    .aside { position: sticky; top: var(--ds-space-8); }
+  }
+  .aside__group + .aside__group { margin-top: var(--ds-space-5); }
+  .aside__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .aside__value { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text); margin: 0; }
+  .aside__tags { display: flex; flex-wrap: wrap; gap: var(--ds-space-2); margin: 0; padding: 0; list-style: none; }
+  .aside__tag {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-3);
+  }
+
+  /*
+   * CTA block. Dark inversion on the GitHub canvas-default near-black, with
+   * the saturated green primary pill and a ghost secondary. Two-column on
+   * desktop; one-column on mobile.
+   */
+  .cta {
+    background: var(--ds-surface-2);
+    color: #ffffff;
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: end;
+  }
+  @media (min-width: 768px) {
+    .cta { grid-template-columns: 1.4fr 1fr; gap: var(--ds-space-10); padding: var(--ds-space-12) var(--ds-space-10); }
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cta__body { font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); color: rgba(255, 255, 255, 0.75); margin: 0; }
+  .cta__actions { display: flex; flex-wrap: wrap; gap: var(--ds-space-3); }
+  .cta__primary {
+    background: var(--ds-accent);
+    color: #ffffff;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .cta__secondary {
+    background: transparent;
+    color: #ffffff;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Related stories. Section heading, then three-up card grid. */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Slot placeholders (stand in for downstream system-tagged wholes). */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band. Full-bleed dark canvas; four columns of quiet links. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    background: var(--ds-surface-2);
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .footer-band .page { color: inherit; }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a github-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <span class="nav__primary" aria-label="Primary links">
+        <a href="#">Platform</a>
+        <a href="#">Solutions</a>
+        <a href="#">Resources</a>
+        <a href="#">Enterprise</a>
+        <a href="#">Pricing</a>
+      </span>
+      <a class="nav__cta" href="#">Start a free trial</a>
+    </nav>
+
+    <!-- Breadcrumb row sits between nav and dark hero band. -->
+    <div class="breadcrumb">
+      <a href="#">Customer Stories</a><span class="breadcrumb__sep">/</span><a href="#">Enterprise</a><span class="breadcrumb__sep">/</span><span>Lorem Customer</span>
+    </div>
+  </div>
+
+  <!-- Hero band breaks the .page container; full-bleed dark canvas. -->
+  <header class="hero-band" aria-label="Customer story hero">
+    <div class="hero">
+      <div>
+        <p class="hero__customer">Lorem Customer Wordmark</p>
+        <h1 class="hero__title">Lorem ipsum dolor sit amet: how Lorem accelerated software delivery with Lorem Platform.</h1>
+        <div class="hero__meta" role="list">
+          <div role="listitem">
+            <p class="hero__meta-label">Plan</p>
+            <p class="hero__meta-value">Lorem Enterprise</p>
+          </div>
+          <div role="listitem">
+            <p class="hero__meta-label">Industry</p>
+            <p class="hero__meta-value">Lorem Ipsum</p>
+          </div>
+          <div role="listitem">
+            <p class="hero__meta-label">Location</p>
+            <p class="hero__meta-value">Dolor Sit, Amet</p>
+          </div>
+          <div role="listitem">
+            <p class="hero__meta-label">Seats</p>
+            <p class="hero__meta-value">19,000+</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero__photo" aria-hidden="true">customer product photo slot</div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- Section: outcome-metrics band. Four tiles. -->
+    <section class="section" aria-label="Outcome metrics">
+      <div class="metrics">
+        <div class="metric">
+          <p class="metric__value">99<span class="metric__unit">%</span></p>
+          <p class="metric__label">Lorem ipsum source code consolidated.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">40<span class="metric__unit">to 1</span></p>
+          <p class="metric__label">Dolor sit amet tools reduced to one platform.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">27<span class="metric__unit">min</span></p>
+          <p class="metric__label">Build times, down from lorem hours.</p>
+        </div>
+        <div class="metric">
+          <p class="metric__value">8k<span class="metric__unit">+</span></p>
+          <p class="metric__label">Developers using Lorem Copilot daily.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: narrative body + products-used aside. -->
+    <section class="section" aria-label="Narrative body">
+      <div class="body-grid">
+        <article class="body">
+          <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco.
+          </p>
+          <h2>Choosing a modern foundation for the future</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+            sunt in culpa qui officia deserunt mollit anim id <code>git push</code>.
+          </p>
+          <pre class="code-block" aria-label="Lorem code sample"><span class="tok-com"># Lorem ipsum dolor sit amet</span>
+<span class="tok-kw">name</span>: Lorem CI
+<span class="tok-kw">on</span>: [push, pull_request]
+<span class="tok-kw">jobs</span>:
+  <span class="tok-fn">build</span>:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: <span class="tok-str">"actions/checkout@v4"</span>
+      - run: <span class="tok-str">"lorem --ipsum"</span></pre>
+          <blockquote class="pull-quote">
+            <p class="pull-quote__body">
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. It was
+              like landing planes on a runway while the runway was still being
+              built. Lorem made the consectetur happen."
+            </p>
+            <footer class="pull-quote__attribution">
+              <span class="pull-quote__avatar" aria-hidden="true"></span>
+              <span>
+                <p class="pull-quote__name">Lorem Ipsum</p>
+                <p class="pull-quote__role">Lorem Role, Lorem Customer</p>
+              </span>
+            </footer>
+          </blockquote>
+          <h2>A new threshold for developer velocity</h2>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </p>
+          <figure>
+            <div class="slot" style="aspect-ratio: 16 / 9;">
+              <span class="slot__label">product-screenshot</span>
+              Lorem ipsum dashboard screenshot
+            </div>
+            <figcaption>Lorem ipsum figcaption explaining the dashboard above.</figcaption>
+          </figure>
+          <h2>From proactive defense to a security-first culture</h2>
+          <p>
+            Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+            natus error sit voluptatem accusantium doloremque laudantium.
+          </p>
+          <blockquote class="pull-quote">
+            <p class="pull-quote__body">
+              "Lorem advanced security means vulnerabilities are fixed in pull
+              requests, not after release. Dolor sit amet."
+            </p>
+            <footer class="pull-quote__attribution">
+              <span class="pull-quote__avatar" aria-hidden="true"></span>
+              <span>
+                <p class="pull-quote__name">Dolor Sit</p>
+                <p class="pull-quote__role">Lorem Role, Lorem Customer</p>
+              </span>
+            </footer>
+          </blockquote>
+          <h2>An engine for AI-powered innovation</h2>
+          <p>
+            Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et
+            quasi architecto beatae vitae dicta sunt explicabo.
+          </p>
+        </article>
+
+        <!-- Aside: products-used + customer metadata. -->
+        <aside class="aside" aria-label="Products used and customer details">
+          <div class="aside__group">
+            <p class="aside__label">Customer</p>
+            <p class="aside__value">Lorem Ipsum, Inc.</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Industry</p>
+            <p class="aside__value">Lorem Ipsum</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Repositories</p>
+            <p class="aside__value">150,000+</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Products Used</p>
+            <ul class="aside__tags">
+              <li class="aside__tag">Enterprise</li>
+              <li class="aside__tag">Copilot</li>
+              <li class="aside__tag">Actions</li>
+              <li class="aside__tag">Advanced Security</li>
+              <li class="aside__tag">Code Review</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: CTA block. Dark inversion with green primary. -->
+    <section class="section" aria-label="Call to action">
+      <div class="cta">
+        <div>
+          <p class="cta__title">Lorem ipsum dolor sit amet?</p>
+          <p class="cta__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Lorem free trial of Lorem Enterprise.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <a class="cta__primary" href="#">Start a free trial</a>
+          <a class="cta__secondary" href="#">Curious about other plans?</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related stories. Three-up grid. -->
+    <section class="section" aria-label="Explore more">
+      <h2 class="related-heading">Explore more from Lorem</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, dark canvas, four columns of quiet links. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px; background: transparent; border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);">
+        <span class="slot__label" style="color: #ffffff;">mega-footer</span>
+        Platform . Ecosystem . Support . Company . Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

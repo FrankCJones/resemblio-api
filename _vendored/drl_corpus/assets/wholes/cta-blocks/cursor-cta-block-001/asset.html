@@ -1,0 +1,193 @@
+<!--
+  Asset: cursor-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses paper-ink + display-tight-sans + primary-fill + ghost-button + external-link-arrow)
+  Inspired by: Cursor (cursor.com)
+  Notes:
+    - Closing CTA at the bottom of cursor.com just above the footer. A
+      single short declarative headline ("Try Cursor now.") centered on
+      the warm-leaning off-white page, followed by one filled primary
+      action and two ghost secondaries on a single horizontal row.
+    - The cursor-blue (#2667FF) is the only saturated color in the block.
+      It carries the primary fill; the ghost secondaries stay in the
+      neutral chrome and use a small directional arrow to signal motion.
+    - Inline ornament: the inline-flex arrow glyph next to button labels
+      (down-arrow for the platform download, right-arrow for navigational
+      secondaries) is character-level cursor-system signage; not a
+      portable contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-cta-block-001 Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Open-license Inter family stands in for the cursor.com production
+     stack. Inter Tight handles the display register; Inter handles
+     button labels. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: warm-leaning off-white surface. The CTA closes the
+   * marketing surface immediately above the footer; no contrasting band
+   * or card, just generous vertical padding. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container with no chrome. The surface change
+   * from the previous section is the only separator on the live site. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    padding: var(--ds-space-12) 0;
+  }
+
+  /* Content column: centered narrow column. The cursor closing CTA has
+   * a single-clause headline (shorter than Linear's two-clause pattern);
+   * the column stays narrow so the headline anchors the eye. */
+  .cta__content {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-8);
+  }
+
+  /* Display headline: Inter Tight at display-tight, fluid 36px to 64px.
+   * Cursor uses a single short imperative; the headline holds the full
+   * weight of the moment and does not need a subhead. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Button row: one filled primary plus two ghost secondaries. On
+   * desktop they sit on one row; the row wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Shared button geometry: 8px radius (cursor-system signature),
+   * tight padding, sm label, no shadow. */
+  .cta__btn {
+    appearance: none;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  /* Primary: cursor-blue fill, white label, no border. The only place
+   * the accent carries weight on the block. */
+  .cta__btn--primary {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-accent);
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: no fill, neutral hairline border, near-black label.
+   * Matched dimensions with the primary so the trio reads as a deliberate
+   * action set rather than primary plus links. */
+  .cta__btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-surface-2);
+    border-color: var(--ds-text-muted);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Inline arrow glyph: small, sits to the right of the label and inherits
+   * color. The down-arrow signals a platform download; the right-arrow
+   * signals navigation. Character-level cursor-system signage, not a
+   * portable contract slot. */
+  .cta__arrow {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    flex: 0 0 auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit.</h2>
+      <div class="cta__actions">
+        <a class="cta__btn cta__btn--primary" href="#">
+          Lorem ipsum
+          <svg class="cta__arrow" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 2v8m0 0l-3-3m3 3l3-3M3 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a class="cta__btn cta__btn--ghost" href="#">
+          Dolor sit
+          <svg class="cta__arrow" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M3 7h8m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a class="cta__btn cta__btn--ghost" href="#">
+          Amet consectetur
+          <svg class="cta__arrow" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M3 7h8m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

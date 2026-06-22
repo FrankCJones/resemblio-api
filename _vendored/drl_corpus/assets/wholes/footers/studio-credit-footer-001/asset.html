@@ -1,0 +1,242 @@
+<!--
+  Asset: studio-credit-footer-001
+  Class: footers (whole)
+  Pattern: editorial-footer, minimal-footer
+  Inspired by: Pentagram
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (palette context: paper, ink, hairline)
+    - type-pairings/grotesk-mono-001        (neogrotesque sans + mono substitute for F37 Plain)
+    - wordmarks/custom-display-001          (the Pentagram wordmark register and fallback chain)
+    - dividers/hairline-rule-001            (single horizontal rule above the footer)
+    - links/footer-link-mono-001            (quiet footer link discipline)
+    - kickers/mono-eyebrow-001              (office-name labels at extended tracking)
+  Notes:
+    - The footer is composed of four bands: hairline rule, four-office contact grid,
+      utility row (social / newsletter / careers / privacy), and a viewport-spanning
+      Pentagram wordmark statement above the copyright.
+    - Variable: every color, type size, spacing step lives in tokens.css and can be
+      reskinned per-site. Inline: the viewport-spanning wordmark uses clamp() and
+      a hand-tuned tracking value that lives in this asset only, because the
+      statement scale is not a contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>studio-credit-footer-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Manrope is the open-license stand-in for F37 Plain's geometric-sans register;
+     JetBrains Mono carries the email and code-style metadata. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The footer shell. Sits hard against the bottom of the page. Inner gutters
+   * use the contract spacing scale; outer max-width is column-aligned to a
+   * generous 1440px studio measure. */
+  .footer {
+    border-top: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+  }
+  .footer__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* About paragraph. Reads as the studio voice; sits at body size, narrow
+   * measure, muted color so the offices grid is what the eye lands on. */
+  .footer__about {
+    max-width: 56ch;
+    margin: 0 0 var(--ds-space-10) 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Office contact grid. Four columns at desktop (London / New York / Austin /
+   * Berlin), single column on mobile. Each office is a label (mono-eyebrow
+   * register) plus an address block and an email. */
+  .footer__offices {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-8);
+    margin-bottom: var(--ds-space-12);
+  }
+  @media (max-width: 900px) { .footer__offices { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .footer__offices { grid-template-columns: 1fr; gap: var(--ds-space-6); } }
+
+  .office__label {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-3);
+  }
+  .office__lines {
+    margin: 0 0 var(--ds-space-3) 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+  }
+  .office__email {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .office__email:hover { border-bottom-color: var(--ds-text); }
+  .office__email:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  /* Utility row: social and admin links, two clusters justified to the ends. */
+  .footer__utility {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+    padding-bottom: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .footer__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-6);
+  }
+  .footer__links a {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__links a:hover { border-bottom-color: var(--ds-text); }
+  .footer__links a:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  /* The wordmark statement. The studio's name set at viewport-spanning size
+   * is the editorial-footer signature move: the footer becomes the signature.
+   * Inline ornament: clamp range and tracking are hand-tuned here, not a
+   * contract slot. */
+  .footer__wordmark {
+    /* clamp scales the wordmark from a comfortable mobile size up to genuinely
+     * giant on desktop. The upper bound matches --ds-text-7xl. */
+    font-size: clamp(var(--ds-text-4xl), 18vw, var(--ds-text-7xl));
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.04em;   /* Inline: tighter than --ds-tracking-tight; the statement scale demands it. */
+    margin: var(--ds-space-12) 0 var(--ds-space-6) 0;
+    color: var(--ds-text-strong);
+    text-wrap: balance;
+  }
+
+  /* Copyright and small print. Sits below the wordmark, justified between
+   * left (copyright) and right (legal links). */
+  .footer__small {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+  .footer__small a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    margin-left: var(--ds-space-5);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__small a:hover { color: var(--ds-text); }
+  .footer__small a:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .office__email, .footer__links a, .footer__small a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer">
+    <div class="footer__inner">
+
+      <p class="footer__about">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur lorem est,
+        rhoncus quis sapien id, viverra placerat lorem. Aenean fermentum, magna at
+        suscipit lacinia, sapien ipsum sodales libero, nec viverra nulla.
+      </p>
+
+      <div class="footer__offices" role="list">
+        <section role="listitem">
+          <span class="office__label">Londinium</span>
+          <p class="office__lines">11 Lorem Street<br/>Ipsumshire LO1 2AB<br/>+44 20 0000 0000</p>
+          <a class="office__email" href="#">londinium@lorem.example</a>
+        </section>
+        <section role="listitem">
+          <span class="office__label">Novum Eboracum</span>
+          <p class="office__lines">204 Ipsum Avenue<br/>New Ipsum NY 10010<br/>+1 212 000 0000</p>
+          <a class="office__email" href="#">novum@lorem.example</a>
+        </section>
+        <section role="listitem">
+          <span class="office__label">Austinia</span>
+          <p class="office__lines">88 Dolor Boulevard<br/>Austinia TX 78701<br/>+1 512 000 0000</p>
+          <a class="office__email" href="#">austinia@lorem.example</a>
+        </section>
+        <section role="listitem">
+          <span class="office__label">Berolinum</span>
+          <p class="office__lines">Lorem Strasse 14<br/>10117 Berolinum<br/>+49 30 0000 0000</p>
+          <a class="office__email" href="#">berolinum@lorem.example</a>
+        </section>
+      </div>
+
+      <div class="footer__utility">
+        <ul class="footer__links" aria-label="Social">
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">X</a></li>
+          <li><a href="#">Facebook</a></li>
+        </ul>
+        <ul class="footer__links" aria-label="Studio">
+          <li><a href="#">Newsletter</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+
+      <h2 class="footer__wordmark">Lorem Studio</h2>
+
+      <div class="footer__small">
+        <span>&copy; 1972 - 2026 Lorem Studio</span>
+        <span>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </span>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

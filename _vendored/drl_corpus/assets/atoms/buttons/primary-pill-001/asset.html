@@ -1,0 +1,116 @@
+<!--
+  Asset: primary-pill-001
+  Class: buttons
+  Pattern: primary-pill
+  Inspired by: Linear, Vercel
+  Notes:
+    - Fully-rounded white pill on dark surface; the single primary affordance.
+    - Renders four states (rest, hover, focus, disabled) so the asset
+      demonstrates the full interaction range in a single card.
+    - Variables: every color, size, spacing, radius, and motion value.
+    - Inline ornament: the focus ring offset (2px) is asset-specific
+      geometric tuning, not a token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>primary-pill-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-5);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-4);
+    flex-wrap: wrap;
+  }
+
+  /* The button. Pill radius, white fill, dark label, restrained shadow.
+   * Hover and active states use only token-defined values; the only inline
+   * ornament is the focus ring offset, called out in its rule. */
+  .btn {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-sm);
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn:hover {
+    background: var(--ds-accent-2);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .btn:active {
+    transform: translateY(1px);
+    /* No new color; just the spatial cue for press. */
+  }
+  /* Focus ring: indigo, offset by 2px from the pill edge so it is visible
+   * against both the white pill and the dark surface. The offset value is
+   * a one-time geometric tuning; not part of the variable contract. */
+  .btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .btn[disabled] {
+    background: var(--ds-border);
+    color: var(--ds-text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* State labels for the demo specimen; mono tag above each button. */
+  .group { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); }
+  .state-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="group">
+    <span class="state-label">rest</span>
+    <button type="button" class="btn">Get started</button>
+  </div>
+  <div class="group">
+    <span class="state-label">hover</span>
+    <button type="button" class="btn" style="background: var(--ds-accent-2); box-shadow: var(--ds-shadow-md);">Get started</button>
+  </div>
+  <div class="group">
+    <span class="state-label">focus</span>
+    <button type="button" class="btn" style="outline: 2px solid var(--ds-focus-ring); outline-offset: 2px;">Get started</button>
+  </div>
+  <div class="group">
+    <span class="state-label">disabled</span>
+    <button type="button" class="btn" disabled>Get started</button>
+  </div>
+</body>
+</html>

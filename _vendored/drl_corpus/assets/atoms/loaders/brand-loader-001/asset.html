@@ -1,0 +1,114 @@
+<!--
+  Asset: brand-loader-001
+  Class: loaders
+  Pattern: loader-as-brand-moment
+  Inspired by: Supabase (brand-green palette and two-bolt mark geometry; abstracted, not a copy)
+  Notes:
+    - Two stacked bolt-style SVG paths draw on via stroke-dasharray reveal, then settle into a steady fill plus a subtle glow pulse.
+    - The bolt geometry is an original abstraction in the same spirit as the Supabase mark; not the Supabase logo itself.
+    - prefers-reduced-motion shows the final settled state with no animation.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>brand-loader-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter as a fallback for Circular which Supabase ships. -->
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-8);
+  }
+
+  /* The loader frame: a 96x96 canvas holding two stacked bolt shapes.
+   * The shapes are abstracted from the Supabase mark's silhouette; not
+   * the Supabase logo. The two paths share a stroke length so they can
+   * be revealed on a coordinated dash cycle. */
+  .brand-loader {
+    width: 96px;
+    height: 96px;
+    color: var(--ds-accent);
+    /* The glow is one-off ornament; not promoted to a contract shadow slot.
+     * It lives inline because it is keyed to this asset's character. */
+    filter: drop-shadow(0 0 0 transparent);
+  }
+
+  .brand-loader svg { width: 100%; height: 100%; display: block; }
+
+  .bolt {
+    fill: currentColor;
+    fill-opacity: 0;
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-dasharray: 320;
+    stroke-dashoffset: 320;
+  }
+  .bolt--lower { color: var(--ds-accent-2); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bolt {
+      animation: ds-bolt-draw var(--ds-duration-slow) var(--ds-ease-emphasize) infinite;
+    }
+    .bolt--lower { animation-delay: 200ms; }
+    .brand-loader {
+      animation: ds-brand-glow var(--ds-duration-slow) var(--ds-ease-standard) infinite;
+    }
+  }
+
+  /* Three-phase loop: stroke reveals on the path (0-40%), fill rises to
+   * solid (40-60%), then fill holds and stroke clears (60-100%) before
+   * cycling. The result is a draw-fill-pulse that feels like the brand
+   * mark assembling itself, holding, and then resetting. */
+  @keyframes ds-bolt-draw {
+    0%   { stroke-dashoffset: 320; fill-opacity: 0; }
+    35%  { stroke-dashoffset: 0;   fill-opacity: 0; }
+    55%  { stroke-dashoffset: 0;   fill-opacity: 1; }
+    85%  { stroke-dashoffset: 0;   fill-opacity: 1; }
+    100% { stroke-dashoffset: 320; fill-opacity: 0; }
+  }
+
+  @keyframes ds-brand-glow {
+    0%, 30%, 100% { filter: drop-shadow(0 0 0 transparent); }
+    60%           { filter: drop-shadow(0 0 16px hsl(155.3deg 78.4% 40% / 0.55)); }
+  }
+
+  /* Lockup label sits below the mark with the wordmark style. */
+  .lockup {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+  }
+</style>
+</head>
+<body>
+  <div class="brand-loader" role="status" aria-busy="true" aria-label="Loading lorem ipsum">
+    <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Upper bolt: a stylized lightning-leaf shape pointing down-right. -->
+      <path class="bolt bolt--upper"
+            d="M52 8 L20 50 L40 50 L40 50 L44 50 L44 50 L52 50 Z"/>
+      <!-- Lower bolt: mirrored shape pointing up-left, stacked below. -->
+      <path class="bolt bolt--lower"
+            d="M44 88 L76 46 L56 46 L56 46 L52 46 L52 46 L44 46 Z"/>
+    </svg>
+  </div>
+
+  <div class="lockup">lorem ipsum</div>
+</body>
+</html>

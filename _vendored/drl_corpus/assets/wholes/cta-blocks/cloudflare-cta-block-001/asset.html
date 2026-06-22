@@ -1,0 +1,264 @@
+<!--
+  Asset: cloudflare-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses accent-on-neutral + mono-eyebrow + display-tight + primary-square + ghost-bordered + centered-narrow-column)
+  Inspired by: Cloudflare (cloudflare.com/network, cloudflare.com/cdn)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/saturated-tech-001               (paper-white surface, signature-orange accent)
+    - type-pairings/sans-system-modern-001          (humanist sans display + body; mono on the kicker)
+    - kickers/mono-eyebrow-001                      (small uppercase mono kicker above headline)
+    - headings/display-tight-001                    (humanist sans display at 44-56px, tight tracking)
+    - body-text/lead-paragraph-001                  (one-sentence dek in cool gray)
+    - buttons/primary-square-001                    (signature-orange small-radius primary)
+    - buttons/ghost-bordered-001                    (hairline-bordered ghost secondary)
+    - dividers/hairline-rule-001                    (cool hairline above the block)
+  Notes:
+    - Sits flush on the paper-white marketing canvas. A single cool
+      hairline separates the CTA from the section above; no card, no
+      band, no shadow at rest. Cloudflare earns weight from the orange
+      accent and the kicker-plus-display-plus-dek hierarchy, not from a
+      container.
+    - Centered, narrow reading column. The closing CTA "centers in" - the
+      hero up top is left-aligned, but the page completes itself with a
+      centered set of words and a paired action row. The orange primary
+      and the ghost secondary share matched dimensions so the pair reads
+      as a deliberate two-action set, not primary plus fallback.
+    - Inline ornament: the small 6px button radius (Cloudflare register
+      against the SaaS pill crowd), the orange focus halo via shadow-lg,
+      and the mono kicker tracked at 0.14em which is the dev-tool eyebrow
+      convention. The orange CTA is the single chromatic moment in the
+      block.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter and Inter Tight stand in for the humanist-sans register
+     Cloudflare ships across its marketing surface. JetBrains Mono carries
+     the kicker; ui-monospace falls back cleanly. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: the paper-white Cloudflare canvas. The CTA sits inline
+   * on the page surface, separated only by a cool hairline above. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container that carries the hairline rule and
+   * the centered content column. The rule spans the reading width above
+   * the block; on the live site it sits where the next section would
+   * have begun. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-6);
+  }
+
+  /* Content column: centered, narrow reading measure. The Cloudflare
+   * closing CTA centers in - the page completes itself rather than
+   * opening a second movement. */
+  .cta__content {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Mono kicker: uppercase eyebrow above the headline. JetBrains Mono
+   * at 12px with wider tracking - the dev-tool register signature.
+   * Cloudflare's marketing surface uses this small uppercase mono label
+   * to brand the CTA in the same register as its product-tile system. */
+  .cta__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+    /* Inline ornament: 0.14em tracking is the wider step in the contract;
+     * the wider track is what makes the four-to-eight-letter word read
+     * as label rather than paragraph. */
+  }
+
+  /* Display headline: humanist sans at 3xl-4xl (44-56px on desktop,
+   * fluid down for narrow), tight leading, -0.02em tracking. One step
+   * below the hero H1; the close speaks at conversational display
+   * volume, not announcement volume. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the headline from
+     * orphaning a single word. */
+  }
+
+  /* Dek paragraph: humanist sans at lg, normal leading, cool-gray ink.
+   * One sentence, not a paragraph. */
+  .cta__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Decorative network glyph: a single SVG orbital ring that doubles as
+   * the Cloudflare network-and-globe motif from the manifest's
+   * design_principles. Sits below the action row; quiet, optional. The
+   * stroke is the standard hairline color so the motif reads as
+   * structural ornament rather than imagery. */
+  .cta__glyph {
+    margin-top: var(--ds-space-6);
+    color: var(--ds-hairline);
+    /* Inline ornament: the orbital ring is the only "imagery" in the
+     * block - a 64px line-art glyph in hairline gray, no fill. Sites
+     * that prefer a pure-type close drop this element. */
+  }
+  .cta__glyph svg {
+    display: block;
+    width: 64px;
+    height: 64px;
+  }
+
+  /* Button row: orange primary + hairline ghost secondary at identical
+   * dimensions. The row wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Primary: signature-orange fill, white label, 6px radius. Inter Tight
+   * medium. 44px tall - one step taller than the Vercel/Geist 40px
+   * default; Cloudflare CTAs sit slightly larger to carry the orange. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    height: 44px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: 6px radius is the Cloudflare register marker;
+     * pill (9999px) would read as SaaS, hard corner would read as
+     * brutalist. The middle radius reads as utility-with-craft. */
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+    /* Inline ornament: the orange focus halo is the only chromatic glow
+     * in the block; matches the brand orange rather than a neutral ring. */
+  }
+
+  /* Ghost secondary: no fill, 1px cool border, Marker Black label, 6px
+   * radius. Identical 44px height and label scale as the primary so the
+   * pair reads as a deliberate two-action set. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    height: 44px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-surface);
+    border-color: var(--ds-text-muted);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <p class="cta__kicker">Lorem ipsum</p>
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur.</h2>
+      <p class="cta__lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+        <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+      </div>
+      <div class="cta__glyph" aria-hidden="true">
+        <!-- Inline ornament: a single orbital ring as the network-and-globe
+             motif from the manifest's design_principles. Hairline stroke,
+             no fill, 64px square. -->
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="1"/>
+          <ellipse cx="32" cy="32" rx="28" ry="11" stroke="currentColor" stroke-width="1"/>
+          <ellipse cx="32" cy="32" rx="11" ry="28" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

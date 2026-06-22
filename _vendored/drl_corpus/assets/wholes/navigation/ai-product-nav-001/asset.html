@@ -1,0 +1,391 @@
+<!--
+  Asset: ai-product-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: Cursor
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001        (light, ink-on-paper palette register)
+    - type-pairings/sans-system-modern-001   (Inter display + body, mono for hint)
+    - wordmarks/lowercase-geometric-001      (wordmark register; here capitalized to match Cursor)
+    - buttons/primary-pill-001               (dark filled pill for Download)
+    - buttons/ghost-bordered-001             (outlined pill for Contact Sales)
+    - links/nav-link-underline-001           (muted-to-ink nav link with underline-on-hover)
+  Notes:
+    - The nav sits flush against the viewport top, no detached pill shell.
+      Wordmark on the left, link cluster centered, action cluster on the right.
+      A single Resources link reveals a mega-menu panel on hover (CSS-only).
+    - Variable vs inline: every color, type size, spacing step, and radius
+      comes from the contract. Inline ornaments: the mega-menu grid column
+      proportions (one-time layout decision specific to this nav) and the
+      keyboard-shortcut hint badge on the search affordance.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ai-product-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Flush-top header. Full-width, no detached pill, no shadow at rest.
+   * A single hairline appears under the bar to separate it from the page
+   * surface; on scroll-position-0 some product sites omit it, on scroll
+   * they show it. Here we show it always for clarity. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--ds-bg) 88%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  .nav__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    height: 60px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Wordmark. Cursor's wordmark is capitalized "Cursor" in an Inter-register
+   * sans, no paired geometric mark. The asset preserves the capitalization
+   * and pairs it with a tiny square mark for the library's
+   * lowercase-geometric-001 + wordmark-with-mark composition note; in a
+   * per-site clone the mark and case are both swappable. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .nav__wordmark-mark {
+    width: 18px;
+    height: 18px;
+    background: var(--ds-text-strong);
+    border-radius: var(--ds-radius-xs);
+    /* Inline ornament: the small square mark is a placeholder geometry
+     * standing in for a per-site logo. Replace with the real SVG when
+     * cloning into a site library. */
+  }
+
+  /* Link cluster. Centered between the wordmark and the action cluster. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; }
+
+  /* Top-level link. From atoms/links/nav-link-underline-001. */
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+  }
+
+  /* Mega menu. Hidden until hover or focus on the parent. CSS-only.
+   * The panel uses a card lift via shadow-md, not a hairline border. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    min-width: 520px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column mega-menu grid. The 1fr 1fr split is a
+     * layout decision specific to this nav, not a contract value. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-1);
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Action cluster. Sign in (text), Contact Sales (ghost), Download (pill). */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__signin {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text); }
+
+  /* Ghost button. From atoms/buttons/ghost-bordered-001. */
+  .nav__ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 8px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__ghost:hover {
+    background: var(--ds-surface-2);
+    border-color: var(--ds-text);
+  }
+
+  /* Primary pill. From atoms/buttons/primary-pill-001. Dark ink on light. */
+  .nav__primary {
+    appearance: none;
+    border: 0;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 8px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--ds-shadow-sm);
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: color-mix(in oklab, var(--ds-accent) 88%, white 12%);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible,
+  .nav__ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__primary-arrow {
+    /* Inline ornament: a one-off downward arrow glyph for the Download CTA.
+     * Not a reusable icon system, so it stays inline rather than a token. */
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Page stub so the floating nav has something to sit on visually. */
+  .page-stub {
+    max-width: 1200px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 800px) {
+    .nav__links, .nav__signin, .nav__ghost { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__ghost, .nav__link, .nav__menu, .nav__caret {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <span class="nav__wordmark-mark" aria-hidden="true"></span>
+        <span>Loremcursor</span>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Product
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Lorem Agents</span>
+              <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Code Review</span>
+              <span class="nav__menu-item-sub">Adipiscing elit vivamus sapien.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Cloud</span>
+              <span class="nav__menu-item-sub">Curabitur nec libero non nisi.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Tab</span>
+              <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">CLI</span>
+              <span class="nav__menu-item-sub">Sed do eiusmod tempor incididunt.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Marketplace</span>
+              <span class="nav__menu-item-sub">Labore et dolore magna aliqua.</span>
+            </a>
+          </div>
+        </li>
+        <li><a class="nav__link" href="#">Enterprise</a></li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Resources
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Changelog</span>
+              <span class="nav__menu-item-sub">Ut enim ad minim veniam.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Blog</span>
+              <span class="nav__menu-item-sub">Quis nostrud exercitation ullamco.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Docs</span>
+              <span class="nav__menu-item-sub">Laboris nisi ut aliquip ex ea.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Community</span>
+              <span class="nav__menu-item-sub">Commodo consequat duis aute irure.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Help</span>
+              <span class="nav__menu-item-sub">Reprehenderit in voluptate velit.</span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-item-title">Careers</span>
+              <span class="nav__menu-item-sub">Esse cillum dolore eu fugiat.</span>
+            </a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Sign in</a>
+        <a class="nav__ghost" href="#">Contact Sales</a>
+        <a class="nav__primary" href="#">
+          Download
+          <svg class="nav__primary-arrow" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M6 2 L6 9 M3 6 L6 9 L9 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+  </main>
+</body>
+</html>

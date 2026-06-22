@@ -1,0 +1,103 @@
+<!--
+  Asset: sans-system-modern-001
+  Class: type-pairings
+  Pattern: single-typeface-system, mono-utility-pair
+  Inspired by: Vercel, Linear
+  Notes:
+    - One humanist sans (Inter / Inter Tight) carries display and body.
+    - A monospace (JetBrains Mono) carries metadata and kicker labels.
+    - Inline ornament: the kicker rule line after the eyebrow label is a
+      one-off character moment, not a token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>sans-system-modern-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-6);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Inline ornament: the rule line after the kicker. A character moment
+   * for this specimen; not a reusable token. */
+  .kicker::after {
+    content: "";
+    width: 80px;
+    height: 1px;
+    background: var(--ds-border);
+  }
+
+  .display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+  }
+  .display em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ds-accent);
+  }
+
+  .body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-3);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: 0.04em;
+  }
+  .meta-row b {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+  <span class="kicker">type pairing · sans-system-modern-001</span>
+  <h1 class="display">Lorem ipsum <em>dolor sit</em> amet.</h1>
+  <p class="body">Consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia.</p>
+  <div class="meta-row">
+    <span>display · <b>Inter Tight 600</b></span>
+    <span>body · <b>Inter 400</b></span>
+    <span>mono · <b>JetBrains Mono 400</b></span>
+  </div>
+</body>
+</html>

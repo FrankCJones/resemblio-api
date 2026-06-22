@@ -1,0 +1,122 @@
+/*
+ * notion-testimonials-001 tokens
+ *
+ * Warm-paper testimonial card chrome inspired by Notion's /customers index
+ * and the /customers/openai story page. Cream page, near-white card, single
+ * hairline edge, no drop shadow at rest, gentle 12px corner. Quote in Inter
+ * at lead-reading scale; sentence case verbatim from the source.
+ *
+ * Source extraction:
+ *   - notion.com/customers (2026-05-20, webfetch): card composition
+ *     confirms quote + name + role + company + circular headshot + company
+ *     logo lockup. Quotes are sentence case ("There's power in a single
+ *     platform where you can do all your work. Notion is that single
+ *     place." / Nick Erdenberger, GTM, OpenAI).
+ *   - notion.com/customers/openai (2026-05-20, webfetch): repeated
+ *     attribution shape (Brad Lightcap, COO, OpenAI; John Allard, Staff
+ *     Engineering Lead, OpenAI) with circular headshots positioned left
+ *     of the quote text.
+ *
+ * Token values cross-referenced against the canonical Notion atoms:
+ * cards/warm-paper-rule-001 (page bg #EFEAE0, card surface #FBF7EF, card
+ * radius 12px, hairline rgba(0,0,0,0.1), no shadow at rest, Inter body,
+ * Notion near-black #191919) which itself was captured 2026-05-19 from
+ * the live site via WebFetch and devtools cross-check.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #EFEAE0;   /* Notion warm cream page background. */
+  --ds-surface:      #FBF7EF;   /* Quote card body; one step brighter than the page. */
+  --ds-surface-2:    #FFFFFF;   /* Inner surfaces (headshot ring background, hover lift). */
+  --ds-text:         #191919;   /* Notion near-black; the quote body color. */
+  --ds-text-muted:   #6B6B6B;   /* Role line, company name secondary. */
+  --ds-text-strong:  #000000;   /* Attribution name, the dominant attribution line. */
+  --ds-border:       rgba(0, 0, 0, 0.1);   /* Card hairline edge; the only border. */
+  --ds-hairline:     rgba(0, 0, 0, 0.06);  /* Internal divider above attribution. */
+  --ds-accent:       #2E6F50;   /* Muted printers-second green; trailing "Read the story" link. */
+  --ds-accent-2:     #4E8B6B;   /* Hover-state accent shift. */
+  --ds-success:      #2E6F50;
+  --ds-warning:      #B88E3A;
+  --ds-error:        #A14438;
+  --ds-info:         #2E6F50;
+  --ds-focus-ring:   #2E6F50;   /* Accent doubles as focus ring; Notion's restraint. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Inter", system-ui, sans-serif;   /* Single-family system on Notion's surface. */
+  --ds-font-body:    "Inter", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Newsreader", Georgia, serif;     /* Reserved; this asset does not use it. */
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;        /* Quote body sits here; lead-paragraph scale, not display. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.55;   /* Quote body; sentence-case reading rhythm. */
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;          /* Card padding matches Notion's card frame. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Notion's frame sits at 12px on cards. The warm paper carries the
+   * softness; the radius stays modest so the corner does not become the
+   * loudest thing on the surface.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;       /* Quote card corner. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;     /* Headshot circle, company logo chip. */
+
+  /* ---------- Shadows ----------
+   * Notion holds the card edge with a hairline. No drop shadow at rest.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;       /* Card at rest. */
+  --ds-shadow-md:   0 2px 8px rgba(60, 50, 30, 0.06);
+  --ds-shadow-lg:   0 8px 24px rgba(60, 50, 30, 0.1);
+  --ds-shadow-2xl:  0 24px 48px rgba(60, 50, 30, 0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

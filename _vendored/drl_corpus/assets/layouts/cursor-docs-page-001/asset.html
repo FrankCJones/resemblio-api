@@ -1,0 +1,579 @@
+<!--
+  Asset: cursor-docs-page-001
+  Class: layouts
+  Pattern: three-column-docs-grid, centered-narrow-column, mono-utility-pair
+  Inspired by: Cursor (cursor.com/docs/get-started/installation)
+  Notes:
+    - Docs-article page skeleton: flush-top nav, then a three-column
+      grid (240px left nav sidebar / 1fr main content column / 200px
+      right TOC rail). Main column sequence: mono breadcrumb, page
+      title, lead paragraph, body with H2/H3, inline code blocks, a
+      callout/admonition, a Next-steps link list, and a prev/next
+      pagination footer at the column close. Sidebar carries grouped
+      doc sections with one active link in Cursor blue and a 2px
+      accent rule on its left edge; TOC rail lists in-page headings
+      with the current heading active.
+    - Variable: three-column grid widths, section sequence in the
+      main column, sidebar and TOC width. Inline: column gutters,
+      sidebar width (240px), TOC width (200px), main column cap
+      (~80ch so code blocks render without horizontal scroll).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-docs-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter Variable and JetBrains Mono are the cursor.com
+  faces. Open analogs (Inter, JetBrains Mono via system fallbacks in
+  tokens.css) carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1440px so the three-column grid
+   * breathes on wide monitors; gutters scale up at the desktop
+   * breakpoint. Inline page-grid character.
+   */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Three-column docs grid. Inline column widths because they are
+   * page-grid character, not contract slots. Sidebar 240px, content
+   * 1fr, TOC 200px. On tablet the TOC drops; on mobile the sidebar
+   * drops to a top toggle (stand-in slot in this skeleton).
+   */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    padding-bottom: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .docs-grid {
+      grid-template-columns: 240px 1fr;
+      gap: var(--ds-space-10);
+    }
+  }
+  @media (min-width: 1200px) {
+    .docs-grid {
+      grid-template-columns: 240px 1fr 200px;
+    }
+  }
+
+  /*
+   * Left nav sidebar. Sticky scroll within the viewport. Doc groups
+   * stack vertically with a small mono group label and a column of
+   * links beneath. The single active link picks up Cursor blue with
+   * a 2px accent rule on its left edge.
+   */
+  .sidebar {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: var(--ds-space-4);
+    border-right: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) { .sidebar { display: block; } }
+  .sidebar__group { margin-bottom: var(--ds-space-6); }
+  .sidebar__group-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .sidebar__link {
+    display: block;
+    padding: 6px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    border-left: 2px solid transparent;
+  }
+  .sidebar__link:hover { color: var(--ds-text-strong); background: var(--ds-surface-2); }
+  .sidebar__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+    font-weight: 500;
+  }
+
+  /*
+   * Main content column. Max-width capped at ~80ch so wide code
+   * blocks render without horizontal scroll while keeping the prose
+   * readable. Inline measure character.
+   */
+  .main {
+    min-width: 0; /* permit code blocks to constrain in the grid cell. */
+    max-width: 80ch;
+  }
+  .breadcrumb {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+    text-transform: none;
+  }
+  .breadcrumb__sep { padding: 0 var(--ds-space-2); color: var(--ds-text-muted); }
+  .breadcrumb a { color: var(--ds-accent); }
+  .doc-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .doc-lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  .doc-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .doc-body > * + * { margin-top: var(--ds-space-5); }
+  .doc-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    scroll-margin-top: var(--ds-space-8);
+  }
+  .doc-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .doc-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .doc-body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface-2);
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Code block. White surface (one step above the paper body) with
+   * hairline border, md radius, mono content. A small mono language
+   * tag sits in the top-right of the block; this is the docs
+   * convention for code-tab labeling. Cursor's docs use multi-tab
+   * code blocks (pnpm/yarn/npm/bun); this skeleton shows a single
+   * tab and leaves the multi-tab variant as a downstream concern.
+   */
+  .codeblock {
+    position: relative;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    overflow-x: auto;
+  }
+  .codeblock__tag {
+    position: absolute;
+    top: var(--ds-space-3);
+    right: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .codeblock pre {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    white-space: pre;
+  }
+
+  /*
+   * Callout / admonition. Tinted surface, hairline border, 3px Cursor
+   * blue rule on the left edge to signal kind (info, note). Title in
+   * display sans; body in smaller body sans muted. Cursor's docs use
+   * this shape for "Note" and "Want a deeper walkthrough?" style
+   * asides inside the body.
+   */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  .callout__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .callout__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Prev/next pagination footer. Two columns at the foot of the main
+   * column. Each cell is a hairline-bordered card with a mono label
+   * (Previous / Next) and a body-sans title for the destination page.
+   * The Next cell right-aligns its content.
+   */
+  .pagination {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-4);
+  }
+  .pagination__cell {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    background: var(--ds-surface);
+  }
+  .pagination__cell--next { text-align: right; align-items: flex-end; }
+  .pagination__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .pagination__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+
+  /*
+   * Right TOC rail. Sticky in the viewport. A small mono "On this
+   * page" label, then a vertical list of in-page headings. Current
+   * heading picks up Cursor blue with a 2px accent rule on the left
+   * edge. Sub-headings indent one step.
+   */
+  .toc {
+    display: none;
+    position: sticky;
+    top: var(--ds-space-6);
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-left: var(--ds-space-5);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 1200px) { .toc { display: block; } }
+  .toc__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .toc__link {
+    display: block;
+    padding: 4px var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    border-left: 2px solid transparent;
+    border-radius: var(--ds-radius-xs);
+  }
+  .toc__link:hover { color: var(--ds-text-strong); }
+  .toc__link--active {
+    color: var(--ds-accent);
+    border-left-color: var(--ds-accent);
+  }
+  .toc__link--sub { padding-left: var(--ds-space-5); }
+
+  /* Footer band: full-width, outside the page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a cursor-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">docs-search + nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-pill</span>
+        Download Lorem
+      </div>
+    </nav>
+
+    <!-- Section: three-column docs grid. -->
+    <div class="docs-grid">
+
+      <!-- Left nav sidebar: grouped doc sections, one active link. -->
+      <aside class="sidebar" aria-label="Documentation navigation">
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Get started</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem welcome</a></li>
+            <li><a class="sidebar__link sidebar__link--active" href="#">Lorem installation</a></li>
+            <li><a class="sidebar__link" href="#">Lorem migrate</a></li>
+            <li><a class="sidebar__link" href="#">Lorem keybindings</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Agent</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem overview</a></li>
+            <li><a class="sidebar__link" href="#">Lorem chat</a></li>
+            <li><a class="sidebar__link" href="#">Lorem plan mode</a></li>
+            <li><a class="sidebar__link" href="#">Lorem terminal</a></li>
+            <li><a class="sidebar__link" href="#">Lorem models</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">Context</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem rules</a></li>
+            <li><a class="sidebar__link" href="#">Lorem mcp</a></li>
+            <li><a class="sidebar__link" href="#">Lorem skills</a></li>
+            <li><a class="sidebar__link" href="#">Lorem memories</a></li>
+          </ul>
+        </div>
+        <div class="sidebar__group">
+          <p class="sidebar__group-label">CLI</p>
+          <ul class="sidebar__list">
+            <li><a class="sidebar__link" href="#">Lorem overview</a></li>
+            <li><a class="sidebar__link" href="#">Lorem install</a></li>
+            <li><a class="sidebar__link" href="#">Lorem reference</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main content column. -->
+      <main class="main">
+
+        <!-- Breadcrumb above the title. -->
+        <p class="breadcrumb">
+          <span>Docs</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Get started</span>
+          <span class="breadcrumb__sep">/</span>
+          <span>Lorem ipsum</span>
+        </p>
+
+        <!-- Page title. -->
+        <h1 class="doc-title">Lorem ipsum quickstart</h1>
+
+        <!-- Lead paragraph. -->
+        <p class="doc-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. This
+          guide gets you from install to your first useful change in
+          three short steps.
+        </p>
+
+        <!-- Body with H2/H3, code blocks, callouts. -->
+        <div class="doc-body">
+
+          <h2 id="install">Install and sign in</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            <a href="#">Sed do eiusmod tempor</a> incididunt ut labore
+            et dolore magna aliqua. Ut enim ad minim veniam, quis
+            nostrud exercitation.
+          </p>
+
+          <h3 id="linux">Linux</h3>
+          <p>
+            Duis aute irure dolor in reprehenderit. Run
+            <code>lorem install</code> from your project root to begin
+            the ipsum workflow.
+          </p>
+          <div class="codeblock">
+            <span class="codeblock__tag">bash</span>
+<pre>sudo apt update
+sudo apt install lorem
+lorem --version</pre>
+          </div>
+
+          <aside class="callout" aria-label="Note">
+            <p class="callout__title">Note</p>
+            <p class="callout__body">
+              Lorem ipsum dolor sit amet. Native packages are preferred
+              over the portable build; they provide desktop icons,
+              automatic updates, and <code>lorem</code> CLI tools.
+            </p>
+          </aside>
+
+          <h2 id="explain">Ask Lorem to explain your codebase</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit
+            voluptatem accusantium doloremque laudantium, totam rem
+            aperiam, eaque ipsa quae ab illo inventore veritatis.
+          </p>
+          <div class="codeblock">
+            <span class="codeblock__tag">bash</span>
+<pre>lorem ask "explain this repo"
+lorem ask "where does auth live?"
+lorem ask "summarize ipsum.ts"</pre>
+          </div>
+
+          <h2 id="change">Make one small change</h2>
+          <p>
+            Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est laborum.
+            <a href="#">Review the diff</a> before accepting.
+          </p>
+
+          <h2 id="next-steps">Next steps</h2>
+          <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+            odit aut fugit, sed quia consequuntur magni dolores.
+          </p>
+          <ul>
+            <li><a href="#">Lorem rules</a> dolor sit amet</li>
+            <li><a href="#">Set up ipsum MCP</a> consectetur</li>
+            <li><a href="#">Add a custom skill</a> adipiscing elit</li>
+            <li><a href="#">Explore lorem models</a> tempor</li>
+          </ul>
+
+        </div>
+
+        <!-- Prev/next pagination at the column close. -->
+        <nav class="pagination" aria-label="Pagination">
+          <a class="pagination__cell" href="#">
+            <span class="pagination__label">Previous</span>
+            <span class="pagination__title">Lorem welcome</span>
+          </a>
+          <a class="pagination__cell pagination__cell--next" href="#">
+            <span class="pagination__label">Next</span>
+            <span class="pagination__title">Lorem migrate</span>
+          </a>
+        </nav>
+      </main>
+
+      <!-- Right TOC rail: in-page headings, current active. -->
+      <aside class="toc" aria-label="On this page">
+        <p class="toc__label">On this page</p>
+        <ul class="toc__list">
+          <li><a class="toc__link toc__link--active" href="#install">Install and sign in</a></li>
+          <li><a class="toc__link toc__link--sub" href="#linux">Linux</a></li>
+          <li><a class="toc__link" href="#explain">Ask Lorem to explain your codebase</a></li>
+          <li><a class="toc__link" href="#change">Make one small change</a></li>
+          <li><a class="toc__link" href="#next-steps">Next steps</a></li>
+        </ul>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 200px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

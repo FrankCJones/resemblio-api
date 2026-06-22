@@ -1,0 +1,128 @@
+<!--
+  Asset: skeleton-screen-001
+  Class: loaders
+  Pattern: (none)
+  Inspired by: Linear (dark surface tiers and app skeleton convention)
+  Notes:
+    - Three skeleton rows mimic the issue-list layout: avatar circle, two stacked text bars, a trailing meta pill.
+    - Bar fill is var(--ds-surface-2); shimmer is a one-off linear-gradient (inline) tracked across via background-position.
+    - prefers-reduced-motion replaces the shimmer with a static surface fill.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>skeleton-screen-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  .panel-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Row mimics one issue row: 28px circle, two text bars, trailing pill. */
+  .row {
+    display: grid;
+    grid-template-columns: 28px 1fr 80px;
+    gap: var(--ds-space-4);
+    align-items: center;
+    padding: var(--ds-space-4) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    max-width: 640px;
+  }
+
+  .skel {
+    background-color: var(--ds-surface-2);
+    /* Shimmer recipe: a soft highlight slug rides a transparent gradient across the
+     * placeholder. The gradient stops are inline because they are this asset's
+     * one-off shimmer character; the duration and easing are contract values. */
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,0.04) 45%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.04) 55%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position: 200% 0;
+    border-radius: var(--ds-radius-sm);
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .skel {
+      animation: ds-skeleton-shimmer var(--ds-duration-slow) var(--ds-ease-emphasize) infinite;
+    }
+  }
+  @keyframes ds-skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skel--avatar { width: 28px; height: 28px; border-radius: var(--ds-radius-full); }
+  .skel--bar    { height: 10px; border-radius: var(--ds-radius-full); }
+  .skel--bar.short { width: 40%; }
+  .skel--bar.mid   { width: 72%; margin-top: var(--ds-space-2); }
+  .skel--pill   { height: 18px; border-radius: var(--ds-radius-full); }
+
+  .text-stack { display: flex; flex-direction: column; }
+
+  /* Stagger the shimmer slightly across rows so the rhythm reads as
+   * organic loading and not as a single sweep across the whole list. */
+  .row:nth-child(2) .skel { animation-delay: 0ms; }
+  .row:nth-child(3) .skel { animation-delay: 120ms; }
+  .row:nth-child(4) .skel { animation-delay: 240ms; }
+</style>
+</head>
+<body>
+  <div class="panel-label">Lorem ipsum, dolor sit amet</div>
+
+  <div class="row" aria-busy="true" aria-label="Loading issue list">
+    <div class="skel skel--avatar"></div>
+    <div class="text-stack">
+      <div class="skel skel--bar short"></div>
+      <div class="skel skel--bar mid"></div>
+    </div>
+    <div class="skel skel--pill"></div>
+  </div>
+
+  <div class="row" aria-busy="true">
+    <div class="skel skel--avatar"></div>
+    <div class="text-stack">
+      <div class="skel skel--bar short"></div>
+      <div class="skel skel--bar mid"></div>
+    </div>
+    <div class="skel skel--pill"></div>
+  </div>
+
+  <div class="row" aria-busy="true">
+    <div class="skel skel--avatar"></div>
+    <div class="text-stack">
+      <div class="skel skel--bar short"></div>
+      <div class="skel skel--bar mid"></div>
+    </div>
+    <div class="skel skel--pill"></div>
+  </div>
+</body>
+</html>

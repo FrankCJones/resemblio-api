@@ -1,0 +1,702 @@
+<!--
+  Asset: huggingface-pricing-page-001
+  Class: layouts
+  Pattern: tiered-pricing-grid, comparison-feature-table, sku-mono-row, paper-and-ink, hairline-as-chrome
+  Inspired by: Hugging Face (huggingface.co/pricing)
+  Notes:
+    - Pricing-page skeleton in the Hugging Face near-white-paper register:
+      nav, pricing-hero, three-up account tier table (PRO / Team / Enterprise)
+      with warm-yellow recommended ring, storage volume-tier ladder,
+      Spaces hardware GPU SKU table, Inference Endpoints SKU table by
+      cloud and accelerator, faq stack, PRO membership cta band, footer.
+    - Tier cards and the recommended-tier yellow accent are the variables;
+      hairline rules, surface color, and mono-uppercase SKU register on
+      the compute tables match the hugging-face system register so this
+      layout composes with the rest of the system.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-pricing-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- IBM Plex stack referenced as a system font here; web font import
+     happens in the alphabet asset, not in layout skeletons. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. 1200px max-width with 16px (mobile) / 32px (desktop)
+   * gutters; the HF marketing surface runs slightly narrower than the
+   * Anthropic editorial column.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-6); }
+  }
+
+  /*
+   * Section rhythm. 80px desktop, 48px mobile, hairline between every
+   * section. Hero gets the extra step.
+   */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-10); }
+  }
+  .section:last-child { border-bottom: 0; }
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-12); }
+  }
+
+  /* Section heading. */
+  .section__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .section__dek {
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+    margin: 0 0 var(--ds-space-8);
+    font-size: var(--ds-text-base);
+  }
+
+  /* Slot placeholder treatment (recurs across system layouts). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Nav: flush-top, hairline beneath. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+  .nav__wordmark {
+    /* The signature emoji-yellow circle wordmark; inline glyph stand-in.
+       The real asset belongs in alphabets/hugging-face. */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__wordmark::before {
+    content: "";
+    width: 22px; height: 22px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    /* One-off: pure circle stand-in for the HF emoji glyph; not a token. */
+    display: inline-block;
+  }
+
+  /* Hero. Editorial statement with decorative kicker pattern. */
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-4xl); }
+  }
+  .hero__support {
+    margin-top: var(--ds-space-5);
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /*
+   * Pricing table: three-up account tier cards on desktop, stacked on
+   * mobile. Middle card is the recommended tier; it gets the warm-yellow
+   * border and a small pill badge. The affordance is color + ring, not
+   * elevation (HF stays flat at rest).
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .tier-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  }
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier--recommended {
+    border: 2px solid var(--ds-accent);
+    position: relative;
+  }
+  .tier__badge {
+    position: absolute;
+    top: calc(var(--ds-space-3) * -1);
+    left: var(--ds-space-5);
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier__tagline {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    margin: 0;
+  }
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+  }
+  .tier__price-figure {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-unit {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__cta {
+    /* Inline pattern; downstream replaced by a real button atom. */
+    display: inline-block;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border-radius: var(--ds-radius-sm);
+    text-align: center;
+  }
+  .tier--recommended .tier__cta {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+  }
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .tier__features li::before {
+    /* Inline check-glyph; not a contract slot, named here as ornament. */
+    content: "✓";
+    color: var(--ds-accent-2);
+    margin-right: var(--ds-space-2);
+    font-weight: 700;
+  }
+
+  /*
+   * Storage volume-tier ladder. Tier-band table; first column is the
+   * volume threshold, next two are public/private $/TB.
+   */
+  .ladder {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+  }
+  .ladder th, .ladder td {
+    text-align: left;
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .ladder thead th {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    background: var(--ds-surface-2);
+    font-weight: 600;
+  }
+  .ladder tbody tr:last-child td { border-bottom: 0; }
+
+  /*
+   * Feature comparison matrix. Categories grouped by mono-uppercase
+   * category band; checkmark cells center-aligned.
+   */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare-table th, .compare-table td {
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .compare-table thead th {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody th {
+    font-weight: 400;
+    color: var(--ds-text);
+  }
+  .compare-table tbody td {
+    text-align: center;
+    color: var(--ds-accent-2);
+  }
+  .compare-table .group-row th {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-top: var(--ds-space-5);
+    background: var(--ds-surface-2);
+  }
+
+  /*
+   * GPU SKU table (Spaces hardware + Inference Endpoints). All-mono
+   * register; right-aligned price; checkmark-free, only numeric values.
+   * This is the load-bearing dev-tool register that distinguishes HF
+   * pricing from purely-marketing pricing pages.
+   */
+  .sku-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+  }
+  .sku-table th, .sku-table td {
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    color: var(--ds-text);
+  }
+  .sku-table thead th {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-weight: 600;
+    background: var(--ds-surface-2);
+  }
+  .sku-table .sku-price {
+    text-align: right;
+    color: var(--ds-text-strong);
+    font-weight: 600;
+  }
+  .sku-table .sku-free {
+    color: var(--ds-accent-2);
+    font-weight: 700;
+  }
+  .sku-table caption {
+    text-align: left;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-4) 0 var(--ds-space-2);
+  }
+
+  /* FAQ band: stacked question/answer rows separated by hairline. */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-5);
+  }
+  .faq-item:last-child { border-bottom: 0; }
+  .faq-item__q {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .faq-item__a {
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+    margin: 0;
+    font-size: var(--ds-text-base);
+  }
+
+  /* CTA band: PRO membership social-proof band; left-aligned statement
+     + yellow primary CTA. */
+  .cta {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .cta { grid-template-columns: 2fr 1fr; align-items: center; }
+  }
+  .cta__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cta__sub {
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .cta__button {
+    display: inline-block;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    border-radius: var(--ds-radius-sm);
+    text-align: center;
+  }
+
+  /* Footer band: full-width outside .page. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/huggingface-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur adipiscing
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">auth-ctas</span>
+        Lorem | Ipsum
+      </div>
+    </nav>
+
+    <!-- Section: pricing-hero. Editorial statement, decorative mono kicker. -->
+    <section class="section section--hero" aria-label="Pricing hero">
+      <p class="hero__kicker">✳ ⟡ · ◎ ✦ · ⟡ ✳</p>
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </section>
+
+    <!-- Section: pricing-table. Three account tiers, middle one recommended. -->
+    <section class="section" aria-label="Account plans">
+      <div class="tier-grid">
+
+        <article class="tier">
+          <h2 class="tier__name">Lorem</h2>
+          <p class="tier__tagline">Lorem ipsum dolor sit amet adipiscing</p>
+          <div class="tier__price">
+            <span class="tier__price-figure">$9</span>
+            <span class="tier__price-unit">/ lorem</span>
+          </div>
+          <a class="tier__cta" href="#">Lorem ipsum</a>
+          <ul class="tier__features">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor incididunt</li>
+            <li>Ut labore et dolore magna</li>
+            <li>Aliqua ut enim ad minim</li>
+            <li>Veniam quis nostrud exercitation</li>
+          </ul>
+        </article>
+
+        <article class="tier tier--recommended">
+          <span class="tier__badge">Lorem popular</span>
+          <h2 class="tier__name">Ipsum</h2>
+          <p class="tier__tagline">Sed do eiusmod tempor incididunt</p>
+          <div class="tier__price">
+            <span class="tier__price-figure">$20</span>
+            <span class="tier__price-unit">/ lorem ipsum</span>
+          </div>
+          <a class="tier__cta" href="#">Lorem ipsum dolor</a>
+          <ul class="tier__features">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Incididunt ut labore et dolore</li>
+            <li>Magna aliqua ut enim ad</li>
+            <li>Minim veniam quis nostrud</li>
+            <li>Exercitation ullamco laboris</li>
+          </ul>
+        </article>
+
+        <article class="tier">
+          <h2 class="tier__name">Dolor</h2>
+          <p class="tier__tagline">Lorem ipsum custom onboarding</p>
+          <div class="tier__price">
+            <span class="tier__price-figure">$50</span>
+            <span class="tier__price-unit">/ lorem ipsum</span>
+          </div>
+          <a class="tier__cta" href="#">Lorem dolor sit</a>
+          <ul class="tier__features">
+            <li>Lorem ipsum dolor sit amet</li>
+            <li>Consectetur adipiscing elit</li>
+            <li>Sed do eiusmod tempor</li>
+            <li>Incididunt ut labore</li>
+            <li>Magna aliqua ut enim</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: storage-ladder. Volume tier $/TB ladder. -->
+    <section class="section" aria-label="Storage pricing">
+      <h2 class="section__head">Lorem ipsum, transparent volume-based</h2>
+      <p class="section__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore.
+      </p>
+      <table class="ladder">
+        <thead>
+          <tr>
+            <th scope="col">Lorem tier</th>
+            <th scope="col">Public</th>
+            <th scope="col">Private</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Lorem base</td><td>$12 / TB / mo</td><td>$18 / TB / mo</td></tr>
+          <tr><td>Lorem 50TB+</td><td>$10 / TB / mo</td><td>$16 / TB / mo</td></tr>
+          <tr><td>Lorem 200TB+</td><td>$9 / TB / mo</td><td>$14 / TB / mo</td></tr>
+          <tr><td>Lorem 500TB+</td><td>$8 / TB / mo</td><td>$12 / TB / mo</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: feature-comparison. Account-tier matrix grouped by category. -->
+    <section class="section" aria-label="Feature comparison">
+      <h2 class="section__head">Lorem ipsum compare features</h2>
+      <p class="section__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+      <table class="compare-table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">Lorem feature</th>
+            <th scope="col">Lorem</th>
+            <th scope="col">Ipsum</th>
+            <th scope="col">Dolor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-row"><th scope="rowgroup" colspan="4">storage_and_compute</th></tr>
+          <tr><th scope="row">Lorem ipsum dolor</th><td>&bull;</td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Sit amet consectetur</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Adipiscing elit sed do</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+
+          <tr class="group-row"><th scope="rowgroup" colspan="4">security_and_compliance</th></tr>
+          <tr><th scope="row">Eiusmod tempor SSO</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Ut labore audit logs</th><td></td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Magna aliqua SCIM</th><td></td><td></td><td>&bull;</td></tr>
+
+          <tr class="group-row"><th scope="rowgroup" colspan="4">support_and_billing</th></tr>
+          <tr><th scope="row">Minim veniam quis</th><td>&bull;</td><td>&bull;</td><td>&bull;</td></tr>
+          <tr><th scope="row">Nostrud dedicated support</th><td></td><td></td><td>&bull;</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: compute-pricing. Spaces hardware + Inference Endpoints SKU
+         tables. This is the load-bearing dev-tool register on the HF
+         pricing surface; the all-mono SKU table is the pattern. -->
+    <section class="section" aria-label="Compute pricing">
+      <h2 class="section__head">Lorem on-demand hardware. Starting at $0.</h2>
+      <p class="section__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore.
+      </p>
+
+      <table class="sku-table">
+        <caption>spaces_hardware</caption>
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">CPU</th>
+            <th scope="col">Memory</th>
+            <th scope="col">Accelerator</th>
+            <th scope="col">VRAM</th>
+            <th scope="col" class="sku-price">Hourly</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>lorem_cpu_basic</td><td>2 vCPU</td><td>16 GB</td><td>—</td><td>—</td><td class="sku-price sku-free">FREE</td></tr>
+          <tr><td>lorem_cpu_upgrade</td><td>8 vCPU</td><td>32 GB</td><td>—</td><td>—</td><td class="sku-price">$0.03</td></tr>
+          <tr><td>lorem_zerogpu</td><td>dynamic</td><td>dynamic</td><td>Lorem H200</td><td>70 GB</td><td class="sku-price sku-free">FREE</td></tr>
+          <tr><td>lorem_t4_small</td><td>4 vCPU</td><td>15 GB</td><td>Lorem T4</td><td>16 GB</td><td class="sku-price">$0.40</td></tr>
+          <tr><td>lorem_l4_1x</td><td>8 vCPU</td><td>30 GB</td><td>Lorem L4</td><td>24 GB</td><td class="sku-price">$0.80</td></tr>
+          <tr><td>lorem_a100_large</td><td>12 vCPU</td><td>142 GB</td><td>Lorem A100</td><td>80 GB</td><td class="sku-price">$2.50</td></tr>
+          <tr><td>lorem_a100_8x</td><td>96 vCPU</td><td>1136 GB</td><td>Lorem A100</td><td>640 GB</td><td class="sku-price">$20.00</td></tr>
+        </tbody>
+      </table>
+
+      <table class="sku-table" style="margin-top: var(--ds-space-6);">
+        <caption>inference_endpoints / gpu_aws</caption>
+        <thead>
+          <tr>
+            <th scope="col">Accelerator</th>
+            <th scope="col">Count</th>
+            <th scope="col">Memory</th>
+            <th scope="col" class="sku-price">Hourly</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>lorem_t4</td><td>1</td><td>14 GB</td><td class="sku-price">$0.50</td></tr>
+          <tr><td>lorem_l40s</td><td>4</td><td>192 GB</td><td class="sku-price">$8.30</td></tr>
+          <tr><td>lorem_h100</td><td>1</td><td>80 GB</td><td class="sku-price">$4.50</td></tr>
+          <tr><td>lorem_h200</td><td>8</td><td>1128 GB</td><td class="sku-price">$40.00</td></tr>
+          <tr><td>lorem_b200</td><td>1</td><td>179 GB</td><td class="sku-price">$9.25</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: faq. Stacked Q/A rows. -->
+    <section class="section" aria-label="Frequently asked questions">
+      <h2 class="section__head">Lorem ipsum, frequently asked</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3 class="faq-item__q">Lorem ipsum dolor sit amet consectetur?</h3>
+          <p class="faq-item__a">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-item__q">Sed do eiusmod tempor incididunt ut labore?</h3>
+          <p class="faq-item__a">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-item__q">Duis aute irure dolor in reprehenderit?</h3>
+          <p class="faq-item__a">
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa
+            qui officia deserunt mollit anim id est laborum.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: cta. PRO social-proof band; warm-yellow primary fill. -->
+    <section class="section" aria-label="Closing call to action">
+      <div class="cta">
+        <div>
+          <p class="cta__statement">Lorem 35k+ members ipsum dolor.</p>
+          <p class="cta__sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</p>
+        </div>
+        <a class="cta__button" href="#">Lorem ipsum</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band, full-width. Stands in for wholes/footers/huggingface-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 200px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

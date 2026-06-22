@@ -1,0 +1,100 @@
+/*
+ * olipop-nav-001 tokens
+ *
+ * Native token values for the Olipop site navigation whole, inspired by
+ * drinkolipop.com. Olipop's marketing surface is candy-bright on peach
+ * cream with a forest-green ink color, with a thin announcement strip
+ * sitting flush above the main bar carrying a rotating sale + free-shipping
+ * line in the same forest ink. Header itself is a 70px row with the
+ * retro-soda wordmark on the left, four categorical text links in the
+ * center-right cluster, and account / cart affordances at the right.
+ * Type is Ano (Olipop's licensed sans) across the bar; mono is reserved
+ * for utility elsewhere in the system.
+ *
+ * Composition_atoms in meta.json: color-groups/candy-bright-001 (the
+ * peach-cream + forest-green palette the bar adopts), type-pairings/
+ * sans-system-modern-001 (humanist sans register; Ano stands in via the
+ * declared font stack), headings/retro-soda-001 (the Windsor wordmark
+ * register; the small bar wordmark is a compressed version of the same
+ * face), buttons/soft-pill-pink-001 (the forest-on-cream CTA register
+ * the Subscribe link picks up on hover and the Account icon picks up at
+ * focus), links/nav-link-underline-001 (forest-ink nav links with a
+ * suppressed underline that animates in on hover).
+ */
+:root {
+  /* Colors. Olipop's surface is intentionally warm: a peach-cream page
+   * with a forest-green ink color, candy-pink accent for sale call-outs,
+   * mint-green for the second CTA register, and vintage-soda yellow held
+   * in reserve for the brand's burst moments. The bar itself carries
+   * only the peach-cream surface and the forest ink. */
+  --ds-bg:           #FFF6EA;   /* Peach cream; Olipop's canonical page surface. */
+  --ds-surface:      #FFF6EA;   /* Same as page; the bar shares the surface, no tint. */
+  --ds-surface-2:    #FFE1D9;   /* Soft candy pink; used for dropdown panels and hover wells. */
+  --ds-text:         #14433D;   /* Forest green; default ink for nav, body, and announcement. */
+  --ds-text-muted:   #4A6E68;   /* Lifted forest; used for sub-links and quiet labels. */
+  --ds-text-strong:  #034638;   /* Deep forest; wordmark and emphasized labels. */
+  --ds-border:       #14433D;   /* Forest at full strength; rare on the bar, reserved for icon outlines. */
+  --ds-hairline:     rgba(20, 67, 61, 0.12);   /* Faint forest tint; used if a divider is needed between strip and bar. */
+  --ds-accent:       #FFB8B3;   /* Candy pink; sale callouts and dot affordances on the strip. */
+  --ds-accent-2:     #98E1C3;   /* Mint green; secondary CTA register inherited from product pages. */
+  --ds-success:      #98E1C3;   /* Same mint. */
+  --ds-warning:      #FCC100;   /* Vintage-soda yellow held in reserve. */
+  --ds-error:        #C04848;   /* Tomato; rare. */
+  --ds-info:         #14433D;   /* Forest; Olipop's info register is the same as body. */
+  --ds-focus-ring:   #034638;   /* Deep forest outline on cream; high contrast at 2px. */
+
+  /* Type. Olipop ships Ano (a licensed humanist sans) for body and nav,
+   * WindsorEF for display. The stack falls back to Helvetica Neue and
+   * system sans where Ano is unavailable. JetBrains Mono fills the
+   * mono slot for any utility moments downstream. */
+  --ds-font-display: "WindsorEF", "Ano", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Ano", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --ds-font-accent:  "WindsorEF", "Ano", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* Sizes. The bar runs heavier than dev-tool nav: 18px / 700 nav links,
+   * 16px announcement strip. Display sizes carry through for downstream
+   * wholes that share this token set. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 18px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 44px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 96px;  --ds-text-7xl: 128px;
+
+  --ds-leading-tight: 1.0;     --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;    --ds-leading-relaxed: 1.65;   --ds-leading-loose: 1.8;
+
+  /* Tracking. Ano is comfortable at normal tracking on body and nav;
+   * tight on the wordmark; wide on small uppercase utility labels. */
+  --ds-tracking-tight: -0.015em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide: 0.06em;
+  --ds-tracking-wider: 0.14em;
+
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. The DTC consumer surface defaults to pills for affordances;
+   * the bar itself stays flat with no radii on the wrapper. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 12px;  --ds-radius-lg: 18px;  --ds-radius-full: 9999px;
+
+  /* Shadows. The bar carries no shadow at rest; dropdown panels lift
+   * with a soft warm shadow tinted toward the forest ink. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 1px 0 rgba(20, 67, 61, 0.05);
+  --ds-shadow-sm:  0 2px 6px rgba(20, 67, 61, 0.08);
+  --ds-shadow-md:  0 12px 28px rgba(20, 67, 61, 0.12);
+  --ds-shadow-lg:  0 20px 48px rgba(20, 67, 61, 0.16);
+  --ds-shadow-2xl: 0 32px 64px rgba(20, 67, 61, 0.20);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

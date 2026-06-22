@@ -1,0 +1,296 @@
+<!--
+  Asset: locomotive-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav
+  Inspired by: Locomotive
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/locomotive-mono-001        (cream paper, black ink, electric-blue focus)
+    - type-pairings/display-distinctive-001   (custom display + sans body)
+    - wordmarks/custom-display-001            (Locomotive wordmark register)
+    - links/nav-link-underline-001            (ink-to-ink nav link register)
+  Notes:
+    - Studio-portfolio register on cream paper. Locomotive's nav sits
+      flush at the top of the page on the same cream surface as the
+      body; there is no bar background, no border, no shadow, no
+      hairline foot. The wordmark "Locomotive(R)" sits left in the
+      custom display face, four content links sit center-left, a
+      Let's talk contact link and a Francais language toggle sit on
+      the right. Hover swaps a quiet ink underline in under each link
+      at fast speed; focus paints the electric-blue ring per system.
+    - Variable vs inline: every color, type, spacing, radius, and
+      motion value comes from the contract. Inline ornaments: the
+      registered-trademark superscript on the wordmark and the small
+      diagonal arrow on Let's talk (one-off marks at this scale, not
+      reusable atoms).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive-nav-001 (dot) Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Locomotive ships LocomotiveNew (custom) and HelveticaNowDisplay
+     (licensed). Inter stands in as the closest open humanist sans
+     fallback for the body register; the display slot falls through
+     to system fonts when neither custom face is available. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Bar sits flush on cream paper. No background fill, no border,
+   * no shadow. The bar reads as a region of the page rather than a
+   * chrome layer above it. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-bg);
+    /* Inline ornament: bar height is a layout decision for the
+     * editorial register; tuned compact so the cream surface dominates. */
+    height: 72px;
+  }
+
+  .nav__inner {
+    max-width: 1440px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-6);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-8);
+  }
+
+  /* Wordmark. Custom display face at editorial scale. The trailing
+   * registered-trademark glyph is inline ornament; a one-off mark,
+   * not part of the wordmark atom. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .nav__wordmark sup {
+    /* Inline ornament: registered-trademark superscript. Tuned to
+     * sit at the cap height of the wordmark without breaking baseline. */
+    font-size: 0.5em;
+    font-weight: 400;
+    margin-left: 2px;
+    transform: translateY(-0.2em);
+    display: inline-block;
+  }
+  .nav__wordmark:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Content link cluster. Four links sit left-aligned inside the
+   * center grid cell. Locomotive holds rest at full ink and animates
+   * a hairline underline in on hover; no muted-grey rest. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { display: inline-flex; align-items: center; }
+
+  .nav__link {
+    position: relative;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    text-decoration: none;
+    line-height: 1;
+    padding: var(--ds-space-2) 0;
+    /* Underline drawn as a pseudo-element so we can animate its
+     * width from 0 to 100% on hover. This is the quiet sibling of
+     * the kinetic featured-link swap that lives downstream. */
+  }
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--ds-hairline);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover::after,
+  .nav__link[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+  .nav__link:hover,
+  .nav__link[aria-current="page"] {
+    color: var(--ds-text-strong);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Utility cluster on the right. Let's talk is the contact entry
+   * point; Francais is the language toggle. Both sit at the same
+   * link register as the content cluster. */
+  .nav__utility {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__utility > li { display: inline-flex; align-items: center; }
+
+  .nav__contact {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    text-decoration: none;
+    line-height: 1;
+    padding: var(--ds-space-2) 0;
+    position: relative;
+  }
+  .nav__contact::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--ds-hairline);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__contact:hover::after { transform: scaleX(1); }
+  .nav__contact:hover { color: var(--ds-text-strong); }
+  .nav__contact:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+  .nav__contact svg {
+    /* Inline ornament: small NE arrow glyph signaling the contact
+     * action. Not a reusable atom at this size. */
+    width: 12px;
+    height: 12px;
+    display: block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__contact:hover svg {
+    transform: translate(2px, -2px);
+  }
+
+  .nav__lang {
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    text-decoration: none;
+    line-height: 1;
+    padding: var(--ds-space-2) 0;
+    position: relative;
+  }
+  .nav__lang::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--ds-hairline);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__lang:hover::after { transform: scaleX(1); }
+  .nav__lang:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Page stub so the bar has surface to sit over. */
+  .page-stub {
+    max-width: 1440px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 800px) {
+    .nav__links { display: none; }
+    .nav__utility { gap: var(--ds-space-4); }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-4); }
+    .nav { height: 60px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__link::after,
+    .nav__contact::after,
+    .nav__lang::after,
+    .nav__contact svg { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">Lorem<sup>(R)</sup></a>
+
+      <ul class="nav__links">
+        <li><a class="nav__link" href="#" aria-current="page">Lorem</a></li>
+        <li><a class="nav__link" href="#">Ipsum</a></li>
+        <li><a class="nav__link" href="#">Dolor</a></li>
+        <li><a class="nav__link" href="#">Amet</a></li>
+      </ul>
+
+      <ul class="nav__utility">
+        <li>
+          <a class="nav__contact" href="#">
+            <span>Sit amet</span>
+            <svg viewBox="0 0 12 12" aria-hidden="true">
+              <path d="M2 10 L10 2 M5 2 L10 2 L10 7" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="square"/>
+            </svg>
+          </a>
+        </li>
+        <li><a class="nav__lang" href="#" lang="fr">Lorem</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum magna at suscipit lacinia, dolor mauris vehicula augue.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

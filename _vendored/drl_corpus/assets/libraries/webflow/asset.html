@@ -1,0 +1,386 @@
+<!--
+  Asset: webflow
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Webflow
+  Notes:
+    - Webflow's complete marketing-surface component vocabulary on one
+      page: wordmark, top nav, hero CTA pair (filled blue primary + ghost
+      secondary), feature tile grid, pricing tier card (with recommended
+      highlight band), testimonial card with metric, eyebrow kicker,
+      hairline divider, footer link columns. One voice across all.
+    - Inline ornament is limited to the recommended-tier blue band and
+      the wordmark mark. Every token comes from the shared tokens.css.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Wordmark - Webflow's blue mark beside the wordmark in near-black.
+     The mark is a stylized W as a stacked pair of angled strokes. */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-2); color: var(--ds-text); font-family: var(--ds-font-display); font-weight: 600; font-size: var(--ds-text-lg); letter-spacing: var(--ds-tracking-normal); }
+  .wordmark .mark { width: 24px; height: 24px; color: var(--ds-accent); }
+
+  /* Buttons - filled Webflow Blue primary, white-with-border ghost
+     secondary, and a tertiary text link. All at 4px radius (the
+     CTA signature). Label tracking sits at -0.01em (matches H1). */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: #FFFFFF;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    padding: 0 var(--ds-space-5); height: 44px;
+    border-radius: var(--ds-radius-sm);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-primary:hover { background: var(--ds-accent-2); }
+  .btn-primary:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  .btn-secondary {
+    appearance: none; cursor: pointer;
+    background: var(--ds-surface); color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    padding: 0 var(--ds-space-5); height: 44px;
+    border-radius: var(--ds-radius-sm);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-secondary:hover { background: var(--ds-surface-2); }
+
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-1);
+    color: var(--ds-accent); font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+    font-weight: 500; text-decoration: none;
+  }
+  .btn-link svg { width: 12px; height: 12px; transition: transform var(--ds-duration-fast) var(--ds-ease-standard); }
+  .btn-link:hover svg { transform: translateX(2px); }
+
+  .btn-sm { height: 36px; font-size: var(--ds-text-sm); padding: 0 var(--ds-space-4); }
+
+  /* Nav - mono-row layout. Wordmark left, links centered, two CTAs right.
+     Bottom hairline divider sets section rhythm. */
+  .nav { display: flex; flex-wrap: wrap; gap: var(--ds-space-5); align-items: center; padding: var(--ds-space-3) 0; border-bottom: 1px solid var(--ds-hairline); }
+  .nav .nav-links { display: flex; gap: var(--ds-space-5); margin-left: var(--ds-space-6); flex: 1; }
+  .nav .nav-links a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text); text-decoration: none; font-weight: 500; transition: color var(--ds-duration-fast) var(--ds-ease-standard); }
+  .nav .nav-links a:hover { color: var(--ds-accent); }
+
+  /* Hero - oversized display, lead paragraph, primary + secondary CTA
+     pair. The H1 sits at 64px here (an intermediate clamp landing). */
+  .hero { display: flex; flex-direction: column; gap: var(--ds-space-5); padding: var(--ds-space-10) 0; }
+  .hero .kicker { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500; color: var(--ds-accent); letter-spacing: var(--ds-tracking-normal); }
+  .hero h2 { font-family: var(--ds-font-display); font-size: var(--ds-text-4xl); line-height: var(--ds-leading-tight); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: 0; color: var(--ds-text-strong); max-width: 18ch; }
+  .hero .lead { font-family: var(--ds-font-body); font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); color: var(--ds-text-muted); margin: 0; max-width: 56ch; }
+  .hero .cta-pair { display: flex; gap: var(--ds-space-3); margin-top: var(--ds-space-2); }
+
+  /* Feature tile grid - hairline card chrome, no shadow at rest.
+     Subtle 8px radius. Icon (blue stroke), title, dek. */
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  .tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .tile:hover { box-shadow: var(--ds-shadow-md); }
+  .tile__icon { width: 32px; height: 32px; color: var(--ds-accent); }
+  .tile__title { font-family: var(--ds-font-display); font-size: var(--ds-text-lg); line-height: var(--ds-leading-snug); letter-spacing: var(--ds-tracking-normal); font-weight: 600; margin: 0; color: var(--ds-text-strong); }
+  .tile__dek { color: var(--ds-text-muted); font-size: var(--ds-text-sm); line-height: var(--ds-leading-normal); margin: 0; }
+
+  /* Pricing tier cards - three across. The middle tier gets a
+     recommended-band: a 4px blue top-strip and a "Recommended" eyebrow.
+     16px radius (the larger panel signature). */
+  .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-5); }
+  .tier {
+    position: relative;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .tier--featured { border-color: var(--ds-accent); }
+  .tier--featured::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--ds-accent); border-radius: var(--ds-radius-lg) var(--ds-radius-lg) 0 0; }
+  .tier__rec { font-family: var(--ds-font-body); font-size: var(--ds-text-xs); font-weight: 500; color: var(--ds-accent); letter-spacing: var(--ds-tracking-normal); }
+  .tier__name { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); font-weight: 600; margin: 0; color: var(--ds-text-strong); letter-spacing: var(--ds-tracking-normal); }
+  .tier__tag { font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin: 0; }
+  .tier__price { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); line-height: 1; letter-spacing: var(--ds-tracking-tight); font-weight: 600; color: var(--ds-text-strong); margin: 0; }
+  .tier__price small { font-size: var(--ds-text-sm); font-weight: 400; color: var(--ds-text-muted); letter-spacing: 0; }
+  .tier__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .tier__list li { display: flex; align-items: flex-start; gap: var(--ds-space-2); font-size: var(--ds-text-sm); color: var(--ds-text); line-height: var(--ds-leading-normal); }
+  .tier__list svg { width: 14px; height: 14px; color: var(--ds-accent); flex-shrink: 0; margin-top: 5px; }
+
+  /* Testimonial card - quote, metric, attribution. Hairline border. */
+  .quotes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ds-space-5); }
+  .quote {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-5);
+  }
+  .quote__metric { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); line-height: 1; letter-spacing: var(--ds-tracking-tight); font-weight: 600; color: var(--ds-accent); margin: 0; }
+  .quote__text { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-normal); color: var(--ds-text); margin: 0; }
+  .quote__who { display: flex; align-items: center; gap: var(--ds-space-3); font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+  .quote__who .avatar { width: 32px; height: 32px; border-radius: var(--ds-radius-full); background: var(--ds-surface-2); border: 1px solid var(--ds-border); }
+
+  /* Footer - link columns under hairline divider. */
+  .footer { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; gap: var(--ds-space-6); padding-top: var(--ds-space-8); border-top: 1px solid var(--ds-hairline); }
+  .footer .brand { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .footer .brand p { font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin: 0; max-width: 28ch; }
+  .footer .col { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .footer .col h4 { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600; color: var(--ds-text); margin: 0 0 var(--ds-space-2) 0; }
+  .footer .col a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text-muted); text-decoration: none; transition: color var(--ds-duration-fast) var(--ds-ease-standard); }
+  .footer .col a:hover { color: var(--ds-accent); }
+
+  /* Body type block - shows display + lead + inline link. */
+  .type-block { display: flex; flex-direction: column; gap: var(--ds-space-3); max-width: 60ch; }
+  .display-h1 { font-family: var(--ds-font-display); font-size: var(--ds-text-5xl); line-height: var(--ds-leading-tight); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: 0; color: var(--ds-text-strong); }
+  .inline-link { color: var(--ds-accent); text-decoration: underline; text-decoration-color: rgba(20,110,245,0.4); text-underline-offset: 3px; }
+  .inline-link:hover { text-decoration-color: var(--ds-accent); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <span class="wordmark" aria-label="Lorem">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5l3.2 14 4-9 2.6 9L19 5h-3l-2.4 8.4L11 5H8.6L6.2 13.4 3.8 5H3z" fill="currentColor"/></svg>
+      lorem
+    </span>
+    <h1>Lorem ipsum: the agentic web platform component vocabulary</h1>
+    <p>Dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Navigation</div>
+    <nav class="nav">
+      <span class="wordmark" aria-label="Lorem">
+        <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5l3.2 14 4-9 2.6 9L19 5h-3l-2.4 8.4L11 5H8.6L6.2 13.4 3.8 5H3z" fill="currentColor"/></svg>
+        lorem
+      </span>
+      <div class="nav-links">
+        <a href="#">Solutions</a>
+        <a href="#">Resources</a>
+        <a href="#">Enterprise</a>
+        <a href="#">Pricing</a>
+      </div>
+      <button class="btn-secondary btn-sm">Log in</button>
+      <button class="btn-primary btn-sm">Get started</button>
+    </nav>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Hero</div>
+    <div class="hero">
+      <span class="kicker">Lorem ipsum dolor</span>
+      <h2>Sit amet consectetur adipiscing elit faster.</h2>
+      <p class="lead">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.</p>
+      <div class="cta-pair">
+        <button class="btn-primary">Get started</button>
+        <button class="btn-secondary">Contact sales</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Buttons</div>
+    <div class="row">
+      <button class="btn-primary">Get started</button>
+      <button class="btn-secondary">Contact sales</button>
+      <a class="btn-link" href="#">Read the docs
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 6h6M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <button class="btn-primary btn-sm">Sign up</button>
+      <button class="btn-secondary btn-sm">Log in</button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Feature tiles</div>
+    <div class="tiles">
+      <article class="tile">
+        <svg class="tile__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M9 21V9" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3 class="tile__title">Lorem ipsum dolor</h3>
+        <p class="tile__dek">Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </article>
+      <article class="tile">
+        <svg class="tile__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7l8 4 8-4-8-4-8 4zM4 12l8 4 8-4M4 17l8 4 8-4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3 class="tile__title">Sit amet veniam</h3>
+        <p class="tile__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.</p>
+      </article>
+      <article class="tile">
+        <svg class="tile__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3 class="tile__title">Exercitation ullamco</h3>
+        <p class="tile__dek">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Pricing tiers</div>
+    <div class="pricing">
+      <article class="tier">
+        <h3 class="tier__name">Starter</h3>
+        <p class="tier__tag">Lorem ipsum dolor sit amet.</p>
+        <p class="tier__price">$0<small> / month</small></p>
+        <ul class="tier__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Consectetur adipiscing</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Sed do eiusmod tempor</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Ut labore et dolore</li>
+        </ul>
+        <button class="btn-secondary">Start for free</button>
+      </article>
+
+      <article class="tier tier--featured">
+        <span class="tier__rec">Recommended</span>
+        <h3 class="tier__name">Growth</h3>
+        <p class="tier__tag">Magna aliqua ut enim ad minim.</p>
+        <p class="tier__price">$24<small> / month</small></p>
+        <ul class="tier__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Veniam quis nostrud</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Exercitation ullamco</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Laboris nisi ut aliquip</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Ex ea commodo</li>
+        </ul>
+        <button class="btn-primary">Add plan</button>
+      </article>
+
+      <article class="tier">
+        <h3 class="tier__name">Enterprise</h3>
+        <p class="tier__tag">Duis aute irure dolor.</p>
+        <p class="tier__price">Custom</p>
+        <ul class="tier__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Reprehenderit voluptate</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Velit esse cillum</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Fugiat nulla pariatur</li>
+        </ul>
+        <button class="btn-secondary">Talk to us</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Testimonials</div>
+    <div class="quotes">
+      <article class="quote">
+        <p class="quote__metric">32 sites</p>
+        <p class="quote__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <div class="quote__who">
+          <span class="avatar"></span>
+          <span>Lorem Ipsum, VP of Dolor at Sit Amet</span>
+        </div>
+      </article>
+      <article class="quote">
+        <p class="quote__metric">20% lift</p>
+        <p class="quote__text">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure.</p>
+        <div class="quote__who">
+          <span class="avatar"></span>
+          <span>Consectetur Adipiscing, Director at Eiusmod Tempor</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Body type</div>
+    <div class="type-block">
+      <h2 class="display-h1">Lorem ipsum dolor sit amet.</h2>
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, <a class="inline-link" href="#">quis nostrud exercitation</a> ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="brand">
+      <span class="wordmark" aria-label="Lorem">
+        <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5l3.2 14 4-9 2.6 9L19 5h-3l-2.4 8.4L11 5H8.6L6.2 13.4 3.8 5H3z" fill="currentColor"/></svg>
+        lorem
+      </span>
+      <p>Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</p>
+    </div>
+    <div class="col">
+      <h4>Products</h4>
+      <a href="#">Lorem</a>
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit amet</a>
+    </div>
+    <div class="col">
+      <h4>Solutions</h4>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+      <a href="#">Eiusmod</a>
+      <a href="#">Tempor</a>
+    </div>
+    <div class="col">
+      <h4>Resources</h4>
+      <a href="#">Incididunt</a>
+      <a href="#">Ut labore</a>
+      <a href="#">Et dolore</a>
+      <a href="#">Magna aliqua</a>
+    </div>
+    <div class="col">
+      <h4>Company</h4>
+      <a href="#">Ut enim</a>
+      <a href="#">Ad minim</a>
+      <a href="#">Veniam</a>
+      <a href="#">Nostrud</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

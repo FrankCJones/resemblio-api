@@ -1,0 +1,675 @@
+<!--
+  Asset: github
+  Class: libraries
+  Pattern: (none)
+  Inspired by: GitHub (Primer)
+  Notes:
+    - GitHub's complete marketing-surface component vocabulary in one
+      voice on one page: dark hero band (the homepage signature) holding
+      the wordmark, kicker, display headline, and the green primary CTA
+      pair; light content body holding feature tile (with code block and
+      product screenshot framing), nav, pricing-tier card with hairline
+      chrome, testimonial card, footer link, status pill, mono SKU row,
+      and hairline divider.
+    - Inline ornament: the dark-hero background uses a one-off radial
+      gradient that does not live in the contract (one-off character
+      stays inline). All chrome uses the --ds-shadow-sm box-shadow ring
+      rather than border, so corners stay crisp at any radius.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* Mona Sans Variable is GitHub's marketing face. Falling back to the
+     system humanist sans stack — Inter or BlinkMacSystemFont — keeps the
+     metrics close on offline render. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1120px; margin: 0 auto; padding: 0 var(--ds-space-6); display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  /* Hero band - the dark surface that opens github.com. Near-black
+     #0d1117 ground with a soft radial accent; white display type; green
+     primary CTA paired with a ghost secondary. */
+  .hero {
+    margin: 0 calc(var(--ds-space-6) * -1);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-10);
+    /* Inline ornament: one-off radial used only by the home hero. Not a
+       contract slot because it is decorative and surface-specific. */
+    background:
+      radial-gradient(80% 60% at 50% 0%, rgba(56, 139, 253, 0.18), transparent 65%),
+      radial-gradient(60% 50% at 80% 100%, rgba(35, 134, 54, 0.14), transparent 60%),
+      #0D1117;
+    color: #FFFFFF;
+    border-radius: 0;
+  }
+  .hero-inner { max-width: 1120px; margin: 0 auto; padding: 0 var(--ds-space-6); display: flex; flex-direction: column; gap: var(--ds-space-5); align-items: flex-start; }
+  .hero-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .hero-h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0;
+    max-width: 18ch;
+  }
+  .hero-dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 56ch;
+    margin: 0;
+  }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: var(--ds-space-3); padding-top: var(--ds-space-2); }
+
+  /* Wordmark - the GitHub Invertocat sits inline with the sans wordmark.
+     Inline SVG so it inherits currentColor. */
+  .wordmark {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    color: #FFFFFF;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-lg);
+    letter-spacing: -0.005em;
+  }
+  .wordmark svg { width: 28px; height: 28px; }
+
+  /* Primary CTA - the signature green pill. Saturated #1f883d on white
+     in light context, on near-black in dark hero. 6px radius, sans
+     medium-weight label, no border, hover darkens by one step. */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: 0 var(--ds-space-4); height: 40px;
+    border-radius: var(--ds-radius-sm);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-primary:hover { background: var(--ds-accent-2); }
+  .btn-primary:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  /* Secondary CTA - default Primer button. White-on-white with hairline
+     border in light mode; transparent with white-alpha hairline on the
+     dark hero. */
+  .btn-secondary {
+    appearance: none; cursor: pointer;
+    background: var(--ds-surface); color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    padding: 0 var(--ds-space-4); height: 40px;
+    border-radius: var(--ds-radius-sm);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-secondary:hover { background: var(--ds-surface-2); }
+  .btn-secondary.on-dark {
+    background: transparent;
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .btn-secondary.on-dark:hover { background: rgba(255, 255, 255, 0.08); }
+
+  /* Section scaffolding - kicker rule above each block, mono uppercase
+     label with a hairline rule, the gallery's marker for "here is a
+     different component." */
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Nav - flush top row, wordmark on the left, links centered, CTA pair
+     on the right. */
+  .nav {
+    display: flex; flex-wrap: wrap; gap: var(--ds-space-5);
+    align-items: center;
+    padding: var(--ds-space-4) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav .wordmark { color: var(--ds-text-strong); font-size: var(--ds-text-base); }
+  .nav .nav-links { display: flex; gap: var(--ds-space-5); margin-left: var(--ds-space-6); flex: 1; }
+  .nav .nav-links a {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav .nav-links a:hover { color: var(--ds-info); }
+
+  /* Card with hairline chrome - the Primer card recipe. 1px ring at
+     #d1d9e0 stands in for a border so the rounded corner stays crisp
+     at any radius. */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-6);
+  }
+  .card-feature {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .card-feature:hover { box-shadow: var(--ds-shadow-md); }
+  .card-feature__media {
+    background: #0D1117;
+    padding: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .card-feature__body {
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .card-feature__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .card-feature__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .card-feature__dek {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+  .card-feature__link {
+    margin-top: var(--ds-space-2);
+    color: var(--ds-info);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: var(--ds-space-1);
+  }
+  .card-feature__link:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* Code block - the inline mono code recipe used across Copilot pages.
+     Near-black ground in dark surface contexts; #f6f8fa in light. The
+     Copilot marketing pages use the dark variant. */
+  .code-block {
+    background: #0D1117;
+    color: #E6EDF3;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    overflow: auto;
+    margin: 0;
+  }
+  .code-block .tok-com { color: #8B949E; }  /* inline ornament: GitHub dark syntax green for comments. */
+  .code-block .tok-key { color: #FF7B72; }  /* GitHub dark syntax red for keywords. */
+  .code-block .tok-str { color: #A5D6FF; }  /* GitHub dark syntax blue for strings. */
+  .code-block .tok-fn  { color: #D2A8FF; }  /* GitHub dark syntax purple for functions. */
+
+  /* Product screenshot frame - the hairline tile that wraps a screenshot
+     in feature sections. Light ground, 12px radius, the same ring chrome
+     as cards, with an internal padding so the screenshot reads as a
+     framed artifact. */
+  .product-frame {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    display: flex; flex-direction: column;
+  }
+  .product-frame__inner {
+    background: #FFFFFF;
+    border-radius: var(--ds-radius-md);
+    height: 220px;
+    box-shadow: inset 0 0 0 1px var(--ds-hairline);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Pricing tier card - three-up tier card per /pricing. Center card
+     (recommended) inverts to the accent surface with white CTA.
+     Hairline chrome on the outer cards, accent border ring on the
+     featured center card. */
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--ds-space-5); }
+  .tier {
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .tier--featured {
+    box-shadow: 0 0 0 2px var(--ds-accent);
+    background: var(--ds-surface);
+  }
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier__rec {
+    align-self: flex-start;
+    display: inline-flex; align-items: center;
+    background: var(--ds-accent); color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: 3px var(--ds-space-2);
+    border-radius: var(--ds-radius-full);
+  }
+  .tier__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier__price small {
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+  }
+  .tier__features {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: var(--ds-space-2);
+  }
+  .tier__features li {
+    display: flex; align-items: flex-start; gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .tier__features svg { width: 14px; height: 14px; margin-top: 4px; color: var(--ds-accent); flex-shrink: 0; }
+
+  /* Testimonial card - quote on a hairline-ringed light surface, attrib
+     row underneath with avatar and mono role label. */
+  .testimonial {
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+    max-width: 640px;
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: -0.005em;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .testimonial__attrib { display: flex; align-items: center; gap: var(--ds-space-3); }
+  .testimonial__avatar {
+    width: 40px; height: 40px;
+    border-radius: var(--ds-radius-full);
+    /* Inline ornament: avatar uses a one-off blue-to-purple gradient.
+       Not a contract slot because it is decorative. */
+    background: linear-gradient(135deg, #388BFD, #BC8CFF);
+    flex-shrink: 0;
+  }
+  .testimonial__meta { display: flex; flex-direction: column; gap: 2px; }
+  .testimonial__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .testimonial__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* Status pill - operational dot beside a mono uppercase label. */
+  .status {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    background: rgba(26, 127, 55, 0.08);
+    color: var(--ds-success);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    padding: 4px var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+  }
+  .status .dot {
+    width: 6px; height: 6px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-success);
+  }
+
+  /* Footer - quiet link grid on muted surface, wordmark at the bottom. */
+  .footer {
+    margin: 0 calc(var(--ds-space-6) * -1);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    background: var(--ds-surface);
+    border-top: 1px solid var(--ds-border);
+  }
+  .footer-inner { max-width: 1120px; margin: 0 auto; padding: 0 var(--ds-space-6); }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-6);
+    margin-bottom: var(--ds-space-8);
+  }
+  .footer-col h4 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .footer-col a {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer-col a:hover { color: var(--ds-info); }
+
+  /* Hairline divider - the section break used between content bands.
+     A single 1px line at the standard border tint. */
+  .divider {
+    height: 1px;
+    background: var(--ds-border);
+    margin: var(--ds-space-8) 0;
+    border: 0;
+  }
+
+  /* Body type block at the bottom - shows the inline link voice. */
+  .type-block { max-width: 64ch; display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .type-block h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .type-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .inline-link {
+    color: var(--ds-info);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(9, 105, 218, 0.3);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .inline-link:hover { border-bottom-color: var(--ds-info); }
+</style>
+</head>
+<body>
+
+  <!-- Hero band: dark surface, wordmark, kicker, display headline,
+       primary green CTA paired with ghost secondary. -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="wordmark" aria-label="Lorem">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.13c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.99 0 1.98.13 2.9.39 2.21-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.18c0 .31.21.67.8.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/>
+        </svg>
+        lorem
+      </span>
+      <span class="hero-kicker">Lorem ipsum dolor</span>
+      <h1 class="hero-h1">Sit amet consectetur adipiscing elit sed do.</h1>
+      <p class="hero-dek">Eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary">Sign up for lorem</button>
+        <button class="btn-secondary on-dark">Read the spec</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="page">
+
+  <!-- Nav: light row, wordmark left, link list, secondary plus primary CTA. -->
+  <nav class="nav" aria-label="Primary">
+    <span class="wordmark" aria-label="Lorem">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.13c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.99 0 1.98.13 2.9.39 2.21-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.18c0 .31.21.67.8.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/>
+      </svg>
+      lorem
+    </span>
+    <div class="nav-links">
+      <a href="#">Product</a>
+      <a href="#">Solutions</a>
+      <a href="#">Resources</a>
+      <a href="#">Open source</a>
+      <a href="#">Enterprise</a>
+      <a href="#">Pricing</a>
+    </div>
+    <button class="btn-secondary">Sign in</button>
+    <button class="btn-primary">Sign up</button>
+  </nav>
+
+  <!-- Feature tile pair: one wraps a code block, one wraps a product
+       screenshot frame. Both share the hairline-chrome card recipe. -->
+  <section class="section">
+    <div class="section-label">Feature tiles</div>
+    <div class="cards">
+      <article class="card-feature">
+        <div class="card-feature__media">
+          <pre class="code-block"><code><span class="tok-com">// lorem ipsum dolor sit amet</span>
+<span class="tok-key">function</span> <span class="tok-fn">consectetur</span>(adipiscing) {
+  <span class="tok-key">return</span> adipiscing
+    .map(elit =&gt; <span class="tok-str">"sed do eiusmod"</span>)
+    .filter(tempor =&gt; tempor.length &gt; <span class="tok-str">4</span>);
+}</code></pre>
+        </div>
+        <div class="card-feature__body">
+          <span class="card-feature__kicker">Lorem ipsum</span>
+          <h3 class="card-feature__title">Dolor sit amet consectetur</h3>
+          <p class="card-feature__dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+          <a class="card-feature__link" href="#">Read the docs
+            <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 6h6M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="card-feature">
+        <div class="card-feature__media" style="background: var(--ds-surface);">
+          <div class="product-frame">
+            <div class="product-frame__inner">Screenshot</div>
+          </div>
+        </div>
+        <div class="card-feature__body">
+          <span class="card-feature__kicker">Quis nostrud</span>
+          <h3 class="card-feature__title">Exercitation ullamco laboris</h3>
+          <p class="card-feature__dek">Nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit.</p>
+          <a class="card-feature__link" href="#">See it in action
+            <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 6h6M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- Pricing tier card row: three-up grid, the center card inverts to
+       the accent ring chrome marking the recommended plan. -->
+  <section class="section">
+    <div class="section-label">Pricing</div>
+    <div class="pricing-grid">
+      <article class="tier">
+        <h3 class="tier__name">Free</h3>
+        <p class="tier__price">$0<small> / month</small></p>
+        <ul class="tier__features">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Lorem ipsum dolor sit</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Amet consectetur adipiscing</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Sed do eiusmod tempor</li>
+        </ul>
+        <button class="btn-secondary">Join for free</button>
+      </article>
+
+      <article class="tier tier--featured">
+        <span class="tier__rec">Recommended</span>
+        <h3 class="tier__name">Team</h3>
+        <p class="tier__price">$4<small> / user / month</small></p>
+        <ul class="tier__features">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Free</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Incididunt ut labore et dolore</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Magna aliqua ut enim ad minim</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Veniam quis nostrud exercitation</li>
+        </ul>
+        <button class="btn-primary">Continue with Team</button>
+      </article>
+
+      <article class="tier">
+        <h3 class="tier__name">Enterprise</h3>
+        <p class="tier__price">$21<small> / user / month</small></p>
+        <ul class="tier__features">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Team</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Ullamco laboris nisi ut</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Aliquip ex ea commodo</li>
+        </ul>
+        <button class="btn-secondary">Contact sales</button>
+      </article>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- Testimonial card. -->
+  <section class="section">
+    <div class="section-label">Testimonial</div>
+    <article class="testimonial">
+      <p class="testimonial__quote">Lorem ipsum dolor sit amet consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <div class="testimonial__attrib">
+        <span class="testimonial__avatar" aria-hidden="true"></span>
+        <div class="testimonial__meta">
+          <span class="testimonial__name">Lorem Ipsum</span>
+          <span class="testimonial__role">Director, Dolor Sit</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- Status indicator and inline body type. -->
+  <section class="section">
+    <div class="section-label">Status and body type</div>
+    <span class="status"><span class="dot"></span>All systems operational</span>
+    <div class="type-block">
+      <h2>Lorem ipsum dolor sit amet</h2>
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, <a class="inline-link" href="#">quis nostrud exercitation</a> ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+  </section>
+
+  </div>
+
+  <!-- Footer: muted-surface grid, quiet links, wordmark anchor. -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">Dolor sit amet</a></li>
+            <li><a href="#">Consectetur</a></li>
+            <li><a href="#">Adipiscing elit</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#">Sed do eiusmod</a></li>
+            <li><a href="#">Tempor incididunt</a></li>
+            <li><a href="#">Ut labore</a></li>
+            <li><a href="#">Et dolore magna</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Aliqua ut enim</a></li>
+            <li><a href="#">Ad minim veniam</a></li>
+            <li><a href="#">Quis nostrud</a></li>
+            <li><a href="#">Exercitation</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">Ullamco laboris</a></li>
+            <li><a href="#">Nisi ut aliquip</a></li>
+            <li><a href="#">Ex ea commodo</a></li>
+            <li><a href="#">Consequat duis</a></li>
+          </ul>
+        </div>
+      </div>
+      <span class="wordmark" style="color: var(--ds-text-strong); font-size: var(--ds-text-base);" aria-label="Lorem">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.13c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.99 0 1.98.13 2.9.39 2.21-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.18c0 .31.21.67.8.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/>
+        </svg>
+        lorem
+      </span>
+    </div>
+  </footer>
+
+</body>
+</html>

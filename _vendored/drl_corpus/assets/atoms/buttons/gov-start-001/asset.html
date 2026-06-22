@@ -1,0 +1,153 @@
+<!--
+  Asset: gov-start-001
+  Class: buttons
+  Pattern: primary-square
+  Inspired by: GOV.UK
+  Notes:
+    - Bottle-green primary "start now" button with hard 2px under-shadow;
+      :active translates the button down by the shadow height so it
+      visibly stamps onto the page rather than bouncing.
+    - Focus state swaps to GOV.UK yellow with black text and a 4px black
+      under-shadow; no ring, no outline-offset, the whole tab changes.
+    - Variables: every color, font, and size. Inline: the exact button
+      padding (10px 20px) and the trailing chevron SVG geometry, both
+      one-off civic-form ornament that does not belong in the contract.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>gov-start-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* GDS Transport is licensed and not webfont-hosted; fallback is Arial,
+     which is what GOV.UK serves to most browsers. No font import. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-8);
+    flex-wrap: wrap;
+  }
+
+  /* The button. Square corners, bottle-green, hard 2px under-shadow.
+   * Padding values are inline because GOV.UK's exact paddings are
+   * (spacing-2 minus border-width) on each side, which does not map
+   * cleanly to the contract spacing scale. */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    appearance: none;
+    border: 2px solid transparent;
+    background: var(--ds-accent);
+    color: #ffffff;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);   /* 24px; the oversized start-now affordance. */
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: 8px 10px 7px 10px;     /* GOV.UK computed padding; bottom 1px short to seat the shadow. */
+    border-radius: var(--ds-radius-none);
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-sm); /* 0 2px 0 #0b5c3e; the press base. */
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: var(--ds-accent-2);  /* Same shade as the shadow; the press collapses on hover. */
+  }
+  /* Active: the button drops by the shadow height. GOV.UK uses `top: 2px`
+   * with the button position:relative, which keeps the shadow visually
+   * intact while the label moves. This is the entire press effect. */
+  .btn:active {
+    top: 2px;
+    box-shadow: none;
+    color: #ffffff;
+  }
+  /* Focus: yellow flood, black text, hard 4px black under-shadow. The
+   * whole tab changes; there is no outline ring offset. Accessibility
+   * by overwhelming contrast change, not by line-around. */
+  .btn:focus-visible,
+  .btn.is-focus {
+    outline: 3px solid transparent;
+    background: var(--ds-focus-ring);
+    color: var(--ds-text);
+    box-shadow: 0 -2px var(--ds-focus-ring), 0 4px var(--ds-text);
+  }
+  .btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: var(--ds-shadow-sm);
+    top: 0;
+  }
+
+  /* Start chevron. Inline SVG geometry; the angle and stroke are
+   * specific to this button, not a contract concern. */
+  .btn__chevron {
+    width: 16px;
+    height: 20px;
+    margin-left: var(--ds-space-1);
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Demo specimen scaffolding. Sans labels above each state. */
+  .group { display: flex; flex-direction: column; align-items: flex-start; gap: var(--ds-space-3); }
+  .state-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+</style>
+</head>
+<body>
+  <div class="group">
+    <span class="state-label">rest</span>
+    <button type="button" class="btn">
+      Start now
+      <svg class="btn__chevron" viewBox="0 0 33 40" focusable="false" aria-hidden="true">
+        <path d="M0 0h13l20 20-20 20H0l20-20z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="group">
+    <span class="state-label">hover</span>
+    <button type="button" class="btn" style="background: var(--ds-accent-2);">
+      Start now
+      <svg class="btn__chevron" viewBox="0 0 33 40" focusable="false" aria-hidden="true">
+        <path d="M0 0h13l20 20-20 20H0l20-20z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="group">
+    <span class="state-label">focus</span>
+    <button type="button" class="btn is-focus">
+      Start now
+      <svg class="btn__chevron" viewBox="0 0 33 40" focusable="false" aria-hidden="true">
+        <path d="M0 0h13l20 20-20 20H0l20-20z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="group">
+    <span class="state-label">active</span>
+    <button type="button" class="btn" style="top: 2px; box-shadow: none;">
+      Start now
+      <svg class="btn__chevron" viewBox="0 0 33 40" focusable="false" aria-hidden="true">
+        <path d="M0 0h13l20 20-20 20H0l20-20z"/>
+      </svg>
+    </button>
+  </div>
+</body>
+</html>

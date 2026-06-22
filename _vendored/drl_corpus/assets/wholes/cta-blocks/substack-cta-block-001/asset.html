@@ -1,0 +1,225 @@
+<!--
+  Asset: substack-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: cta-block; paper-and-ink + serif-display-sans-body + primary-pill + ghost-button
+  Inspired by: Substack (substack.com/, substack.com/about, substack.com/going-paid)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001          (warm off-white paper, near-black ink)
+    - type-pairings/serif-mono-editorial-001   (editorial serif display, sans body)
+    - headings/display-editorial-serif-001     (serif display, sentence-case)
+    - body-text/lead-paragraph-001             (supporting dek measure)
+    - buttons/primary-pill-001                 (Substack-orange rounded pill)
+    - buttons/ghost-bordered-001               (hairline ghost secondary)
+  Notes:
+    - The closing CTA sits flush on the off-white page surface, centered.
+      No card, no tinted band, no shadow. The Substack orange on the
+      primary pill is the only saturated moment; everything else is
+      ink on paper, with the editorial serif on the headline acting
+      as the platform's signature.
+    - Headline is sentence-case ("You deserve to make money doing the
+      work you love.", "Make money from your work. Start today.")
+      rendered in the display serif. One short dek under it. Primary
+      "Start your Substack" pill plus secondary "Talk to our team"
+      ghost link.
+    - Inline ornament: the pill radius (radius-full) and the large
+      serif display step (4xl) are deliberate; this block reads as
+      editorial-publication rather than SaaS-marketing because the
+      headline lives in the same typographic register that Substack
+      uses for the writing surface itself.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 stands in for Substack's display serif. Open-license
+     substitute in the same transitional-serif register; Substack's own
+     production face is a custom serif licensed to the platform. Inter
+     stands in for the marketing sans on dek + button labels. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: warm off-white paper. The closing CTA sits flush
+   * on the page surface; no separator above it, just generous
+   * whitespace and a centered content column. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container holding a centered content
+   * column. Substack's closing CTAs are centered; the headline
+   * carries the block on its own typographic weight. */
+  .cta {
+    width: 100%;
+    max-width: 1080px;
+    padding: var(--ds-space-10) var(--ds-space-5);
+    position: relative;
+  }
+
+  /* Optional decorative ornament: Substack's /about closing CTA
+   * references a background image ("about-v2-final-cta-bg.jpg") that
+   * sits subtly behind the type. Stand-in here is a soft radial
+   * paper-warmth wash that lifts the headline off the page without
+   * adding chrome. Inline ornament rather than a token because the
+   * exact radial recipe is per-asset. */
+  .cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse at 50% 30%,
+        rgba(255, 103, 25, 0.05) 0%,
+        rgba(255, 103, 25, 0) 60%
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .cta__content {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Display headline: editorial serif, sentence case, tight leading.
+   * The platform's signature; the headline reads as continuous with
+   * the Substack writing surface itself. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.2vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance lets short sentence-case
+     * headlines hold their final word; the serif benefits more from
+     * balance than a sans because the descender rhythm is uneven. */
+  }
+
+  /* Dek: one short sentence, sans, muted ink. Sits under the serif
+   * headline at lg with relaxed leading. */
+  .cta__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+    font-weight: 400;
+  }
+
+  /* Button row: primary orange pill + ghost secondary. Centered
+   * under the dek, wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+
+  /* Primary: Substack-orange fill, white label, full pill radius.
+   * The single saturated moment in the block. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Ghost secondary: no fill, hairline border in warm gray, ink
+   * label. Same vertical dimensions as the primary so the pair
+   * reads as a deliberate two-action set. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: rgba(26, 26, 26, 0.04);
+    border-color: var(--ds-text-muted);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
+      <p class="cta__dek">Vivamus nec libero non nisi convallis fringilla. Praesent fermentum, sapien eu lacinia tristique.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Start your lorem</a>
+        <a class="cta__btn--ghost" href="#">Talk to our team</a>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

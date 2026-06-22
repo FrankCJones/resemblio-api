@@ -1,0 +1,365 @@
+<!--
+  Asset: aworking-library-essay-layout-001
+  Class: article-layouts
+  Pattern: centered-narrow-column
+  Inspired by: A Working Library (aworkinglibrary.com)
+  Notes:
+    - Long-form essay layout in the paper-and-ink register. Narrow
+      single column, Chaparral Pro serif at AWL native sizes, date
+      stamp top-left, kicker label (Reading Note / Writing), 27px H1,
+      lead-style dek, body at 18px line-height 1.4, indented serif
+      blockquote with a faint left rule, inline underlined links,
+      bracketed footnote markers, a hairline-capped Related section
+      and a one-line essay-end footer. No chromatic accent. No boxes.
+    - Variable: every color, font, size, leading, spacing step (all
+      --ds-*). Inline: the blockquote left-rule width (3px) and color,
+      the footnote-marker baseline shift, and the link underline-offset
+      step on hover. Each is a one-off character moment that would
+      over-promote a slot if pulled into the contract.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>aworking-library-essay-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font import. The token contract names Chaparral Pro (per A
+  Working Library's published colophon) but the family is licensed
+  through Typekit. The fallback chain (Newsreader, Charter, Georgia)
+  carries the same humanist-serif register on systems without the
+  licensed family.
+-->
+<style>
+  /* Reset only what this layout needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Narrow reading column. 32em is the AWL-register measure: long
+     enough for 12-14 word lines, short enough that the eye returns
+     without effort. */
+  .essay {
+    max-width: 32em;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-10);
+  }
+
+  /* Header block. Date stamp first, kicker label second, title third.
+     The order mirrors the AWL essay-page sequence. */
+  .essay header {
+    margin-bottom: var(--ds-space-8);
+  }
+  .date-stamp {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .essay h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);   /* AWL native H1 = 27px */
+    font-weight: 400;                /* AWL display weight; the size is the emphasis */
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    font-style: italic;
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 28em;
+  }
+
+  /* Body prose. Paragraphs are unindented; rhythm comes from the
+     margin between them. The first paragraph carries no special
+     treatment - this is a reading layout, not a magazine. */
+  .essay .prose p {
+    margin: 0 0 var(--ds-space-5);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .essay .prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Inline links. Underlined at rest in keeping with the AWL idiom -
+     the underline IS the affordance. Hover thickens the underline by
+     widening its offset; the color stays put. */
+  .essay .prose a,
+  .essay .endnotes a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;     /* inline: hairline underline matches body weight */
+    text-underline-offset: 2px;          /* inline: drop the underline below descenders */
+    transition: text-underline-offset var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .essay .prose a:hover,
+  .essay .endnotes a:hover {
+    color: var(--ds-accent-2);
+    text-underline-offset: 4px;          /* inline: hover lifts the underline 2px lower */
+  }
+  .essay .prose a:focus-visible,
+  .essay .endnotes a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Blockquote. Indented from both sides; a faint left rule
+     announces the quotation without painting a box. Body size and
+     line-height stay constant; the indent and the rule do the work. */
+  .essay blockquote {
+    margin: var(--ds-space-6) 0;
+    padding: 0 var(--ds-space-5) 0 var(--ds-space-5);
+    border-left: 3px solid var(--ds-hairline);   /* inline: 3px rule; thicker than --ds-hairline use elsewhere on this page */
+    color: var(--ds-text);
+  }
+  .essay blockquote p {
+    margin: 0 0 var(--ds-space-4);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .essay blockquote p:last-child {
+    margin-bottom: 0;
+  }
+  .essay blockquote cite {
+    display: block;
+    margin-top: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    color: var(--ds-text-muted);
+  }
+
+  /* H2 inside the essay. A quieter step above body; restraint matters. */
+  .essay .prose h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+    color: var(--ds-text);
+  }
+
+  /* Footnote markers. Bracketed numbers, slight baseline shift, mute
+     color. The marker is a link that jumps to the endnote block. */
+  .essay .prose sup.fn {
+    font-size: var(--ds-text-xs);
+    line-height: 0;
+    vertical-align: 0.4em;                 /* inline: marker baseline shift; pseudo-superscript */
+    margin-left: 1px;
+  }
+  .essay .prose sup.fn a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .essay .prose sup.fn a::before { content: "["; }
+  .essay .prose sup.fn a::after  { content: "]"; }
+
+  /* Endnote block. A hairline cap, a small heading, ordered list at
+     small size. Markers in muted ink. */
+  .essay .endnotes {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .essay .endnotes h3 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .essay .endnotes ol {
+    margin: 0;
+    padding-left: var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .essay .endnotes ol li {
+    margin-bottom: var(--ds-space-3);
+  }
+  .essay .endnotes ol li::marker {
+    color: var(--ds-text-muted);
+  }
+
+  /* Related-reading block at end-of-essay. Hairline cap, italic kicker,
+     a short unordered list with no bullets, each line a link. */
+  .essay .related {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .essay .related h3 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .essay .related ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .essay .related ul li {
+    margin-bottom: var(--ds-space-2);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .essay .related ul li a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .essay .related ul li .venue {
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin-left: 0.4em;
+  }
+
+  /* Essay-end footer. Single line, muted, centered. The signature
+     close on AWL essays. */
+  .essay .colophon {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-5);
+    text-align: center;
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+  <article class="essay">
+    <header>
+      <p class="date-stamp">
+        <time datetime="2026-05-19">2026-05-19</time>
+      </p>
+      <p class="kicker">A Reading Note</p>
+      <h1>Lorem ipsum dolor sit amet, consectetur adipiscing</h1>
+      <p class="dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua, in
+        the company of one well-thumbed paperback.
+      </p>
+    </header>
+
+    <div class="prose">
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam, quis nostrud exercitation
+        <a href="#">ullamco laboris</a> nisi ut aliquip ex ea commodo
+        consequat. Duis aute irure dolor in reprehenderit in voluptate
+        velit esse cillum dolore eu fugiat nulla pariatur.<sup class="fn"><a href="#fn-1" id="fnref-1">1</a></sup>
+      </p>
+
+      <p>
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa
+        qui officia deserunt mollit anim id est laborum. Sed ut
+        perspiciatis unde omnis iste natus error sit voluptatem
+        accusantium doloremque laudantium, totam rem aperiam.
+      </p>
+
+      <blockquote>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. At
+          vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti
+          quos dolores et quas molestias excepturi sint occaecati
+          cupiditate non provident.
+        </p>
+        <p>
+          Similique sunt in culpa qui officia deserunt mollitia animi,
+          id est laborum et dolorum fuga.
+        </p>
+        <cite>Lorem Auctor, <em>De Rerum Lorem</em>, 1938</cite>
+      </blockquote>
+
+      <p>
+        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+        odit aut fugit, sed quia consequuntur magni dolores eos qui
+        ratione voluptatem sequi nesciunt. Neque porro quisquam est,
+        qui dolorem ipsum quia <a href="#">dolor sit amet</a>,
+        consectetur, adipisci velit.<sup class="fn"><a href="#fn-2" id="fnref-2">2</a></sup>
+      </p>
+
+      <h2>Et harum quidem rerum</h2>
+
+      <p>
+        Temporibus autem quibusdam et aut officiis debitis aut rerum
+        necessitatibus saepe eveniet ut et voluptates repudiandae sint
+        et molestiae non recusandae. Itaque earum rerum hic tenetur a
+        sapiente delectus, ut aut reiciendis voluptatibus maiores alias
+        consequatur aut perferendis doloribus asperiores repellat.
+      </p>
+
+      <p>
+        On nam libero tempore, cum soluta nobis est eligendi optio
+        cumque nihil impedit quo minus id quod maxime placeat facere
+        possimus, omnis voluptas assumenda est, omnis dolor
+        reprehendendus.
+      </p>
+    </div>
+
+    <section class="endnotes" aria-labelledby="endnotes-title">
+      <h3 id="endnotes-title">Notes</h3>
+      <ol>
+        <li id="fn-1">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          <a href="#fnref-1" aria-label="Return to text">&crarr;</a>
+        </li>
+        <li id="fn-2">
+          Cf. Lorem Auctor, <em>De Lorem</em>, p. 42.
+          <a href="#fnref-2" aria-label="Return to text">&crarr;</a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="related" aria-labelledby="related-title">
+      <h3 id="related-title">Related reading</h3>
+      <ul>
+        <li>
+          <a href="#">Lorem ipsum dolor sit amet</a>
+        </li>
+        <li>
+          <a href="#">Consectetur adipiscing elit</a>
+          <span class="venue">(Lorem Review)</span>
+        </li>
+        <li>
+          <a href="#">Sed do eiusmod tempor incididunt</a>
+        </li>
+      </ul>
+    </section>
+
+    <footer class="colophon">
+      <p>Lorem ipsum, set on paper, read in the morning.</p>
+    </footer>
+  </article>
+</body>
+</html>

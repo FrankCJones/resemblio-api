@@ -1,0 +1,124 @@
+/*
+ * editorial-newspaper-001 tokens
+ *
+ * Editorial newspaper headline register inspired by The Markup (themarkup.org).
+ * Deep navy page background with cream cards holding ivar-display serif
+ * headlines; the hot-coral pink reserved for section labels in messina sans.
+ * The pairing reads as investigative-newspaper: heavy serif for story titles,
+ * compact sans in saturated accent for editorial wayfinding.
+ *
+ * Native values from devtools_computed_style inspection 2026-05-19.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Navy + cream + coral. The Markup's identity hinges on this triad: cards
+   * sit on the navy field; the coral is the only saturated color allowed,
+   * carrying section labels and active states.
+   */
+  --ds-bg:           #242A49;   /* The Markup body bg; rgb(36,42,73) from devtools. Deep ink-navy. */
+  --ds-surface:      #FBFAF5;   /* Cream card surface where headlines actually live; off-white with warmth. */
+  --ds-surface-2:    #FFFFFF;   /* Pure white for nested or modal moments. */
+  --ds-text:         #242A49;   /* Headlines and body inside cards reuse the navy as ink. */
+  --ds-text-muted:   #6A7090;   /* Captions and metadata; navy desaturated toward cool grey. */
+  --ds-text-strong:  #161A33;   /* Reserved emphasis; navy pushed a step darker. */
+  --ds-border:       #D8D6CF;   /* Hairlines on cards and rules; cream-neutral. */
+  --ds-hairline:     #EAE7DD;   /* Faintest separator; bg-on-cream divider. */
+  --ds-accent:       #FF335F;   /* The Markup section-label color; rgb(255,51,95) from devtools. */
+  --ds-accent-2:     #D11A45;   /* Pressed/hover variant of the coral; one step deeper. */
+  --ds-success:      #2A6F44;   /* Editorial green, calibrated for cream. */
+  --ds-warning:      #B5871F;   /* Old-gold warning, calibrated for cream. */
+  --ds-error:        #C0392B;   /* Newspaper red, distinct from the brand coral. */
+  --ds-info:         #FF335F;   /* Info inherits the brand coral; the publication has one accent role. */
+  --ds-focus-ring:   #FF335F;   /* Coral; visible against both the navy field and cream surface. */
+
+  /* ---------- Type families ----------
+   * The Markup ships two faces: ivar-display serif for editorial headlines
+   * and messina (a humanist sans) for labels, body, and small text. Fallbacks
+   * choose nearest cousins: Newsreader for ivar-display, Inter for messina.
+   */
+  --ds-font-display: "Newsreader", "Ivar Display", "Tiempos Headline", Georgia, "Times New Roman", serif;
+  --ds-font-body:    "Inter", "Messina Sans", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", "Messina Sans", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Modular scale. The Markup H1 hits 36px on the live homepage; section
+   * H2/H3 labels at 18-21px; article H3 cards at 18-30px. The scale here
+   * runs higher than the live site so the asset can also serve as the
+   * display-scale headline pattern for editorial wholes.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;   /* The Markup body small */
+  --ds-text-base: 16px;
+  --ds-text-lg:   18px;   /* The Markup article card H3 */
+  --ds-text-xl:   21px;   /* The Markup section label H2 */
+  --ds-text-2xl:  30px;   /* The Markup featured article H3 */
+  --ds-text-3xl:  36px;   /* The Markup hero H1 size */
+  --ds-text-4xl:  52px;
+  --ds-text-5xl:  68px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Display sits tight (1.05-1.1) per the live h1 (39.6/36 = 1.1).
+   */
+  --ds-leading-tight:   1.1;     /* Matches The Markup h1 line-height ratio. */
+  --ds-leading-snug:    1.2;     /* Matches the H3 card line-height ratio (25.2/21). */
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;       /* The Markup ships letter-spacing: normal on h1; no negative tracking. */
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid; standard editorial rhythm.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * The Markup cards have square corners; editorial-print register favors zero radius.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   2px;
+  --ds-radius-lg:   4px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cream cards on navy use no shadow; the contrast of surface against bg
+   * does the lift. Defaults provided for downstream wholes.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   0 1px 2px rgba(20,24,48,0.10);
+  --ds-shadow-md:   0 4px 12px rgba(20,24,48,0.14);
+  --ds-shadow-lg:   0 12px 32px rgba(20,24,48,0.18);
+  --ds-shadow-2xl:  0 24px 48px rgba(20,24,48,0.24);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

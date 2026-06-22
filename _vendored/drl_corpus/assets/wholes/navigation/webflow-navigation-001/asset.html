@@ -1,0 +1,380 @@
+<!--
+  Asset: webflow-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav, mega-menu
+  Inspired by: Webflow (webflow.com home + /pricing, 2026-05-20)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001       (light surface, single blue accent stands in for Webflow brand blue)
+    - type-pairings/sans-system-modern-001 (Inter-family humanist sans body)
+    - wordmarks/mono-uppercase-001         (wordmark register on the left)
+    - links/nav-link-underline-001         (muted-to-strong nav link register)
+  Notes:
+    - Bright canvas, near-black wordmark, saturated blue CTA. Bar pins
+      to the top of the viewport with a single hairline at its foot;
+      no shadow at rest. This is the light-mode counterpart to the
+      Vercel/Geist dark flush-top register.
+    - Variable vs inline: every color, type, spacing, radius, motion
+      value comes from the contract. Inline ornaments: the wordmark
+      glyph geometry (Webflow's "W" mark is per-site), the 72 px bar
+      height (layout decision, not a contract value), and the
+      dropdown's two-column 520 px grid.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter is the closest open humanist sans to Webflow's marketing
+     register. The contract resolves the system stack as the fallback. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Flush-top bar. Sticks to the top edge of the viewport. Hairline
+   * border at the foot is the only chrome; no shadow at rest. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: bar height is a layout decision specific to the
+     * Webflow marketing register. */
+    height: 72px;
+  }
+
+  .nav__inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Wordmark. Geometric "W" glyph plus a near-black text wordmark in
+   * the display family. The glyph stands in for Webflow's mark. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .nav__wordmark svg {
+    /* Inline ornament: stylized "W" mark. Single geometric path. */
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+  .nav__wordmark-text {
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* Link cluster. Sits to the right of the wordmark, left-aligned within
+   * its grid cell. Sentence-case copy throughout. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { position: relative; display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-md);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__caret {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    color: currentColor;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .has-menu:hover .nav__caret,
+  .has-menu:focus-within .nav__caret {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown panel. Surfaces below the bar with a hairline edge and a
+   * soft cool shadow on the bright canvas. CSS-only on hover/focus. */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 520px;
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-3);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+    /* Inline ornament: two-column dropdown grid. Layout decision
+     * specific to Webflow's Solutions / Resources menus. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .has-menu:hover .nav__menu,
+  .has-menu:focus-within .nav__menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .nav__menu-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--ds-space-3);
+    align-items: start;
+    padding: var(--ds-space-3);
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    color: var(--ds-text);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__menu-item:hover { background: var(--ds-surface-2); }
+  .nav__menu-icon {
+    /* Inline ornament: hairline-outlined square that stands in for the
+     * per-item glyph. Not a reusable atom at this scale. */
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-surface);
+    flex: 0 0 28px;
+  }
+  .nav__menu-item-title {
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav__menu-item-sub {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin-top: 2px;
+  }
+
+  /* Action cluster. Login (muted) plus a saturated-blue "Get started"
+   * CTA. Webflow keeps the CTA at a small radius, not a pill, and lets
+   * the blue do the work. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .nav__signin {
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text-strong); }
+
+  .nav__primary {
+    appearance: none;
+    border: 1px solid var(--ds-accent);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 10px var(--ds-space-4);
+    border-radius: var(--ds-radius-lg);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .nav__primary:active { transform: translateY(1px); }
+  .nav__primary:focus-visible,
+  .nav__signin:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the bar has a surface to sit over. */
+  .page-stub {
+    max-width: 1280px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 800px) {
+    .nav__links, .nav__signin { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__primary, .nav__link, .nav__menu, .nav__caret { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <!-- Stylized "W" mark stands in for Webflow's wordmark glyph. -->
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M3 7 L9 25 L14 13 L19 25 L25 7 L21 7 L18 18 L14 7 L11 7 L7 18 L7 7 Z" fill="currentColor"/>
+        </svg>
+        <span class="nav__wordmark-text">Lorem</span>
+      </a>
+
+      <ul class="nav__links">
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Solutions
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem for Marketers</span>
+                <span class="nav__menu-item-sub">Ipsum dolor sit amet consectetur adipiscing elit.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem for Engineering</span>
+                <span class="nav__menu-item-sub">Curabitur nec libero non nisi convallis fringilla.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem for Service Providers</span>
+                <span class="nav__menu-item-sub">Aenean fermentum magna at suscipit lacinia.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Lorem for Enterprise</span>
+                <span class="nav__menu-item-sub">Vivamus sit amet sapien velit tincidunt.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li class="has-menu">
+          <button class="nav__link" type="button" aria-haspopup="true" aria-expanded="false">
+            Resources
+            <svg class="nav__caret" viewBox="0 0 10 10" aria-hidden="true">
+              <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav__menu" role="menu">
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Templates</span>
+                <span class="nav__menu-item-sub">Sed do eiusmod tempor incididunt ut labore.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Blog</span>
+                <span class="nav__menu-item-sub">Ut enim ad minim veniam quis nostrud.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Community</span>
+                <span class="nav__menu-item-sub">Quis nostrud exercitation ullamco laboris.</span>
+              </span>
+            </a>
+            <a class="nav__menu-item" href="#" role="menuitem">
+              <span class="nav__menu-icon" aria-hidden="true"></span>
+              <span>
+                <span class="nav__menu-item-title">Help center</span>
+                <span class="nav__menu-item-sub">Aliquip ex ea commodo consequat duis aute.</span>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li><a class="nav__link" href="#">Enterprise</a></li>
+        <li><a class="nav__link" href="#">Pricing</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Log in</a>
+        <a class="nav__primary" href="#">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

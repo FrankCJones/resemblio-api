@@ -1,0 +1,462 @@
+<!--
+  Asset: cursor
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Cursor (cursor.com)
+  Notes:
+    - Cursor's full component vocabulary in one voice on one page:
+      navigation (mono wordmark, sans links, cyan-accent download CTA),
+      buttons (primary cyan, secondary hairline, link arrow, icon
+      square), kbd shortcut pills (the signature mono pill family),
+      model pills (Composer 2.5, Auto, GPT-5.5, Opus 4.7), version
+      chips, mono metadata labels, eyebrow kickers, hairline cards,
+      code-editor screenshot frame (the hero imagery convention),
+      pricing-tier card, status badge, theme toggle, avatar, tooltip,
+      download CTA. All on a near-white surface with a single cyan
+      accent doing the chromatic punctuation work.
+    - All components share tokens.css. Inline ornament limited to the
+      code-editor faux-syntax coloring and the cyan-tinted hover lift
+      on the primary CTA. The kbd pill family is the load-bearing
+      lesson: mono, small radius, hairline border, 1.5px shadow lift
+      under the keycap.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Navigation - mono wordmark, sans links, cyan-accent download CTA. */
+  .nav { display: flex; flex-wrap: wrap; gap: var(--ds-space-5); align-items: center; padding: var(--ds-space-3) 0; border-bottom: 1px solid var(--ds-hairline); }
+  .nav-mark { display: inline-flex; align-items: center; gap: var(--ds-space-2); font-family: var(--ds-font-display); font-size: var(--ds-text-base); font-weight: 600; color: var(--ds-text); }
+  .nav-mark .glyph { width: 18px; height: 18px; border-radius: 4px; background: var(--ds-text); display: inline-block; }
+  .nav-links { display: flex; gap: var(--ds-space-4); margin-left: var(--ds-space-6); flex: 1; }
+  .nav-links a { font-size: var(--ds-text-sm); color: var(--ds-text-muted); text-decoration: none; transition: color var(--ds-duration-fast) var(--ds-ease-standard); }
+  .nav-links a:hover { color: var(--ds-text); }
+
+  /* Buttons - primary cyan, secondary hairline, link arrow, icon square. */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-accent); color: var(--ds-text);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600;
+    padding: 0 var(--ds-space-4); height: 40px;
+    border-radius: var(--ds-radius-md);
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard), transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-primary:hover { background: var(--ds-accent-2); }
+  .btn-primary:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  .btn-secondary {
+    appearance: none; cursor: pointer;
+    background: var(--ds-surface); color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 500;
+    padding: 0 var(--ds-space-4); height: 40px;
+    border-radius: var(--ds-radius-md);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-secondary:hover { background: var(--ds-surface-2); }
+
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-1);
+    color: var(--ds-text); font-size: var(--ds-text-sm); font-weight: 500; text-decoration: none;
+  }
+  .btn-link .arrow { color: var(--ds-accent-2); transition: transform var(--ds-duration-fast) var(--ds-ease-standard); }
+  .btn-link:hover .arrow { transform: translateX(2px); }
+
+  .btn-icon {
+    appearance: none; border: 1px solid var(--ds-border); cursor: pointer;
+    width: 40px; height: 40px; border-radius: var(--ds-radius-md);
+    background: var(--ds-surface); color: var(--ds-text);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-icon:hover { background: var(--ds-surface-2); }
+  .btn-icon svg { width: 16px; height: 16px; }
+
+  .btn-sm { height: 32px; font-size: var(--ds-text-xs); padding: 0 var(--ds-space-3); }
+
+  /* Download CTA - the marketing CTA with the platform glyph + arrow. */
+  .btn-download {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--ds-text); color: var(--ds-bg);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 600;
+    padding: 0 var(--ds-space-5); height: 44px;
+    border-radius: var(--ds-radius-md);
+    display: inline-flex; align-items: center; gap: var(--ds-space-3);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-download:hover { background: #1F2125; }
+  .btn-download .platform { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); opacity: 0.7; letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; }
+
+  /* Kbd shortcut pills - mono, small radius, hairline border, subtle
+     1.5px shadow under the keycap. The signature small-utility piece. */
+  .kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; padding: 0 6px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-bottom-width: 2px;
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); font-weight: 500;
+    color: var(--ds-text);
+    box-shadow: 0 1px 0 rgba(11,12,14,0.04);
+  }
+  .kbd-combo { display: inline-flex; align-items: center; gap: var(--ds-space-1); }
+  .kbd-combo .plus { color: var(--ds-text-muted); font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); }
+
+  /* Model pills - cyan-tinted brand pill carrying the AI model name. */
+  .pill-model {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    background: rgba(61,217,214,0.12); color: var(--ds-accent-2);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); font-weight: 500;
+    padding: 4px 10px;
+    border-radius: var(--ds-radius-full);
+    border: 1px solid rgba(61,217,214,0.30);
+  }
+  .pill-model .dot { width: 6px; height: 6px; border-radius: var(--ds-radius-full); background: var(--ds-accent); }
+
+  .pill-version {
+    display: inline-flex; align-items: center;
+    background: var(--ds-surface-2); color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    padding: 3px 8px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Badges - status pill with dot, "New" cyan accent pill. */
+  .badge-status {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    background: var(--ds-surface); color: var(--ds-text);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-xs); font-weight: 500;
+    padding: 4px 10px; border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+  }
+  .badge-status .dot { width: 6px; height: 6px; border-radius: var(--ds-radius-full); background: var(--ds-success); }
+  .badge-status.is-info .dot { background: var(--ds-accent); }
+  .badge-status.is-warn .dot { background: var(--ds-warning); }
+  .badge-status.is-error .dot { background: var(--ds-error); }
+
+  .badge-new {
+    display: inline-flex; align-items: center;
+    background: var(--ds-accent); color: var(--ds-text);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-2xs); font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    padding: 3px 7px; border-radius: var(--ds-radius-sm);
+  }
+
+  /* Mono metadata labels - read-time, dates, category eyebrows. */
+  .meta {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted); letter-spacing: var(--ds-tracking-wide);
+  }
+  .meta .sep { color: var(--ds-border); }
+
+  /* Eyebrow kicker - uppercase category tag in cyan, sans (not mono),
+     per the cursor.com/blog convention. */
+  .kicker {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xs); font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-accent-2);
+  }
+
+  /* Cards - hairline card and elevated hover. */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ds-space-5); }
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard), transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .card:hover { box-shadow: var(--ds-shadow-md); }
+  .card__title { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); font-weight: 600; line-height: var(--ds-leading-snug); letter-spacing: var(--ds-tracking-tight); margin: 0; color: var(--ds-text); }
+  .card__dek { color: var(--ds-text-muted); font-size: var(--ds-text-sm); line-height: var(--ds-leading-relaxed); margin: 0; }
+
+  /* Pricing card - the cyan-highlighted tier */
+  .card-pricing {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .card-pricing.is-featured { border-color: var(--ds-accent); box-shadow: 0 0 0 1px var(--ds-accent); }
+  .card-pricing__tier { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); }
+  .card-pricing__price { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl); line-height: 1; letter-spacing: var(--ds-tracking-tight); font-weight: 600; color: var(--ds-text); margin: 0; }
+  .card-pricing__price small { font-size: var(--ds-text-sm); font-weight: 400; color: var(--ds-text-muted); letter-spacing: 0; }
+  .card-pricing__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .card-pricing__list li { display: flex; align-items: center; gap: var(--ds-space-2); font-size: var(--ds-text-sm); color: var(--ds-text); }
+  .card-pricing__list svg { width: 14px; height: 14px; color: var(--ds-accent-2); flex-shrink: 0; }
+
+  /* Code-editor screenshot frame - the hero imagery convention.
+     Hairline border, chrome row with traffic lights, mono filename
+     tab, body painted with faux-syntax coloring. */
+  .editor {
+    background: #0E1014;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--ds-shadow-lg);
+    font-family: var(--ds-font-mono);
+    color: #D4D4D8;
+    max-width: 720px;
+  }
+  .editor__chrome { display: flex; align-items: center; gap: var(--ds-space-2); padding: var(--ds-space-3) var(--ds-space-4); border-bottom: 1px solid rgba(255,255,255,0.06); background: #16181D; }
+  .editor__dots { display: inline-flex; gap: 6px; }
+  .editor__dots span { width: 10px; height: 10px; border-radius: var(--ds-radius-full); background: #2A2D33; }
+  .editor__tab { font-size: var(--ds-text-xs); color: #A1A1AA; margin-left: var(--ds-space-3); padding: 4px 10px; border-radius: var(--ds-radius-sm); background: #1F2228; }
+  .editor__body { padding: var(--ds-space-5); font-size: var(--ds-text-sm); line-height: var(--ds-leading-normal); }
+  .editor__body .ln { color: #4B5159; display: inline-block; width: 22px; text-align: right; margin-right: var(--ds-space-3); user-select: none; }
+  .tok-key { color: #C792EA; }
+  .tok-fn  { color: var(--ds-accent); }
+  .tok-str { color: #C3E88D; }
+  .tok-com { color: #5A6066; font-style: italic; }
+
+  /* Tooltip - dark pill that hovers above a target. */
+  .tip { position: relative; display: inline-block; }
+  .tip__target { font-family: var(--ds-font-mono); font-size: var(--ds-text-sm); color: var(--ds-text); padding: 6px 10px; background: var(--ds-surface-2); border-radius: var(--ds-radius-sm); border: 1px solid var(--ds-border); cursor: default; }
+  .tip__pop {
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: #0B0C0E; color: #F4F4F5;
+    font-size: var(--ds-text-xs); white-space: nowrap;
+    padding: 6px 10px; border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-lg);
+  }
+  .tip__pop::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #0B0C0E; }
+
+  /* Avatar - circular initials avatar. */
+  .avatar { width: 32px; height: 32px; border-radius: var(--ds-radius-full); display: inline-flex; align-items: center; justify-content: center; font-family: var(--ds-font-body); font-size: var(--ds-text-xs); font-weight: 600; color: var(--ds-text); background: var(--ds-surface-2); border: 1px solid var(--ds-border); }
+  .avatar.is-cyan { background: var(--ds-accent); color: var(--ds-text); border-color: var(--ds-accent-2); }
+
+  /* Theme toggle - the light/dark segmented control. */
+  .toggle { display: inline-flex; padding: 3px; background: var(--ds-surface-2); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-full); }
+  .toggle button { appearance: none; border: 0; cursor: pointer; background: transparent; font-family: var(--ds-font-body); font-size: var(--ds-text-xs); padding: 6px 12px; border-radius: var(--ds-radius-full); color: var(--ds-text-muted); display: inline-flex; align-items: center; gap: var(--ds-space-1); }
+  .toggle button.is-active { background: var(--ds-surface); color: var(--ds-text); box-shadow: var(--ds-shadow-sm); }
+
+  /* Type block - the marketing display + lead. */
+  .type-block { display: flex; flex-direction: column; gap: var(--ds-space-3); max-width: 60ch; }
+  .display-h1 { font-family: var(--ds-font-display); font-size: var(--ds-text-5xl); line-height: var(--ds-leading-tight); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: 0; color: var(--ds-text-strong); }
+  .lead { font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); color: var(--ds-text-muted); margin: 0; }
+  .inline-link { color: var(--ds-text); text-decoration: underline; text-decoration-color: var(--ds-accent); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <span class="nav-mark"><span class="glyph"></span>lorem</span>
+    <h1>Lorem ipsum: Cursor's component vocabulary in one voice</h1>
+    <p>Dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Navigation</div>
+    <nav class="nav">
+      <span class="nav-mark"><span class="glyph"></span>lorem</span>
+      <div class="nav-links">
+        <a href="#">Product</a>
+        <a href="#">Enterprise</a>
+        <a href="#">Pricing</a>
+        <a href="#">Changelog</a>
+        <a href="#">Docs</a>
+      </div>
+      <button class="btn-secondary btn-sm">Sign in</button>
+      <button class="btn-primary btn-sm">Download</button>
+    </nav>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Buttons + download CTA</div>
+    <div class="row">
+      <button class="btn-primary">Get Started</button>
+      <button class="btn-secondary">See pricing</button>
+      <a class="btn-link" href="#">Learn about agentic dev <span class="arrow">-&gt;</span></a>
+      <button class="btn-icon" aria-label="Search">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="row">
+      <button class="btn-download">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5a4 4 0 0 0-4 4v1H3a1 1 0 0 0-1 1v6.5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7.5a1 1 0 0 0-1-1h-1v-1a4 4 0 0 0-4-4Zm-2.5 4a2.5 2.5 0 0 1 5 0v1h-5v-1Z"/></svg>
+        <span>Download for macOS</span>
+        <span class="platform">Apple Silicon</span>
+      </button>
+      <button class="btn-secondary">All downloads</button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Kbd shortcut pills</div>
+    <div class="row">
+      <kbd class="kbd">&#8984;K</kbd>
+      <kbd class="kbd">&#8984;L</kbd>
+      <kbd class="kbd">Tab</kbd>
+      <kbd class="kbd">Esc</kbd>
+      <kbd class="kbd">@</kbd>
+      <kbd class="kbd">/</kbd>
+      <kbd class="kbd">!</kbd>
+      <span class="kbd-combo">
+        <kbd class="kbd">&#8984;</kbd><span class="plus">+</span><kbd class="kbd">Shift</kbd><span class="plus">+</span><kbd class="kbd">P</kbd>
+      </span>
+      <span class="kbd-combo">
+        <kbd class="kbd">Ctrl</kbd><span class="plus">+</span><kbd class="kbd">Enter</kbd>
+      </span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Model pills + version chips</div>
+    <div class="row">
+      <span class="pill-model"><span class="dot"></span>Auto</span>
+      <span class="pill-model"><span class="dot"></span>Composer 2.5</span>
+      <span class="pill-model"><span class="dot"></span>GPT-5.5</span>
+      <span class="pill-model"><span class="dot"></span>Opus 4.7</span>
+      <span class="pill-version">v0.42.1</span>
+      <span class="pill-version">beta</span>
+      <span class="badge-new">New</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Status badges + mono metadata</div>
+    <div class="row">
+      <span class="badge-status"><span class="dot"></span>Ready</span>
+      <span class="badge-status is-info"><span class="dot"></span>In Progress</span>
+      <span class="badge-status is-warn"><span class="dot"></span>Reviewing</span>
+      <span class="badge-status is-error"><span class="dot"></span>Failed</span>
+    </div>
+    <div class="row">
+      <span class="kicker">Research</span>
+      <span class="meta">3 min read <span class="sep">/</span> May 20, 2026</span>
+      <span class="meta">@lorem-ipsum <span class="sep">/</span> v1.4.2</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Cards</div>
+    <div class="cards">
+      <article class="card">
+        <span class="kicker">Product</span>
+        <h2 class="card__title">Lorem ipsum dolor sit amet</h2>
+        <p class="card__dek">Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.</p>
+        <a class="btn-link" href="#">Learn more <span class="arrow">-&gt;</span></a>
+      </article>
+      <article class="card-pricing is-featured">
+        <span class="card-pricing__tier">Pro</span>
+        <p class="card-pricing__price">$20<small> / month</small></p>
+        <ul class="card-pricing__list">
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Extended agent limits</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Access to frontier models</li>
+          <li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Lorem ipsum dolor sit</li>
+        </ul>
+        <button class="btn-primary">Get Pro</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Code-editor screenshot frame</div>
+    <div class="editor" role="img" aria-label="Code editor screenshot">
+      <div class="editor__chrome">
+        <span class="editor__dots"><span></span><span></span><span></span></span>
+        <span class="editor__tab">Dashboard.tsx</span>
+      </div>
+      <pre class="editor__body" style="margin: 0;"><code><span class="ln">1</span><span class="tok-com">// Lorem ipsum dolor sit amet</span>
+<span class="ln">2</span><span class="tok-key">import</span> { <span class="tok-fn">useState</span> } <span class="tok-key">from</span> <span class="tok-str">'react'</span>;
+<span class="ln">3</span>
+<span class="ln">4</span><span class="tok-key">export function</span> <span class="tok-fn">Dashboard</span>() {
+<span class="ln">5</span>  <span class="tok-key">const</span> [count, setCount] = <span class="tok-fn">useState</span>(<span class="tok-str">0</span>);
+<span class="ln">6</span>  <span class="tok-key">return</span> &lt;<span class="tok-fn">div</span>&gt;{count}&lt;/<span class="tok-fn">div</span>&gt;;
+<span class="ln">7</span>}</code></pre>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Tooltip, avatar, theme toggle</div>
+    <div class="row">
+      <span class="tip">
+        <span class="tip__target">&#8984;K</span>
+        <span class="tip__pop">Open the command palette</span>
+      </span>
+      <span class="avatar">LI</span>
+      <span class="avatar is-cyan">FJ</span>
+      <span class="avatar">BD</span>
+      <div class="toggle" role="tablist">
+        <button class="is-active" role="tab" aria-selected="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M6 1v1.5M6 9.5V11M1 6h1.5M9.5 6H11M2.4 2.4l1 1M8.6 8.6l1 1M2.4 9.6l1-1M8.6 3.4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Light
+        </button>
+        <button role="tab" aria-selected="false">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10 7a4 4 0 0 1-5-5 4 4 0 1 0 5 5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          Dark
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Body type</div>
+    <div class="type-block">
+      <h2 class="display-h1">Lorem ipsum dolor sit amet</h2>
+      <p class="lead">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, <a class="inline-link" href="#">quis nostrud exercitation</a> ullamco laboris nisi ut aliquip.</p>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

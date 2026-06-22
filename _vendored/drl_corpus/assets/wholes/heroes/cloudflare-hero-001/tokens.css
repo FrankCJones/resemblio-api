@@ -1,0 +1,136 @@
+/*
+ * cloudflare-hero-001 tokens
+ *
+ * Native token values for the Cloudflare marketing hero, drawn from WebFetch
+ * inspection on 2026-05-20 across two surfaces: the Developer Platform
+ * page (workers.cloudflare.com 301s to /developer-platform; dek "Deploy
+ * serverless code instantly across the globe...") and the Global Network
+ * page (cloudflare.com/network; H1 "Cloudflare Global Network", CTAs
+ * "Test your latency" + "Start building for free", background pattern
+ * asset present behind the hero).
+ *
+ * Cloudflare serves AI-LLM markdown to WebFetch which strips computed
+ * styles. Color tokens here are the documented Cloudflare brand
+ * identity (signature orange #F6821F, Marker Black #222222) used
+ * consistently across the marketing surface for a decade; the asset's
+ * score (B) reflects that hero copy and structure were verified live
+ * via WebFetch, while the precise hex values come from the long-running
+ * Cloudflare brand vocabulary rather than a devtools read.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cloudflare runs a near-white canvas with Marker Black headline ink,
+   * cool gray body copy, and a single saturated signature-orange accent
+   * reserved for the primary CTA, link color, and the underline that
+   * appears under product-name kickers. The hero typically sits over a
+   * subtle network-globe or PoP-map background pattern (a confirmed
+   * "Background Pattern" asset is referenced on the Global Network page). */
+  --ds-bg:           #FFFFFF;   /* Marketing canvas; the hero block sits on white. */
+  --ds-surface:      #FAFAFA;   /* Subtle wash for inset bands and the network-pattern underlay. */
+  --ds-surface-2:    #F2F2F2;   /* Card chrome wash. */
+  --ds-text:         #222222;   /* Cloudflare "Marker Black"; H1 and primary copy. */
+  --ds-text-muted:   #595959;   /* Cool gray; dek paragraph and helper copy. */
+  --ds-text-strong:  #000000;   /* Reserved for deepest emphasis. */
+  --ds-border:       #E5E5E5;   /* Standard component border. */
+  --ds-hairline:     #EAEAEA;   /* Section dividers, framework strip rules. */
+  --ds-accent:       #F6821F;   /* Cloudflare signature orange; primary CTA fill, links, kicker underline. */
+  --ds-accent-2:     #FBAD41;   /* Lighter orange; hover lift on the primary CTA. */
+  --ds-success:      #2DB55D;   /* Operational green; status indicators. */
+  --ds-warning:      #F6821F;   /* Brand orange doubles as warning per Cloudflare convention. */
+  --ds-error:        #BD2527;   /* Cloudflare red; failure / destructive. */
+  --ds-info:         #0051C3;   /* Deep blue; informational status. */
+  --ds-focus-ring:   #F6821F;   /* The brand orange carries focus, not a halo. */
+
+  /* ---------- Type families ----------
+   * Cloudflare ships with a humanist sans across display and body; the
+   * marketing register uses Inter or a similar Inter-class face as a
+   * system fallback. Mono carries technical kickers (latency metadata,
+   * region labels, CLI snippets in the developer surface). */
+  --ds-font-display: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Marketing H1 sets at 64-88px on wide viewports; the Cloudflare hero
+   * is willing to go large on positioning headlines ("Connect, protect,
+   * and build with Cloudflare"). Dek lands at 18-20px. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono kicker uppercase label. */
+  --ds-text-sm:   14px;   /* CTA label, topbar nav. */
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek paragraph. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   /* Hero H1 baseline at desktop. */
+  --ds-text-6xl:  88px;   /* Wide-viewport ceiling. */
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Cloudflare display copy holds slightly tighter than body; the mono
+   * kicker takes a wider step so READY / EDGE / WORKERS reads as label. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * Marketing rhythm: 24px between hero column elements, 96-128px above
+   * the headline column on desktop, 48px between dek and CTA pair. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Cloudflare uses subtle rounded corners on buttons (4-6px), not pills.
+   * The orange primary CTA is a small-radius rectangle that matches the
+   * dev-tool register; pricing tiers and cards lift to 8px. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;     /* Kicker chip. */
+  --ds-radius-md:   6px;     /* Primary CTA rectangle. */
+  --ds-radius-lg:   8px;     /* Card chrome. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Light surfaces; minimal shadow language. Hairlines do most of the
+   * separating work. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 4px rgba(246,130,31,0.22);   /* Orange focus glow. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Standard humanist-sans marketing transitions; 150ms ease for hover. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,448 @@
+<!--
+  Asset: quanta-science-article-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, editorial-hero, pull-quote-breakout, drop-cap
+  Inspired by: Quanta Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (paper-and-ink palette context)
+    - type-pairings/quanta-science-pair-001      (three-family editorial system)
+    - kickers/quanta-section-001                 (lowercase violet topic kicker)
+    - headings/editorial-newspaper-001           (serif feature headline register)
+    - body-text/lead-paragraph-001               (lifted lead-paragraph register)
+    - body-text/drop-cap-editorial-001           (drop-cap opening the article body)
+    - body-text/pull-quote-breakout-001          (full-measure quote interrupting the column)
+    - links/inline-link-accent-001               (violet inline links inside prose)
+    - dividers/hairline-rule-001                 (byline / section hairlines)
+  Notes:
+    - The mechanic is a tight centered measure (~660px) anchored by a
+      feature header above and a related-reading rail below, with one
+      violet kicker as the only chromatic punctuation in the entire page.
+    - Variable: the violet, the family stack, the 17px body register.
+      Inline ornament: the drop-cap geometry (offset, line drop), the
+      figure aspect-ratio crop, and the pull-quote's left-padded indent.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-science-article-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 substitutes for Tiempos; Inter for GT America. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * The article sits on the page; the header and the body share a
+   * single narrow measure. The related-reading block uses the wider
+   * grid to break the column at the end.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Editorial-hero register: lowercase violet kicker (from
+   * kickers/quanta-section-001), serif feature headline, serif dek,
+   * sans byline + date below a hairline.
+   */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Kicker - the Quanta signature. From atoms/kickers/quanta-section-001.
+   * Lowercase humanist sans, deep violet, small size, positive tracking. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-decoration: none;
+    margin-bottom: var(--ds-space-5);
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__kicker:hover,
+  .article__kicker:focus-visible {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Feature headline - editorial serif at 4xl, tight leading, negative
+   * tracking. From atoms/headings/editorial-newspaper-001 register. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - the standfirst paragraph beneath the title. Serif, lifted
+   * size (lg), muted color. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    font-style: italic;
+    /* Italic because the dek operates as a different voice than the
+     * body that follows; not a contract variant, just an editorial
+     * convention for the standfirst on long-form features. */
+  }
+
+  /* Byline strip - sans, muted, sits below a hairline. From
+   * dividers/hairline-rule-001 pattern. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .article__byline-name {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .article__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column - the load-bearing rhythm decision. ~660px
+   * measure keeps line length to ~65 characters at 17px body.
+   */
+  .article__body {
+    max-width: 660px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Drop cap - from body-text/drop-cap-editorial-001 pattern. Inline
+   * ornament: the exact line-drop (3 lines), the right-padding to the
+   * next character, and the slight vertical offset are tuned per face. */
+  .article__body p.has-drop-cap::first-letter {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    float: left;
+    font-size: 4.6em;            /* Inline ornament: 4.6em yields ~3-line drop on Source Serif 4. */
+    line-height: 0.85;            /* Inline ornament: tightens the cap into the line grid. */
+    padding-right: 0.08em;        /* Inline ornament: optical air after the cap. */
+    margin-top: 0.08em;           /* Inline ornament: drops baseline alignment for the cap. */
+    color: var(--ds-text-strong);
+  }
+
+  /* Inline link inside prose - from links/inline-link-accent-001.
+   * Violet color, underline at rest, lift on hover. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside the body - serif, slightly larger, generous gap
+   * above. The serif keeps the headline voice consistent with the
+   * feature title. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* ---------------- Pull quote ----------------
+   * From body-text/pull-quote-breakout-001. Breaks the column to the
+   * full feature measure; large serif italic, hairline ruled top and
+   * bottom, attribution in sans below.
+   */
+  .article__pullquote {
+    margin: var(--ds-space-8) auto;
+    padding: var(--ds-space-6) 0;
+    max-width: 760px;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: the slight negative side margin would let this
+     * bleed past the body column when the viewport allows. Skipped
+     * here to keep the demo predictable. */
+  }
+  .article__pullquote blockquote {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .article__pullquote cite {
+    display: block;
+    margin-top: var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Figure ----------------
+   * Image breaks the column to the wider feature measure. Caption
+   * sits flush left under the image in sans, muted, with a violet
+   * credit hair-line on the right.
+   */
+  .article__figure {
+    margin: var(--ds-space-8) auto;
+    max-width: 880px;
+    /* Inline ornament: 880px is wider than body (660) but narrower
+     * than header (760); the figure intentionally breaks BOTH measures
+     * to claim visual weight as the illustration moment. */
+  }
+  .article__figure-frame {
+    aspect-ratio: 16 / 9;
+    /* Inline ornament: 16:9 chosen for the demo placeholder; live
+     * articles vary per illustration crop. */
+    background:
+      linear-gradient(135deg, #F2F2F2 0%, #E5E5E5 50%, #F2F2F2 100%);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+  }
+  .article__figure figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    margin-top: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+  }
+  .article__figure-credit {
+    color: var(--ds-accent);
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* ---------------- Section divider ----------------
+   * A spaced asterism between major body sections; from
+   * dividers/hairline-rule-001 register but rendered as glyphic
+   * punctuation rather than a rule. */
+  .article__sectionbreak {
+    display: block;
+    text-align: center;
+    margin: var(--ds-space-8) 0;
+    color: var(--ds-text-muted);
+    letter-spacing: 1em;
+    /* Inline ornament: 1em letter-spacing on the three-dot glyph
+     * produces the asterism spacing; not a contract slot because it
+     * is a single-purpose ornament. */
+    font-size: var(--ds-text-sm);
+  }
+
+  /* ---------------- Related reading ----------------
+   * End-of-article rail: violet kicker, three serif card titles, sans
+   * meta. Sits in the wider article grid (1080) to break out of the
+   * body column.
+   */
+  .article__related {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .article__related-kicker {
+    display: block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-5);
+  }
+  .article__related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .article__related-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .article__related-card .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-decoration: none;
+  }
+  .article__related-card .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__related-card .title:hover,
+  .article__related-card .title:focus-visible {
+    color: var(--ds-accent);
+  }
+  .article__related-card .meta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-6) var(--ds-space-5) var(--ds-space-10); }
+    .article__related-grid { grid-template-columns: 1fr; }
+    .article__pullquote blockquote { font-size: var(--ds-text-xl); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__kicker,
+    .article__body a,
+    .article__related-card .title { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <a class="article__kicker" href="#">quantum mechanica</a>
+      <h1 class="article__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit per saecula scientiae</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, ipsum lectus malesuada ante.</p>
+      <div class="article__meta">
+        <span>By <span class="article__byline-name">Lorem Ipsum Dolor</span></span>
+        <span>Contributing Writer</span>
+        <time datetime="2026-05-19">May 19, 2026</time>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p class="has-drop-cap">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. <a href="#">Pellentesque habitant morbi tristique senectus</a> et netus et malesuada fames ac turpis egestas.</p>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <figure class="article__figure">
+        <div class="article__figure-frame" role="img" aria-label="Lorem ipsum illustration placeholder"></div>
+        <figcaption>
+          <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. A schematic representation of the quantum lorem.</span>
+          <span class="article__figure-credit">samuel velasco / lorem ipsum</span>
+        </figcaption>
+      </figure>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Curabitur lacinia magna ut nibh tempor, ut fermentum sapien fringilla. Sed at lacus nec sapien fringilla ullamcorper. Quisque sit amet aliquet enim. Praesent ultrices, lorem in tincidunt suscipit, justo nibh euismod nibh, sit amet condimentum lectus sapien at lectus.</p>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. <a href="#">Nemo enim ipsam voluptatem</a>.</p>
+
+      <aside class="article__pullquote">
+        <blockquote>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."</blockquote>
+        <cite>Lorem Ipsum, Princeton University</cite>
+      </aside>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident. Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+
+      <div class="article__sectionbreak" aria-hidden="true">. . .</div>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</p>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum.</p>
+
+    </div>
+
+    <aside class="article__related" aria-label="Related reading">
+      <span class="article__related-kicker">read also</span>
+      <ul class="article__related-grid">
+        <li class="article__related-card">
+          <a class="kicker" href="#">cosmologia</a>
+          <a class="title" href="#">Lorem ipsum dolor sit amet consectetur adipiscing elit</a>
+          <span class="meta">Lorem Ipsum · Apr 24, 2026</span>
+        </li>
+        <li class="article__related-card">
+          <a class="kicker" href="#">cryptographia</a>
+          <a class="title" href="#">Vivamus sit amet sapien velit curabitur nec libero non nisi</a>
+          <span class="meta">Dolor Sit · Apr 02, 2026</span>
+        </li>
+        <li class="article__related-card">
+          <a class="kicker" href="#">neuroscientia</a>
+          <a class="title" href="#">Aenean fermentum magna at suscipit lacinia ipsum lectus</a>
+          <span class="meta">Amet Consectetur · Mar 18, 2026</span>
+        </li>
+      </ul>
+    </aside>
+
+  </article>
+</body>
+</html>

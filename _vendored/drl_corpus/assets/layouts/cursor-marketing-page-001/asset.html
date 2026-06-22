@@ -1,0 +1,849 @@
+<!--
+  Asset: cursor-marketing-page-001
+  Class: layouts
+  Pattern: triple-cta-hero, product-screenshot-hero, alternating-feature-rows, testimonial-stack, mega-footer
+  Inspired by: Cursor (cursor.com)
+  Notes:
+    - Marketing homepage skeleton: flush-top nav with product dropdown,
+      triple-CTA hero with product-screenshot canvas underneath, brand
+      statement band, vertical technology timeline, alternating
+      text-left/screenshot-right feature rows (Agents, Autonomy,
+      Multi-tool, Tab, Enterprise), testimonial stack with six attributed
+      quotes, model-selection feature, codebase-understanding row,
+      changelog list, careers row, blog-highlights cards, final
+      triple-CTA, five-column footer with SOC2 badge and language switch.
+      Container caps at 1200px; product-screenshot bands extend wider.
+    - Variable: section sequence, container width, vertical rhythm,
+      typographic role per slot, screenshot vs photograph imagery.
+      Inline: container max-width (1200px), feature-row gap, code-well
+      aspect, testimonial avatar size, footer column count (5).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cursor-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter Display / Inter are the Cursor marketing faces; the
+  mono face is a Geist Mono / JetBrains Mono class. Faces are not loaded
+  in the asset; the fallback chains in tokens.css carry the register so
+  the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1200px so feature rows and the footer five
+   * columns sit comfortably; product-screenshot bands extend beyond. */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-bottom: 1px solid var(--ds-hairline); }
+
+  /* Hero. Triple-CTA, product-screenshot canvas below the type. */
+  .hero {
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-8);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-10);
+    }
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 20ch;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-5xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 56ch;
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+  .cta--primary {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-text-strong);
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-border);
+  }
+  .cta--accent {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-accent);
+  }
+
+  /* Product-screenshot canvas. Sits below the hero copy; soft shadow
+   * lifts it off the near-white surface. The IDE screenshot lives here. */
+  .product-canvas {
+    margin-top: var(--ds-space-10);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-lg);
+    min-height: 420px;
+    padding: var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Brand statement band. Centered prose moment between hero and
+   * the alternating feature rows. */
+  .brand-statement {
+    text-align: center;
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .brand-statement__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 48ch;
+  }
+
+  /* Timeline. Vertical year markers with feature names. */
+  .timeline {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+    padding-block: var(--ds-space-10);
+  }
+  .timeline__row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--ds-space-6);
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .timeline__year {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .timeline__feature {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* Section heading register. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 24ch;
+  }
+  .section-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Feature row. Alternating text/screenshot split. */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .feature-row { grid-template-columns: 1fr 1.2fr; gap: var(--ds-space-12); }
+    .feature-row--reverse .feature-row__copy { order: 2; }
+  }
+  .feature-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-tight);
+    max-width: 22ch;
+  }
+  .feature-row__body {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-4);
+    max-width: 44ch;
+  }
+  .feature-row__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent-2);
+    border-bottom: 1px solid var(--ds-accent-2);
+    padding-bottom: 2px;
+  }
+
+  /* Product-screenshot slot inside a feature row. */
+  .feature-row__visual {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    min-height: 320px;
+    padding: var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Testimonial stack. Six attributed quotes; one per row at full width. */
+  .testimonial {
+    border-top: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .testimonial { grid-template-columns: 64px 1fr; gap: var(--ds-space-6); }
+  }
+  .testimonial__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-tight);
+    max-width: 60ch;
+  }
+  .testimonial__attribution {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /* Code-well used in feature rows that show CLI install or shortcuts. */
+  .code-well {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Changelog list. Stacked dated rows. */
+  .changelog-row {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: var(--ds-space-5);
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    align-items: baseline;
+  }
+  .changelog-row__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .changelog-row__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+  }
+  .changelog-row__link {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-accent-2);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Blog highlight cards. Four-up on desktop, stacked metadata. */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .blog-grid { grid-template-columns: repeat(4, 1fr); } }
+  .blog-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .blog-card__meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .blog-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* Final CTA block: centered, triple-CTA mirroring the hero. */
+  .cta-final {
+    text-align: center;
+    padding-block: var(--ds-space-16);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page container, five-column grid. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(5, 1fr); } }
+  .footer-col__title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .footer-col__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .footer-legal {
+    margin-top: var(--ds-space-10);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a cursor-tagged navigation/* whole
+         (ai-product-nav-001). Product dropdown, Enterprise, Pricing,
+         Resources dropdown, Sign in, Contact sales, Download. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Product / Enterprise / Pricing / Resources
+      </div>
+      <div class="slot" style="min-width: 240px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Sign in / Contact sales / Download
+      </div>
+    </nav>
+
+    <!-- Section: hero. Triple-CTA, product-screenshot canvas below the type. -->
+    <header class="hero" aria-label="Hero">
+      <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Download macOS</a>
+        <a href="#" class="cta--ghost">Try mobile agent</a>
+        <a href="#" class="cta--ghost">Request demo</a>
+      </div>
+      <div class="product-canvas" role="img" aria-label="Product screenshot placeholder">
+        ide-screenshot-canvas
+      </div>
+    </header>
+
+    <!-- Section: brand statement band. -->
+    <section class="brand-statement" aria-label="Brand statement">
+      <p class="brand-statement__body">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna.
+      </p>
+      <a href="#" class="feature-row__link">Lorem ipsum -&gt;</a>
+    </section>
+
+    <!-- Section: technology timeline (vertical year markers). -->
+    <section class="section" aria-label="Technology timeline">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+      <div class="timeline" role="list">
+        <div class="timeline__row" role="listitem">
+          <span class="timeline__year">2022</span>
+          <span class="timeline__feature">Lorem ipsum dolor</span>
+        </div>
+        <div class="timeline__row" role="listitem">
+          <span class="timeline__year">2023</span>
+          <span class="timeline__feature">Consectetur adipiscing</span>
+        </div>
+        <div class="timeline__row" role="listitem">
+          <span class="timeline__year">2024</span>
+          <span class="timeline__feature">Sed do eiusmod tempor</span>
+        </div>
+        <div class="timeline__row" role="listitem">
+          <span class="timeline__year">2025</span>
+          <span class="timeline__feature">Ut labore et dolore</span>
+        </div>
+        <div class="timeline__row" role="listitem">
+          <span class="timeline__year">2026</span>
+          <span class="timeline__feature">Magna aliqua published</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Agents feature row (text-left, product-screenshot right). -->
+    <section class="section section--ruled" aria-label="Agents feature">
+      <div class="feature-row">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Lorem ipsum dolor sit amet.</h3>
+          <p class="feature-row__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <a href="#" class="feature-row__link">Lorem about ipsum -&gt;</a>
+        </div>
+        <div class="feature-row__visual">agents-composer-screenshot</div>
+      </div>
+    </section>
+
+    <!-- Section: Autonomy / parallel processing feature row (reverse). -->
+    <section class="section section--ruled" aria-label="Autonomy feature">
+      <div class="feature-row feature-row--reverse">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Consectetur adipiscing elit.</h3>
+          <p class="feature-row__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+          </p>
+          <a href="#" class="feature-row__link">Lorem about dolor -&gt;</a>
+        </div>
+        <div class="feature-row__visual">cloud-agents-task-board</div>
+      </div>
+    </section>
+
+    <!-- Section: Multi-tool integration row. CLI install + chat thread. -->
+    <section class="section section--ruled" aria-label="Multi-tool integration">
+      <div class="feature-row">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Ut enim ad minim veniam.</h3>
+          <p class="feature-row__body">
+            Quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat duis aute irure.
+          </p>
+          <pre class="code-well">$ curl -fsSL https://lorem.ipsum/install | sh</pre>
+        </div>
+        <div class="feature-row__visual">slack-channel-thread</div>
+      </div>
+    </section>
+
+    <!-- Section: Tab autocomplete feature row (reverse). -->
+    <section class="section section--ruled" aria-label="Tab autocomplete">
+      <div class="feature-row feature-row--reverse">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Duis aute irure dolor.</h3>
+          <p class="feature-row__body">
+            In reprehenderit in voluptate velit esse cillum dolore eu
+            fugiat nulla pariatur excepteur sint occaecat.
+          </p>
+          <a href="#" class="feature-row__link">Lorem about tab -&gt;</a>
+        </div>
+        <div class="feature-row__visual">react-component-code</div>
+      </div>
+    </section>
+
+    <!-- Section: Enterprise trust row. Team photograph slot. -->
+    <section class="section section--ruled" aria-label="Enterprise trust">
+      <div class="feature-row">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Cupidatat non proident sunt.</h3>
+          <p class="feature-row__body">
+            In culpa qui officia deserunt mollit anim id est laborum sed
+            ut perspiciatis unde omnis iste natus error.
+          </p>
+          <a href="#" class="feature-row__link">Explore lorem -&gt;</a>
+        </div>
+        <div class="feature-row__visual">team-photograph</div>
+      </div>
+    </section>
+
+    <!-- Section: testimonial stack. Six attributed quotes. -->
+    <section class="section" aria-label="Testimonials">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+
+      <div class="testimonial">
+        <div class="testimonial__avatar"></div>
+        <div>
+          <p class="testimonial__quote">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore.
+          </p>
+          <span class="testimonial__attribution">Lorem Ipsum -- Dolor Sit</span>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial__avatar"></div>
+        <div>
+          <p class="testimonial__quote">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua.
+          </p>
+          <span class="testimonial__attribution">Amet Consectetur -- Adipiscing</span>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial__avatar"></div>
+        <div>
+          <p class="testimonial__quote">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip ex ea commodo.
+          </p>
+          <span class="testimonial__attribution">Sed Eiusmod -- Tempor</span>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial__avatar"></div>
+        <div>
+          <p class="testimonial__quote">
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur.
+          </p>
+          <span class="testimonial__attribution">Ut Labore -- Et Dolore</span>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial__avatar"></div>
+        <div>
+          <p class="testimonial__quote">
+            Excepteur sint occaecat cupidatat non proident sunt in culpa
+            qui officia deserunt mollit anim id est.
+          </p>
+          <span class="testimonial__attribution">Magna Aliqua -- Quis</span>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial__avatar"></div>
+        <div>
+          <p class="testimonial__quote">
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium totam.
+          </p>
+          <span class="testimonial__attribution">Nostrud Exerci -- Ullamco</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: model selection feature (centered with dropdown slot). -->
+    <section class="section section--ruled" aria-label="Model selection">
+      <div style="text-align: center;">
+        <span class="section-kicker">Lorem ipsum</span>
+        <h2 class="section-heading" style="margin-inline: auto;">Lorem ipsum dolor sit amet.</h2>
+        <p class="feature-row__body" style="margin: 0 auto var(--ds-space-5); max-width: 56ch;">
+          Sed do eiusmod tempor incididunt ut labore et dolore magna
+          aliqua excepteur sint occaecat.
+        </p>
+        <div class="slot" style="margin: 0 auto; max-width: 320px;">
+          <span class="slot__label">model-selector-dropdown</span>
+          Agent / Auto / Composer / Opus / GPT
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: codebase understanding feature row. -->
+    <section class="section section--ruled" aria-label="Codebase understanding">
+      <div class="feature-row">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Quis nostrud exercitation.</h3>
+          <p class="feature-row__body">
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat duis
+            aute irure dolor in reprehenderit.
+          </p>
+          <a href="#" class="feature-row__link">Lorem about indexing -&gt;</a>
+        </div>
+        <div class="feature-row__visual">codebase-semantic-search</div>
+      </div>
+    </section>
+
+    <!-- Section: changelog list. Four dated rows. -->
+    <section class="section section--ruled" aria-label="Changelog">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum changelog.</h2>
+      <div role="list">
+        <div class="changelog-row" role="listitem">
+          <span class="changelog-row__date">May 19, 2026</span>
+          <span class="changelog-row__title">Lorem ipsum dolor sit amet release</span>
+          <a href="#" class="changelog-row__link">Read -&gt;</a>
+        </div>
+        <div class="changelog-row" role="listitem">
+          <span class="changelog-row__date">May 16, 2026</span>
+          <span class="changelog-row__title">Consectetur adipiscing elit update</span>
+          <a href="#" class="changelog-row__link">Read -&gt;</a>
+        </div>
+        <div class="changelog-row" role="listitem">
+          <span class="changelog-row__date">May 14, 2026</span>
+          <span class="changelog-row__title">Sed do eiusmod tempor improvement</span>
+          <a href="#" class="changelog-row__link">Read -&gt;</a>
+        </div>
+        <div class="changelog-row" role="listitem">
+          <span class="changelog-row__date">May 13, 2026</span>
+          <span class="changelog-row__title">Ut labore et dolore patch</span>
+          <a href="#" class="changelog-row__link">Read -&gt;</a>
+        </div>
+      </div>
+      <p style="margin-top: var(--ds-space-5);"><a href="#" class="feature-row__link">See what is new -&gt;</a></p>
+    </section>
+
+    <!-- Section: careers / research row. -->
+    <section class="section section--ruled" aria-label="Careers">
+      <div class="feature-row feature-row--reverse">
+        <div class="feature-row__copy">
+          <span class="section-kicker">Lorem ipsum</span>
+          <h3 class="feature-row__title">Magna aliqua ut enim.</h3>
+          <p class="feature-row__body">
+            Ad minim veniam quis nostrud exercitation ullamco laboris nisi
+            ut aliquip ex ea commodo consequat.
+          </p>
+          <a href="#" class="cta--primary" style="display: inline-block;">Join us</a>
+        </div>
+        <div class="feature-row__visual">research-team-photograph</div>
+      </div>
+    </section>
+
+    <!-- Section: blog highlights. Four-up cards. -->
+    <section class="section section--ruled" aria-label="Blog highlights">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor.</h2>
+      <div class="blog-grid" role="list">
+        <article class="blog-card" role="listitem">
+          <div class="blog-card__meta">Mar 27, 2026 -- Research</div>
+          <h3 class="blog-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+        <article class="blog-card" role="listitem">
+          <div class="blog-card__meta">May 18, 2026 -- Research</div>
+          <h3 class="blog-card__title">Consectetur adipiscing elit eiusmod.</h3>
+        </article>
+        <article class="blog-card" role="listitem">
+          <div class="blog-card__meta">Apr 02, 2026 -- Product</div>
+          <h3 class="blog-card__title">Ut labore et dolore magna.</h3>
+        </article>
+        <article class="blog-card" role="listitem">
+          <div class="blog-card__meta">Mar 19, 2026 -- Research</div>
+          <h3 class="blog-card__title">Excepteur sint occaecat cupidatat.</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: final triple-CTA mirroring the hero. -->
+    <section class="cta-final" aria-label="Final CTA">
+      <h2 class="section-heading" style="margin-inline: auto;">Lorem ipsum now.</h2>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Download macOS</a>
+        <a href="#" class="cta--ghost">Try mobile agent</a>
+        <a href="#" class="cta--ghost">Request demo</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width, outside .page container; five-column grid plus
+       SOC2 badge and language switch in the legal strip. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div>
+          <h4 class="footer-col__title">Product</h4>
+          <ul class="footer-col__list">
+            <li>Lorem</li><li>Ipsum</li><li>Dolor</li><li>Sit</li>
+            <li>Amet</li><li>Consectetur</li><li>Adipiscing</li><li>Elit</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col__title">Resources</h4>
+          <ul class="footer-col__list">
+            <li>Sed</li><li>Eiusmod</li><li>Tempor</li><li>Incididunt</li>
+            <li>Labore</li><li>Dolore</li><li>Magna</li><li>Aliqua</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col__title">Company</h4>
+          <ul class="footer-col__list">
+            <li>Ut</li><li>Enim</li><li>Minim</li><li>Veniam</li>
+            <li>Quis</li><li>Nostrud</li><li>Exerci</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col__title">Legal</h4>
+          <ul class="footer-col__list">
+            <li>Terms</li><li>Privacy</li><li>Data use</li><li>Security</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col__title">Connect</h4>
+          <ul class="footer-col__list">
+            <li>Lorem</li><li>Ipsum</li><li>Dolor</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-legal">
+        <span>(c) Lorem Ipsum 2026</span>
+        <span>SOC 2 -- Type II</span>
+        <span>English / 10 locales</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

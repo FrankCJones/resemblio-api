@@ -1,0 +1,831 @@
+<!--
+  Asset: loom-pricing-page-001
+  Class: layouts
+  Pattern: tiered-pricing-grid, comparison-feature-table, faq-accordions, mega-footer
+  Inspired by: Loom (loom.com/pricing)
+  Notes:
+    - Pricing-page skeleton: nav (flush-top), pricing-hero (centered H1
+      "Choose the plan that fits your needs." plus a team-size slider
+      affordance and a Monthly / Annually segmented toggle with a small
+      "SAVE UP TO 17%" pill marker, no imagery), tiered-pricing-grid
+      (four equal cards Starter $0 / Business $18 / Business + AI $24
+      with MOST POPULAR / Enterprise Custom, with the Business + AI card
+      lifted as the recommended tier via accent purple-blue border plus
+      pill marker), comparison-feature-table (sticky tier-header row
+      over thirteen category-banded sections covering Workspace Members
+      and Videos, Loom AI, Team Workspace, Video Recording, Video
+      Editing, Custom Branding, Content Management, Video Analytics,
+      Video Interaction, Security and Privacy, Admin Controls, Support,
+      Integrations), faq-accordion (ten items), social-proof cta-block
+      ("More than 25 million people across 400,000 companies" with
+      logo strip), mega-footer. The page rides at 1200px; tier cards are
+      equal width on desktop; comparison table is full container-width.
+    - Variable: section sequence, page max-width, tier card structure,
+      billing-toggle pattern, comparison-table category banding, typo
+      role per slot. Inline: page max-width (1200px), four-column tier
+      grid, sticky comparison-header offset, recommended-tier border
+      treatment, CTA button geometry, included / not_available cell
+      glyph, customer-logo-strip row.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>loom-pricing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Loom's marketing site uses a humanist-sans display and body
+  face. We do not load it; the Inter + system-ui fallback in tokens.css
+  carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px so the four-card tier grid, the
+   * comparison table, and the FAQ share the same gutter. Inline value,
+   * not a contract slot, because it is page-grid character.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top with hairline below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  .section { padding-block: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Pricing hero. Centered H1, no imagery. Below the H1 sits a team-size
+   * slider stand-in and a Monthly / Annually segmented toggle with a
+   * "SAVE UP TO 17%" pill. The toggle is the Loom-specific moment on this
+   * hero; structurally it is a `segmented-switch` plus accent pill.
+   */
+  .pricing-hero { text-align: center; padding-block: var(--ds-space-12) var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .pricing-hero { padding-block: var(--ds-space-16) var(--ds-space-10); }
+  }
+  .pricing-hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 22ch;
+  }
+  .pricing-hero__dek {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 60ch;
+  }
+  .billing-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-1);
+    font-size: var(--ds-text-sm);
+  }
+  .billing-toggle__option {
+    padding: var(--ds-space-2) var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    color: var(--ds-text-muted);
+    font-weight: 500;
+  }
+  .billing-toggle__option--active {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-weight: 600;
+  }
+  .save-pill {
+    display: inline-block;
+    margin-left: var(--ds-space-3);
+    padding: 4px var(--ds-space-3);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /*
+   * Tier grid. Four equal cards on desktop, two-up at tablet, single
+   * column on mobile. Business + AI card is recommended and lifts via
+   * accent purple-blue border plus "MOST POPULAR" pill; the surface
+   * stays paper-white so the four cards keep equal mass on the row.
+   */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) {
+    .tier-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .tier-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .tier-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+  .tier-card--featured {
+    /* Recommended tier: purple-blue 2px border, white surface kept. */
+    border-color: var(--ds-accent);
+    border-width: 2px;
+    background: var(--ds-bg);
+  }
+  .tier-card__pill {
+    position: absolute;
+    top: -10px;
+    left: var(--ds-space-5);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    padding: 4px var(--ds-space-3);
+    border-radius: var(--ds-radius-full);
+    text-transform: uppercase;
+  }
+
+  .tier-card__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+  .tier-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .tier-card__price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .tier-card__price-unit {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-1);
+  }
+  .tier-card__tagline {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .tier-card__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .tier-card__feature::before {
+    content: "+ ";
+    font-family: var(--ds-font-mono);
+    color: var(--ds-accent);
+  }
+
+  /* CTA button: md radius (not pill), per Loom chrome. Featured card
+     uses solid accent fill; other cards use outline. */
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    background: transparent;
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+    align-self: stretch;
+    text-align: center;
+  }
+  .tier-card--featured .cta-button,
+  .cta-button--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-color: var(--ds-accent);
+  }
+
+  /*
+   * Comparison feature table. Full container-width, hairline-bordered.
+   * Sticky tier-header row over thirteen category-banded sections;
+   * each category leads with a tinted mono-uppercase band heading. Cells
+   * render check (included), em-marker (not_available), numeric usage
+   * limits, or "Custom".
+   */
+  .compare-section { padding-top: var(--ds-space-10); }
+  .compare-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .compare-table-wrap {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+  }
+  .compare-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    text-align: left;
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+  .compare-table tbody tr.category-band td {
+    background: var(--ds-surface-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .compare-table tbody td {
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    vertical-align: top;
+  }
+  .compare-table tbody tr:first-child td { border-top: 0; }
+  .compare-table .feature-cell { color: var(--ds-text); }
+  .compare-table .cell-tier { color: var(--ds-text); width: 14%; }
+  .compare-table .glyph-included { color: var(--ds-success); font-family: var(--ds-font-mono); }
+  .compare-table .glyph-na { color: var(--ds-text-muted); font-family: var(--ds-font-mono); }
+  .compare-table .cell-unit {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * FAQ accordion. Hairline-divided rows; sans question + mono "+ / -"
+   * affordance. Open items reveal a smaller muted answer.
+   */
+  .faq-list { border-top: 1px solid var(--ds-hairline); }
+  .faq-item { border-bottom: 1px solid var(--ds-hairline); }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--ds-space-5) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+  }
+  .faq-item[open] summary::after { content: "-"; }
+  .faq-item__body {
+    padding-bottom: var(--ds-space-6);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 72ch;
+  }
+  .faq-item__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /*
+   * Social-proof CTA band. Full-width tinted band: large headline, single
+   * primary CTA, then a six-logo customer strip below. Tinted surface
+   * (not gradient) is the Loom move here.
+   */
+  .cta-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    text-align: center;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .cta-band__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 28ch;
+  }
+  .cta-band__sub {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-4) auto 0;
+  }
+  .logo-strip {
+    margin-top: var(--ds-space-10);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .logo-strip { grid-template-columns: repeat(6, 1fr); }
+  }
+  .logo-strip__cell {
+    height: 32px;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Footer band: full-width, sits outside .page container. */
+  .footer-band {
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a loom-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 180px;">
+        <span class="slot__label">cta-button</span>
+        Sign up lorem
+      </div>
+    </nav>
+
+    <!-- Section: pricing-hero. Title + billing toggle, no imagery. -->
+    <header class="pricing-hero" aria-label="Pricing hero">
+      <h1 class="pricing-hero__title">Choose the lorem ipsum that fits your needs.</h1>
+      <p class="pricing-hero__dek">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore.
+      </p>
+      <div class="billing-toggle" role="tablist" aria-label="Billing cadence">
+        <span class="billing-toggle__option" role="tab">Lorem monthly</span>
+        <span class="billing-toggle__option billing-toggle__option--active" role="tab" aria-selected="true">Lorem annually</span>
+        <span class="save-pill">Save up to 17%</span>
+      </div>
+    </header>
+
+    <!-- Section: tiered-pricing-grid. Four equal cards; third is recommended. -->
+    <section class="section" aria-label="Pricing tiers">
+      <div class="tier-grid">
+
+        <article class="tier-card" aria-label="Starter tier">
+          <span class="tier-card__label">Tier 01</span>
+          <h2 class="tier-card__name">Lorem Starter</h2>
+          <p class="tier-card__price">
+            $0
+            <span class="tier-card__price-unit">Lorem ipsum forever</span>
+          </p>
+          <p class="tier-card__tagline">For individuals lorem ipsum just getting started.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+          </ul>
+          <a class="cta-button" href="#">Sign up lorem</a>
+        </article>
+
+        <article class="tier-card" aria-label="Business tier">
+          <span class="tier-card__label">Tier 02</span>
+          <h2 class="tier-card__name">Lorem Business</h2>
+          <p class="tier-card__price">
+            $18
+            <span class="tier-card__price-unit">per user / month, billed annually</span>
+          </p>
+          <p class="tier-card__tagline">For teams collaborating lorem ipsum on shared workflows.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+          </ul>
+          <a class="cta-button" href="#">Try lorem free</a>
+        </article>
+
+        <article class="tier-card tier-card--featured" aria-label="Business plus AI tier (most popular)">
+          <span class="tier-card__pill">Most popular</span>
+          <span class="tier-card__label">Tier 03</span>
+          <h2 class="tier-card__name">Lorem Business + AI</h2>
+          <p class="tier-card__price">
+            $24
+            <span class="tier-card__price-unit">per user / month, billed annually</span>
+          </p>
+          <p class="tier-card__tagline">For teams needing lorem ipsum AI automation across recordings.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-button" href="#">Try lorem free</a>
+        </article>
+
+        <article class="tier-card" aria-label="Enterprise tier">
+          <span class="tier-card__label">Tier 04</span>
+          <h2 class="tier-card__name">Lorem Enterprise</h2>
+          <p class="tier-card__price">
+            Custom
+            <span class="tier-card__price-unit">Contact lorem sales</span>
+          </p>
+          <p class="tier-card__tagline">For organizations lorem ipsum needing custom controls and support.</p>
+          <ul class="tier-card__features">
+            <li class="tier-card__feature">Lorem ipsum dolor sit amet</li>
+            <li class="tier-card__feature">Consectetur adipiscing elit</li>
+            <li class="tier-card__feature">Sed do eiusmod tempor</li>
+            <li class="tier-card__feature">Incididunt ut labore</li>
+            <li class="tier-card__feature">Et dolore magna aliqua</li>
+            <li class="tier-card__feature">Ut enim ad minim veniam</li>
+            <li class="tier-card__feature">Quis nostrud exercitation</li>
+          </ul>
+          <a class="cta-button" href="#">Contact lorem sales</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section: comparison-feature-table. Sticky tier row over thirteen banded categories. -->
+    <section class="section compare-section" aria-label="Compare plans">
+      <h2 class="compare-heading">Compare lorem plans</h2>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">Starter</th>
+              <th scope="col">Business</th>
+              <th scope="col">Business + AI</th>
+              <th scope="col">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="category-band"><td colspan="5">Lorem workspace members and videos</td></tr>
+            <tr>
+              <td class="feature-cell">Lorem ipsum dolor sit amet</td>
+              <td class="cell-tier"><span class="cell-unit">25</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem AI</td></tr>
+            <tr>
+              <td class="feature-cell">Consectetur adipiscing elit</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem team workspace</td></tr>
+            <tr>
+              <td class="feature-cell">Sed do eiusmod tempor</td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem video recording</td></tr>
+            <tr>
+              <td class="feature-cell">Incididunt ut labore</td>
+              <td class="cell-tier"><span class="cell-unit">5 min</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+              <td class="cell-tier"><span class="cell-unit">Unlimited</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem video editing</td></tr>
+            <tr>
+              <td class="feature-cell">Et dolore magna aliqua</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem custom branding</td></tr>
+            <tr>
+              <td class="feature-cell">Ut enim ad minim veniam</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem content management</td></tr>
+            <tr>
+              <td class="feature-cell">Quis nostrud exercitation</td>
+              <td class="cell-tier"><span class="cell-unit">Basic</span></td>
+              <td class="cell-tier"><span class="cell-unit">Advanced</span></td>
+              <td class="cell-tier"><span class="cell-unit">Advanced</span></td>
+              <td class="cell-tier"><span class="cell-unit">Custom</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem video analytics</td></tr>
+            <tr>
+              <td class="feature-cell">Ullamco laboris nisi</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem video interaction</td></tr>
+            <tr>
+              <td class="feature-cell">Aliquip ex ea commodo</td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem security and privacy</td></tr>
+            <tr>
+              <td class="feature-cell">Duis aute irure dolor</td>
+              <td class="cell-tier"><span class="cell-unit">Standard</span></td>
+              <td class="cell-tier"><span class="cell-unit">Standard</span></td>
+              <td class="cell-tier"><span class="cell-unit">Advanced</span></td>
+              <td class="cell-tier"><span class="cell-unit">SSO + SCIM</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem admin controls</td></tr>
+            <tr>
+              <td class="feature-cell">Reprehenderit in voluptate</td>
+              <td class="cell-tier"><span class="glyph-na">[-]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+              <td class="cell-tier"><span class="glyph-included">[+]</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem support</td></tr>
+            <tr>
+              <td class="feature-cell">Velit esse cillum dolore</td>
+              <td class="cell-tier"><span class="cell-unit">Email</span></td>
+              <td class="cell-tier"><span class="cell-unit">Priority</span></td>
+              <td class="cell-tier"><span class="cell-unit">Priority</span></td>
+              <td class="cell-tier"><span class="cell-unit">Dedicated</span></td>
+            </tr>
+
+            <tr class="category-band"><td colspan="5">Lorem integrations</td></tr>
+            <tr>
+              <td class="feature-cell">Eu fugiat nulla pariatur</td>
+              <td class="cell-tier"><span class="cell-unit">Basic</span></td>
+              <td class="cell-tier"><span class="cell-unit">All</span></td>
+              <td class="cell-tier"><span class="cell-unit">All</span></td>
+              <td class="cell-tier"><span class="cell-unit">Custom</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section: faq-accordion. Ten-item FAQ; hairline-divided rows. -->
+    <section class="section" aria-label="Pricing FAQ">
+      <h2 class="compare-heading">Frequently lorem questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>Can I start a lorem free trial of paid plans?</summary>
+          <div class="faq-item__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <a href="#">Lorem ipsum link</a> for further reading.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What's the lorem difference between buying on the marketplace versus direct?</summary>
+          <div class="faq-item__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Why should I consider lorem Business + AI?</summary>
+          <div class="faq-item__body">
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+            aute irure dolor in reprehenderit in voluptate.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What enterprise-grade security features does lorem offer?</summary>
+          <div class="faq-item__body">
+            Cillum dolore eu fugiat nulla pariatur. Excepteur sint
+            occaecat cupidatat non proident, sunt in culpa qui officia.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What are my lorem payment options?</summary>
+          <div class="faq-item__body">
+            Mollit anim id est laborum. Sed ut perspiciatis unde omnis
+            iste natus error sit voluptatem accusantium doloremque.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What are lorem workspaces and who can I add to mine?</summary>
+          <div class="faq-item__body">
+            Totam rem aperiam, eaque ipsa quae ab illo inventore
+            veritatis et quasi architecto beatae vitae dicta sunt.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Do I get a lorem refund if I deactivate members?</summary>
+          <div class="faq-item__body">
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+            odit aut fugit, sed quia consequuntur magni dolores.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How is my lorem data used?</summary>
+          <div class="faq-item__body">
+            Neque porro quisquam est, qui dolorem ipsum quia dolor sit
+            amet, consectetur, adipisci velit, sed quia non numquam.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Is there a discounted lorem education plan?</summary>
+          <div class="faq-item__body">
+            Eius modi tempora incidunt ut labore et dolore magnam aliquam
+            quaerat voluptatem. Ut enim ad minima veniam.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How do lorem screenshots work?</summary>
+          <div class="faq-item__body">
+            Quis autem vel eum iure reprehenderit qui in ea voluptate
+            velit esse quam nihil molestiae consequatur.
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- CTA band: social-proof tinted band with customer logo strip. -->
+  <aside class="cta-band" aria-label="Social proof CTA">
+    <div class="page">
+      <h2 class="cta-band__heading">More than lorem million people across lorem companies choose us.</h2>
+      <a class="cta-button cta-button--primary" href="#">Get lorem for free</a>
+      <p class="cta-band__sub">For Lorem, Ipsum, Dolor, and Sit.</p>
+      <div class="logo-strip" aria-label="Customer logos">
+        <div class="logo-strip__cell">Lorem 01</div>
+        <div class="logo-strip__cell">Lorem 02</div>
+        <div class="logo-strip__cell">Lorem 03</div>
+        <div class="logo-strip__cell">Lorem 04</div>
+        <div class="logo-strip__cell">Lorem 05</div>
+        <div class="logo-strip__cell">Lorem 06</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Footer: stands in for a loom-tagged mega-footer whole. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

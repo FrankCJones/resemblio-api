@@ -1,0 +1,168 @@
+<!--
+  Asset: maggie-appleton-about-page-001
+  Class: layouts
+  Pattern: centered-narrow-column
+  Inspired by: Maggie Appleton (https://maggieappleton.com/about)
+  Notes:
+    - No marketing hero; the page opens directly into bio prose.
+    - Portraits cluster near the bottom rather than at the top.
+    - Reads as an essay; the same article-layout conventions apply to the bio body.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>maggie-appleton-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+.n-nav { background: var(--ds-bg); border-bottom: 1px solid var(--ds-hairline); }
+.n-nav__inner { max-width: 1200px; margin: 0 auto; padding: 16px 32px;
+                display: flex; align-items: center; gap: 32px; }
+.n-nav__brand { font-family: var(--ds-font-display); font-weight: 600;
+                font-size: var(--ds-text-lg); color: var(--ds-text);
+                text-decoration: none; }
+.n-nav__links { display: flex; gap: 24px; flex: 1; }
+.n-nav__links a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                  font-weight: 500; color: var(--ds-text); text-decoration: none; }
+.n-nav__actions { display: flex; align-items: center; gap: 16px; }
+.n-nav__signin { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                 font-weight: 500; color: var(--ds-text); text-decoration: none; }
+.n-btn { display: inline-flex; padding: 8px 14px; border-radius: var(--ds-radius-sm, 6px);
+         font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+         font-weight: 500; text-decoration: none; }
+.n-btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
+
+.at { background: var(--ds-bg); padding: 96px 32px; }
+.at__inner { max-width: 1100px; margin: 0 auto; }
+.at__head { max-width: 720px; margin-bottom: 48px; }
+.at__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+              text-transform: uppercase; letter-spacing: 0.08em;
+              color: var(--ds-text-muted); }
+.at__title { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
+             margin: 16px 0 12px; line-height: 1.15; }
+.at__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+           color: var(--ds-text-muted); margin: 0; }
+.at__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.at__member { text-align: center; }
+.at__avatar { width: 96px; height: 96px; border-radius: var(--ds-radius-full, 9999px);
+              background: var(--ds-surface-2, var(--ds-surface));
+              margin: 0 auto 16px; }
+.at__member h3 { font-family: var(--ds-font-display); font-size: var(--ds-text-base);
+                 margin: 0 0 4px; }
+.at__member p { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                color: var(--ds-text-muted); margin: 0; }
+
+.cta { background: var(--ds-surface); color: var(--ds-text);
+       padding: 96px 32px; border-top: 1px solid var(--ds-hairline); }
+.cta__inner { max-width: 720px; margin: 0 auto; text-align: center; }
+.cta__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+               text-transform: uppercase; letter-spacing: 0.08em;
+               color: var(--ds-text-muted); }
+.cta__title { font-family: var(--ds-font-display); font-size: var(--ds-text-4xl);
+              line-height: 1.1; margin: 16px 0 12px; letter-spacing: -0.015em; }
+.cta__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
+            color: var(--ds-text-muted); margin: 0 0 32px; }
+.cta__actions { display: inline-flex; gap: 12px; }
+.cta__btn { padding: 12px 20px; border-radius: var(--ds-radius-sm, 6px);
+            font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+            font-weight: 500; text-decoration: none; }
+.cta__btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
+.cta__btn--ghost { background: transparent; color: var(--ds-text);
+                   border: 1px solid var(--ds-border); }
+
+.f-footer { background: var(--ds-bg); color: var(--ds-text);
+            border-top: 1px solid var(--ds-hairline); padding: 64px 32px 24px; }
+.f-footer__inner { max-width: 1200px; margin: 0 auto;
+                   display: grid; grid-template-columns: 1fr 2fr; gap: 48px; }
+.f-footer__wordmark { font-family: var(--ds-font-display); font-weight: 600;
+                      font-size: var(--ds-text-lg); }
+.f-footer__tagline { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+                     color: var(--ds-text-muted); margin: 8px 0 0; max-width: 32ch; }
+.f-footer__cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.f-footer__col h4 { font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+                    text-transform: uppercase; letter-spacing: 0.06em;
+                    color: var(--ds-text-muted); margin: 0 0 12px; font-weight: 500; }
+.f-footer__col a { display: block; font-family: var(--ds-font-body);
+                   font-size: var(--ds-text-sm); color: var(--ds-text);
+                   text-decoration: none; padding: 4px 0; }
+.f-footer__legal { max-width: 1200px; margin: 48px auto 0;
+                   padding-top: 24px; border-top: 1px solid var(--ds-hairline);
+                   font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+                   color: var(--ds-text-muted); }
+
+</style>
+</head>
+<body>
+<header class="n-nav">
+  <div class="n-nav__inner">
+    <a class="n-nav__brand" href="#">Wordmark</a>
+    <nav class="n-nav__links">
+      <a href="#">Lorem</a>
+      <a href="#">Lorem</a>
+      <a href="#">Lorem</a>
+      <a href="#">Lorem</a>
+    </nav>
+    <div class="n-nav__actions">
+      <a class="n-nav__signin" href="#">Sign in</a>
+      <a class="n-btn n-btn--primary" href="#">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<section class="at">
+  <div class="at__inner">
+    <header class="at__head">
+      <span class="at__kicker">New</span>
+      <h2 class="at__title">Lorem ipsum dolor sit amet</h2>
+      <p class="at__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+    </header>
+    <div class="at__grid">
+      <article class="at__member"><div class="at__avatar"></div><h3>Lorem</h3><p>Lorem</p></article>
+      <article class="at__member"><div class="at__avatar"></div><h3>Lorem</h3><p>Lorem</p></article>
+      <article class="at__member"><div class="at__avatar"></div><h3>Lorem</h3><p>Lorem</p></article>
+      <article class="at__member"><div class="at__avatar"></div><h3>Lorem</h3><p>Lorem</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="cta__inner">
+    <span class="cta__kicker">New</span>
+    <h2 class="cta__title">Lorem ipsum dolor sit amet</h2>
+    <p class="cta__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+    <div class="cta__actions">
+      <a class="cta__btn cta__btn--primary" href="#">Get started</a>
+      <a class="cta__btn cta__btn--ghost" href="#">Learn more</a>
+    </div>
+  </div>
+</section>
+
+<footer class="f-footer">
+  <div class="f-footer__inner">
+    <div class="f-footer__brand">
+      <span class="f-footer__wordmark">Wordmark</span>
+      <p class="f-footer__tagline">Tagline goes here</p>
+    </div>
+    <div class="f-footer__cols">
+      <div class="f-footer__col">
+        <h4>Lorem</h4>
+        <a href="#">Lorem</a><a href="#">Lorem</a><a href="#">Lorem</a>
+      </div>
+      <div class="f-footer__col">
+        <h4>Lorem</h4>
+        <a href="#">Lorem</a><a href="#">Lorem</a><a href="#">Lorem</a>
+      </div>
+      <div class="f-footer__col">
+        <h4>Lorem</h4>
+        <a href="#">Lorem</a><a href="#">Lorem</a><a href="#">Lorem</a>
+      </div>
+    </div>
+  </div>
+  <div class="f-footer__legal">
+    <span>© 2026 Lorem Ipsum</span>
+  </div>
+</footer>
+
+</body>
+</html>

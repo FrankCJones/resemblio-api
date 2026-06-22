@@ -1,0 +1,494 @@
+<!--
+  Asset: github-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, story-card-grid, mega-footer
+  Inspired by: GitHub Blog (github.blog/ai-and-ml/...)
+  Notes:
+    - Single-article page skeleton for GitHub's product-blog register:
+      flush-top white nav with green primary CTA, article hero
+      (category breadcrumb eyebrow, large sans display title, byline +
+      date + duration row, full-width feature image with green block
+      decoration), narrow ~720px body column with code blocks and
+      inline figures, callout pull quote, three-up related grid, gray
+      newsletter band, dark charcoal mega-footer.
+    - Variable: section sequence, container max-widths, vertical rhythm,
+      type role per slot. Inline: article-column measure (720px),
+      page max-width (1280px), the byline avatar circle, the feature
+      image aspect ratio (1600x850).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-article-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Mona Sans is GitHub's open variable family. Fallbacks
+  (system sans + Segoe UI + Helvetica Neue) approximate the register
+  when Mona Sans is unavailable. Mono stack matches the SF Mono / SFMono
+  Regular stack GitHub ships for code surfaces.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so nav, related-grid, newsletter,
+   * and footer breathe; article body inside is narrower. Inline value
+   * (page grid character, not a contract slot).
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. The reading rhythm sits near 720px (the ~70ch
+   * Mona Sans body measure GitHub's blog uses). Inline because the
+   * measure is article-page character, not a contract slot.
+   */
+  .column {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__cluster {
+    display: flex;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+  }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid rgba(0,0,0,0.10);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Article hero. Category breadcrumb (uppercase, muted), display
+   * title (sans 4xl), byline row with avatar + name + handle + date +
+   * reading-duration. Below: full-width feature image framed in lg
+   * radius. No background tint on the hero band; the page stays white.
+   */
+  .article-hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-6); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-8); }
+  }
+  .breadcrumb {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .breadcrumb__sep { margin: 0 var(--ds-space-2); color: var(--ds-border); }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 20ch;
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .byline-author {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Author avatar: 32px circle on the byline. Inline ornament. */
+  .byline-author__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  .byline-author__name { color: var(--ds-text); font-weight: 600; }
+  .byline-author__handle { color: var(--ds-text-muted); }
+  .byline-meta { color: var(--ds-text-muted); }
+  .byline-sep { margin: 0 var(--ds-space-2); color: var(--ds-border); }
+
+  /* Feature image: framed inside the page container (not the column),
+   * lg radius, 1600x850 aspect ratio. The green block behind is inline
+   * because it is a GitHub-blog signature ornament for AI/Copilot posts. */
+  .feature-image {
+    margin-top: var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    aspect-ratio: 1600 / 850;
+    background:
+      linear-gradient(135deg, #1F883D 0%, #0E7D2E 100%);  /* signature green block, inline */
+    border: 1px solid var(--ds-border);
+    position: relative;
+  }
+  .feature-image__caption {
+    position: absolute;
+    inset: auto var(--ds-space-5) var(--ds-space-5) var(--ds-space-5);
+    color: rgba(255,255,255,0.85);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /*
+   * Article body. Lead paragraph one step larger. Body uses Mona Sans
+   * at 16px / 1.6. H2 / H3 break the column. Inline links pick up
+   * GitHub blue.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body figure { margin: var(--ds-space-8) 0; }
+
+  /* Code block. Surface-tinted, mono, sm radius, hairline border. */
+  .code-block {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Pull-quote breakout. Sits inside the narrow column, with a
+   * left-accent green rule and larger italic display. */
+  .pull-quote {
+    border-left: 4px solid var(--ds-accent);
+    padding: var(--ds-space-3) 0 var(--ds-space-3) var(--ds-space-5);
+    margin: var(--ds-space-8) 0;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    font-style: italic;
+  }
+
+  /*
+   * Related posts. Section heading in display sans, then three-up
+   * card grid: desktop 3 columns, tablet 2, mobile 1. Sits in the
+   * page container, not the article column.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Newsletter band. Surface-tinted, sits inside the page container
+   * with generous padding. Single-row input + green CTA. */
+  .newsletter {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    margin-top: var(--ds-space-10);
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .newsletter__body {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 60ch;
+  }
+  .newsletter__row {
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+  .newsletter__input {
+    flex: 1 1 280px;
+    background: #FFFFFF;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .newsletter__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    border: 1px solid rgba(0,0,0,0.10);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width charcoal band, sits outside .page container.
+   * Stands in for wholes/footers/github-footer-001. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    background: #0D1117;          /* Primer canvas.default dark; GitHub footer surface. Inline ornament. */
+    color: #B1BAC4;               /* Primer fg.muted dark. Inline ornament. */
+    border-top: 1px solid #21262D; /* Primer border.default dark. Inline ornament. */
+  }
+  .footer-band .slot {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.70);
+  }
+  .footer-band .slot__label { color: rgba(255,255,255,0.92); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/github-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="nav__cluster">
+        <span>Lorem</span>
+        <span>Ipsum</span>
+        <span>Dolor</span>
+        <span>Sit</span>
+        <a class="nav__cta" href="#">Try Lorem</a>
+      </div>
+    </nav>
+
+    <!-- Section: article-hero. Breadcrumb + title + byline row + feature image. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="breadcrumb">
+          Lorem Category <span class="breadcrumb__sep">/</span> Lorem Subcategory
+        </p>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur adipiscing elit sed.</h1>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            <span>
+              <span class="byline-author__name">Lorem Ipsum</span>
+              <span class="byline-author__handle">&nbsp;@loremipsum</span>
+            </span>
+          </span>
+          <span class="byline-meta">
+            May 15, 2026
+            <span class="byline-sep">·</span>
+            11 minutes
+          </span>
+        </div>
+      </div>
+      <figure class="feature-image" aria-label="Feature image placeholder">
+        <figcaption class="feature-image__caption">feature-image · 1600 × 850</figcaption>
+      </figure>
+    </header>
+
+    <!-- Section: article-body. Narrow ~720px reading column. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+        <pre class="code-block">$ lorem ipsum --dolor sit
+&gt; consectetur adipiscing elit
+&gt; sed do eiusmod tempor</pre>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur.
+        </p>
+        <blockquote class="pull-quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore.
+        </blockquote>
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa.
+        </p>
+        <figure>
+          <div class="slot" style="aspect-ratio: 16 / 9;">
+            <span class="slot__label">inline-figure</span>
+            Lorem ipsum chart
+          </div>
+        </figure>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Three-up grid, full page width. -->
+    <section class="section" aria-label="Related posts">
+      <h2 class="related-heading">Lorem ipsum related reading</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 3 / 4;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: newsletter band. Tinted card with input + green CTA. -->
+    <section aria-label="Newsletter signup">
+      <div class="newsletter">
+        <h2 class="newsletter__title">Lorem ipsum newsletter</h2>
+        <p class="newsletter__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <form class="newsletter__row" onsubmit="return false;">
+          <input class="newsletter__input" type="email" placeholder="lorem@ipsum.dolor" aria-label="Email"/>
+          <button class="newsletter__cta" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for wholes/footers/github-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 260px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

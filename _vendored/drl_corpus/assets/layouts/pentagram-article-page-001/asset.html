@@ -1,0 +1,479 @@
+<!--
+  Asset: pentagram-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, lead-paragraph, hairline-divider, pull-quote, story-card-grid, editorial-footer
+  Inspired by: Pentagram (pentagram.com/work/giorgia-lupi-data-humanism-at-gallerie-d-italia)
+  Notes:
+    - News/work article page skeleton: paper-and-ink nav (wordmark + Work/About/News/Contact/Search links), bracketed-kicker article hero with oversized F37 statement title, sans byline plus muted date, narrow longform column with a Caslon-feel serif body and sans subheads, inline figure with mono caption, pull quote bracketed top-and-bottom by full-ink hairline rules, end-of-article tag list arranged Client/Sector/Discipline/Office, single related-work card strip, editorial footer with four-office contact grid.
+    - Variable: section sequence, page max-width, oversized display step, tag-grid columns. Inline: reading column measure (62ch), page max-width (1320px), pull-quote rule thickness (1px ink), bracketed kicker prefix and suffix.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: F37 Plain is the licensed Pentagram studio face; the body slot
+  reaches for a transitional serif in the Caslon family for the longform
+  register. Faces are not bundled; the fallback chains in tokens.css
+  (Helvetica Neue for display, Times New Roman / Georgia for body) carry the
+  register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1320px so nav, related strip, and footer
+   * breathe; the article-column inside is narrower. Inline value because
+   * the studio grid is page-character, not a contract slot.
+   */
+  .page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article reading column. Sits at ~62ch (about 720px at the 18px serif
+   * register). This measure is article-specific character, not a contract
+   * slot, so it lives inline.
+   */
+  .column {
+    max-width: 62ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: paper-and-ink, full-ink hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    font-family: var(--ds-font-display);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .nav__links a:hover { color: var(--ds-accent); }
+
+  /* Recurring section pad; full-ink rule between major article-page beats. */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--quiet { border-bottom: 0; }
+
+  /*
+   * Article hero. Bracketed-kicker tag row in red, oversized F37 statement
+   * title at the 7xl step with -0.02em tracking, then a sans byline and a
+   * muted date stamp underneath. No cover image inline in the hero band;
+   * image evidence sits as inline figures further down. The bracket
+   * convention (square brackets around discipline labels) is Pentagram's
+   * decades-old listing voice.
+   */
+  .article-hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-10); }
+  @media (min-width: 768px) {
+    .article-hero { padding-top: var(--ds-space-16); padding-bottom: var(--ds-space-12); }
+  }
+  .kicker-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-8);
+    text-transform: none;
+  }
+  /* Square-bracket prefix and suffix mark each discipline tag.
+   * Inline ornament so the bracket character stays visible in markup. */
+  .kicker-row a::before { content: "["; margin-right: 2px; }
+  .kicker-row a::after  { content: "]"; margin-left: 2px; }
+  .kicker-row a:hover { color: var(--ds-accent-2); }
+
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 18ch;
+  }
+  @media (min-width: 768px) {
+    .article-title { font-size: var(--ds-text-7xl); }
+  }
+
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+  }
+  .byline-author {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+  }
+  .byline-author strong { font-weight: 500; }
+  .byline-date {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * Article body. Caslon-feel serif at 18px on 1.6 leading runs the
+   * longform reading rhythm. Lead paragraph steps up one and tightens
+   * leading. H2 and H3 break the column in sans (F37) to keep navigation
+   * crisp against the serif body. Inline links pick up red with a thin
+   * underline; the underline is the affordance.
+   */
+  .article-body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    line-height: 1.5;
+    color: var(--ds-text-strong);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    font-weight: 500;
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+    font-weight: 500;
+  }
+  .article-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .article-body figure {
+    margin: var(--ds-space-10) 0;
+  }
+  .article-body figcaption {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * Pull quote. The Pentagram signature: a longform serif quote bracketed
+   * top and bottom by a full-ink 1px hairline rule. No left bar, no quote
+   * mark glyphs, no surface tint. The rule is the chrome. Cite line in
+   * sans display picks up muted ink with positive tracking.
+   */
+  .pull-quote {
+    border-top: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+    padding-block: var(--ds-space-6);
+    margin-block: var(--ds-space-10);
+  }
+  .pull-quote__text {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: 1.4;
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-style: italic;
+  }
+  .pull-quote__cite {
+    display: block;
+    margin-top: var(--ds-space-4);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    font-style: normal;
+  }
+
+  /*
+   * End-of-article tag list. Pentagram closes its work pages with a
+   * Client / Sector / Discipline / Office metadata grid. Labels in mono
+   * uppercase with positive tracking; values in display sans. Sits in the
+   * narrow column.
+   */
+  .tag-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6) var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-border);
+  }
+  @media (min-width: 768px) {
+    .tag-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .tag-grid__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .tag-grid__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .tag-grid__value a:hover { color: var(--ds-accent); }
+
+  /*
+   * Related-work strip. Pentagram shows a single related card on most
+   * work pages, occasionally two. Bracketed-kicker discipline tags, sans
+   * title, ink-on-paper. Sits at full page width so the cover image
+   * breathes wider than the body column.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .related-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Slot placeholders. */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container, full-ink rule
+   * on top. Stands in for the system-tagged
+   * wholes/footers/studio-credit-footer-001. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-border);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Wordmark + horizontal link cluster + search. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="nav__links">
+        <a href="#">Lorem</a>
+        <a href="#">Ipsum</a>
+        <a href="#">Dolor</a>
+        <a href="#">Sit</a>
+        <a href="#">Amet</a>
+        <a href="#">Consectetur</a>
+      </div>
+    </nav>
+
+    <!-- Section: article-hero. Bracketed kicker, oversized statement title, sans byline plus muted date. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <div class="kicker-row" aria-label="Disciplines">
+          <a href="#">Lorem Exhibitions</a>
+          <a href="#">Ipsum Driven Experiences</a>
+          <a href="#">Dolor &amp; Culture</a>
+        </div>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+        <div class="byline-row">
+          <span class="byline-author">By <strong>Lorem Ipsum</strong>, Partner</span>
+          <span class="byline-date">May 18, 2026</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Narrow serif column, inline figure, pull quote bracketed by hairline rules. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam quis nostrud exercitation.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+          sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+          nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat.
+        </p>
+        <figure>
+          <div class="slot" style="aspect-ratio: 3 / 2;">
+            <span class="slot__label">inline-figure</span>
+            Lorem ipsum installation photograph.
+          </div>
+          <figcaption>
+            Lorem ipsum dolor sit amet consectetur, photographed by Lorem Ipsum.
+          </figcaption>
+        </figure>
+        <blockquote class="pull-quote">
+          <p class="pull-quote__text">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <cite class="pull-quote__cite">Lorem Ipsum, Partner</cite>
+        </blockquote>
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident sunt in culpa qui officia deserunt.
+        </p>
+        <p>
+          Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+          natus error sit voluptatem accusantium doloremque laudantium
+          totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: tag list. Client / Sector / Discipline / Office metadata grid. -->
+    <section class="section section--quiet" aria-label="Project metadata">
+      <div class="column">
+        <div class="tag-grid">
+          <div>
+            <p class="tag-grid__label">Client</p>
+            <p class="tag-grid__value">Lorem Galleria</p>
+          </div>
+          <div>
+            <p class="tag-grid__label">Sector</p>
+            <p class="tag-grid__value"><a href="#">Arts &amp; Culture</a></p>
+          </div>
+          <div>
+            <p class="tag-grid__label">Discipline</p>
+            <p class="tag-grid__value">
+              <a href="#">Exhibitions</a>,<br/>
+              <a href="#">Data Driven Experiences</a>
+            </p>
+          </div>
+          <div>
+            <p class="tag-grid__label">Office</p>
+            <p class="tag-grid__value"><a href="#">New York</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related-work strip. Pentagram defaults to one or two cards. -->
+    <section class="section section--quiet" aria-label="Related work">
+      <h2 class="related-heading">More work</h2>
+      <div class="related-grid">
+        <article>
+          <div class="slot" style="aspect-ratio: 4 / 3; margin-bottom: var(--ds-space-4);">
+            <span class="slot__label">related-cover</span>
+            Lorem ipsum project cover.
+          </div>
+          <div class="kicker-row" style="margin-bottom: var(--ds-space-3);">
+            <a href="#">Lorem Identity</a>
+            <a href="#">Ipsum Editorial</a>
+          </div>
+          <h3 style="font-family: var(--ds-font-display); font-size: var(--ds-text-xl); font-weight: 500; color: var(--ds-text-strong); margin: 0;">
+            Lorem ipsum dolor sit amet.
+          </h3>
+        </article>
+        <article>
+          <div class="slot" style="aspect-ratio: 4 / 3; margin-bottom: var(--ds-space-4);">
+            <span class="slot__label">related-cover</span>
+            Lorem ipsum project cover.
+          </div>
+          <div class="kicker-row" style="margin-bottom: var(--ds-space-3);">
+            <a href="#">Dolor Exhibitions</a>
+          </div>
+          <h3 style="font-family: var(--ds-font-display); font-size: var(--ds-text-xl); font-weight: 500; color: var(--ds-text-strong); margin: 0;">
+            Lorem ipsum consectetur adipiscing.
+          </h3>
+        </article>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for the
+       system-tagged wholes/footers/studio-credit-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">studio-credit-footer (offices, social, copyright)</span>
+        Lorem ipsum dolor sit amet. Four-office contact grid, social row, dated copyright.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

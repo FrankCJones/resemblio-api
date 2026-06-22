@@ -1,0 +1,395 @@
+<!--
+  Asset: locomotive
+  Class: alphabets
+  Pattern: two-typeface-system, oversized-kinetic-statement, electric-accent, paper-and-ink, label-value-credits, step-number-walkthrough
+  Inspired by: Locomotive (locomotive.ca home + /en/work/scout-motors case study)
+  Notes:
+    - The full Locomotive typography vocabulary as one specimen. Two faces:
+      LocomotiveNew (a PP-foundry custom display neo-grotesque) carries every
+      display step from the 110px kinetic statement down to H6; HelveticaNow
+      Display carries body, navigation, project credits, and step utilities.
+    - Editorial moves: oversized kinetic statement (.-huge class at 7.639vw
+      resting; this specimen captures the static end-state of the hover
+      animation), Pentagram-adjacent label-value project credits grid, mono
+      utility for step numbers (the case-study walkthrough numbering), the
+      electric-blue link-hover fill.
+    - Inline ornament: the kinetic-statement hover-fill simulation, the
+      step-number tabular alignment, and the dashed-underline focus state on
+      the huge headline are specimen-specific.
+    - Web-font substitute: both faces are licensed; system fallbacks
+      (avenir/helvetica/segoe) carry the structure. The specimen reads
+      correctly even without the source web fonts loaded.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font is loaded here. LocomotiveNew is a licensed PP-foundry face;
+  HelveticaNowDisplay is a Monotype licensed face. The fallback chain
+  (avenir next / helvetica neue / helvetica / arial) carries the neo-grotesque
+  structure. Substitute the source faces locally if you have a license.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-5);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Kinetic statement (the .-huge class) ----------
+   * Locomotive's hero kinetic headline. 7.639vw at desktop resolves to
+   * ~110px at 1440. LocomotiveNew at weight 400 (optically Light) with
+   * line-height 1.1 and a hair of negative tracking. The static end-state
+   * is what we capture; the live site animates the fill from black ink to
+   * electric blue on hover. The dashed underline below simulates the focus
+   * state the source uses for keyboard users on these headlines.
+   */
+  .statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-7xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    /* Inline ornament: a 0.05em underline thickness specific to the .-huge a
+     * rule in the source; not a contract value. */
+    text-decoration: none;
+    transition: color var(--ds-duration-normal) var(--ds-ease-standard);
+    cursor: pointer;
+  }
+  .statement:hover { color: var(--ds-accent); }
+  .statement.focus-visible {
+    text-decoration: underline dashed;
+    text-decoration-thickness: 0.05em;
+    text-underline-offset: 0.1em;
+  }
+
+  /* ---------- H1 ----------
+   * 70px LocomotiveNew. Project-page H1 from /en/work/scout-motors. Tight
+   * leading, neutral tracking. Pure ink color.
+   */
+  .h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- H2 / medium ---------- */
+  .h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- H3 ---------- */
+  .h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- H4 ---------- */
+  .h4 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* ---------- Body ----------
+   * 15px HelveticaNowDisplay at 1.4 leading. Locomotive escalates the body
+   * size at wider viewports (15 → 17 → 19 → 21px); the specimen sits at the
+   * 1280-viewport baseline.
+   */
+  .body p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 64ch;
+  }
+  .body p a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .body p a:hover { color: var(--ds-accent); text-decoration-color: var(--ds-accent); }
+
+  /* ---------- Credits grid (project metadata) ----------
+   * Source rule: a label-value list where the label sits in HelveticaNow at
+   * 15px muted ink, the value at the same size in pure ink. Hairline rule
+   * above. This is the project-credits block under "Credits" on
+   * /en/work/scout-motors.
+   */
+  .credits {
+    border-top: 1.6px solid var(--ds-hairline);   /* Source uses a 1.6px hairline, not 1px. */
+    padding-top: var(--ds-space-5);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    column-gap: var(--ds-space-6);
+    row-gap: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+  .credits dt { color: var(--ds-text-muted); margin: 0; }
+  .credits dd { color: var(--ds-text); margin: 0; }
+
+  /* ---------- Step number walkthrough ----------
+   * The case-study walkthrough numbers steps "01", "02", "03". Source ships
+   * no actual monospace face; numbers ride HelveticaNow with tabular-nums.
+   * The contract's --ds-font-mono points at a system mono fallback so the
+   * specimen also demonstrates the true-mono register for assets that want
+   * character-width parity (code blocks, counters).
+   */
+  .steps {
+    border-top: 1.6px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+  }
+  .step .n {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--ds-text-muted);
+  }
+  .step .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+  }
+
+  /* ---------- Caption ---------- */
+  .caption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1.6px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 180px 110px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    line-height: var(--ds-leading-normal);
+  }
+
+  /* ---------- Family strip ---------- */
+  .family-strip {
+    border-top: 1.6px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .family-strip b { color: var(--ds-text); font-weight: 400; }
+  .swatch {
+    display: inline-block;
+    width: 0.9em;
+    height: 0.9em;
+    vertical-align: -0.05em;
+    margin-right: 0.4em;
+    background: var(--ds-accent);
+  }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <!-- Kinetic statement -->
+    <section>
+      <p class="caption">Hover the headline below to see the static end-state of the kinetic fill transition.</p>
+      <a class="statement" href="#">Lorem ipsum dolor sit amet consectetur</a>
+    </section>
+
+    <!-- H1 + body -->
+    <section class="body" style="display:flex; flex-direction:column; gap:var(--ds-space-4);">
+      <h1 class="h1">Sed do eiusmod tempor incididunt ut labore</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad <a href="#">minim veniam quis nostrud</a> exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </section>
+
+    <!-- H2 / H3 / H4 -->
+    <section class="body" style="display:flex; flex-direction:column; gap:var(--ds-space-4);">
+      <h2 class="h2">Duis aute irure dolor in reprehenderit voluptate</h2>
+      <p>Aenean fermentum magna at suscipit lacinia, eros nibh sodales lacus. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh.</p>
+      <h3 class="h3">Excepteur sint occaecat cupidatat non proident</h3>
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus.</p>
+      <h4 class="h4">Sunt in culpa qui officia deserunt mollit</h4>
+    </section>
+
+    <!-- Project credits -->
+    <section>
+      <dl class="credits">
+        <dt>Client</dt>               <dd>Lorem Ipsum Motors</dd>
+        <dt>Categories</dt>           <dd>Branding, Digital, E-commerce</dd>
+        <dt>Location</dt>             <dd>San Francisco, USA</dd>
+        <dt>Creative Director</dt>    <dd>Lorem Ipsum</dd>
+        <dt>Art Director</dt>         <dd>Dolor Sit-Amet</dd>
+        <dt>Technical Director</dt>   <dd>Consectetur Adipiscing</dd>
+        <dt>Front-end Developers</dt> <dd>Eiusmod Tempor, Incididunt Labore, Magna Aliqua</dd>
+      </dl>
+    </section>
+
+    <!-- Step walkthrough -->
+    <section class="steps" aria-label="Case study walkthrough">
+      <div class="step"><span class="n">01</span><span class="title">Lorem ipsum dolor sit amet consectetur adipiscing</span></div>
+      <div class="step"><span class="n">02</span><span class="title">Sed do eiusmod tempor incididunt ut labore et dolore</span></div>
+      <div class="step"><span class="n">03</span><span class="title">Ut enim ad minim veniam quis nostrud exercitation</span></div>
+      <div class="step"><span class="n">04</span><span class="title">Duis aute irure dolor in reprehenderit voluptate</span></div>
+    </section>
+
+    <!-- Type scale -->
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">huge · kinetic · 400</span>
+        <span class="step-size">110 / 1.1</span>
+        <span class="step-sample" style="font-size:110px; letter-spacing:-0.01em;">Aa Bb Cc</span>
+      </div>
+      <div class="row">
+        <span class="step-label">huge · mobile · 400</span>
+        <span class="step-size">40 / 1.1</span>
+        <span class="step-sample" style="font-size:40px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">h1 · 400</span>
+        <span class="step-size">70 / 1.1</span>
+        <span class="step-sample" style="font-size:70px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">h1 · md · 400</span>
+        <span class="step-size">50 / 1.1</span>
+        <span class="step-sample" style="font-size:50px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">h2 / medium · 400</span>
+        <span class="step-size">26 / 1.2</span>
+        <span class="step-sample" style="font-size:26px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">h3 · 400</span>
+        <span class="step-size">22 / 1.2</span>
+        <span class="step-sample" style="font-size:22px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">h4 · 400</span>
+        <span class="step-size">20 / 1.2</span>
+        <span class="step-sample" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">h5 · 400</span>
+        <span class="step-size">18 / 1.2</span>
+        <span class="step-sample" style="font-size:18px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">body · 400</span>
+        <span class="step-size">15 / 1.4</span>
+        <span class="step-sample body" style="font-size:15px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">caption · 400</span>
+        <span class="step-size">13 / 1.4</span>
+        <span class="step-sample body" style="font-size:13px; color:var(--ds-text-muted);">Lorem ipsum dolor sit amet consectetur project caption.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">step-num · mono</span>
+        <span class="step-size">15 / tab</span>
+        <span class="step-sample" style="font-family:var(--ds-font-mono); font-size:15px; font-variant-numeric:tabular-nums; color:var(--ds-text-muted);">01 / 02 / 03 / 04</span>
+      </div>
+    </section>
+
+    <!-- Family strip -->
+    <section class="family-strip" aria-label="Type families">
+      <span>display · <b>LocomotiveNew 400</b> (PP-foundry custom, optically Light) · all headings + kinetic huge</span>
+      <span>body · <b>HelveticaNowDisplay 400</b> · 15 / 1.4; escalates 15 → 17 → 19 → 21px at wider viewports</span>
+      <span>mono · <b>system mono fallback</b> · source ships no mono; step-numbers ride HelveticaNow with tabular-nums</span>
+      <span>kinetic huge · <b>LocomotiveNew 400</b> · 7.639vw resting, hover-fills to electric blue</span>
+      <span>credits · <b>HelveticaNowDisplay 400</b> · label muted ink #5E6266, value black</span>
+      <span><span class="swatch" aria-hidden="true"></span>accent · <b>Electric blue #312DFB</b> · menu surface + kinetic-headline hover-fill only</span>
+    </section>
+
+  </article>
+</body>
+</html>

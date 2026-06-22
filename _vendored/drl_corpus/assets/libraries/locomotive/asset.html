@@ -1,0 +1,449 @@
+<!--
+  Asset: locomotive (library)
+  Class: libraries
+  Pattern: paper-and-ink, oversized-statement, story-card-grid, mono-eyebrow, numbered-feature-row, external-link-arrow
+  Inspired by: Locomotive (locomotive.ca/en, /en/work, /en/agency, /en/work/scout-motors)
+  Notes:
+    - Specimen demonstrates Locomotive's complete component vocabulary in one coherent system: kinetic statement headline, electric-blue underline link, hard-corner button, mono step number, case-study tile, 1.6px hairline divider, marquee strip, square partner-portrait avatar, awards row, mono client list-row.
+    - Variable values live in tokens.css. Inline ornament (1.6px hairline thickness, kinetic-headline hover-lift translate, marquee animation duration, partner-portrait 1:1 aspect crop) stays here as character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>locomotive (library) · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  /* Reset */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page frame */
+  .specimen { padding: var(--ds-space-10) var(--ds-space-8); max-width: 1280px; margin: 0 auto; }
+  .section { margin: 0 0 var(--ds-space-12) 0; }
+  .section-label {
+    /* Mono kicker labeling each component block. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .section-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-6) 0;
+    font-weight: 400;
+  }
+
+  /* 1. Kinetic statement headline */
+  .kinetic {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-7xl);
+    line-height: 1.0;             /* inline: kinetic headlines compress to match font-size, mirroring source .c-featured-links_title */
+    letter-spacing: -0.02em;      /* inline: tighter than the global tight slot at this scale */
+    color: var(--ds-text);
+    margin: 0;
+    font-weight: 400;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-emphasize);
+    display: inline-block;
+    cursor: pointer;
+  }
+  .kinetic:hover { transform: translateY(-8px); }  /* inline: 8px hover-lift is the kinetic moment */
+  @media (prefers-reduced-motion: reduce) { .kinetic { transition: none; } .kinetic:hover { transform: none; } }
+
+  /* 2. 1.6px hairline divider - Locomotive draws section rules thicker than 1px */
+  .hairline {
+    border: 0;
+    border-top: 1.6px solid var(--ds-border);  /* inline: 1.6px is the Locomotive rule; thinner reads as utility chrome */
+    margin: var(--ds-space-10) 0;
+  }
+
+  /* 3. Mono step number (01. 02. 03.) running down feature rows */
+  .step-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+    padding: var(--ds-space-5) 0;
+    border-top: 1.6px solid var(--ds-border);
+  }
+  .step-row:last-child { border-bottom: 1.6px solid var(--ds-border); }
+  .step-num {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+  }
+  .step-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 400;
+  }
+  .step-meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* 4. Hard-corner button (0 radius) */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    border: 0;
+    border-radius: var(--ds-radius-none);
+    text-transform: none;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn:hover { background: var(--ds-info); color: var(--ds-bg); }
+  .btn .arrow { display: inline-block; }
+
+  /* 5. Electric-blue underline link - the one chromatic event */
+  .link-blue {
+    color: var(--ds-text);
+    border-bottom: 1.6px solid var(--ds-info);  /* inline: underline color is the electric blue rgb(49,45,251), thickness matches hairline */
+    padding-bottom: 2px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .link-blue:hover { color: var(--ds-info); }
+
+  /* 6. Case-study tile (project tile - no card frame) */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-10) var(--ds-space-8);
+  }
+  .work-tile { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .work-tile .media {
+    aspect-ratio: 16 / 10;          /* inline: observed project-tile aspect ratio on /work */
+    background: var(--ds-surface-2);
+    color: var(--ds-bg);
+    display: grid;
+    place-items: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .work-tile .meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-top: var(--ds-space-2);
+  }
+  .work-tile .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 400;
+  }
+  .work-tile .dek { color: var(--ds-text-muted); max-width: 48ch; }
+
+  /* 7. Marquee strip - infinite horizontal ticker */
+  .marquee {
+    overflow: hidden;
+    border-top: 1.6px solid var(--ds-border);
+    border-bottom: 1.6px solid var(--ds-border);
+    padding: var(--ds-space-5) 0;
+  }
+  .marquee-track {
+    display: flex;
+    gap: var(--ds-space-10);
+    white-space: nowrap;
+    animation: marquee 28s linear infinite;  /* inline: 28s loop is the comfortable Locomotive ticker speed */
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 400;
+  }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+  /* 8. Partner-portrait avatar - square crop, not circle */
+  .partner-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-6);
+  }
+  .partner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .partner .portrait {
+    aspect-ratio: 1 / 1;             /* inline: square portrait crop; Locomotive does not round partner avatars */
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    display: grid;
+    place-items: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .partner .name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    margin-top: var(--ds-space-2);
+  }
+  .partner .role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* 9. Awards row - three-up with org + recognition + year */
+  .awards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-8);
+    padding: var(--ds-space-8) 0;
+    border-top: 1.6px solid var(--ds-border);
+    border-bottom: 1.6px solid var(--ds-border);
+  }
+  .award { display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .award .org {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .award .recognition {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* 10. Mono client list-row - alphabetized roster */
+  .client-list { list-style: none; padding: 0; margin: 0; }
+  .client-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: var(--ds-space-5);
+    align-items: baseline;
+    padding: var(--ds-space-4) 0;
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .client-row:last-child { border-bottom: 1px solid var(--ds-hairline); }
+  .client-row .idx { color: var(--ds-text-muted); }
+  .client-row .name { color: var(--ds-text); }
+  .client-row .sector { color: var(--ds-text-muted); text-align: right; }
+
+  /* Inversion block - black surface as first-class second mode */
+  .inverted {
+    background: var(--ds-surface-2);
+    color: var(--ds-accent-2);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    margin: var(--ds-space-12) 0;
+  }
+  .inverted .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent-2);
+    opacity: 0.7;
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+  .inverted .hero-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin: 0;
+    color: var(--ds-accent-2);
+  }
+</style>
+</head>
+<body>
+  <main class="specimen">
+
+    <section class="section">
+      <p class="section-label">01 / kinetic-statement</p>
+      <h2 class="section-title">Kinetic statement headline</h2>
+      <a class="kinetic" href="#" aria-label="kinetic headline lorem ipsum">Lorem ipsum dolor sit amet.</a>
+    </section>
+
+    <hr class="hairline" aria-hidden="true"/>
+
+    <section class="section">
+      <p class="section-label">02 / hairline-rule</p>
+      <h2 class="section-title">1.6px hairline divider</h2>
+      <p style="color: var(--ds-text-muted); max-width: 60ch;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. The rule above and below this paragraph render at 1.6px in solid ink, thicker than a utility hairline.</p>
+    </section>
+
+    <section class="section">
+      <p class="section-label">03 / numbered-feature-row</p>
+      <h2 class="section-title">Mono step number rows</h2>
+      <div role="list">
+        <div class="step-row" role="listitem">
+          <span class="step-num">01.</span>
+          <span class="step-title">Discover, define, frame the brief.</span>
+          <span class="step-meta">Phase one</span>
+        </div>
+        <div class="step-row" role="listitem">
+          <span class="step-num">02.</span>
+          <span class="step-title">Design the system, draft the surface.</span>
+          <span class="step-meta">Phase two</span>
+        </div>
+        <div class="step-row" role="listitem">
+          <span class="step-num">03.</span>
+          <span class="step-title">Develop, deploy, document the build.</span>
+          <span class="step-meta">Phase three</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="section-label">04 / hard-corner-button</p>
+      <h2 class="section-title">Hard-corner button (0 radius)</h2>
+      <a class="btn" href="#">Read more about this project <span class="arrow" aria-hidden="true">&rarr;</span></a>
+    </section>
+
+    <section class="section">
+      <p class="section-label">05 / electric-blue-link</p>
+      <h2 class="section-title">Electric-blue underline link</h2>
+      <p style="max-width: 60ch;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. <a class="link-blue" href="#">Sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua.</p>
+    </section>
+
+    <section class="section">
+      <p class="section-label">06 / case-study-tile</p>
+      <h2 class="section-title">Case-study tile grid</h2>
+      <div class="work-grid">
+        <article class="work-tile">
+          <div class="media" aria-label="Project media placeholder">[ media · 16:10 ]</div>
+          <div class="meta"><span>Branding · Digital</span><span>&copy; MMXXV</span></div>
+          <h3 class="title">Lorem ipsum studio</h3>
+          <p class="dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </article>
+        <article class="work-tile">
+          <div class="media" aria-label="Project media placeholder">[ media · 16:10 ]</div>
+          <div class="meta"><span>Experience · Content</span><span>&copy; MMXXIV</span></div>
+          <h3 class="title">Consectetur dolor</h3>
+          <p class="dek">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="section-label">07 / marquee-strip</p>
+      <h2 class="section-title">Infinite marquee strip</h2>
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>Lorem ipsum</span><span>&mdash;</span>
+          <span>Dolor sit amet</span><span>&mdash;</span>
+          <span>Consectetur adipiscing</span><span>&mdash;</span>
+          <span>Sed do eiusmod tempor</span><span>&mdash;</span>
+          <span>Lorem ipsum</span><span>&mdash;</span>
+          <span>Dolor sit amet</span><span>&mdash;</span>
+          <span>Consectetur adipiscing</span><span>&mdash;</span>
+          <span>Sed do eiusmod tempor</span><span>&mdash;</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="section-label">08 / partner-portrait</p>
+      <h2 class="section-title">Partner portrait avatars (square)</h2>
+      <div class="partner-grid">
+        <figure class="partner">
+          <div class="portrait" aria-label="portrait placeholder">FM</div>
+          <div class="name">Lorem Ipsum</div>
+          <div class="role">Co-founder, Design</div>
+        </figure>
+        <figure class="partner">
+          <div class="portrait" aria-label="portrait placeholder">MD</div>
+          <div class="name">Dolor Sit</div>
+          <div class="role">Co-founder, Development</div>
+        </figure>
+        <figure class="partner">
+          <div class="portrait" aria-label="portrait placeholder">JC</div>
+          <div class="name">Amet Consectetur</div>
+          <div class="role">Co-founder, Operations</div>
+        </figure>
+        <figure class="partner">
+          <div class="portrait" aria-label="portrait placeholder">EX</div>
+          <div class="name">Adipiscing Elit</div>
+          <div class="role">Associate</div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="section-label">09 / awards-row</p>
+      <h2 class="section-title">Awards row</h2>
+      <div class="awards">
+        <div class="award">
+          <div class="org">Lorem Awards 2025</div>
+          <div class="recognition">E-commerce of the Year</div>
+        </div>
+        <div class="award">
+          <div class="org">Ipsum Foundry 2025</div>
+          <div class="recognition">Site of the Day</div>
+        </div>
+        <div class="award">
+          <div class="org">Dolor Web 2024</div>
+          <div class="recognition">Developer Award</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="section-label">10 / client-list-row</p>
+      <h2 class="section-title">Mono client list rows</h2>
+      <ul class="client-list">
+        <li class="client-row"><span class="idx">01</span><span class="name">Lorem Holdings</span><span class="sector">Finance</span></li>
+        <li class="client-row"><span class="idx">02</span><span class="name">Ipsum Motors</span><span class="sector">Automotive</span></li>
+        <li class="client-row"><span class="idx">03</span><span class="name">Dolor Athletic</span><span class="sector">Apparel</span></li>
+        <li class="client-row"><span class="idx">04</span><span class="name">Amet Foundation</span><span class="sector">Non-profit</span></li>
+        <li class="client-row"><span class="idx">05</span><span class="name">Consectetur Group</span><span class="sector">Hospitality</span></li>
+      </ul>
+    </section>
+
+    <section class="inverted" aria-label="Inverted black surface specimen">
+      <p class="kicker">Inversion mode &mdash; black surface</p>
+      <h2 class="hero-title">Lorem ipsum dolor sit amet, kinetic statement on ink.</h2>
+    </section>
+
+  </main>
+</body>
+</html>

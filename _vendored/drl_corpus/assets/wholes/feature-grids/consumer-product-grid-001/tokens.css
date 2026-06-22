@@ -1,0 +1,104 @@
+/*
+ * consumer-product-grid-001 tokens
+ *
+ * Whole feature-grid composing six atoms. Native tokens calibrated to
+ * Olipop's CPG-DTC palette (forest-green ink on warm cream paper, soft
+ * peach surface, mint and yellow accents). When this composition is
+ * cloned into a per-site library, swapping this tokens.css for the
+ * project's swaps the assembled grid's appearance in one step.
+ *
+ * Composition_atoms in meta.json names every atom referenced:
+ * headings/retro-soda-001, buttons/soft-pill-pink-001, cards/hairline-flat-001,
+ * type-pairings/display-distinctive-001, badges/tag-chip-001, kickers/mono-eyebrow-001.
+ */
+:root {
+  /* Colors. Sources, all observed on drinkolipop.com/collections/all and
+   * /products/strawberry-vanilla on 2026-05-19 via devtools computed style. */
+  --ds-bg:           #FFF6EA;   /* Warm cream paper; the Olipop product-area body, observed at rgb(255,246,234) across the homepage hero band. */
+  --ds-surface:      #FFFFFF;   /* Pure white; Olipop's collection page lifts cards onto white above the cream band. */
+  --ds-surface-2:    #FFE1D9;   /* Soft peach; rgb(255,225,217) on the strawberry-vanilla product page body. */
+  --ds-text:         #14433D;   /* Body text default; rgb(20,67,61). The deep teal-green ink Olipop uses for reading text. */
+  --ds-text-muted:   #0A3128;   /* Eyebrow / sub-label; rgb(10,49,40) seen on the "9g Fiber" card chip. */
+  --ds-text-strong:  #034638;   /* Display ink; rgb(3,70,56). Forest green for headings, links, and CTA fills. */
+  --ds-border:       #E7D6C2;   /* Cream hairline derived from --ds-bg shifted darker; Olipop's grid cells separate without hard borders. */
+  --ds-hairline:     #ECE1D0;   /* The faintest visible divider, calibrated to barely break the cream field. */
+  --ds-accent:       #034638;   /* Primary accent equals --ds-text-strong; Olipop uses one ink for emphasis. */
+  --ds-accent-2:     #98E1C3;   /* Mint; rgb(152,225,195) - Olipop's secondary button fill on the homepage. */
+  --ds-success:      #98E1C3;   /* Reuses the mint accent. */
+  --ds-warning:      #FCC100;   /* Olipop's house yellow rgb(252,193,0); observed on nav highlights. */
+  --ds-error:        #FFB8B3;   /* Soft section pink rgb(255,184,179); doubles as a gentle attention color. */
+  --ds-info:         #034638;   /* No distinct info color; reuses forest green. */
+  --ds-focus-ring:   #98E1C3;   /* Mint ring for keyboard focus on dark CTAs against cream. */
+
+  /* Type. WindsorEF is Olipop's licensed display face; the asset uses
+   * Fraunces as a free variable-axis substitute that carries the same
+   * chunky 70s-revival character. Ano (Olipop body) is substituted with
+   * the system sans stack since Ano is not free; Geist mirrors the same
+   * humanist register. */
+  --ds-font-display: "Fraunces", "WindsorEF", Georgia, serif;
+  --ds-font-body:    "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Fraunces", serif;
+
+  /* Type sizes. Card title 16px observed on Olipop collection card link
+   * ("Vintage Cola"); section H1 80px observed on "All" collection header. */
+  --ds-text-2xs: 10px;
+  --ds-text-xs:  12px;
+  --ds-text-sm:  14px;   /* Olipop card button "Add 12 Pack" text. */
+  --ds-text-base: 16px;  /* Olipop card title link, rating row. */
+  --ds-text-lg:  20px;
+  --ds-text-xl:  24px;
+  --ds-text-2xl: 32px;
+  --ds-text-3xl: 44px;
+  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;
+  --ds-text-6xl: 80px;   /* Olipop collection H1 "All" measured 80px / 88px line-height. */
+  --ds-text-7xl: 120px;
+
+  --ds-leading-tight:   1.05;   /* Display heading; Olipop H1 used 88/80 = 1.10, the asset keeps it slightly tighter. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.45;   /* Card meta and body reading. */
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.16em;  /* Mono kicker tracking. */
+
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;   /* Olipop's collection-group-grid gap measured 24px. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;   /* Olipop CTA pill radius 50px effectively pill-shape; full token reads the same role. */
+
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(20, 67, 61, 0.06);
+  --ds-shadow-sm:  0 1px 2px rgba(20, 67, 61, 0.08);
+  --ds-shadow-md:  0 8px 24px rgba(20, 67, 61, 0.10);
+  --ds-shadow-lg:  0 16px 40px rgba(20, 67, 61, 0.14);
+  --ds-shadow-2xl: 0 32px 64px rgba(20, 67, 61, 0.20);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

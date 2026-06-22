@@ -1,0 +1,143 @@
+<!--
+  Asset: metadata-mono-001
+  Class: labels
+  Pattern: mono-eyebrow
+  Inspired by: Vercel
+  Notes:
+    - Geist Mono uppercase label paired with a value below; the rhythm is label-row, value-row, repeated.
+    - Label color, font and tracking come from tokens; the muted helper text below each value is inline because it is content not chrome.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>metadata-mono-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Vercel ships Geist and Geist Mono; system mono fallbacks below. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-5) var(--ds-space-6);
+  }
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .meta-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .meta-value {
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1.3;
+  }
+  .meta-value-mono {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    letter-spacing: 0;
+  }
+  /* inline: 1px hairline separator between meta rows when stacked vertically */
+  .stack { display: flex; flex-direction: column; gap: 0; }
+  .stack .meta-row {
+    padding: var(--ds-space-3) 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .stack .meta-row:first-child { border-top: 0; padding-top: 0; }
+  .stack .meta-row:last-child { padding-bottom: 0; }
+  .title-row {
+    color: var(--ds-text);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    margin-bottom: var(--ds-space-5);
+  }
+  .section-gap { height: var(--ds-space-8); }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="card">
+      <div class="title-row">Lorem ipsum dolor sit</div>
+      <div class="meta-grid">
+        <div class="meta-row">
+          <span class="meta-label">Deployment</span>
+          <span class="meta-value-mono">dpl_loremipsum482</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Status</span>
+          <span class="meta-value">Ready</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Created</span>
+          <span class="meta-value">May 19, 2026</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Region</span>
+          <span class="meta-value-mono">iad1</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Source</span>
+          <span class="meta-value">git/main</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Duration</span>
+          <span class="meta-value">42s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-gap"></div>
+
+    <div class="card">
+      <div class="title-row">Stacked variant</div>
+      <div class="stack">
+        <div class="meta-row">
+          <span class="meta-label">Project</span>
+          <span class="meta-value">Lorem Ipsum Industries</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Plan</span>
+          <span class="meta-value">Pro</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Billing cycle</span>
+          <span class="meta-value">Monthly</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

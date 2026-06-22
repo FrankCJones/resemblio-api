@@ -1,0 +1,506 @@
+<!--
+  Asset: github
+  Class: alphabets
+  Pattern: mono-utility-pair, mono-eyebrow, display-tight, property-value-row, primary-square, status-mono-uppercase
+  Inspired by: GitHub (github.com, github.com/features/copilot, github.com/pricing)
+  Notes:
+    - GitHub's full typography expression as one specimen: display Mona Sans
+      VF, body Mona Sans VF, mono ui-monospace platform stack. The mono is
+      heavy-use here in a way it is not on most marketing surfaces because
+      GitHub's product IS code; every CLI snippet, commit hash, SHA, issue
+      number, file path, and SKU label runs through the mono.
+    - Editorial moves: the GitHub-green primary CTA #1f883d (success-emphasis
+      promoted to primary action; the most recognizable button on the modern
+      internet), mono uppercase status indicators / "NEW" "BETA" "PREVIEW"
+      pills, the property-value-row pattern that runs in metered SKU lines
+      on /pricing, the inline-text-link in #0969da accent blue.
+    - Inline ornament: the GitHub green #1f883d used as primary CTA fill,
+      the saturated blue #0969da used inline for links and focus rings, the
+      orange-amber #9a6700 attention badges. The dark-mode marketing hero
+      override (canvas flips to #000) is captured in the marketing-canvas
+      block at the bottom of the specimen.
+    - Web-font substitutes: Mona Sans VF is open-license (GitHub ships it
+      from github.githubassets.com as a variable font with wght/wdth/opsz
+      axes); the system fallback chain catches users without it. The mono
+      stack is ui-monospace first so it matches whatever face the user's
+      OS uses for code in their editor.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Mona Sans is GitHub's open-license variable font. Loaded here from
+  Google Fonts as a static fallback (the GitHub VF file is hosted on
+  github.githubassets.com but not CORS-open for arbitrary referrers).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);             /* GitHub's UI default sits at 14px, not 16px. */
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Hero block (marketing display tier) ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Mono uppercase kicker; ui-monospace 12px / 500. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: the "NEW" pill that appears next to feature
+     announcements; GitHub green background, white mono text. */
+  .eyebrow .pill {
+    background: var(--ds-accent-2);
+    color: #ffffff;
+    border-radius: var(--ds-radius-full);
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);            /* 72px statement display on Copilot feature page. */
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);     /* 1.25 */
+    letter-spacing: var(--ds-tracking-tight); /* -0.01em */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);             /* 20px lead paragraph. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row (GitHub-green primary + outlined secondary) ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; flex-wrap: wrap; }
+  .cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);             /* 14px; GitHub button text. */
+    font-weight: 500;
+    background: var(--ds-accent-2);           /* GitHub green #1f883d. */
+    color: #ffffff;
+    border: 0;
+    border-radius: var(--ds-radius-sm);       /* 6px; the canonical GitHub corner. */
+    padding: 6px 16px;                        /* Tighter than most; product-chrome height. */
+    cursor: pointer;
+    line-height: 20px;
+  }
+  .cta-secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 5px 16px;                        /* 1px shy of primary to absorb the border. */
+    cursor: pointer;
+    line-height: 20px;
+  }
+
+  /* ---------- Inline link specimen ---------- */
+  .inline-link p { font-family: var(--ds-font-body); font-size: var(--ds-text-base); color: var(--ds-text); margin: 0; }
+  .inline-link a {
+    color: var(--ds-accent);                  /* #0969da. */
+    text-decoration: none;
+  }
+  .inline-link a:hover { text-decoration: underline; }
+  .inline-link code {
+    /* Inline code: the mono utility moment that appears inside body prose. */
+    font-family: var(--ds-font-mono);
+    font-size: 85%;
+    background: var(--ds-surface);
+    padding: 0.2em 0.4em;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* ---------- Pricing tier card (mono SKU rows / property-value-row) ---------- */
+  .tier {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+  }
+  .tier-card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier-card .tier-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);             /* 32px tier title. */
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .tier-card .tier-blurb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+  .tier-card .tier-price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);            /* 40px price. */
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+  .tier-card .tier-price span {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+  }
+
+  /* Property-value rows: mono key + sans value. */
+  .sku-rows {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .sku-rows .row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--ds-space-4);
+    align-items: baseline;
+    font-size: var(--ds-text-sm);
+  }
+  .sku-rows .key {
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-muted);
+  }
+  .sku-rows .val {
+    font-family: var(--ds-font-body);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* ---------- Code block specimen (mono utility, heavy use) ---------- */
+  .code-block {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+  }
+  .code-block pre {
+    margin: 0;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: 13px;                          /* --text-codeBlock-size .8125rem. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    overflow-x: auto;
+  }
+
+  /* ---------- Status footnote (mono uppercase) ---------- */
+  .footer-line {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .footer-line .status {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-success);
+  }
+  .footer-line .status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: currentColor;
+    display: inline-block;
+  }
+  .footer-line .meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .footer-line .meta .sep { padding: 0 0.4em; opacity: 0.5; }
+  .footer-line .meta b { color: var(--ds-text); font-weight: 500; }
+  .footer-line .footnote {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------- Wordmark specimen ---------- */
+  .wordmark {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .wordmark svg { display: block; }
+  .wordmark .name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 128px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body { font-weight: 400; line-height: var(--ds-leading-normal); }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ---------- Type families strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+
+  /* ---------- Dark hero override block (marketing canvas inversion) ---------- */
+  .dark-hero {
+    background: #000;                          /* brand-color-canvas-default inverted to black-0 on landing heroes. */
+    color: #ffffff;
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .dark-hero .eyebrow { color: rgba(255,255,255,0.65); }
+  .dark-hero .title { color: #ffffff; }
+  .dark-hero .lead { color: rgba(255,255,255,0.75); }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <!-- Marketing hero block (light canvas, the canonical surface) -->
+    <header class="head">
+      <p class="eyebrow">
+        <span class="pill">NEW</span>
+        <span>Lorem ipsum dolor sit amet</span>
+      </p>
+      <h1 class="title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta-secondary" type="button">Dolor sit amet</button>
+      </div>
+    </header>
+
+    <!-- Inline link specimen -->
+    <section class="inline-link" aria-label="Inline link and code">
+      <p>Lorem ipsum dolor sit amet, <a href="#">consectetur adipiscing elit</a>, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Run <code>git clone</code> to fetch ut enim ad minim veniam.</p>
+    </section>
+
+    <!-- Pricing tier with mono SKU rows -->
+    <section class="tier" aria-label="Pricing tier specimen">
+      <div class="tier-card">
+        <h2 class="tier-name">Lorem</h2>
+        <p class="tier-blurb">Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+        <p class="tier-price">$4 <span>/ user / month</span></p>
+        <div class="sku-rows">
+          <div class="row"><span class="key">private_repositories</span><span class="val">Unlimited</span></div>
+          <div class="row"><span class="key">actions_minutes</span><span class="val">3,000 / month</span></div>
+          <div class="row"><span class="key">packages_storage</span><span class="val">2 GB included</span></div>
+          <div class="row"><span class="key">copilot_seats</span><span class="val">add-on available</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code block (heavy mono utility) -->
+    <section class="code-block" aria-label="Code block specimen">
+      <pre><code>$ gh repo clone lorem-ipsum/dolor-sit
+$ cd dolor-sit
+$ npm install
+$ npm run dev
+
+# Server listening on http://localhost:3000</code></pre>
+    </section>
+
+    <!-- Status / footnote line -->
+    <section class="footer-line" aria-label="Status and footnote">
+      <span class="status"><span class="dot"></span>Operational</span>
+      <span class="meta">
+        <b>commit a1b2c3d</b><span class="sep">·</span><span>main</span><span class="sep">·</span><span>built in 18s</span><span class="sep">·</span><span>2026-05-20 14:22</span>
+      </span>
+      <span class="footnote">Lorem ipsum dolor sit amet. Available on Free, Pro, Team, and Enterprise. Read the docs for ut enim ad minim veniam.</span>
+    </section>
+
+    <!-- Wordmark specimen (Mona Sans display) -->
+    <section class="wordmark" aria-label="Wordmark specimen">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-.99-.02-1.94-3.2.69-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39.98 0 1.97.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.4-5.25 5.68.41.36.77 1.06.77 2.14 0 1.55-.01 2.8-.01 3.18 0 .31.21.67.8.55 4.57-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5Z"/>
+      </svg>
+      <span class="name">Lorem ipsum</span>
+    </section>
+
+    <!-- Type scale across display, body, mono -->
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">72 / 1.25 / 600</span>
+        <span class="step-sample" style="font-size:72px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl display</span>
+        <span class="step-size">56 / 1.25 / 600</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">48 / 1.25 / 600</span>
+        <span class="step-sample" style="font-size:48px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">40 / 1.375 / 500</span>
+        <span class="step-sample" style="font-size:40px; font-weight:500;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl title</span>
+        <span class="step-size">32 / 1.5 / 600</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg lead</span>
+        <span class="step-size">20 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">16 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm ui</span>
+        <span class="step-size">14 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit ut enim.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono</span>
+        <span class="step-size">12 / 1.5 / 500</span>
+        <span class="step-sample mono" style="font-size:12px;">Lorem ipsum kicker status</span>
+      </div>
+      <div class="row">
+        <span class="step-label">codeBlock</span>
+        <span class="step-size">13 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-family: var(--ds-font-mono); font-size:13px; font-weight:400;">$ gh repo clone lorem/ipsum</span>
+      </div>
+    </section>
+
+    <!-- Type families summary -->
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Mona Sans VF, wght 600</b></span>
+      <span>body · <b>Mona Sans VF, wght 400 / 500</b></span>
+      <span>mono · <b>ui-monospace, SF Mono, Menlo, Consolas (platform stack)</b></span>
+      <span>base · <b>14px / 21px UI default; 16px reading body</b></span>
+      <span>H1 · <b>40-72px / 1.25-1.375 / wght 500-600</b></span>
+      <span>cta · <b>14px / wght 500 / radius 6px / bg #1f883d</b></span>
+      <span>scale · <b>Primer base xs .75 / sm .875 / md 1 / lg 1.25 / xl 2 / 2xl 2.5 rem</b></span>
+      <span>link · <b>#0969da; no underline at rest; underline on hover</b></span>
+    </section>
+
+    <!-- Dark hero override: the editorial-hero marketing inversion -->
+    <section class="dark-hero" aria-label="Dark marketing hero override">
+      <p class="eyebrow"><span>Lorem ipsum</span></p>
+      <h2 class="title" style="font-size: 48px;">Lorem ipsum dolor sit amet.</h2>
+      <p class="lead">Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+      </div>
+    </section>
+
+  </article>
+</body>
+</html>

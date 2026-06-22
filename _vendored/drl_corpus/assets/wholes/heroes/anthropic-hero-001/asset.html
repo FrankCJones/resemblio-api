@@ -1,0 +1,258 @@
+<!--
+  Asset: anthropic-hero-001
+  Class: heroes (whole)
+  Pattern: editorial-hero, dual-cta-hero, no-imagery
+  Inspired by: Anthropic
+  Composition (declared in meta.json > composition_atoms):
+    - backgrounds/subtle-noise-001         (warm paper field)
+    - body-text/callout-warm-001           (lead paragraph register)
+    - wordmarks/serif-italic-001           (top-left mark)
+    - labels/section-label-numbered-001    (uppercase sans eyebrow)
+    - buttons/anthropic-primary-square-001 (ink-fill primary "Try Claude")
+    - buttons/anthropic-secondary-ghost-001(bordered ghost secondary)
+    - links/inline-link-accent-001         (clay-crimson accent rule)
+  Notes:
+    - Native context: anthropic.com homepage opening viewport. Warm paper
+      bg, uppercase sans eyebrow, oversized anthropicSerif H1, single lead
+      paragraph, paired CTAs (ink primary + ghost secondary). No imagery
+      anywhere in the first viewport; type and the warm-paper field do
+      all the work. Clay-crimson appears only in the inline accent rule
+      and the focus ring.
+    - Variable: every color, type, spacing, radius, motion value via
+      tokens.css.
+    - Inline ornament: the lone hairline rule above the eyebrow is hero-
+      specific furniture (60px fixed, never repeats); the H1's optical
+      text-wrap balance is editorial layout intent, not a token. The
+      noise texture is delivered as an inline data-URI SVG so the asset
+      opens on disk without a network fetch.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 stands in for anthropicSerif (Tiempos family); Inter
+     stands in for anthropicSans (Sohne family). The system declares the
+     custom faces first and falls back through these on open-source loads. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm paper field carries everything; the subtle-noise
+   * texture is delivered inline as a data-URI SVG (composition_atom
+   * backgrounds/subtle-noise-001 supplies the rationale; geometry stays
+   * inline so the file opens standalone). */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Inline: 1.5% opacity SVG noise on top of the warm paper bg. */
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-repeat: repeat;
+  }
+
+  /* Top bar: serif-italic wordmark at left (composition_atom
+   * wordmarks/serif-italic-001), uppercase sans nav at right. A single
+   * hairline underline separates chrome from canvas. */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-5) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-weight: 600;
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-6);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a { color: inherit; text-decoration: none; transition: color var(--ds-duration-fast) var(--ds-ease-standard); }
+  .topbar__nav a:hover { color: var(--ds-text); }
+
+  /* The hero shell. Single column on every breakpoint; the editorial
+   * register prefers vertical stacking with generous breathing room over
+   * any split-hero geometry. Max line measure capped at ~22ch on the H1
+   * so the display step holds its weight. */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+    align-items: flex-start;
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-12);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Eyebrow row: uppercase sans label preceded by a short hairline rule.
+   * The 60px rule is hero-specific ornament and stays inline (no token
+   * slot for a fixed-length accent rule). */
+  .hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .hero__eyebrow::before {
+    content: "";
+    width: 60px;
+    height: 1px;
+    background: var(--ds-accent);
+    /* Inline: the lone clay-crimson moment in the eyebrow row. The
+     * accent rule is the only chromatic mark above the fold. */
+  }
+
+  /* The H1. anthropicSerif display step at 88px on the wide viewport,
+   * scaled down via clamp on narrow. text-wrap: balance is editorial
+   * layout intent, holding the H1's three-or-four-line shape regardless
+   * of viewport width. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 7.5vw, var(--ds-text-6xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  /* The lead paragraph. anthropicSerif body at 20px (one step above
+   * reading) on the editorial 1.55 leading. The single-paragraph dek
+   * is non-negotiable in this register; a list of bullets here would
+   * break the editorial frame. */
+  .hero__lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* CTA pair: primary ink-fill (composition_atom buttons/anthropic-
+   * primary-square-001) plus ghost secondary (composition_atom buttons/
+   * anthropic-secondary-ghost-001). The two-CTA hero violates the
+   * single-cta orthodoxy on purpose; Anthropic's two surfaces (Claude
+   * for end users, the API for developers) earn two doors. */
+  .hero__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    flex-wrap: wrap;
+    margin-top: var(--ds-space-3);
+  }
+  .btn {
+    appearance: none;
+    border: 1px solid transparent;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    padding: 12px var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border-color: var(--ds-text-strong);
+  }
+  .btn--primary:hover {
+    /* Inline: one step warmer ink for the hover lift; matches the
+     * anthropic-primary-square-001 button atom convention. */
+    background: #2A2A28;
+    border-color: #2A2A28;
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border-color: var(--ds-border);
+  }
+  .btn--ghost:hover {
+    border-color: var(--ds-text);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* The arrow glyph on the primary CTA. Hero-specific composition
+   * detail (the button atom does not ship with an arrow); stays inline. */
+  .btn__arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary:hover .btn__arrow { transform: translateX(2px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .btn__arrow, .topbar__nav a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">Lorem</a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__eyebrow">Lorem Ipsum Dolor</span>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
+    <p class="hero__lead">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+      nisi ut aliquip ex ea commodo consequat.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">
+        Lorem Ipsum
+        <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a href="#" class="btn btn--ghost">Dolor Sit Amet</a>
+    </div>
+  </section>
+</body>
+</html>

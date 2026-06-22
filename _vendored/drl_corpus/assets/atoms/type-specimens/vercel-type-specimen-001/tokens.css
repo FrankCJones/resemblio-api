@@ -1,0 +1,174 @@
+/*
+ * vercel alphabet tokens
+ *
+ * Vercel's complete typography expression as one coherent vocabulary.
+ *
+ * Two faces from one foundry do the entire job: Geist Sans across display
+ * and body, Geist Mono for metadata, status, technical chrome, and SKU
+ * labels. The system is light-mode-native (near-white #FAFAFA body with
+ * near-black #171717 ink) with a dark mirror that inverts the surface
+ * while preserving Vercel Blue #0070F3 unchanged. Blue is the only
+ * chromatic punctuation in marketing chrome; system colors (success
+ * green, amber warning, red error) live only in status indicators and
+ * deploy badges.
+ *
+ * The signature is the mono pair. Most modern sans systems pair a sans
+ * with a different mono family; Vercel pairs Geist Sans with Geist Mono,
+ * a sibling face from the same foundry that shares letterform DNA. The
+ * mono shows up everywhere a value is being measured or recorded:
+ * deploy IDs, region codes, plan tier SKUs (hobby / pro / enterprise),
+ * status labels (READY / BUILDING / ERROR), pricing line items
+ * (edge_requests, vercel_network). It is the face that says "this is
+ * data" inside a marketing surface.
+ *
+ * Hero display is restrained: H1s sit around 56-72px at tight tracking
+ * (-0.02em), never the editorial 7xl statement. Base body is 16px /
+ * 1.5. The scale is conventional 1.25 through the body steps and steps
+ * wider at the display tier. Hairlines do the chrome work: the
+ * box-shadow-as-border ring (0 0 0 1px #EAEAEA) replaces real borders
+ * on cards so corners stay crisp at any radius.
+ *
+ * Type values corroborated against same-system devtools captures
+ * preserved in system-tagged atoms (kickers/mono-eyebrow-001 at 12px
+ * Geist Mono weight 500, cards/hairline-flat-001 at #EBEBEB ring,
+ * status-indicators/pulsing-dot-001 with --geist-success #0070F3 /
+ * --geist-warning #F5A623 / --geist-error #EE0000, wordmarks/
+ * mono-uppercase-001 at #171717 body color). All captured 2026-05-19
+ * via devtools_computed_style at provenance score A.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Near-white surface system with near-black ink and one saturated blue.
+   * Geist's "success" slot is remapped to blue for loading/checking states;
+   * a separate green carries operational. The chromatic restraint outside
+   * status is the load-bearing decision.
+   */
+  --ds-bg:           #FAFAFA;   /* Marketing body bg rgb(250,250,250); cool near-white. */
+  --ds-surface:      #FFFFFF;   /* Card surface; one step above bg. */
+  --ds-surface-2:    #F4F4F5;   /* Nested panel / hovered surface. */
+  --ds-text:         #171717;   /* Body color rgb(23,23,23); near-black, Geist convention. */
+  --ds-text-muted:   #666666;   /* Geist secondary; metadata, timestamps, footer links. */
+  --ds-text-strong:  #000000;   /* Hero H1 maximum-contrast; rare reserved emphasis. */
+  --ds-border:       #EAEAEA;   /* Card hairline; the entire chrome character lives here. */
+  --ds-hairline:     #F0F0F0;   /* Subtler still; section breaks, sidebar nav rules. */
+  --ds-accent:       #0070F3;   /* Vercel Blue; the single chromatic punctuation in marketing. */
+  --ds-accent-2:     #0050C0;   /* Pressed / hover state of accent. */
+  --ds-success:      #00C875;   /* Operational green; warmer than emerald to match Geist green family. */
+  --ds-warning:      #F5A623;   /* Geist warning amber; observed --geist-warning. */
+  --ds-error:        #EE0000;   /* Geist error red; observed --geist-error. */
+  --ds-info:         #0070F3;   /* Matches accent. */
+  --ds-focus-ring:   #0070F3;   /* Vercel Blue at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Geist Sans + Geist Mono. Two faces from the same foundry that share
+   * geometric DNA: the same circular o, the same flat-terminal lowercase,
+   * the same crisp x-height proportion. The mono is not a decorative
+   * counterpart; it is the data face that runs alongside the sans for any
+   * value being measured, recorded, or labeled as machine-meaningful.
+   *
+   * Inter is the documented fallback (Geist is open-license but loads from
+   * Vercel's CDN; Inter approximates the metrics for offline rendering).
+   */
+  --ds-font-display: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", "Roboto Mono", monospace;
+  /* No accent family. Vercel is a two-face system; the mono is the only
+   * secondary, and it is functional rather than ornamental. */
+  --ds-font-accent:  "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* ---------- Type sizes ----------
+   * Base 16px. Conventional 1.25 ratio through body and subhead steps,
+   * stepping wider at the display tier (40 to 56 to 72). The hero ceiling
+   * is 72px; Vercel never reaches the editorial 6xl / 7xl statement
+   * display. The mono labels sit at 12px (xs) almost exclusively.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Geist Mono uppercase kicker / status label / SKU label. */
+  --ds-text-sm:   14px;   /* Secondary UI, nav links, footer links. */
+  --ds-text-base: 16px;   /* Body reading default. */
+  --ds-text-lg:   20px;   /* Lead paragraph / feature description. */
+  --ds-text-xl:   24px;   /* Subheads (H3). */
+  --ds-text-2xl:  32px;   /* Section heads (H2). */
+  --ds-text-3xl:  40px;   /* Pricing tier headline. */
+  --ds-text-4xl:  56px;   /* Marketing hero H1 lower bound. */
+  --ds-text-5xl:  72px;   /* Marketing hero H1 upper bound. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Display sits tight at 1.1 (never the 1.0 Linear ratio; Geist's
+   * proportions need slightly more room). Body at 1.5. Subheads at 1.2.
+   */
+  --ds-leading-tight:   1.1;    /* Hero H1. */
+  --ds-leading-snug:    1.2;    /* H2 / H3. */
+  --ds-leading-normal:  1.5;    /* Body reading. */
+  --ds-leading-relaxed: 1.65;   /* Docs longform. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Negative tracking on display (-0.02em on hero H1). Body sits at 0.
+   * Wide tracking on uppercase mono labels; wider still on the smallest
+   * status text (READY / BUILDING / ERROR).
+   */
+  --ds-tracking-tight:  -0.02em;   /* Hero H1, section H2. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.14em;    /* Uppercase Geist Mono kicker / status label. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Vercel's vertical rhythm is tighter than Linear's;
+   * marketing sections breathe at space-10 (64px) rather than space-12.
+   * Card interior padding lands at space-6 / space-8 (32 / 48).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;   /* Card horizontal padding. */
+  --ds-space-8:  48px;   /* Card vertical padding; section internal rhythm. */
+  --ds-space-10: 64px;   /* Marketing section rhythm. */
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Small radii, never pills outside of small chips. The signature radius
+   * is 6-8px on cards; the editorial flat register would round to 0, but
+   * Geist softens the corner just enough to read as modern rather than
+   * brutalist. CTAs use sm (5px) corners.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   5px;     /* CTA buttons, input fields. */
+  --ds-radius-md:   8px;     /* Card corner. */
+  --ds-radius-lg:   12px;    /* Featured / pricing card. */
+  --ds-radius-full: 9999px;  /* Small status chips, "New" badges. */
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome. The signature: a 1px ring box-shadow stands in
+   * for a border on cards so corners stay crisp at any radius. Drop
+   * shadows are rare and soft when present.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);   /* Vercel's signature ring; card at rest. */
+  --ds-shadow-md:   0 0 0 1px var(--ds-border), 0 2px 4px rgba(0,0,0,0.04);
+  --ds-shadow-lg:   0 0 0 1px var(--ds-border), 0 8px 24px rgba(0,0,0,0.08);
+  --ds-shadow-2xl:  0 0 0 1px var(--ds-border), 0 24px 48px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ----------
+   * Standard ease for most UI; emphasize curve on deploy-state transitions.
+   * Vercel's signature is fast (150ms) UI feedback paired with a slow
+   * (1800ms) breath on operational pulses; the contrast is intentional.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

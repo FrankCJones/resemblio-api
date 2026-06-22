@@ -1,0 +1,504 @@
+<!--
+  Asset: linear-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, story-card-grid, paper-and-ink, centered-narrow-column
+  Inspired by: Linear (linear.app/customers/<slug> case-study template)
+  Notes:
+    - Dark-mode-native customer-story skeleton. Top nav with breadcrumb,
+      hero with mono kicker plus serif-sans display headline, a four-up
+      company metadata band (Industry / Founded / HQ / Adopted), narrative
+      body inside a narrow reading column, indigo-ruled pull quote, two-up
+      prev/next related-stories cards (Linear's grid is two cards, not the
+      four common to Anthropic), centered CTA, mega-footer band.
+    - Variable: max-width of reading column, metric count, related-card
+      count (Linear ships 2). Inline ornament: the indigo left rule on the
+      pull quote, the metric numeral display size (4xl), and the
+      backdrop-blur on the floating-pill nav (not a contract slot).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-customer-story-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Linear ships Inter Variable for display + body. The system-ui
+  fallback chain keeps the page legible if Inter does not load; the visual
+  register is close on macOS / iOS / Windows.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Outer max-width 1200px for the grid sections (metadata
+   * band, related-stories grid); inner reading-column max-width 680px so
+   * body paragraphs hold a ~70-character measure. Inline values; not
+   * contract slots.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+  .reading-column {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Section block. Linear uses very subtle hairline rules on dark; the
+   * story-hero and metadata-band read as one opening unit (no rule between). */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--no-rule { border-bottom: 0; }
+
+  /*
+   * Nav. Linear ships a floating-pill nav with backdrop-blur on the live
+   * homepage; customer-story pages keep the same wordmark register but
+   * sit it on a flush hairline-bottom strip. Backdrop-blur left inline
+   * (not a contract slot) so the character is preserved.
+   */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    background: rgba(8, 9, 10, 0.7);
+    backdrop-filter: blur(12px);   /* inline ornament; not a contract slot */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 510;              /* Linear's variable-axis body/display weight */
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Breadcrumb. Mono, muted, sits flush under the nav before the hero. */
+  .breadcrumb {
+    padding-block: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .breadcrumb a { color: var(--ds-text-muted); }
+  .breadcrumb__sep {
+    display: inline-block;
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-border);
+  }
+
+  /*
+   * Story hero. Mono kicker, display sans headline (Linear uses Inter
+   * Variable at display weight, not a contrast-driven serif), lede
+   * paragraph. Linear sometimes pairs with a full-width hero video or
+   * image; the slot below stands in for that.
+   */
+  .story-hero {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-8);
+  }
+  .story-hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .story-hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 22ch;
+    font-weight: 510;
+  }
+  @media (min-width: 768px) {
+    .story-hero__headline { font-size: var(--ds-text-4xl); }
+  }
+  .story-hero__lede {
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 60ch;
+    margin: 0 0 var(--ds-space-8);
+  }
+  .hero-media {
+    margin-top: var(--ds-space-8);
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ds-radius-lg);
+    background:
+      radial-gradient(circle at 20% 30%, rgba(94,106,210,0.4), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(181,189,251,0.25), transparent 55%),
+      var(--ds-surface);
+    /* inline ornament: mesh-gradient stand-in for the customer-story hero media */
+    border: 1px solid var(--ds-border);
+  }
+
+  /*
+   * Metrics band. Linear customer-story pages display a four-up company
+   * metadata strip (Industry / Founded / HQ / Adopted). Each cell is a
+   * mono uppercase label over a sans value.
+   */
+  .metrics {
+    background: var(--ds-surface-2);
+    border-block: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+  }
+  .metrics__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .metrics__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .metrics__grid { grid-template-columns: repeat(4, 1fr); } }
+  .metric__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .metric__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-weight: 510;
+  }
+
+  /*
+   * Narrative body. Subheads at 2xl sans display weight; body paragraphs at
+   * lg with relaxed leading. Reading column is the constrained width.
+   */
+  .narrative h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+    font-weight: 510;
+  }
+  .narrative h2:first-child { margin-top: 0; }
+  .narrative p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /*
+   * Pull quote callout. Indigo left rule is the signature; serif-italic
+   * substitute is not Linear's vocabulary so the quote stays in display sans
+   * at italic. Background lifts one surface level for separation on dark.
+   */
+  .quote {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-8) var(--ds-space-6);
+    background: var(--ds-surface-2);
+    border-left: 3px solid var(--ds-accent);   /* indigo rule; inline ornament, not a contract slot */
+    border-radius: var(--ds-radius-sm);
+  }
+  .quote__body {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .quote__attrib {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * Related stories. Linear ships a 2-card prev/next layout (e.g. Ramp
+   * shows Oscar Health and Automattic). Cards are dark surfaces with a
+   * hairline border, no shadow, mono kicker above sans title.
+   */
+  .related h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-6);
+    font-weight: 510;
+  }
+  .related__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .related__grid { grid-template-columns: repeat(2, 1fr); } }
+  .story-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    min-height: 200px;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .story-card:hover { border-color: var(--ds-accent-2); }
+  .story-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .story-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-weight: 510;
+  }
+
+  /*
+   * CTA block. Centered sans display statement plus primary pill plus
+   * ghost button. Primary pill is the Linear signature: white pill, dark
+   * text. Ghost is bordered transparent.
+   */
+  .cta { text-align: center; }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    max-width: 24ch;
+    margin: 0 auto var(--ds-space-6);
+    font-weight: 510;
+  }
+  .cta__actions {
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+    font-weight: 510;
+  }
+  .btn--primary {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    border-color: var(--ds-text-strong);
+  }
+  .btn--ghost { background: transparent; color: var(--ds-text); }
+  .btn:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  /*
+   * Slot. Placeholder for downstream wholes (nav, footer) when this
+   * layout is used as a composition scaffold rather than rendered alone.
+   */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band. Full-width hairline-top strip; mega-footer placeholder. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: nav. Stands in for wholes/navigation/<linear-nav>. -->
+  <nav class="nav" aria-label="Primary">
+    <div class="page" style="display: flex; align-items: center; justify-content: space-between; gap: var(--ds-space-6); padding-block: 0;">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 140px;">
+        <span class="slot__label">cta-pill</span>
+        Sign up
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- Breadcrumb: customers > <company> -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="#">Customers</a><span class="breadcrumb__sep">/</span><span>Lorem ipsum</span>
+    </nav>
+
+    <!-- Section: story-hero. Kicker + display headline + lede + hero media. -->
+    <section class="section section--no-rule story-hero" aria-label="Story hero">
+      <div class="reading-column">
+        <p class="story-hero__kicker">Customer story</p>
+        <h1 class="story-hero__headline">
+          Lorem ipsum dolor sit amet consectetur adipiscing elit.
+        </h1>
+        <p class="story-hero__lede">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua ut
+          enim ad minim veniam quis nostrud exercitation.
+        </p>
+      </div>
+      <div class="hero-media" role="img" aria-label="Hero media placeholder"></div>
+    </section>
+
+  </div>
+
+  <!-- Section: metrics-band. Full-width tinted strip, four-up metadata grid. -->
+  <section class="metrics" aria-label="Company metadata">
+    <div class="page">
+      <div class="metrics__grid">
+        <div>
+          <p class="metric__label">Industry</p>
+          <p class="metric__value">Lorem ipsum</p>
+        </div>
+        <div>
+          <p class="metric__label">Founded</p>
+          <p class="metric__value">Dolor, 2019</p>
+        </div>
+        <div>
+          <p class="metric__label">Headquarters</p>
+          <p class="metric__value">Sit amet</p>
+        </div>
+        <div>
+          <p class="metric__label">Adopted Lorem</p>
+          <p class="metric__value">October 2019</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page">
+
+    <!-- Section: narrative-body. Subheads + reading-column paragraphs + mid-body quote. -->
+    <section class="section narrative" aria-label="Narrative body">
+      <div class="reading-column">
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt
+          mollit anim id est laborum.
+        </p>
+
+        <!-- Quote callout. Inline ornament: indigo left rule. -->
+        <blockquote class="quote">
+          <p class="quote__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p class="quote__attrib">Lorem Ipsum / Dolor Sit Amet</p>
+        </blockquote>
+
+        <h2>Consectetur adipiscing elit</h2>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque
+          ipsa quae ab illo inventore veritatis et quasi architecto beatae
+          vitae dicta sunt explicabo.
+        </p>
+        <p>
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+          aut fugit, sed quia consequuntur magni dolores eos qui ratione
+          voluptatem sequi nesciunt.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: related-stories. Two-card prev/next grid per Linear. -->
+    <section class="section related" aria-label="Related stories">
+      <h2>Lorem ipsum dolor</h2>
+      <div class="related__grid">
+        <article class="story-card">
+          <span class="story-card__kicker">Previous story</span>
+          <h3 class="story-card__title">Lorem ipsum dolor sit amet consectetur.</h3>
+        </article>
+        <article class="story-card">
+          <span class="story-card__kicker">Next story</span>
+          <h3 class="story-card__title">Adipiscing elit sed do eiusmod tempor.</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: cta-block. Centered statement + primary white pill + ghost. -->
+    <section class="section section--no-rule cta" aria-label="Call to action">
+      <p class="cta__title">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+      <div class="cta__actions">
+        <a href="#" class="btn btn--primary">Sign up</a>
+        <a href="#" class="btn btn--ghost">Contact lorem</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer: full-width band, stands in for wholes/footers/<linear-footer>. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

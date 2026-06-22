@@ -1,0 +1,589 @@
+<!--
+  Asset: substack-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, serif-display-sans-body, paper-and-ink, callout-aside
+  Inspired by: Substack post-shell (on.substack.com, post.substack.com)
+  Notes:
+    - Mechanic: the canonical Substack post-shell. White canvas, near-black
+      Spectral serif body, single orange accent (#FF6719), small circular
+      avatar adjacent to author + publication + date byline, a horizontal
+      toolbar of like / comment / restack / share counts above and below
+      the body, a paywall divider card mid-column, and a comment thread
+      surface beneath. The shell carries no publication-header chrome -
+      that is the per-publication navigation, which lives elsewhere.
+    - Variable: white bg, near-black ink, signature Substack orange,
+      Spectral serif body at 20px / 1.6, sans toolbar / metadata.
+    - Inline ornament: the 680px body measure, the 48px circular author
+      avatar, the orange left-rule on the paywall divider, the heart-
+      shaped like glyph.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Spectral (Google Fonts) is the Substack default editorial serif on
+     the Reuters theme. Source Sans 3 (Google Fonts) carries metadata
+     and the toolbar labels. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure throughout. The
+   * Substack post-shell holds the body, the toolbar, the paywall, and
+   * the comment thread at the same column width.
+   */
+  .post {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-5) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Title, subtitle, then a byline row: small circular avatar adjacent
+   * to author name, a middle dot, publication name (linked), a middle
+   * dot, and the ISO date. The toolbar of counts sits directly below.
+   */
+  .post__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-4xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Dek - serif italic, sits below H1, slightly muted. The italic is
+   * the move that says editorial; sans subtitle would read SaaS. */
+  .post__dek {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-style: italic;
+    font-weight: 400;
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Byline row - small circular avatar + sans metadata. The publication
+   * link reads as the second-priority link colour; the author name is
+   * heavier. */
+  .post__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    padding-bottom: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .post__avatar {
+    /* Inline ornament: 48px avatar matches the live Substack post-shell
+     * byline diameter. Specific to this surface, not a contract slot. */
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ds-radius-full);
+    background-image: linear-gradient(135deg, #E8C5A0 0%, #C49B6A 100%);
+    border: 1px solid var(--ds-border);
+    flex: 0 0 48px;
+  }
+  .post__byline-meta { display: flex; flex-direction: column; gap: 2px; }
+  .post__byline-line1 { color: var(--ds-text); font-weight: 600; }
+  .post__byline-line1 a { color: var(--ds-text); text-decoration: none; }
+  .post__byline-line1 a:hover { color: var(--ds-accent); }
+  .post__byline-line2 { color: var(--ds-text-muted); font-weight: 400; }
+  .post__byline-line2 .dot {
+    /* Middle-dot separator between publication and date. */
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Toolbar ----------------
+   * Like / comment / restack / share. Numeric counts inline. Sans family
+   * across the toolbar. Sits as a horizontal row with a hairline rule
+   * above and below; the same toolbar repeats at the foot of the body.
+   */
+  .post__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-3) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    margin: 0 0 var(--ds-space-8);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .post__toolbar button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) 0;
+    cursor: pointer;
+    color: var(--ds-text-muted);
+    font: inherit;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .post__toolbar button:hover,
+  .post__toolbar button:focus-visible { color: var(--ds-accent); }
+  .post__toolbar .icon {
+    /* Inline ornament: 16px line-glyph slot. Substack uses heart, speech
+     * bubble, restack-arrows, share-up. The asset shows minimal SVG
+     * primitives that brands would swap for icons. */
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .post__toolbar .icon svg { width: 100%; height: 100%; }
+  .post__toolbar .share { margin-left: auto; }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column. Spectral serif at 20px / 1.6. Italic
+   * accents inside prose. Inline links carry the orange accent with
+   * an always-present underline.
+   */
+  .post__body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .post__body p { margin: 0 0 var(--ds-space-5); }
+  .post__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .post__body a:hover,
+  .post__body a:focus-visible { color: var(--ds-accent-2); }
+  .post__body em, .post__body i { font-style: italic; }
+
+  .post__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-4);
+  }
+  .post__body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-3);
+  }
+  .post__body blockquote {
+    margin: var(--ds-space-6) 0;
+    padding: 0 0 0 var(--ds-space-5);
+    border-left: 3px solid var(--ds-border);
+    color: var(--ds-text-muted);
+    font-style: italic;
+  }
+  .post__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.9em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.06em 0.36em;
+  }
+
+  /* ---------------- Paywall divider ----------------
+   * The free-preview-ends moment. A card with an orange left rule, a
+   * sans heading, a sentence of plain English, and a Substack-orange
+   * subscribe button. Sits flush in the body column, breaks the read
+   * with a soft shadow lift to signal a structural break.
+   */
+  .post__paywall {
+    margin: var(--ds-space-10) 0;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 4px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    box-shadow: var(--ds-shadow-lg);
+    padding: var(--ds-space-6);
+    text-align: center;
+    font-family: var(--ds-font-accent);
+  }
+  .post__paywall h3 {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    line-height: var(--ds-leading-snug);
+  }
+  .post__paywall p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+    line-height: var(--ds-leading-normal);
+  }
+  .post__paywall .cta {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-sm);
+    border: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .post__paywall .cta:hover { background: var(--ds-accent-2); }
+
+  /* ---------------- Restack panel ----------------
+   * After the body and below the foot-of-post toolbar: a "Share this
+   * post" / "Restack" panel that surfaces the restack pattern as the
+   * platform's distinctive virality mechanic. Sans, light surface,
+   * orange icon glyph.
+   */
+  .post__restack {
+    margin: var(--ds-space-10) 0;
+    padding: var(--ds-space-5);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+  }
+  .post__restack-glyph {
+    /* Two-stack arrow glyph signature; the restack mark. Inline ornament. */
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    color: var(--ds-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .post__restack-text { flex: 1; }
+  .post__restack-title {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-1);
+  }
+  .post__restack-sub {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+    line-height: var(--ds-leading-normal);
+  }
+  .post__restack button {
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    color: var(--ds-text);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    transition:
+      border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .post__restack button:hover {
+    border-color: var(--ds-accent);
+    color: var(--ds-accent);
+  }
+
+  /* ---------------- Comment section ----------------
+   * "Discussion about this post" header, then a stack of comment cards.
+   * Each card carries an avatar, author + publication + relative time
+   * meta line, the body text, and a small like / reply toolbar.
+   */
+  .post__discussion-header {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-10) 0 var(--ds-space-5);
+  }
+
+  .post__comment {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-5) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-accent);
+  }
+  .post__comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-border);
+    background-image: linear-gradient(135deg, #C4D9E8 0%, #8AA8C0 100%);
+  }
+  .post__comment-meta {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .post__comment-meta .name {
+    color: var(--ds-text);
+    font-weight: 600;
+  }
+  .post__comment-meta .dot {
+    margin: 0 var(--ds-space-2);
+    color: var(--ds-text-muted);
+  }
+  .post__comment-body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .post__comment-actions {
+    display: flex;
+    gap: var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .post__comment-actions button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: var(--ds-text-muted);
+    font: inherit;
+  }
+  .post__comment-actions button:hover { color: var(--ds-accent); }
+
+  /* Nested reply - same shape, indented and on a deeper surface. */
+  .post__reply {
+    margin-left: var(--ds-space-8);
+    background: var(--ds-surface);
+    border-left: 2px solid var(--ds-hairline);
+    padding-left: var(--ds-space-4);
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .post { padding: var(--ds-space-6) var(--ds-space-4) var(--ds-space-10); }
+    .post__title { font-size: var(--ds-text-2xl); }
+    .post__avatar { width: 40px; height: 40px; flex-basis: 40px; }
+    .post__toolbar { gap: var(--ds-space-4); flex-wrap: wrap; }
+    .post__restack { flex-direction: column; align-items: flex-start; }
+    .post__reply { margin-left: var(--ds-space-4); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post__body a, .post__toolbar button, .post__paywall .cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="post">
+
+    <h1 class="post__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+
+    <p class="post__dek">Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus aenean dolor sit amet.</p>
+
+    <div class="post__byline">
+      <div class="post__avatar" aria-hidden="true"></div>
+      <div class="post__byline-meta">
+        <span class="post__byline-line1"><a href="#">Lorem Ipsum</a></span>
+        <span class="post__byline-line2">
+          <a href="#">Lorem Publication</a>
+          <span class="dot">&middot;</span>
+          <time datetime="2026-05-19">May 19, 2026</time>
+        </span>
+      </div>
+    </div>
+
+    <div class="post__toolbar" role="toolbar" aria-label="Post engagement">
+      <button type="button" aria-label="Like">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </span>
+        1,642
+      </button>
+      <button type="button" aria-label="Comment">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </span>
+        171
+      </button>
+      <button type="button" aria-label="Restack">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        </span>
+        45
+      </button>
+      <button type="button" class="share" aria-label="Share">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+        </span>
+        Share
+      </button>
+    </div>
+
+    <div class="post__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. <em>Integer non nibh in odio luctus elementum.</em> Suspendisse potenti. In hac habitasse platea dictumst. Mauris vitae diam in tortor cursus tincidunt.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <blockquote>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</blockquote>
+
+      <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. <a href="#">Neque porro quisquam</a> est, qui dolorem ipsum quia dolor sit amet.</p>
+
+      <div class="post__paywall" role="region" aria-label="Paid subscription required">
+        <h3>Keep reading with a 7-day free trial</h3>
+        <p>Subscribe to Lorem Publication to keep reading this post and get 7 days of free access to the full post archives.</p>
+        <a href="#" class="cta">Subscribe</a>
+      </div>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <p>Quisque velit nisi, pretium ut lacinia in, elementum id enim. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi sed eu sapien velit ipsum dolorem.</p>
+
+    </div>
+
+    <div class="post__toolbar" role="toolbar" aria-label="Post engagement repeat">
+      <button type="button" aria-label="Like">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </span>
+        1,642
+      </button>
+      <button type="button" aria-label="Comment">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </span>
+        171
+      </button>
+      <button type="button" aria-label="Restack">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        </span>
+        45
+      </button>
+      <button type="button" class="share" aria-label="Share">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+        </span>
+        Share
+      </button>
+    </div>
+
+    <div class="post__restack" role="region" aria-label="Restack this post">
+      <div class="post__restack-glyph" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </div>
+      <div class="post__restack-text">
+        <p class="post__restack-title">Share this post</p>
+        <p class="post__restack-sub">Lorem ipsum dolor sit amet consectetur adipiscing elit nullam vel velit a lorem dictum convallis.</p>
+      </div>
+      <button type="button">Restack</button>
+    </div>
+
+    <h2 class="post__discussion-header">Discussion about this post</h2>
+
+    <div class="post__comment">
+      <div class="post__comment-avatar" aria-hidden="true"></div>
+      <div>
+        <p class="post__comment-meta">
+          <span class="name">Lorem Reader</span>
+          <span class="dot">&middot;</span>
+          <a href="#">Reader Publication</a>
+          <span class="dot">&middot;</span>
+          <time>2h ago</time>
+        </p>
+        <p class="post__comment-body">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus aenean dolor sit amet consectetur adipiscing elit.</p>
+        <div class="post__comment-actions">
+          <button type="button">Like (24)</button>
+          <button type="button">Reply (3)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="post__comment post__reply">
+      <div class="post__comment-avatar" aria-hidden="true"></div>
+      <div>
+        <p class="post__comment-meta">
+          <span class="name">Ipsum Author</span>
+          <span class="dot">&middot;</span>
+          <time>1h ago</time>
+        </p>
+        <p class="post__comment-body">Donec euismod sapien id ante porta, eget rhoncus tortor varius. Pellentesque habitant morbi tristique senectus et netus.</p>
+        <div class="post__comment-actions">
+          <button type="button">Like (8)</button>
+          <button type="button">Reply</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="post__comment">
+      <div class="post__comment-avatar" aria-hidden="true"></div>
+      <div>
+        <p class="post__comment-meta">
+          <span class="name">Dolor Sit</span>
+          <span class="dot">&middot;</span>
+          <time>4h ago</time>
+        </p>
+        <p class="post__comment-body">Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna.</p>
+        <div class="post__comment-actions">
+          <button type="button">Like (17)</button>
+          <button type="button">Reply (1)</button>
+        </div>
+      </div>
+    </div>
+
+  </article>
+</body>
+</html>

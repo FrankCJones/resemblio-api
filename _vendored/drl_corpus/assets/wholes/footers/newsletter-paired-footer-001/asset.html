@@ -1,0 +1,336 @@
+<!--
+  Asset: newsletter-paired-footer-001
+  Class: footers (whole)
+  Pattern: editorial-footer, minimal-footer, underline-input, label-above, inline-text-link
+  Inspired by: Frank Chimero
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001              (palette context)
+    - type-pairings/serif-mono-editorial-001   (serif body + mono meta)
+    - inputs/text-underline-001                (underline email field pattern)
+    - buttons/editorial-arrow-002              (serif arrow CTA pattern)
+    - links/inline-link-accent-001             (inline serif link pattern)
+    - dividers/dotted-editorial-divider-001    (leader-dot break above the row)
+    - wordmarks/serif-italic-001               (italic serif wordmark moment)
+  Notes:
+    - The footer pairs a small newsletter signup block on the left with a
+      single centered text row of contact links (Email, Newsletter, RSS) and
+      a copyright line on the right. The Chimero source uses a single
+      centered line with no signup form; the pairing here is the asset's
+      compositional move, lifting the implied newsletter affordance into a
+      visible block while preserving the minimal contact row beside it.
+    - Variable: every palette, type, spacing, and chrome value comes from
+      tokens.css. Inline: the single bullet glyph separator and the small
+      italic 'frank.' wordmark sizing are one-off ornamental decisions and
+      stay inline with comments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>newsletter-paired-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Newsreader is the closest open-source stand-in for the warm-paper
+     optical-size serif idiom Chimero's canon era reads in. JetBrains Mono
+     handles the kicker and copyright meta line. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. The footer is its own band, but the asset renders the
+   * footer alone against the warm-paper bg so the band reads in situ. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: end center;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-6);
+  }
+
+  /* Footer band. Centered, narrow editorial measure; the dotted divider
+   * sits above as the section break from preceding content. */
+  .footer {
+    width: 100%;
+    max-width: 880px;
+    color: var(--ds-text);
+  }
+
+  /* Leader-dot divider (from atoms/dividers/dotted-editorial-divider-001).
+   * A row of low-contrast dots; print's leader-dot tradition. */
+  .footer__rule {
+    display: block;
+    height: 6px;
+    margin: 0 0 var(--ds-space-8);
+    /* Inline ornament: the dots are a tiny repeating radial gradient. The
+     * 8px tile width is hand-tuned for the warm-paper register. */
+    background-image: radial-gradient(circle, var(--ds-border) 1px, transparent 1.4px);
+    background-size: 8px 6px;
+    background-repeat: repeat-x;
+    background-position: left center;
+    opacity: 0.7;
+  }
+
+  /* Two-column pairing. Left: newsletter block. Right: contact row + meta.
+   * Gap is the editorial 5-step. Collapses to one column under 640px. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ds-space-10);
+    align-items: start;
+  }
+  @media (max-width: 640px) {
+    .footer__grid { grid-template-columns: 1fr; gap: var(--ds-space-8); }
+  }
+
+  /* ---------- Newsletter block (left column) ---------- */
+
+  /* Mono kicker above the signup label. Uppercase, wide tracking, muted. */
+  .nl__kicker {
+    display: block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  /* Serif heading for the signup block. Mid display size, italic accent on
+   * one word to register the wordmark voice in the heading itself. */
+  .nl__title {
+    margin: 0 0 var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+  .nl__title em {
+    font-style: italic;
+    font-weight: 400;
+    /* Inline ornament: the italic word picks up the accent sage to read as
+     * a printer's second-color, matching the wordmark register. */
+    color: var(--ds-accent);
+  }
+
+  .nl__lede {
+    margin: 0 0 var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    max-width: 38ch;
+  }
+
+  /* Underline input (from atoms/inputs/text-underline-001). Label above,
+   * borderless field, hairline underline thickens on focus. */
+  .nl__form {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--ds-space-3);
+    max-width: 420px;
+  }
+  .nl__field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+  }
+  .nl__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .nl__input {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    border-bottom: 1px solid var(--ds-border);
+    padding: var(--ds-space-2) 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nl__input::placeholder { color: var(--ds-text-muted); opacity: 0.7; }
+  .nl__input:focus {
+    outline: none;
+    border-bottom-color: var(--ds-accent);
+    border-bottom-width: 2px;
+    /* The 1px-to-2px swap shifts the field's baseline by 1px; we offset by
+     * trimming a padding step on focus so the label does not jump. */
+    padding-bottom: calc(var(--ds-space-2) - 1px);
+  }
+  .nl__input:focus-visible {
+    /* Accessible focus indicator beyond the underline thickening. */
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Editorial arrow CTA (from atoms/buttons/editorial-arrow-002). Serif,
+   * underline at rest, arrow nudges right on hover. */
+  .nl__cta {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    padding: var(--ds-space-2) 0;
+    border-bottom: 1px solid var(--ds-text);
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    transition:
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nl__cta .arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-emphasize);
+  }
+  .nl__cta:hover {
+    color: var(--ds-accent);
+    border-bottom-color: var(--ds-accent);
+  }
+  .nl__cta:hover .arrow { transform: translateX(4px); }
+  .nl__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* ---------- Contact row + meta (right column) ---------- */
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    align-items: flex-start;
+  }
+  @media (max-width: 640px) {
+    .meta { align-items: flex-start; }
+  }
+
+  /* The italic-serif wordmark moment (from atoms/wordmarks/serif-italic-001).
+   * Sized small here; the wordmark is the personal sign-off, not the brand
+   * banner. */
+  .meta__mark {
+    font-family: var(--ds-font-accent);
+    font-style: italic;
+    font-weight: 400;
+    /* Inline ornament: the wordmark sits between display and base sizes; a
+     * non-scale step that the wordmark atom uses verbatim. */
+    font-size: 26px;
+    line-height: 1;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .meta__mark .dot {
+    /* The trailing period is a wordmark fixture; we tint it sage so the
+     * mark carries a single tiny moment of color. */
+    color: var(--ds-accent);
+  }
+
+  /* Single centered text row of contact links separated by bullet glyphs.
+   * Mirrors the Chimero source row exactly: Email • Newsletter • RSS. */
+  .meta__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    align-items: baseline;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .meta__row a {
+    /* Inline link (from atoms/links/inline-link-accent-001). 1px underline
+     * at rest, shifts to sage on hover. */
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .meta__row a:hover { color: var(--ds-accent); }
+  .meta__row a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+  .meta__sep {
+    /* Inline ornament: bullet glyph separator. The exact character (\2022)
+     * is the source's separator; not a token. */
+    color: var(--ds-text-muted);
+    user-select: none;
+  }
+
+  /* Mono copyright line beneath the contact row. */
+  .meta__copy {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nl__cta, .nl__cta .arrow, .nl__input, .meta__row a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <span class="footer__rule" aria-hidden="true"></span>
+
+    <div class="footer__grid">
+
+      <!-- Newsletter signup block (left). The pairing's contribution. -->
+      <section class="nl" aria-labelledby="nl-heading">
+        <span class="nl__kicker">Lorem dispatch</span>
+        <h2 id="nl-heading" class="nl__title">Quaerendo <em>invenietis</em>.</h2>
+        <p class="nl__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sent the first Tuesday of each lorem, with notes from the workshop.</p>
+        <form class="nl__form" action="#" method="post" novalidate>
+          <div class="nl__field">
+            <label class="nl__label" for="nl-email">Email address</label>
+            <input
+              class="nl__input"
+              id="nl-email"
+              name="email"
+              type="email"
+              placeholder="lorem@ipsum.studio"
+              autocomplete="email"
+            />
+          </div>
+          <button class="nl__cta" type="submit">
+            <span>Subscribe</span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Contact row, wordmark, and copyright (right). Mirrors the
+           Chimero source row exactly. -->
+      <section class="meta" aria-label="Contact and copyright">
+        <span class="meta__mark">frank<span class="dot">.</span></span>
+        <nav class="meta__row" aria-label="Contact">
+          <a href="#email">Email</a>
+          <span class="meta__sep" aria-hidden="true">&bull;</span>
+          <a href="#newsletter">Newsletter</a>
+          <span class="meta__sep" aria-hidden="true">&bull;</span>
+          <a href="#rss">RSS</a>
+        </nav>
+        <p class="meta__copy">&copy; 2004 - 2026 Lorem Ipsum</p>
+      </section>
+
+    </div>
+  </footer>
+</body>
+</html>

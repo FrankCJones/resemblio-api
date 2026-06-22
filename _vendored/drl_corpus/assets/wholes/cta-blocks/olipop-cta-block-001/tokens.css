@@ -1,0 +1,139 @@
+/*
+ * olipop-cta-block-001 tokens
+ *
+ * Native token values for Olipop's recurring CTA-band pattern. Two pages
+ * sampled via Chrome devtools 2026-05-20:
+ *   - drinkolipop.com (homepage): mint-teal band rgb(156,212,209) with
+ *     headline "Why OLIPOP?" in WindsorEF 48px/48px forest ink, body Ano
+ *     20px, forest-green pill CTA rgb(20,67,61) with cream label
+ *     rgb(255,247,229), 50px radius, padding 10px 32px.
+ *   - drinkolipop.com (homepage section 2): pink band rgb(255,184,179)
+ *     with headline "Made with real ingredients" WindsorEF 48px/52.8px,
+ *     body Ano 18px, identical forest-green pill CTA at 50px radius and
+ *     8px 32px padding, white label.
+ *
+ * The CTA-band class on Olipop is: candy-bright surface fill, retro-soda
+ * WindsorEF headline, Ano supporting line, forest-green pill button with
+ * cream or white label. The surface carries the personality; the button
+ * stays calm at the brand forest green. The asset bottles that pattern.
+ *
+ * Forest green and the WindsorEF + Ano pairing match the sibling Olipop
+ * assets in this library (olipop-product-hero-001 tokens.css and the
+ * Olipop atoms it composes).
+ */
+:root {
+  /* ---------- Colors ----------
+   * The block surface is a candy-bright tinted fill (this asset ships
+   * peach-pink as the default; mint-teal lives as accent-2 so a one-line
+   * swap recolours the band). Body ink is the deep forest green; the CTA
+   * pill takes the same forest green at full saturation with a cream
+   * label so it reads warm against the bright surface.
+   */
+  --ds-bg:          #FFB8B3; /* Olipop section pink rgb(255,184,179); the band fill. */
+  --ds-surface:     #FFF7E5; /* Olipop cream rgb(255,247,229); raised surface and pill label. */
+  --ds-surface-2:   #FFE1D9; /* Olipop product-page peach rgb(255,225,217); alternate band fill. */
+  --ds-text:        #14433D; /* Olipop body ink rgb(20,67,61); headline and body color. */
+  --ds-text-muted:  #0A3128; /* Forest-green sub-label rgb(10,49,40); rarely needed in this block. */
+  --ds-text-strong: #034638; /* Olipop deepest forest rgb(3,70,56); brand canonical CTA fill. */
+  --ds-border:      #034638; /* Forest green hairline (secondary-button outline elsewhere). */
+  --ds-hairline:    #14433D; /* Sub-band hairline; not used in this band but declared. */
+  --ds-accent:      #14433D; /* The CTA pill fill at rest (matches body ink); the brand keeps the action calm. */
+  --ds-accent-2:    #9CD4D1; /* Olipop mint-teal rgb(156,212,209); alternate band fill. */
+  --ds-success:     #98E1C3; /* Olipop mint as success tone. */
+  --ds-warning:     #FCC100; /* Olipop sun-yellow. */
+  --ds-error:       #C53A38; /* Tuned warm-red consistent with the peach field. */
+  --ds-info:        #034638; /* The palette refuses a separate info hue. */
+  --ds-focus-ring:  #FCC100; /* Olipop yellow; high contrast against the forest-green pill. */
+
+  /* ---------- Type families ----------
+   * Olipop's pairing: WindsorEF for the chunky retro-soda display headline
+   * and Ano (Schick Toikka) for body. Fallback chain steps to Cooper Std
+   * for the headline and Inter/Helvetica Neue for body so the warm-soda
+   * register survives unlicensed.
+   */
+  --ds-font-display: "WindsorEF", "Cooper Std", "Georgia", serif;
+  --ds-font-body:    "Ano", "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Ano", "Inter", "Helvetica Neue", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Headline binds to 4xl on desktop (48px measured on both bands). Body
+   * binds to lg (18-20px measured). Button label binds to lg (18-20px
+   * measured).
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Body line and button label. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  48px;   /* Display headline. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;  /* WindsorEF headline on Olipop measures 48px/48px on one band, 48px/52.8px on the other; rounds to ~1.05. */
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;   /* Ano body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.015em;  /* WindsorEF needs less negative tracking than a grotesque. */
+  --ds-tracking-normal: 0;          /* Ano body at normal. */
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;
+
+  /* ---------- Spacing ----------
+   * Band padding measured at 54-56px top/bottom on the pink band. Headline
+   * to body gap ~24px, body to button row ~32px.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;   /* Headline to body. */
+  --ds-space-6:  32px;   /* Body to button. */
+  --ds-space-8:  56px;   /* Band vertical padding (matches measured 54-56px). */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Olipop's signature pill is 50px on most CTAs (functionally full at
+   * the button's 40-48px height). Kept full to match.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;
+  --ds-radius-lg:   24px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Olipop bands sit flat. No shadow at rest; a 1.5px forest ring is the
+   * secondary lift convention in other Olipop assets and is declared here
+   * for consistency, but unused in this block.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1.5px #034638;
+  --ds-shadow-sm:   0 1px 0 rgba(3,70,56,0.15);
+  --ds-shadow-md:   0 6px 20px rgba(3,70,56,0.18);
+  --ds-shadow-lg:   0 18px 40px rgba(3,70,56,0.22);
+  --ds-shadow-2xl:  0 36px 72px rgba(3,70,56,0.28);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,365 @@
+<!--
+  Asset: linear
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Linear
+  Notes:
+    - Linear's full component vocabulary on one page: buttons (4 variants:
+      primary pill, secondary ghost, link with arrow, icon square), text
+      input with kbd hint, feature card and customer-quote card, issue-label
+      badge and "New" changelog badge, icon row, nav-link row, status
+      indicator, loader, monogram and wordmark, type block.
+    - All components share tokens.css; inline ornament limited to the
+      gradient placeholder on the feature-card media region.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .head p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Buttons - the four variants */
+  .btn-primary {
+    appearance: none; border: 0; cursor: pointer;
+    background: #E5E5E6; color: var(--ds-bg);
+    font-family: var(--ds-font-body); font-size: 13px; font-weight: 510;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: 0 var(--ds-space-3); height: 32px;
+    border-radius: var(--ds-radius-full);
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .btn-primary:hover { background: var(--ds-text-strong); }
+
+  .btn-secondary {
+    appearance: none; cursor: pointer;
+    background: rgba(255,255,255,0.05); color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body); font-size: 13px; font-weight: 510;
+    letter-spacing: var(--ds-tracking-normal);
+    padding: 0 var(--ds-space-3); height: 32px;
+    border-radius: var(--ds-radius-full);
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+
+  .btn-link {
+    display: inline-flex; align-items: center; gap: var(--ds-space-1);
+    color: var(--ds-text); font-family: var(--ds-font-body); font-size: 13px;
+    font-weight: 510; text-decoration: none;
+  }
+  .btn-link svg { width: 12px; height: 12px; transition: transform var(--ds-duration-fast) var(--ds-ease-standard); }
+  .btn-link:hover svg { transform: translateX(2px); }
+
+  .btn-icon {
+    appearance: none; border: 0; cursor: pointer;
+    width: 32px; height: 32px; border-radius: var(--ds-radius-md);
+    background: transparent; color: var(--ds-text-muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background var(--ds-duration-instant) var(--ds-ease-standard), color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .btn-icon:hover { background: rgba(255,255,255,0.05); color: var(--ds-text); }
+  .btn-icon svg { width: 16px; height: 16px; }
+
+  /* Input - bordered text input with optional kbd hint */
+  .search {
+    display: flex; align-items: center; gap: var(--ds-space-2);
+    background: rgba(255,255,255,0.05);
+    border: 0.8px solid rgba(255,255,255,0.05);
+    border-radius: var(--ds-radius-md);
+    padding: 0 var(--ds-space-3);
+    height: 40px; max-width: 420px; width: 100%;
+    transition: outline var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .search:focus-within { outline: 2.4px solid var(--ds-text-strong); outline-offset: 0; }
+  .search svg.icon { width: 16px; height: 16px; color: var(--ds-text-muted); }
+  .search input {
+    flex: 1; background: transparent; border: 0; outline: none;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    height: 100%;
+  }
+  .search input::placeholder { color: var(--ds-text-muted); }
+  .kbd { display: inline-flex; gap: 2px; color: var(--ds-text-muted); font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); }
+  .kbd kbd { background: rgba(255,255,255,0.05); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-sm); padding: 1px 4px; min-width: 18px; text-align: center; font: inherit; }
+
+  /* Badges */
+  .badge-label {
+    display: inline-flex; align-items: center; gap: var(--ds-space-1);
+    background: rgba(255,255,255,0.05); color: var(--ds-text-muted);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+    font-weight: 500; letter-spacing: var(--ds-tracking-normal);
+    padding: 2px var(--ds-space-2); border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+  }
+  .badge-label .dot { width: 6px; height: 6px; border-radius: var(--ds-radius-full); background: var(--ds-accent); }
+  .badge-label.is-warn .dot { background: var(--ds-warning); }
+  .badge-label.is-success .dot { background: var(--ds-success); }
+  .badge-label.is-error .dot { background: var(--ds-error); }
+
+  .badge-new {
+    display: inline-flex; align-items: center;
+    background: var(--ds-accent); color: var(--ds-text-strong);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-xs);
+    font-weight: 510; letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    padding: 2px var(--ds-space-2); border-radius: var(--ds-radius-sm);
+  }
+
+  /* Icons */
+  .icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--ds-space-4); max-width: 520px; }
+  .icon-cell { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); color: var(--ds-text); }
+  .icon-cell svg { width: 20px; height: 20px; }
+  .icon-cell .lbl { font-family: var(--ds-font-mono); font-size: var(--ds-text-2xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); }
+
+  /* Cards - feature card (large) and customer-quote card (compact) */
+  .cards { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--ds-space-6); }
+  .card-feature {
+    background: var(--ds-surface);
+    border: 0.8px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: box-shadow var(--ds-duration-normal) var(--ds-ease-standard), transform var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+  .card-feature:hover { box-shadow: var(--ds-shadow-md); transform: translateY(-1px); }
+  /* inline ornament: indigo-tinted mesh placeholder for the product-shot region. */
+  .card-feature__media { aspect-ratio: 16/10; background: radial-gradient(circle at 30% 30%, rgba(94,106,210,0.25), transparent 60%), radial-gradient(circle at 70% 70%, rgba(113,112,255,0.2), transparent 55%), var(--ds-surface-2); }
+  .card-feature__body { padding: var(--ds-space-5) var(--ds-space-5) var(--ds-space-5); display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .card-feature__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); letter-spacing: var(--ds-tracking-wider); text-transform: uppercase; color: var(--ds-text-muted); }
+  .card-feature__title { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); line-height: var(--ds-leading-snug); letter-spacing: var(--ds-tracking-tight); font-weight: 510; margin: 0; color: var(--ds-text-strong); }
+  .card-feature__dek { color: var(--ds-text-muted); font-size: var(--ds-text-sm); margin: 0; }
+
+  .card-customer {
+    background: var(--ds-surface);
+    border: 0.8px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-5);
+    display: flex; flex-direction: column; gap: var(--ds-space-4);
+  }
+  .card-customer__quote { font-family: var(--ds-font-display); font-size: var(--ds-text-lg); line-height: var(--ds-leading-snug); letter-spacing: var(--ds-tracking-tight); color: var(--ds-text); margin: 0; }
+  .card-customer__byline { display: flex; align-items: center; gap: var(--ds-space-3); padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-hairline); }
+  .card-customer__avatar { width: 32px; height: 32px; border-radius: var(--ds-radius-full); background: linear-gradient(135deg, #4C5BC9, #7170FF); /* inline: indigo placeholder portrait */ }
+  .card-customer__meta { display: flex; flex-direction: column; gap: 2px; }
+  .card-customer__name { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 510; color: var(--ds-text); }
+  .card-customer__role { font-family: var(--ds-font-body); font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+
+  /* Nav-link row */
+  .nav { display: flex; flex-wrap: wrap; gap: var(--ds-space-5); align-items: center; }
+  .nav a {
+    font-family: var(--ds-font-body); font-size: 13px; font-weight: 510;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-muted); text-decoration: none;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .nav a:hover { color: var(--ds-text); }
+
+  /* Status indicator */
+  .status { display: inline-flex; align-items: center; gap: var(--ds-space-2); font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text-muted); }
+  .status .dot { width: 8px; height: 8px; border-radius: var(--ds-radius-full); background: var(--ds-success); box-shadow: 0 0 0 3px rgba(76,183,130,0.15); }
+
+  /* Loader - skeleton bars */
+  @keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
+  }
+  .skel {
+    height: 12px; border-radius: var(--ds-radius-sm);
+    background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+    background-size: 400px 12px;
+    animation: shimmer 1.4s var(--ds-ease-standard) infinite;
+  }
+  .skel-block { display: flex; flex-direction: column; gap: var(--ds-space-2); width: 280px; }
+  .skel.w-80 { width: 80%; }
+  .skel.w-60 { width: 60%; }
+
+  /* Wordmark and monogram */
+  .wordmark { display: inline-flex; align-items: center; gap: var(--ds-space-2); color: var(--ds-text-strong); font-family: var(--ds-font-display); font-weight: 510; font-size: var(--ds-text-base); letter-spacing: var(--ds-tracking-tight); }
+  .wordmark .mono-mark { width: 22px; height: 22px; border-radius: var(--ds-radius-full); background: linear-gradient(135deg, var(--ds-accent), var(--ds-accent-2)); display: inline-block; }
+
+  /* Body type block */
+  .type-block { display: flex; flex-direction: column; gap: var(--ds-space-3); max-width: 60ch; }
+  .display-h1 { font-family: var(--ds-font-display); font-size: var(--ds-text-4xl); line-height: var(--ds-leading-tight); letter-spacing: var(--ds-tracking-tight); font-weight: 600; margin: 0; color: var(--ds-text-strong); }
+  .lead { font-family: var(--ds-font-body); font-size: var(--ds-text-lg); line-height: var(--ds-leading-relaxed); color: var(--ds-text-muted); margin: 0; }
+  .inline-link { color: var(--ds-text); text-decoration: underline; text-decoration-color: var(--ds-border); text-underline-offset: 2px; }
+  .inline-link:hover { text-decoration-color: var(--ds-accent); }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <span class="wordmark" aria-label="Lorem">
+      <span class="mono-mark" aria-hidden="true"></span>
+      lorem
+    </span>
+    <h1>Lorem ipsum: a complete component vocabulary in one voice</h1>
+    <p>Dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Navigation links</div>
+    <nav class="nav">
+      <a href="#">Product</a>
+      <a href="#">Resources</a>
+      <a href="#">Customers</a>
+      <a href="#">Pricing</a>
+      <a href="#">Changelog</a>
+      <a href="#">Contact</a>
+    </nav>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Buttons</div>
+    <div class="row">
+      <button class="btn-primary">Sign up</button>
+      <button class="btn-secondary">Log in</button>
+      <a class="btn-link" href="#">Read the docs
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 6h6M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <button class="btn-icon" aria-label="Search">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="btn-icon" aria-label="Menu">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h10M3 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Input</div>
+    <div class="row">
+      <div class="search">
+        <svg class="icon" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="Lorem ipsum..." aria-label="Search"/>
+        <span class="kbd" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Badges</div>
+    <div class="row">
+      <span class="badge-label"><span class="dot"></span>Lorem</span>
+      <span class="badge-label is-warn"><span class="dot"></span>Ipsum dolor</span>
+      <span class="badge-label is-success"><span class="dot"></span>Sit amet</span>
+      <span class="badge-label is-error"><span class="dot"></span>Consectetur</span>
+      <span class="badge-new">New</span>
+      <span class="badge-new">Changelog</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Icons</div>
+    <div class="icon-grid">
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">search</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">arrow</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">menu</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">close</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">plus</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v4M10 13h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="lbl">info</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">chevron</span></div>
+      <div class="icon-cell"><svg viewBox="0 0 20 20" fill="none"><rect x="4" y="5" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M4 8h12" stroke="currentColor" stroke-width="1.5"/></svg><span class="lbl">issue</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Cards</div>
+    <div class="cards">
+      <article class="card-feature">
+        <div class="card-feature__media" role="img" aria-label="Lorem"></div>
+        <div class="card-feature__body">
+          <span class="card-feature__kicker">Lorem ipsum</span>
+          <h2 class="card-feature__title">Dolor sit amet consectetur</h2>
+          <p class="card-feature__dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore.</p>
+        </div>
+      </article>
+
+      <article class="card-customer">
+        <p class="card-customer__quote">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt."</p>
+        <div class="card-customer__byline">
+          <div class="card-customer__avatar" role="img" aria-label="Lorem"></div>
+          <div class="card-customer__meta">
+            <span class="card-customer__name">Lorem Ipsum</span>
+            <span class="card-customer__role">Head of dolor at Sit Amet Co</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Status and loader</div>
+    <div class="row">
+      <span class="status"><span class="dot"></span>All systems operational</span>
+      <div class="skel-block" aria-label="Loading">
+        <div class="skel w-80"></div>
+        <div class="skel w-60"></div>
+        <div class="skel"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Body type</div>
+    <div class="type-block">
+      <h2 class="display-h1">Lorem ipsum dolor sit amet</h2>
+      <p class="lead">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, <a class="inline-link" href="#">quis nostrud exercitation</a> ullamco laboris.</p>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

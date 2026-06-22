@@ -1,0 +1,236 @@
+<!--
+  Asset: minimal-editorial-band-001
+  Class: newsletter-bands
+  Pattern: paper-and-ink
+  Inspired by: A Working Library (aworkinglibrary.com)
+  Notes:
+    - Sidebar-register subscribe block ported into a centered narrow
+      column. Mono kicker, serif heading, one descriptive line in
+      muted ink, label-above email input with an underline-only
+      chrome, and a text-arrow submit. No box, no card, no fill, no
+      chromatic accent. The page is paper; the band is set on the
+      same sheet.
+    - Variable: every color, every font, every size step (all
+      `--ds-*`). Inline: the underline thickness step on focus (1px to
+      2px) and the 4px hover translate on the submit arrow, both
+      one-off character moments that would over-promote a slot if
+      pulled into the contract.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>minimal-editorial-band-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  No web font import. The token contract names Chaparral Pro (per A
+  Working Library's published colophon) but the family is licensed
+  through Typekit. The fallback chain (Newsreader, Charter, Georgia)
+  carries the same humanist-serif register on systems without the
+  licensed family.
+-->
+<style>
+  /* Reset only what this band needs. The harness handles broader normalization. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Page wrapper: narrow measure echoing the reading column.
+     36em matches the canonical longform measure; the band inherits it
+     rather than spanning the full viewport. */
+  .page {
+    max-width: 36em;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-10);
+  }
+
+  /* A short reading block above the band so the band's relationship
+     to the page is legible when opened standalone. */
+  .reading p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Section-cap rule above the band. A single hairline; not a box. */
+  .band {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+
+  /* Mono kicker above the heading. Wide tracking does the work; the
+     trailing rule is omitted here since the band already sits under
+     one. */
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* The heading. Native A Working Library size step; serif carries
+     the whole register. */
+  .band h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 400;          /* AWL display is set at regular weight; the size is the emphasis. */
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  /* One descriptive line. Body register, muted ink. Replaces the
+     marketing paragraph other newsletter bands stack here. */
+  .band p.dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 28em;
+  }
+
+  /* Form: label above, then field, then helper text. The field row is
+     a horizontal flex with the submit arrow inline. */
+  .band form {
+    display: block;
+  }
+  .field-label {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+  }
+  .field-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: var(--ds-space-2);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .field-row:focus-within {
+    border-bottom: 2px solid var(--ds-focus-ring);   /* one-off step from 1px to 2px; not a contract role */
+    padding-bottom: 7px;                              /* compensates the extra border to hold the baseline */
+  }
+
+  /* The email input itself. Borderless, transparent; the row carries
+     the rule. */
+  .band input[type="email"] {
+    flex: 1 1 auto;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) 0;
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .band input[type="email"]::placeholder {
+    color: var(--ds-text-muted);
+    opacity: 0.7;
+  }
+  .band input[type="email"]:focus {
+    outline: 0;
+  }
+
+  /* Submit as text-link with trailing arrow. Inherits ink color; the
+     hover lifts toward absolute black and the arrow translates 4px
+     right. */
+  .band button[type="submit"] {
+    flex: 0 0 auto;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) 0;
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .band button[type="submit"] .arrow {
+    display: inline-block;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-emphasize);
+  }
+  .band button[type="submit"]:hover,
+  .band button[type="submit"]:focus-visible {
+    color: var(--ds-accent-2);
+  }
+  .band button[type="submit"]:hover .arrow,
+  .band button[type="submit"]:focus-visible .arrow {
+    transform: translateX(4px);  /* one-off hover travel; band-specific character */
+  }
+  .band button[type="submit"]:focus-visible {
+    outline: 0;
+  }
+
+  /* Helper text under the field. Small, muted, sets expectations
+     without dressing the band up. */
+  .helper {
+    margin: var(--ds-space-3) 0 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <article class="reading">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in nisl ac mauris vehicula commodo. Sed faucibus, libero a posuere fringilla, sapien justo blandit eros, quis interdum nibh ipsum nec lectus.</p>
+      <p>Vivamus euismod, justo a egestas tincidunt, augue lectus sollicitudin lorem, eu fermentum velit ipsum at libero. Donec a ornare nibh.</p>
+    </article>
+
+    <section class="band" aria-labelledby="band-title">
+      <p class="kicker">Lorem ipsum</p>
+
+      <h2 id="band-title">Newsletter</h2>
+
+      <p class="dek">
+        Lorem ipsum, technologia &amp; futura laboris. Una epistula
+        per mensem, sine ornamento.
+      </p>
+
+      <form action="#" method="post" novalidate>
+        <label class="field-label" for="band-email">Lorem ipsum address</label>
+        <div class="field-row">
+          <input
+            id="band-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="exemplum@dominium.net"
+            required
+          />
+          <button type="submit">
+            <span>Lorem subscribe</span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+        <p class="helper">Lorem ipsum unsubscribe quovis tempore. Nulla informatio collegitur.</p>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

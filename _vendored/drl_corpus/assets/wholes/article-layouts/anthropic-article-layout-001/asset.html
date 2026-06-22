@@ -1,0 +1,432 @@
+<!--
+  Asset: anthropic-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, editorial-hero, serif-display-sans-body, paper-and-ink
+  Inspired by: Anthropic news post (/news/widening-conversation-ai)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001            (warm-paper-on-ink palette)
+    - type-pairings/dual-serif-001           (serif display + serif body, sans accent)
+    - labels/section-label-numbered-001      (Announcements-style sans kicker)
+    - headings/editorial-newspaper-001       (52px serif feature headline)
+    - body-text/lead-paragraph-001           (lifted dek beneath the title)
+    - body-text/callout-warm-001             (tinted aside callout)
+    - body-text/pull-quote-breakout-001      (full-measure quote interrupting)
+    - links/inline-link-accent-001           (clay-crimson inline links)
+    - dividers/hairline-rule-001             (byline / section hairlines)
+    - cards/anthropic-news-listing-001       (related-rail card frame)
+  Notes:
+    - Mechanic: editorial restraint applied to a product surface. One
+      single chromatic role (clay-crimson) does kicker, links, focus,
+      and the related-rail label. Everything else is paper-on-ink with
+      hairlines as chrome. The serif owns display AND body - the choice
+      that anchors the Anthropic register against generic AI marketing.
+    - Variable: the warm-paper bg, the clay accent, the serif family,
+      the 17px body register at 1.55 leading, the 52px H1.
+    - Inline ornament: the 660px body measure, the figure 16:9 frame,
+      the section-break dot-cluster glyph spacing, the asymmetric
+      negative side margin on the pull-quote.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-article-layout-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 substitutes for anthropicSerif (Tiempos-family).
+     Inter substitutes for anthropicSans (Söhne-family). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * The article sits within a single article container. The header
+   * and body share a centered narrow measure; the figure and related
+   * rail break to wider measures.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ----------------
+   * Editorial-hero register: sans Announcements kicker, serif feature
+   * headline, serif italic dek, sans date strip below a hairline.
+   * Order and weight follow the live Anthropic news-post chrome.
+   */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-10);
+    text-align: left;
+  }
+
+  /* Kicker - sans, small, positive tracking. The Anthropic kicker is
+   * uppercase at +0.16em (anthropicSans). Color stays ink, not accent;
+   * the clay is reserved for links and the related-rail label. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    text-decoration: none;
+    margin-bottom: var(--ds-space-6);
+  }
+
+  /* Feature headline - serif at 4xl (52px), tight leading, negative
+   * tracking. The single-family-spans-display-and-body decision is
+   * what reads as Anthropic. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.2vw, var(--ds-text-4xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek - serif italic at lg (20px), muted ink. The italic carries a
+   * different voice than the upright body that follows. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Date strip - sans below a hairline. The live Anthropic post does
+   * not carry a byline name; the date stands alone as the metadata. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--ds-space-5);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .article__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Hero figure ----------------
+   * The Anthropic news template anchors a 1:1 (or near-square) hero
+   * graphic between header and body. Reaches the header measure, not
+   * the body measure - the figure is part of the editorial header,
+   * not an in-body interrupt.
+   */
+  .article__hero {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-10);
+  }
+  .article__hero-frame {
+    aspect-ratio: 16 / 10;
+    /* Inline ornament: 16:10 chosen for demo; live posts vary between
+     * 1:1 illustrative SVG and 16:9 photographic crops. */
+    background:
+      radial-gradient(120% 80% at 30% 30%, #F2EFE3 0%, #E5E1D2 60%, #D9D5C7 100%);
+    border-radius: var(--ds-radius-md);
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 660px. The load-bearing rhythm decision.
+   * At 17px body that yields ~65-character lines, the editorial target.
+   */
+  .article__body {
+    max-width: 660px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - clay-crimson accent, hairline underline
+   * at rest, lifted clay on hover. From links/inline-link-accent-001. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside body - serif at xl, generous gap above. The serif
+   * keeps the headline voice consistent through the article. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* ---------------- Callout aside ----------------
+   * Warm tinted callout, one step warmer than the paper bg. From
+   * body-text/callout-warm-001. Used for adjacent commentary, not
+   * for the load-bearing pull-quote.
+   */
+  .article__callout {
+    margin: var(--ds-space-6) 0;
+    padding: var(--ds-space-5) var(--ds-space-6);
+    background: var(--ds-surface-2);
+    border-left: 2px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__callout p { margin: 0; }
+
+  /* ---------------- Pull quote ----------------
+   * Breaks the column to the wider header measure. Serif italic at
+   * 2xl, bounded by hairlines top and bottom, attribution in sans
+   * below. From body-text/pull-quote-breakout-001.
+   */
+  .article__pullquote {
+    margin: var(--ds-space-10) auto;
+    padding: var(--ds-space-6) 0;
+    max-width: 760px;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .article__pullquote blockquote {
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .article__pullquote cite {
+    display: block;
+    margin-top: var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Section break ----------------
+   * A spaced three-dot cluster between major sections. The Anthropic
+   * news posts use hairline rules; the cluster glyph here is the
+   * editorial equivalent rendered as punctuation rather than rule.
+   */
+  .article__sectionbreak {
+    display: block;
+    text-align: center;
+    margin: var(--ds-space-10) 0;
+    color: var(--ds-text-muted);
+    letter-spacing: 1em;
+    /* Inline ornament: 1em letter-spacing produces the spaced-dot
+     * cluster from a literal three-dot string. Not a contract slot;
+     * single-purpose glyph spacing. */
+    font-size: var(--ds-text-sm);
+  }
+
+  /* ---------------- Related reading ----------------
+   * End-of-article rail. Clay-crimson sans label, three serif card
+   * titles, sans meta. Sits in the wider article grid (1080) to break
+   * out of the body measure. From cards/anthropic-news-listing-001
+   * register.
+   */
+  .article__related {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .article__related-kicker {
+    display: block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-6);
+  }
+  .article__related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .article__related-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-md);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__related-card:hover {
+    background: var(--ds-surface-2);
+    border-color: var(--ds-border);
+  }
+  .article__related-card .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .article__related-card .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__related-card .title:hover,
+  .article__related-card .title:focus-visible {
+    color: var(--ds-accent);
+  }
+  .article__related-card .meta {
+    margin-top: auto;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__related-grid { grid-template-columns: 1fr; }
+    .article__pullquote blockquote { font-size: var(--ds-text-xl); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__related-card,
+    .article__related-card .title { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <span class="article__kicker">Announcements</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit per saecula intelligentiae</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus ipsum dolor.</p>
+      <div class="article__meta">
+        <time datetime="2026-05-20">May 20, 2026</time>
+      </div>
+    </header>
+
+    <figure class="article__hero" aria-label="Lorem ipsum hero illustration">
+      <div class="article__hero-frame" role="img" aria-label="Warm paper gradient placeholder"></div>
+    </figure>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis. Donec euismod sapien id ante porta, eget rhoncus tortor varius.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. Suspendisse potenti. In hac habitasse platea dictumst. <a href="#">Pellentesque habitant morbi tristique senectus</a> et netus et malesuada fames ac turpis egestas ipsum.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien, eu venenatis lorem libero nec eros.</p>
+
+      <aside class="article__callout">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua dolor.</p>
+      </aside>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. <a href="#">Nemo enim ipsam voluptatem</a> quia voluptas sit aspernatur aut odit.</p>
+
+      <aside class="article__pullquote">
+        <blockquote>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."</blockquote>
+        <cite>Lorem Ipsum, Anthropic</cite>
+      </aside>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <div class="article__sectionbreak" aria-hidden="true">. . .</div>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.</p>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum ipsum dolor sit amet.</p>
+
+    </div>
+
+    <aside class="article__related" aria-label="Related reading">
+      <span class="article__related-kicker">Read more</span>
+      <ul class="article__related-grid">
+        <li class="article__related-card">
+          <a class="kicker" href="#">Announcements</a>
+          <a class="title" href="#">Lorem ipsum dolor sit amet consectetur adipiscing elit</a>
+          <span class="meta">Apr 24, 2026</span>
+        </li>
+        <li class="article__related-card">
+          <a class="kicker" href="#">Policy</a>
+          <a class="title" href="#">Vivamus sit amet sapien velit curabitur nec libero non nisi</a>
+          <span class="meta">Apr 02, 2026</span>
+        </li>
+        <li class="article__related-card">
+          <a class="kicker" href="#">Research</a>
+          <a class="title" href="#">Aenean fermentum magna at suscipit lacinia ipsum lectus</a>
+          <span class="meta">Mar 18, 2026</span>
+        </li>
+      </ul>
+    </aside>
+
+  </article>
+</body>
+</html>

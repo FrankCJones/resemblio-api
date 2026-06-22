@@ -1,0 +1,39 @@
+<!--
+  Asset: kicker-vertical-001
+  Class: kickers
+  Pattern: mono-eyebrow (rotated)
+  Inspired by: editorial side-rails, marginalia
+  Notes: 90deg rotated kicker for side-rail layouts. Sits in left margin.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>kicker-vertical-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--ds-bg); color: var(--ds-text); font-family: var(--ds-font-body); padding: var(--ds-space-6); min-height: 100vh; display: grid; grid-template-columns: 48px 1fr; gap: var(--ds-space-6); align-items: center; }
+  .vrail {
+    display: flex; align-items: center; justify-content: center;
+    /* Writing-mode rotates the text 90deg. */
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider); text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .vrail::after {
+    content: ""; display: inline-block; margin-top: var(--ds-space-3);
+    width: 1px; height: 60px; background: var(--ds-hairline);
+  }
+  .sample { font-size: var(--ds-text-xl); line-height: var(--ds-leading-relaxed); color: var(--ds-text); max-width: 56ch; }
+</style>
+</head>
+<body>
+  <div class="vrail">lorem ipsum · section 02</div>
+  <p class="sample">Body text sits beside the vertical kicker. The rotated label occupies almost no horizontal space, leaving the reading column intact while still marking the section structurally.</p>
+</body>
+</html>

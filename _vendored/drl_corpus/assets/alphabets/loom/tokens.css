@@ -1,0 +1,178 @@
+/*
+ * loom alphabet tokens
+ *
+ * Loom's complete typography expression as one coherent vocabulary.
+ *
+ * One face does almost the entire job: GT Walsheim (Grilli Type) across
+ * display and body. GT Walsheim is a geometric humanist sans with a warm,
+ * slightly rounded character that softens the SaaS dev-tool register
+ * Loom adjacents (Vercel, Linear) without going playful. The face carries
+ * the wordmark, all hero display, all body reading, all button labels.
+ * A mono is reserved for the rare metadata moment (workspace IDs, video
+ * timestamps inside product chrome) but does not appear in the marketing
+ * alphabet the way Geist Mono does on Vercel.
+ *
+ * The signature register is sentence-case conversational copy on a light
+ * canvas with Loom's purple-blue (#625DF5) as the single chromatic
+ * accent. Hero H1s sit at 56-72px range with mild negative tracking
+ * (-0.015em); body sits at 18px (not 16px) which is the warm-paper
+ * productivity-app convention. The voice is "video for work" - confident
+ * but conversational, not technical. Kickers carry uppercase labels in
+ * Walsheim 12px tracked wider (NEW, MOST POPULAR, BETA) rather than mono.
+ *
+ * Loom's purple is the load-bearing decision. It signals async-video-
+ * messaging the way Vercel Blue signals deploys. The accent appears on
+ * primary CTAs, the recorder dot in product screenshots, link underlines,
+ * and the purple gradient panels that anchor pricing tier highlights.
+ * The rest of the surface is restrained: white #FFFFFF body, near-black
+ * #0B0B0F ink, two greys for muted text and hairlines.
+ *
+ * Type values derived from WebFetch HTML inspection of www.loom.com
+ * and www.loom.com/pricing on 2026-05-20. Hero H1 ("One video is worth
+ * a thousand words"), pricing H1 ("Choose the plan that fits your
+ * needs."), tier names (Starter, Business, Business + AI, Enterprise),
+ * tier prices ($0 / $18 / $24 / Let's Talk), kicker labels (NEW,
+ * MOST POPULAR, BETA), CTA labels (Get Loom for free, Download now,
+ * Learn more, Try for free, Contact Sales), and the sentence-case
+ * conversational voice across both pages were observed directly. Font
+ * family is GT Walsheim per Loom's published brand identity; specific
+ * computed pixel values are inferred from visual scale conventions in
+ * the productivity-app category and the system manifest's design
+ * principles for the Loom system seeded 2026-05-20.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Light canvas with one saturated purple-blue accent. The accent is
+   * the entire chromatic identity; greens and ambers appear only inside
+   * product chrome (recording dot, status pills) and not on marketing
+   * surfaces. The two greys (muted text, hairline) do all the secondary
+   * work.
+   */
+  --ds-bg:           #FFFFFF;   /* Pure white marketing canvas; not the off-white #FAFAFA Vercel convention. */
+  --ds-surface:      #FFFFFF;   /* Card surface matches canvas; chrome lives in the hairline ring. */
+  --ds-surface-2:    #F6F6F8;   /* Nested panel / hovered surface / pricing tier highlight bg. */
+  --ds-text:         #0B0B0F;   /* Near-black body color; reads warmer than pure #000. */
+  --ds-text-muted:   #6B6B76;   /* Cool grey for descriptions, footnotes, metadata. */
+  --ds-text-strong:  #0B0B0F;   /* Hero H1; same as body, Loom does not push to pure black. */
+  --ds-border:       #E6E6EA;   /* Card hairline; subtle warm grey. */
+  --ds-hairline:     #EFEFF3;   /* Section breaks, footer rules. */
+  --ds-accent:       #625DF5;   /* Loom purple-blue; the signature async-video accent. */
+  --ds-accent-2:     #4F49E0;   /* Pressed / hover state of accent. */
+  --ds-success:      #15B981;   /* Operational green; reserved for in-product status. */
+  --ds-warning:      #F59E0B;   /* Amber warning; reserved. */
+  --ds-error:        #EF4444;   /* Destructive red; reserved. */
+  --ds-info:         #625DF5;   /* Matches accent. */
+  --ds-focus-ring:   #625DF5;   /* Loom purple at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * GT Walsheim across display and body. Walsheim is a geometric humanist
+   * sans with slightly rounded terminals; the warmth keeps Loom's
+   * marketing surface from reading as a dev-tool. Inter is the documented
+   * metric-adjacent fallback (Walsheim is a licensed Grilli Type face).
+   *
+   * No primary mono in the marketing alphabet. JetBrains Mono is reserved
+   * for the rare product-chrome moment (timestamps, workspace IDs) that
+   * leaks into marketing screenshots.
+   */
+  --ds-font-display: "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "GT Walsheim", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", "Roboto Mono", monospace;
+  /* No dedicated accent face; the wordmark and display share GT Walsheim. */
+  --ds-font-accent:  "GT Walsheim", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Base 18px. The productivity-app convention bumps body above 16px to
+   * read warmer; Loom sits at 18px / 1.55. Hero H1 ranges 56-72px with
+   * 64px the most common observed setting. Kickers and button labels at
+   * 14px. Footnotes at 12-13px.
+   */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   13px;   /* Footnotes, legal, finest captions. */
+  --ds-text-sm:   14px;   /* CTA labels, nav links, kickers. */
+  --ds-text-base: 18px;   /* Body reading default; warm-paper-productivity convention. */
+  --ds-text-lg:   20px;   /* Lead paragraph / feature description. */
+  --ds-text-xl:   24px;   /* Feature tile H3. */
+  --ds-text-2xl:  32px;   /* Section heads (H2). */
+  --ds-text-3xl:  40px;   /* Pricing tier headline. */
+  --ds-text-4xl:  56px;   /* Marketing hero H1 lower bound. */
+  --ds-text-5xl:  72px;   /* Marketing hero H1 upper bound; pricing H1. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Display sits at 1.08 (tighter than Vercel's 1.1; Walsheim's rounded
+   * terminals tolerate the squeeze). Body at 1.55 (looser than Vercel's
+   * 1.5) for the warmer reading rhythm.
+   */
+  --ds-leading-tight:   1.08;   /* Hero H1, pricing H1. */
+  --ds-leading-snug:    1.2;    /* H2 / H3. */
+  --ds-leading-normal:  1.55;   /* Body reading. */
+  --ds-leading-relaxed: 1.7;    /* Footnote / FAQ longform. */
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Mild negative tracking on display (-0.015em on hero). Body at 0.
+   * Uppercase kickers (NEW / MOST POPULAR / BETA) sit at +0.08em wider;
+   * not the +0.14em wider-still Vercel reserves for mono status text.
+   */
+  --ds-tracking-tight:  -0.015em;  /* Hero H1, section H2. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.08em;    /* Uppercase Walsheim kicker / tier ribbon label. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Marketing sections breathe at space-12 (96px), looser
+   * than Vercel's space-10 rhythm. Card interior padding lands at
+   * space-6 / space-8.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;   /* Card vertical padding. */
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;   /* Marketing section rhythm. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Subtle rounding, not pills outside of small chips and the recorder
+   * dot. The signature radius is 8-10px on cards and 8px on CTAs. The
+   * productivity-app category sits between Linear's 4px and Notion's
+   * 6px on the modern radius continuum.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;     /* Input fields. */
+  --ds-radius-md:   8px;     /* CTA button, card. */
+  --ds-radius-lg:   12px;    /* Featured / pricing card. */
+  --ds-radius-full: 9999px;  /* NEW / MOST POPULAR / BETA pills, recorder dot. */
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome at rest, soft elevation on the featured pricing
+   * tier. Loom uses real (not 0 0 0 1px) box-shadows more readily than
+   * Vercel; the brand voice is warmer and tolerates lift.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(11, 11, 15, 0.04);
+  --ds-shadow-sm:   0 1px 3px rgba(11, 11, 15, 0.06), 0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 4px 12px rgba(11, 11, 15, 0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 16px 40px rgba(11, 11, 15, 0.10), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 32px 64px rgba(98, 93, 245, 0.18), 0 0 0 1px var(--ds-border);
+
+  /* ---------- Motion ----------
+   * Standard ease for most UI; the recorder dot pulse uses a slow
+   * (1600ms) breath. CTA feedback at 150ms is the marketing-page default.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,738 @@
+<!--
+  Asset: cloudflare-marketing-page-001
+  Class: layouts
+  Pattern: dual-cta-hero, flush-top-nav, bento-grid, mega-footer, mono-utility-pair, accent-on-neutral, paper-and-ink
+  Inspired by: Cloudflare (cloudflare.com)
+  Notes:
+    - Marketing homepage skeleton in the Cloudflare register: flush-top
+      nav with wordmark plus primary link cluster plus auth pair; paper-
+      white hero with mono kicker, large display, lede on the Workers /
+      serverless positioning, and a dual CTA (primary orange plus ghost);
+      product portfolio grid grouped by category (Compute, Storage, AI,
+      Media, Network) with dense tile rhythm; customer trust strip on a
+      faint tint band; two feature deep-dive blocks (Workers / serverless
+      and Zero Trust / security); stats plus network-map band with the
+      "330+ cities" anchor; centered pull-quote testimonial; final CTA
+      block echoing the hero dual-action; mega-footer with five column
+      groups. Container caps at 1280px; no dark bands; hairline-as-chrome
+      throughout; signature orange is the only chromatic accent.
+    - Variable: section sequence, container width, vertical rhythm, tint
+      vs white band assignment per section. Inline: container max-width
+      (1280px), portfolio category 4-up tile grid, customer-logo 6-up
+      grid, stats 4-up mono figure row, network-map background gradient,
+      footer five-column break.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Cloudflare's marketing canon runs on a humanist sans;
+  Inter and the system stack carry the register without loading inline.
+  JetBrains Mono is the mono utility fallback for edge-location stats
+  and snake_case product keys.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. 1280px cap so the product-portfolio four-up grid,
+   * customer-logo row, and footer columns breathe at desktop. Inline. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  .band-light { background: var(--ds-bg);      color: var(--ds-text); }
+  .band-tint  { background: var(--ds-surface); color: var(--ds-text); }
+
+  /* Nav. Flush-top, white surface, hairline bottom rule. Wordmark left,
+   * primary link cluster center, auth pair right. */
+  .nav {
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+    padding-block: var(--ds-space-4);
+  }
+  .nav__mark {
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-lg);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__mark::before {
+    /* Inline orange disc proxy for the Cloudflare cloud mark. Not a
+     * token because it is a one-off ornament tied to this wordmark. */
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    vertical-align: -1px;
+  }
+  .nav__links {
+    display: flex;
+    gap: var(--ds-space-5);
+    flex: 1;
+    margin-left: var(--ds-space-6);
+  }
+  .nav__links a {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .nav__auth {
+    display: flex;
+    gap: var(--ds-space-4);
+    align-items: center;
+    font-size: var(--ds-text-sm);
+  }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-sm);
+    font-weight: 600;
+  }
+
+  /* Hero. Paper-white band, dual-CTA, centered measure. Large display,
+   * mono kicker above, lede below the title. */
+  .hero {
+    padding-block: var(--ds-space-16);
+    text-align: center;
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-5);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(40px, 6.5vw, var(--ds-text-5xl));
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 18ch;
+  }
+  .hero__lede {
+    max-width: 58ch;
+    margin: 0 auto var(--ds-space-8);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+  }
+  .hero__actions {
+    display: flex;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 0;
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+    cursor: pointer;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-border);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+  }
+
+  /* Section block. Used for every product-portfolio category and
+   * feature deep-dive. Heading-left rhythm with feature-tile grid. */
+  .section {
+    padding-block: var(--ds-space-12);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-4);
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    max-width: 24ch;
+    margin: 0 0 var(--ds-space-4);
+  }
+  .section__lede {
+    max-width: 60ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    margin-bottom: var(--ds-space-10);
+  }
+
+  /* Product portfolio. Dense four-up tile grid per category, with a
+   * category band above. Tiles are hairline-chrome, no shadow at rest. */
+  .portfolio__category {
+    margin-bottom: var(--ds-space-10);
+  }
+  .portfolio__cat-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+    margin-bottom: var(--ds-space-5);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .portfolio__cat-label::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-xs);
+  }
+  .portfolio__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 600px) { .portfolio__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 900px) { .portfolio__grid { grid-template-columns: repeat(4, 1fr); } }
+  .product-tile {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .product-tile:hover { border-color: var(--ds-accent); }
+  .product-tile h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ds-text-strong);
+  }
+  .product-tile p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .product-tile__sku {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* Customer trust strip. Faint tint band, six-up muted logo cells. */
+  .logos {
+    background: var(--ds-surface);
+    padding-block: var(--ds-space-10);
+  }
+  .logos__title {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-align: center;
+    margin-bottom: var(--ds-space-6);
+  }
+  .logos__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-items: center;
+  }
+  @media (min-width: 600px)  { .logos__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px)  { .logos__grid { grid-template-columns: repeat(6, 1fr); } }
+  .logos__cell {
+    height: 32px;
+    width: 100%;
+    background: var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    opacity: 0.65;
+  }
+
+  /* Feature deep-dive. Split block: heading-and-lede left, illustration
+   * proxy right. Alternates direction between blocks. */
+  .deep-dive {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .deep-dive { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+    .deep-dive--reverse .deep-dive__media { order: -1; }
+  }
+  .deep-dive__media {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    aspect-ratio: 4 / 3;
+    /* Inline: faint orange network-trace diagonal as a one-off
+     * ornament. Not a token because it is unique to this asset. */
+    background-image: linear-gradient(135deg, rgba(246,130,31,0.08) 0%, rgba(246,130,31,0) 60%);
+  }
+  .deep-dive__bullets {
+    list-style: none;
+    margin: var(--ds-space-6) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .deep-dive__bullets li {
+    display: flex;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+  }
+  .deep-dive__bullets li::before {
+    content: "";
+    flex: 0 0 6px;
+    height: 6px;
+    margin-top: 10px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Stats / network-map band. Faint tint surface, four-up mono stat
+   * row above a globe / network-map proxy. */
+  .network {
+    background: var(--ds-surface);
+    padding-block: var(--ds-space-16);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .network__map {
+    /* Inline radial dots stand in for the global edge-location map.
+     * Two-stop orange wash hints at the network glow. Inline since
+     * the recipe is unique to this section. */
+    height: 240px;
+    margin: var(--ds-space-10) auto 0;
+    max-width: 960px;
+    border-radius: var(--ds-radius-lg);
+    background:
+      radial-gradient(circle at 30% 40%, rgba(246,130,31,0.18) 0%, rgba(246,130,31,0) 50%),
+      radial-gradient(circle at 70% 60%, rgba(251,173,65,0.16) 0%, rgba(251,173,65,0) 55%),
+      radial-gradient(circle at 50% 50%, var(--ds-bg) 0%, var(--ds-surface) 100%);
+    border: 1px solid var(--ds-border);
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  @media (min-width: 800px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+  .stats__fig {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .stats__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Testimonial pull-quote. Centered, white band, no chrome. */
+  .quote {
+    padding-block: var(--ds-space-16);
+    text-align: center;
+  }
+  .quote__mark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-4);
+    line-height: 1;
+  }
+  .quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    max-width: 32ch;
+    margin: 0 auto var(--ds-space-6);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+  }
+  .quote__cite {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+  }
+
+  /* Final CTA. White band echo of the hero, dual-action. */
+  .endcta {
+    padding-block: var(--ds-space-16);
+    text-align: center;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .endcta__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(32px, 5vw, var(--ds-text-4xl));
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    max-width: 22ch;
+    margin: 0 auto var(--ds-space-5);
+  }
+  .endcta__lede {
+    max-width: 56ch;
+    margin: 0 auto var(--ds-space-8);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+  }
+  .endcta__actions { display: flex; gap: var(--ds-space-3); justify-content: center; flex-wrap: wrap; }
+
+  /* Mega-footer. Near-black surface, five column groups, social row,
+   * language selector, copyright meta row. */
+  .footer {
+    background: var(--ds-surface-2);
+    color: rgba(255,255,255,0.7);
+    padding-block: var(--ds-space-12) var(--ds-space-8);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-8);
+    margin-bottom: var(--ds-space-10);
+  }
+  @media (min-width: 700px) { .footer__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1000px) { .footer__grid { grid-template-columns: repeat(5, 1fr); } }
+  .footer__col h4 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    color: #FFFFFF;
+    margin: 0 0 var(--ds-space-4);
+    font-weight: 600;
+  }
+  .footer__col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  .footer__col a { font-size: var(--ds-text-sm); color: rgba(255,255,255,0.6); }
+  .footer__meta {
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--ds-text-xs);
+    color: rgba(255,255,255,0.5);
+  }
+  .footer__social { display: flex; gap: var(--ds-space-4); }
+  .footer__social span {
+    width: 18px; height: 18px; border-radius: var(--ds-radius-full);
+    background: rgba(255,255,255,0.2); display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. Nav (flush-top, white, hairline bottom rule) -->
+<header class="nav">
+  <div class="page nav__inner">
+    <span class="nav__mark">Lorem</span>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#">Lorem</a>
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+    </nav>
+    <div class="nav__auth">
+      <a href="#">Sign in</a>
+      <a href="#" class="nav__cta">Sign up</a>
+    </div>
+  </div>
+</header>
+
+<!-- 2. Hero (paper-white band, dual-CTA, mono kicker + large display) -->
+<section class="band-light hero">
+  <div class="page">
+    <div class="hero__kicker">Lorem ipsum dolor sit</div>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing</h1>
+    <p class="hero__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+    <div class="hero__actions">
+      <button class="btn-primary" type="button">Lorem ipsum</button>
+      <a href="#" class="btn-ghost">Dolor sit amet</a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Product portfolio (dense tile grid grouped by category) -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem portfolio</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet consectetur</h2>
+    <p class="section__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+    <div class="portfolio__category">
+      <div class="portfolio__cat-label">Lorem</div>
+      <div class="portfolio__grid">
+        <article class="product-tile"><span class="product-tile__sku">lorem_one</span><h3>Lorem ipsum</h3><p>Dolor sit amet consectetur adipiscing.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">lorem_two</span><h3>Dolor sit</h3><p>Sed do eiusmod tempor incididunt.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">lorem_three</span><h3>Amet consectetur</h3><p>Ut enim ad minim veniam.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">lorem_four</span><h3>Adipiscing elit</h3><p>Quis nostrud exercitation ullamco.</p></article>
+      </div>
+    </div>
+
+    <div class="portfolio__category">
+      <div class="portfolio__cat-label">Ipsum</div>
+      <div class="portfolio__grid">
+        <article class="product-tile"><span class="product-tile__sku">ipsum_one</span><h3>Lorem ipsum</h3><p>Dolor sit amet consectetur.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">ipsum_two</span><h3>Dolor amet</h3><p>Sed do eiusmod tempor.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">ipsum_three</span><h3>Consectetur</h3><p>Ut labore et dolore.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">ipsum_four</span><h3>Adipiscing</h3><p>Magna aliqua ut enim.</p></article>
+      </div>
+    </div>
+
+    <div class="portfolio__category">
+      <div class="portfolio__cat-label">Dolor</div>
+      <div class="portfolio__grid">
+        <article class="product-tile"><span class="product-tile__sku">dolor_one</span><h3>Lorem</h3><p>Dolor sit amet.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">dolor_two</span><h3>Ipsum</h3><p>Consectetur adipiscing elit.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">dolor_three</span><h3>Amet</h3><p>Sed do eiusmod.</p></article>
+        <article class="product-tile"><span class="product-tile__sku">dolor_four</span><h3>Consectetur</h3><p>Tempor incididunt ut.</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Customer trust strip (tint band, six-up logos) -->
+<section class="logos">
+  <div class="page">
+    <p class="logos__title">Lorem ipsum dolor sit amet consectetur</p>
+    <div class="logos__grid" aria-label="Customer logos">
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+      <div class="logos__cell"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Feature deep-dive A (Workers / serverless register) -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem serverless</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet consectetur</h2>
+    <div class="deep-dive">
+      <div>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <ul class="deep-dive__bullets">
+          <li>Lorem ipsum dolor sit amet consectetur adipiscing elit.</li>
+          <li>Sed do eiusmod tempor incididunt ut labore et dolore.</li>
+          <li>Ut enim ad minim veniam quis nostrud exercitation.</li>
+          <li>Magna aliqua ut enim ad minim veniam quis nostrud.</li>
+        </ul>
+      </div>
+      <div class="deep-dive__media" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Feature deep-dive B (Zero Trust / security register) -->
+<section class="section band-light">
+  <div class="page">
+    <p class="section__kicker">Lorem zero trust</p>
+    <h2 class="section__title">Lorem ipsum dolor sit amet adipiscing</h2>
+    <div class="deep-dive deep-dive--reverse">
+      <div>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.</p>
+        <ul class="deep-dive__bullets">
+          <li>Lorem ipsum dolor sit amet consectetur.</li>
+          <li>Sed do eiusmod tempor incididunt ut labore.</li>
+          <li>Ut enim ad minim veniam quis nostrud.</li>
+          <li>Magna aliqua ut enim ad minim veniam.</li>
+        </ul>
+      </div>
+      <div class="deep-dive__media" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Stats / network-map band (faint tint, mono four-up + map proxy) -->
+<section class="network">
+  <div class="page">
+    <p class="section__kicker" style="text-align:center; color: var(--ds-accent);">Lorem network</p>
+    <h2 class="section__title" style="margin-inline:auto; text-align:center;">Lorem ipsum dolor sit amet consectetur</h2>
+    <div class="stats" role="group" aria-label="Network statistics">
+      <div>
+        <p class="stats__fig">330+</p>
+        <p class="stats__label">Lorem ipsum dolor</p>
+      </div>
+      <div>
+        <p class="stats__fig">120</p>
+        <p class="stats__label">Sit amet consectetur</p>
+      </div>
+      <div>
+        <p class="stats__fig">99.99%</p>
+        <p class="stats__label">Adipiscing elit sed</p>
+      </div>
+      <div>
+        <p class="stats__fig">50ms</p>
+        <p class="stats__label">Tempor incididunt</p>
+      </div>
+    </div>
+    <div class="network__map" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- 8. Testimonial pull-quote (white band, centered) -->
+<section class="band-light quote">
+  <div class="page">
+    <div class="quote__mark">&ldquo;</div>
+    <p class="quote__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p class="quote__cite">Lorem Ipsum &middot; Dolor Sit, Lorem Inc.</p>
+  </div>
+</section>
+
+<!-- 9. Final CTA (white band, dual-action echo of the hero) -->
+<section class="band-light endcta">
+  <div class="page">
+    <h2 class="endcta__title">Lorem ipsum dolor sit amet consectetur</h2>
+    <p class="endcta__lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="endcta__actions">
+      <button class="btn-primary">Lorem ipsum</button>
+      <a href="#" class="btn-ghost">Dolor sit amet</a>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Mega-footer (near-black, five column groups + meta row) -->
+<footer class="footer">
+  <div class="page">
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Lorem</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+          <li><a href="#">Adipiscing</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Ipsum</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Dolor</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Amet</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Consectetur</h4>
+        <ul>
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">Dolor sit</a></li>
+          <li><a href="#">Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__meta">
+      <span>(c) 2026 Lorem Ipsum, Inc.</span>
+      <div class="footer__social" aria-label="Social">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

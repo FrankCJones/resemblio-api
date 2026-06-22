@@ -1,0 +1,566 @@
+<!--
+  Asset: webflow-marketing-page-001
+  Class: layouts
+  Pattern: dual-cta-hero, framework-strip, story-card-grid, mega-footer
+  Inspired by: Webflow (webflow.com)
+  Notes:
+    - Marketing homepage skeleton: announcement bar, flush-top nav,
+      dual-CTA hero with product-canvas screenshot below, trust-logo
+      strip, three-card feature grid, customer-metrics rail, platform
+      pitch with three sub-features, customer-success carousel, AEO
+      band, getting-started teaser, gallery rail, final CTA band, mega
+      footer. Light-mode paper-white surface with one Webflow Blue
+      accent on primary CTAs only.
+    - Variable: section sequence, padding rhythm, card grid columns,
+      type role per slot. Inline: page max-width (1280px), hero
+      headline max-width (16ch), trust-strip logo width, product
+      canvas aspect ratio (16/10), gallery card aspect (4/5).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: WF Visual Sans Variable is Webflow's foundry-proprietary
+  marketing face. Not loaded here; the Arial / system-ui fallback chain
+  in tokens.css carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px so the multi-column rails breathe;
+   * inline value because it is page-grid character, not a contract slot.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Announcement bar: full-width band, dark surface, single line. */
+  .announce {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    text-align: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+  }
+  .announce a { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* Nav: flush-top, sits in the page container, hairline below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop; section
+   * dividers are hairlines, not shadows. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-top: 1px solid var(--ds-hairline); }
+  .section--inset {
+    background: var(--ds-surface-2);
+  }
+
+  /*
+   * Hero. "Make your website a growth engine" sits at H1 ceiling (80px
+   * fluid clamp on the live site; the asset uses the 80px upper bound).
+   * Dual CTA: primary Webflow Blue fill, secondary ghost. Product-canvas
+   * screenshot stands in below.
+   */
+  .hero { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-10); text-align: center; }
+  .hero__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 16ch; /* Hero headline measure; inline ornament. */
+  }
+  .hero__lede {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 48ch;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-4);
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border-color: var(--ds-border);
+  }
+
+  /* Product canvas. Wide screenshot frame below the hero copy. */
+  .product-canvas {
+    margin-top: var(--ds-space-10);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    background: var(--ds-surface-2);
+  }
+  .product-canvas .slot {
+    aspect-ratio: 16 / 10; /* Inline; product-shot character not a contract slot. */
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  /* Trust strip. Hairline-bordered band of partner logos. */
+  .trust {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+  .trust__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .trust__logos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-6);
+    width: 100%;
+  }
+  @media (min-width: 768px) { .trust__logos { grid-template-columns: repeat(6, 1fr); } }
+  .trust__logo {
+    height: 28px; /* Inline; trust-strip logo height not a contract slot. */
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Section heading shared. */
+  .sec-head {
+    text-align: center;
+    max-width: 32ch;
+    margin: 0 auto var(--ds-space-10);
+  }
+  .sec-head h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .sec-head p {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Three-card feature grid. */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+  .feature-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    min-height: 320px;
+  }
+  .feature-card__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-accent);
+  }
+  .feature-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .feature-card__body {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .feature-card__visual {
+    margin-top: auto;
+    aspect-ratio: 16 / 10;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Customer metrics rail (carousel placeholder). */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .metrics-row { grid-template-columns: repeat(3, 1fr); } }
+  .metric-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .metric-card__value {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .metric-card__quote {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .metric-card__attrib {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Testimonials / customer-success rail. */
+  .testimonial-rail {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) { .testimonial-rail { grid-template-columns: repeat(2, 1fr); } }
+  .testimonial {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .testimonial__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .testimonial__attrib {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Pricing teaser: single card pulling the eye to a sign-up path. */
+  .pricing-teaser {
+    text-align: center;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+  .pricing-teaser__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Final CTA band. */
+  .cta-band {
+    text-align: center;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+  .cta-band__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    max-width: 24ch;
+    margin: 0 auto var(--ds-space-5);
+  }
+  .cta-band__body {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 48ch;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes / atoms). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, sits outside the .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface-2);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: announcement bar. Dark band, single line. -->
+  <div class="announce" role="region" aria-label="Announcement">
+    Lorem ipsum dolor sit amet: <a href="#">consectetur adipiscing</a>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a webflow-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Platform . Solutions . Resources . Enterprise . Pricing
+      </div>
+      <div class="slot" style="min-width: 200px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Login + Get started
+      </div>
+    </nav>
+
+    <!-- Section: hero. Dual CTA + product canvas below. -->
+    <header class="hero" aria-label="Hero">
+      <p class="hero__eyebrow">Lorem ipsum dolor</p>
+      <h1 class="hero__title">Make your website a growth engine.</h1>
+      <p class="hero__lede">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="cta-row">
+        <button class="btn btn--primary">Get started</button>
+        <button class="btn btn--ghost">Talk to sales</button>
+      </div>
+      <div class="product-canvas" aria-hidden="true">
+        <div class="slot">
+          <span class="slot__label">product-canvas-screenshot</span>
+          Lorem ipsum dolor sit amet
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: trust strip. Hairline above, partner logo grid. -->
+    <section class="section section--ruled" aria-label="Trust strip">
+      <div class="trust">
+        <p class="trust__label">Lorem ipsum dolor sit amet teams at</p>
+        <div class="trust__logos" aria-hidden="true">
+          <div class="trust__logo"></div>
+          <div class="trust__logo"></div>
+          <div class="trust__logo"></div>
+          <div class="trust__logo"></div>
+          <div class="trust__logo"></div>
+          <div class="trust__logo"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: three-card feature grid. -->
+    <section class="section section--ruled" aria-label="Feature grid">
+      <div class="sec-head">
+        <h2>Lorem ipsum dolor sit amet consectetur.</h2>
+        <p>Adipiscing elit, sed do eiusmod tempor incididunt.</p>
+      </div>
+      <div class="grid-3">
+        <article class="feature-card">
+          <span class="feature-card__kicker">Lorem</span>
+          <h3 class="feature-card__title">Lorem ipsum dolor sit amet.</h3>
+          <p class="feature-card__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </p>
+          <div class="feature-card__visual"></div>
+        </article>
+        <article class="feature-card">
+          <span class="feature-card__kicker">New</span>
+          <h3 class="feature-card__title">Consectetur adipiscing elit.</h3>
+          <p class="feature-card__body">
+            Sed do eiusmod tempor incididunt ut labore et dolore magna.
+          </p>
+          <div class="feature-card__visual"></div>
+        </article>
+        <article class="feature-card">
+          <span class="feature-card__kicker">Lorem</span>
+          <h3 class="feature-card__title">Tempor incididunt ut labore.</h3>
+          <p class="feature-card__body">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco.
+          </p>
+          <div class="feature-card__visual"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: customer-metrics rail (carousel-style). -->
+    <section class="section section--ruled" aria-label="Customer metrics">
+      <div class="sec-head">
+        <h2>Lorem ipsum metrics from real customers.</h2>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <p class="metric-card__value">10x</p>
+          <p class="metric-card__quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <p class="metric-card__attrib">Lorem Ipsum / Dolor Inc.</p>
+        </div>
+        <div class="metric-card">
+          <p class="metric-card__value">67%</p>
+          <p class="metric-card__quote">Sed do eiusmod tempor incididunt ut labore et dolore magna.</p>
+          <p class="metric-card__attrib">Consectetur / Adipiscing Co.</p>
+        </div>
+        <div class="metric-card">
+          <p class="metric-card__value">1,170%</p>
+          <p class="metric-card__quote">Ut enim ad minim veniam quis nostrud exercitation.</p>
+          <p class="metric-card__attrib">Veniam / Nostrud Ltd.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: testimonials / customer success rail. -->
+    <section class="section section--ruled" aria-label="Testimonials">
+      <div class="sec-head">
+        <h2>300,000+ brands move the needle with Lorem.</h2>
+        <p>Adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+      </div>
+      <div class="testimonial-rail">
+        <article class="testimonial">
+          <p class="testimonial__quote">
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+            sed do eiusmod tempor incididunt ut labore."
+          </p>
+          <p class="testimonial__attrib">Lorem Ipsum / Director / Dolor Sit Amet</p>
+        </article>
+        <article class="testimonial">
+          <p class="testimonial__quote">
+            "Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua."
+          </p>
+          <p class="testimonial__attrib">Consectetur Adipiscing / VP / Elit Co.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: pricing teaser. Inset panel with start-free path. -->
+    <section class="section section--ruled" aria-label="Pricing teaser">
+      <div class="pricing-teaser">
+        <h2 class="pricing-teaser__title">Start building for free. Upgrade any time.</h2>
+        <p class="hero__lede" style="margin: 0 auto var(--ds-space-6);">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </p>
+        <div class="cta-row">
+          <button class="btn btn--primary">Get started</button>
+          <button class="btn btn--ghost">See pricing</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: final CTA band. Dual buttons, large headline. -->
+    <section class="section" aria-label="Final CTA">
+      <div class="cta-band">
+        <h2 class="cta-band__title">Make your website your competitive edge.</h2>
+        <p class="cta-band__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+          do eiusmod tempor incididunt.
+        </p>
+        <div class="cta-row">
+          <button class="btn btn--primary">Get started - it's free</button>
+          <button class="btn btn--ghost">Talk to sales</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum: Product . Solutions . Resources . Company . Compare . Community . Help
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

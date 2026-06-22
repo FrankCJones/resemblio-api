@@ -1,0 +1,455 @@
+<!--
+  Asset: webflow-hero-001
+  Class: heroes (whole)
+  Pattern: announcement-kicker-link, oversized-display-headline, dual-cta-hero, product-canvas-screenshot, no-imagery-behind-type
+  Inspired by: Webflow
+  Notes:
+    - Native context: webflow.com homepage and webflow.com/enterprise opening
+      viewport, captured via WebFetch 2026-05-20. White Webflow canvas, an
+      announcement kicker rendered as a pill-shaped link with a trailing arrow
+      ("Coming soon: ... AEO -->"), oversized sans display H1 stacked over a
+      single-paragraph dek, paired primary (Webflow Blue solid) and secondary
+      (hairline-outline) CTAs, and a product canvas screenshot beneath
+      framed in gray-200 hairline chrome. Tokens are reused as-is from
+      assets/alphabets/webflow/tokens.css (the system canon).
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the topbar wordmark "W" SVG path is a one-off glyph;
+      the announcement kicker arrow is a one-off SVG. The product canvas
+      mockup beneath the hero is a lightweight illustrated stand-in for the
+      Webflow Designer screenshot, painted in pure CSS so the asset remains
+      single-file. The mockup chrome (window dots, sidebar panels, canvas
+      blocks) uses gray-100 / gray-200 / Webflow Blue as the only palette
+      and the alphabet's radii / spacing scale.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for WF Visual Sans Variable on machines without the
+     foundry-proprietary woff2. Weights pinned to the values Webflow uses
+     in marketing chrome: 500 body, 600 display. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Pure white Webflow canvas. The first viewport carries
+   * exactly two chromatic moments: the announcement kicker arrow and the
+   * Webflow Blue primary CTA. Everything else is monochrome ruled by
+   * hairlines instead of shadows. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: Webflow "W" left, sparse sans nav center, sign-in plus a
+   * primary CTA right. Hairline below separates chrome from canvas. */
+  .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: Webflow "W" wordmark stand-in; no contract slot for arbitrary
+   * path data. */
+  .topbar__mark svg { width: 24px; height: 24px; display: block; color: var(--ds-accent); }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text-muted); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 960px so the oversized H1 lands as a
+   * two- or three-line shape. Generous vertical padding so the headline
+   * sits well below the chrome. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Announcement kicker: a pill-shaped link with a trailing arrow. The
+   * pattern is "an event or feature is shipping; tap to read." Webflow
+   * uses this consistently above the H1 to ladder visitors into AEO /
+   * Conf / new-feature pages. */
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .hero__kicker:hover { border-color: var(--ds-text); }
+  .hero__kicker__tag {
+    color: var(--ds-text-muted);
+  }
+  .hero__kicker__arrow {
+    width: 14px;
+    height: 14px;
+    color: var(--ds-accent);
+  }
+
+  /* H1: the oversized display signature. Clamps from H3 ceiling on mobile
+   * to H1 ceiling on wide viewports, matching the alphabet's fluid scale.
+   * Modest weight 600, tiny negative tracking. text-wrap: balance holds
+   * the two-line shape Webflow's headline writers pace toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 7vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: single conversational sentence in gray-600. 20px at 1.6 leading,
+   * the most generous reading height in the dev-tool-adjacent corpus. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* CTA row: Webflow Blue primary, hairline-outline secondary. Webflow
+   * never ships a hero with a single CTA; both paths (self-serve sign-up
+   * and sales-led demo) are always offered. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    padding: 12px 20px;
+    border-radius: var(--ds-radius-sm);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: Webflow Blue focus glow; rgba stop is hero-specific and
+     * the glow geometry has no contract slot. */
+    box-shadow: 0 0 0 4px rgba(20, 110, 245, 0.20);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface-2); border-color: var(--ds-text); }
+
+  /* Product canvas: the screenshot frame beneath the hero. A gray-200
+   * hairline border with a soft shadow is the only elevation moment in
+   * the first viewport. Inside, an illustrated stand-in for the Webflow
+   * Designer: window dots, a left sidebar (layers / styles), a center
+   * canvas with three placeholder blocks, and a right inspector panel.
+   * Pure CSS so the asset stays single-file with no external image. */
+  .canvas {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto var(--ds-space-16);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-2);
+    box-shadow: var(--ds-shadow-lg);
+    overflow: hidden;
+  }
+  .canvas__chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  /* Inline ornament: three traffic-light dots in gray-200. */
+  .canvas__chrome span {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-border);
+  }
+  .canvas__body {
+    display: grid;
+    grid-template-columns: 200px 1fr 240px;
+    min-height: 360px;
+  }
+  .canvas__sidebar {
+    background: var(--ds-bg);
+    border-right: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  /* Inline: sidebar layer rows; a small accent square plus a hairline
+   * label bar approximating the Designer's layer tree. */
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .layer__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-border);
+  }
+  .layer--active .layer__dot { background: var(--ds-accent); }
+  .layer--active { color: var(--ds-text); }
+  .layer__bar {
+    flex: 1;
+    height: 6px;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-hairline);
+  }
+  .canvas__stage {
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    background: var(--ds-surface-2);
+  }
+  /* Inline ornament: stand-in canvas blocks. The headline-block carries
+   * a single Webflow Blue selection outline to imply the active
+   * selection in the Designer. */
+  .block {
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-border);
+    padding: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .block--selected {
+    /* Inline: Webflow Blue selection ring; specific to this Designer
+     * affordance and has no contract slot. */
+    box-shadow: 0 0 0 2px var(--ds-accent);
+    border-color: transparent;
+  }
+  .block__line {
+    height: 10px;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-hairline);
+  }
+  .block__line--short { width: 55%; }
+  .block__line--med { width: 75%; }
+  .block__pair {
+    display: flex;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+  .block__pair > span {
+    height: 28px;
+    flex: 1;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-hairline);
+  }
+  .block__pair > span:first-child { background: var(--ds-accent); }
+  .canvas__inspector {
+    background: var(--ds-bg);
+    border-left: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .insp-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .insp-row__field {
+    height: 24px;
+    border-radius: var(--ds-radius-xs);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a, .hero__kicker { transition: none; }
+  }
+
+  @media (max-width: 820px) {
+    .topbar__nav { display: none; }
+    .canvas__body { grid-template-columns: 1fr; }
+    .canvas__sidebar, .canvas__inspector { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: Webflow "W" wordmark stand-in. -->
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path fill="currentColor" d="M3 6 L9 26 L14 14 L19 26 L25 6 L21 6 L17 18 L13 6 L11 6 L7 18 L5 6 Z"/>
+      </svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit Amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">Sed Do</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <a href="#" class="hero__kicker">
+      <span class="hero__kicker__tag">Lorem ipsum:</span>
+      <span>dolor sit amet consectetur adipiscing</span>
+      <!-- Inline: arrow glyph; no contract slot for path data. -->
+      <svg class="hero__kicker__arrow" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M3 8 H12 M8 4 L12 8 L8 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam quis nostrud exercitation ullamco laboris.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit Amet</a>
+    </div>
+  </section>
+
+  <figure class="canvas" aria-label="Lorem ipsum product canvas">
+    <div class="canvas__chrome" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="canvas__body">
+      <aside class="canvas__sidebar" aria-hidden="true">
+        <div class="layer"><span class="layer__dot"></span><span class="layer__bar"></span></div>
+        <div class="layer layer--active"><span class="layer__dot"></span><span class="layer__bar"></span></div>
+        <div class="layer"><span class="layer__dot"></span><span class="layer__bar"></span></div>
+        <div class="layer"><span class="layer__dot"></span><span class="layer__bar"></span></div>
+        <div class="layer"><span class="layer__dot"></span><span class="layer__bar"></span></div>
+        <div class="layer"><span class="layer__dot"></span><span class="layer__bar"></span></div>
+      </aside>
+      <div class="canvas__stage" aria-hidden="true">
+        <div class="block block--selected">
+          <div class="block__line block__line--med"></div>
+          <div class="block__line block__line--short"></div>
+        </div>
+        <div class="block">
+          <div class="block__line"></div>
+          <div class="block__line block__line--med"></div>
+          <div class="block__pair">
+            <span></span><span></span>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block__line block__line--short"></div>
+          <div class="block__line block__line--med"></div>
+        </div>
+      </div>
+      <aside class="canvas__inspector" aria-hidden="true">
+        <div class="insp-row"><span>Lorem</span><span class="insp-row__field"></span></div>
+        <div class="insp-row"><span>Ipsum</span><span class="insp-row__field"></span></div>
+        <div class="insp-row"><span>Dolor</span><span class="insp-row__field"></span></div>
+        <div class="insp-row"><span>Sit Amet</span><span class="insp-row__field"></span></div>
+        <div class="insp-row"><span>Consectetur</span><span class="insp-row__field"></span></div>
+      </aside>
+    </div>
+  </figure>
+</body>
+</html>

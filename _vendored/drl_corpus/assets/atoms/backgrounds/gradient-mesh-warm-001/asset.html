@@ -1,0 +1,85 @@
+<!--
+  Asset: gradient-mesh-warm-001
+  Class: backgrounds
+  Pattern: mesh-gradient-bg
+  Inspired by: Resend
+  Notes:
+    - Three layers composited over near-black: a white top-spotlight, a warm
+      amber bloom in the upper-center, and a deeper terracotta blob in the
+      lower-right. The two warm blobs derive from --ds-accent and --ds-accent-2
+      so palette swaps recolor the mesh automatically.
+    - Inline ornament: every gradient position, size, and color stop is
+      asset character. Comments name each one. Resend's actual mesh on the
+      live hero uses a top-mounted white glow plus a lower color bloom; this
+      atom keeps that two-source structure and substitutes warm tones for
+      the cool register.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>gradient-mesh-warm-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    /* Three-layer composite:
+     *   1. Top spotlight: white at low alpha, mounted at 50% 0% (matches
+     *      Resend's `radial-gradient(70% 80% at 50% 0%, white 6% ...)`).
+     *   2. Warm amber bloom: from --ds-accent, upper center, large radius.
+     *   3. Deeper terracotta blob: from --ds-accent-2, lower right.
+     * The base --ds-bg sits underneath.
+     */
+    background:
+      radial-gradient(70% 60% at 50% 0%,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0) 70%),
+      radial-gradient(55% 45% at 30% 25%,
+        color-mix(in oklab, var(--ds-accent) 32%, transparent),
+        transparent 75%),
+      radial-gradient(70% 55% at 80% 80%,
+        color-mix(in oklab, var(--ds-accent-2) 28%, transparent),
+        transparent 80%),
+      var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(20, 20, 20, 0.45);
+    backdrop-filter: blur(8px);
+  }
+
+  .lorem {
+    max-width: 32ch;
+    margin-top: var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <span class="label">gradient-mesh-warm-001 . background atom</span>
+  <p class="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+</body>
+</html>

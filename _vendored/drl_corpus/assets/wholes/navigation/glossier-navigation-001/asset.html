@@ -1,0 +1,305 @@
+<!--
+  Asset: glossier-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav
+  Inspired by: Glossier
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/pastel-soft-001        (paper-and-pink register)
+    - type-pairings/sans-system-modern-001 (refined humanist sans register)
+    - links/nav-link-underline-001        (suppressed-underline nav links)
+    - wordmarks/custom-display-001        (refined-sans wordmark)
+  Notes:
+    - DTC beauty register: a 32 px announcement strip flush above the
+      main row carrying a rotating free-shipping line at 12 px in near-
+      black ink on the same paper-white surface as the bar. Below it a
+      56 px main row with the Glossier wordmark at the left, eight
+      product-category links distributed across the bar (Skincare,
+      Makeup, Balms, Body, Fragrance, Glossier Goods, Sets, Shop All)
+      at 13 px / 400 in sentence case, and a four-icon right cluster
+      (search, region, account, bag with counter). A single hairline
+      sits between strip and bar; no shadows, no fills, no chrome.
+    - Variable vs inline: every color, type, spacing, radius, motion
+      value comes from the contract. Inline ornaments: the 32 px strip
+      height and 56 px row height (layout decisions specific to this
+      register), and the dusty-pink bag counter dot (the brand accent
+      used here as a shape-only affordance).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>glossier-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Glossier Sans is the licensed face; Inter stands in as the closest
+     open humanist sans with a similar refined register. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Announcement strip. Flush top, 32 px tall on desktop, on the same
+   * paper-white surface as the bar. Carries the rotating free-shipping
+   * line in 12 px near-black ink. A hairline divides strip from bar. */
+  .strip {
+    /* Inline ornament: 32 px strip height is the layout decision specific
+     * to this register; not a contract value. */
+    height: 32px;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 400;
+    letter-spacing: var(--ds-tracking-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .strip__text { display: inline-flex; align-items: center; gap: var(--ds-space-2); }
+  .strip__text a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Main row. Sits flush below the strip. 56 px tall on desktop. The
+   * bar is the same paper-white as the page; a single hairline at the
+   * base divides the bar from the content below. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-surface);
+    /* Inline ornament: 56 px row height is the layout decision specific
+     * to this register; not a contract value. */
+    height: 56px;
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  .nav__inner {
+    max-width: 1440px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+
+  /* Wordmark. Refined-sans register; sits flush left, near-black ink,
+   * 22 px with tight tracking so it reads as a typographic mark. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+
+  /* Link cluster. Center of the bar. Eight product-category labels at
+   * 13 px / 400 in sentence case, near-black ink at rest. From
+   * atoms/links/nav-link-underline-001. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__links > li { display: inline-flex; align-items: center; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) 0;
+    cursor: pointer;
+    position: relative;
+    letter-spacing: var(--ds-tracking-normal);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  /* Suppressed underline at rest; animates in on hover from the left. */
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 6px;
+    height: 1px;
+    background: currentColor;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform var(--ds-duration-normal) var(--ds-ease-emphasize);
+  }
+  .nav__link:hover::after,
+  .nav__link[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+  .nav__link:hover { color: var(--ds-text-strong); }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Right cluster. Search, region selector, account, bag icons in
+   * near-black ink, with a dusty-pink counter dot on the bag. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .nav__region {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2) var(--ds-space-2);
+    cursor: pointer;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .nav__icon {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: var(--ds-space-2);
+    color: var(--ds-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ds-radius-full);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+    position: relative;
+    text-decoration: none;
+  }
+  .nav__icon:hover { background: var(--ds-surface-2); color: var(--ds-text-strong); }
+  .nav__icon:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .nav__icon svg { width: 20px; height: 20px; display: block; }
+
+  /* Bag counter. Inline ornament: a dusty-pink dot in the upper right
+   * of the bag icon, carrying a small near-black numeral. The pink is
+   * the brand accent used here as a shape-only affordance. */
+  .nav__count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-full);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xs);
+    font-weight: 600;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  /* Page stub so the bar has a surface to sit over. */
+  .page-stub {
+    max-width: 1280px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 900px) {
+    .nav__links { display: none; }
+    .nav__inner { grid-template-columns: auto 1fr auto; gap: var(--ds-space-3); }
+    .strip { font-size: var(--ds-text-2xs); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__link::after, .nav__icon { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="strip" role="region" aria-label="Site announcement">
+    <span class="strip__text">
+      Lorem ipsum free shipping on qualifying orders.
+      <a href="#">Lorem details</a>
+    </span>
+  </div>
+
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">Loremipsum</a>
+
+      <ul class="nav__links">
+        <li><a class="nav__link" href="#" aria-current="page">Skincare</a></li>
+        <li><a class="nav__link" href="#">Makeup</a></li>
+        <li><a class="nav__link" href="#">Balms</a></li>
+        <li><a class="nav__link" href="#">Body</a></li>
+        <li><a class="nav__link" href="#">Fragrance</a></li>
+        <li><a class="nav__link" href="#">Lorem goods</a></li>
+        <li><a class="nav__link" href="#">Sets</a></li>
+        <li><a class="nav__link" href="#">Shop all</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <button class="nav__icon" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m20 20-3.5-3.5"/>
+          </svg>
+        </button>
+        <button class="nav__region" aria-label="Region selector, currently US">US</button>
+        <a class="nav__icon" href="#" aria-label="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+          </svg>
+        </a>
+        <a class="nav__icon" href="#" aria-label="Bag, 0 items">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 7h14l-1.5 11.2a2 2 0 0 1-2 1.8H8.5a2 2 0 0 1-2-1.8L5 7Z"/>
+            <path d="M9 7V5a3 3 0 0 1 6 0v2"/>
+          </svg>
+          <span class="nav__count" aria-hidden="true">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!--
+  Asset: mailchimp-docs-page-001
+  Class: layouts
+  Pattern: centered-narrow-column, breadcrumb-trail, callout-aside
+  Inspired by: Mailchimp (mailchimp.com/help/<article>)
+  Notes:
+    - Help-center article skeleton: flush-top nav, breadcrumb band,
+      then a two-column grid (1fr main content / 280px right rail).
+      Main column sequence: H1 article title, lead paragraph, body
+      with H2 sections (numbered step lists, inline screenshots,
+      Note callouts), and a Related articles footer block. Right
+      rail carries an "In this article" mono-labelled anchor list
+      and a warm-tinted "Hire a Partner" promo card with the
+      Cavendish Yellow CTA. No left doc-tree sidebar; the help
+      center indexes via the category grid on /help/ itself.
+    - Variable: two-column grid widths, main-column section
+      sequence, rail card composition. Inline: rail width (280px),
+      content cap (~72ch), partner-card padding, breadcrumb glyph
+      character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-docs-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Graphik is the Mailchimp marketing and help face. Faces are
+  not loaded in the asset; the fallback chain in tokens.css (Helvetica
+  Neue, Inter) carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max 1280px so the two-column grid breathes without
+   * the rail floating in deep whitespace on wide monitors. Inline
+   * page-grid character.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Nav: flush-top with hairline divider below. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+
+  /*
+   * Breadcrumb band. Sits flush below the nav, separated by a hairline
+   * top and bottom. Pure utility row, warm-gray text, Graphik at
+   * --ds-text-sm. The glyph (>) carries no special chrome.
+   */
+  .breadcrumb-band {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .breadcrumb {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .breadcrumb a:hover { color: var(--ds-text); }
+  .breadcrumb__sep { padding: 0 var(--ds-space-2); color: var(--ds-text-muted); }
+  .breadcrumb__current { color: var(--ds-text); }
+
+  /*
+   * Two-column docs grid. Inline column widths because they are
+   * page-grid character, not contract slots. Main 1fr, rail 280px. On
+   * tablet the rail drops below the content; on mobile a single column.
+   */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-12);
+  }
+  @media (min-width: 1024px) {
+    .docs-grid {
+      grid-template-columns: 1fr 280px;
+      gap: var(--ds-space-10);
+    }
+  }
+
+  /*
+   * Main content column. Cap measure at 72ch so step lists and inline
+   * screenshots stay editorial; this is the docs-specific tightening
+   * vs the marketing-page hero measure. Inline character.
+   */
+  .main {
+    min-width: 0;
+    max-width: 72ch;
+  }
+
+  .doc-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .doc-lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  .doc-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .doc-body > * + * { margin-top: var(--ds-space-5); }
+  .doc-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+    scroll-margin-top: var(--ds-space-8);
+    font-weight: 600;
+  }
+  .doc-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+    font-weight: 600;
+  }
+  .doc-body a {
+    color: var(--ds-text-strong);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .doc-body ol, .doc-body ul {
+    padding-left: var(--ds-space-5);
+  }
+  .doc-body li + li { margin-top: var(--ds-space-3); }
+
+  /*
+   * Inline screenshot block. Mailchimp's help articles run a hairline
+   * border around step screenshots, on the warm off-white surface so
+   * the chrome reads as continuous with the article. No drop shadow.
+   * Standin in this skeleton: a fixed-height tinted card with a mono
+   * label.
+   */
+  .screenshot {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-8);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /*
+   * Note callout. Warm off-white surface, hairline border, no left
+   * accent rule. The "Note" prefix is bolded inline rather than
+   * promoted to a title block. This is the Mailchimp help convention:
+   * inline-weighted notes, not banner-style admonitions.
+   */
+  .callout {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    margin-top: var(--ds-space-6);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .callout strong { color: var(--ds-text); }
+
+  /*
+   * Related-articles block. Sits at the foot of the main column above
+   * the page footer. Section title in Graphik, then a simple list of
+   * linked titles. No card chrome; the list is the chrome.
+   */
+  .related {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .related__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .related__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .related__link {
+    color: var(--ds-text-strong);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /*
+   * Right rail. Sticky scroll. Two cards stacked: the "In this article"
+   * TOC and the warm-tinted "Hire a Partner" promo. The rail width is
+   * inline (280px); the cards inherit standard hairline border and md
+   * radius from the contract.
+   */
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 1024px) {
+    .rail {
+      position: sticky;
+      top: var(--ds-space-6);
+      align-self: start;
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+    }
+  }
+
+  .toc-card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+  }
+  .toc-card__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .toc-card__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .toc-card__link {
+    display: block;
+    padding: 4px 0;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+  .toc-card__link:hover { color: var(--ds-text); }
+  .toc-card__link--active {
+    color: var(--ds-text);
+    font-weight: 600;
+  }
+
+  /*
+   * "Hire a Partner" promo card. Sits on the second warm surface so it
+   * reads as a sibling of the body callouts rather than as a marketing
+   * pop-out. The CTA pill is the only Cavendish Yellow moment on the
+   * page; restraint is the mechanic.
+   */
+  .partner-card {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .partner-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .partner-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    color: var(--ds-text);
+    line-height: var(--ds-leading-snug);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .partner-card__body {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .partner-card__cta {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: var(--ds-accent-2);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* Footer band: full-width, outside the page container. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-bg);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a mailchimp-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster + lang-selector</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 200px;">
+        <span class="slot__label">cta-pill</span>
+        Start free Lorem
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- Section: breadcrumb band. Full-bleed hairline rule. -->
+  <div class="breadcrumb-band">
+    <div class="page">
+      <p class="breadcrumb">
+        <a href="#">Help Center</a>
+        <span class="breadcrumb__sep">&rsaquo;</span>
+        <a href="#">Audiences</a>
+        <span class="breadcrumb__sep">&rsaquo;</span>
+        <span class="breadcrumb__current">Lorem ipsum dolor</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: two-column docs grid. -->
+    <div class="docs-grid">
+
+      <!-- Main content column. -->
+      <main class="main">
+
+        <!-- Page title. -->
+        <h1 class="doc-title">Lorem ipsum dolor sit amet consectetur</h1>
+
+        <!-- Lead paragraph. -->
+        <p class="doc-lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+          do eiusmod tempor incididunt ut labore et dolore magna aliqua
+          to add or update items in Lorem.
+        </p>
+
+        <!-- Body with H2/H3, screenshots, callouts, lists. -->
+        <div class="doc-body">
+
+          <h2 id="before-you-start">Before you start</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Here are a few things to know before you begin the lorem
+            process.
+          </p>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+            <li>Sed do eiusmod tempor incididunt ut labore et dolore magna.</li>
+            <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</li>
+            <li>Duis aute irure dolor in reprehenderit in voluptate.</li>
+          </ul>
+
+          <h2 id="import-from-service">Import from another service</h2>
+          <p>
+            Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+          <p>To begin the lorem ipsum workflow, follow these steps.</p>
+          <ol>
+            <li>Click <a href="#">Lorem audience</a> in the sidebar.</li>
+            <li>Choose ipsum from the dolor menu.</li>
+            <li>Select your sit-amet source and click <a href="#">Continue</a>.</li>
+            <li>Map your consectetur fields and click <a href="#">Finish</a>.</li>
+          </ol>
+
+          <div class="screenshot" role="img" aria-label="Step screenshot">
+            screenshot of the lorem import workflow
+          </div>
+
+          <div class="callout">
+            <strong>Note</strong> Lorem ipsum dolor sit amet,
+            consectetur adipiscing elit. Some integrations require an
+            additional dolor step on the connected app side before the
+            sit-amet import can complete.
+          </div>
+
+          <h2 id="import-from-file">Import from a CSV file</h2>
+          <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+            odit aut fugit, sed quia consequuntur magni dolores eos qui
+            ratione voluptatem.
+          </p>
+
+          <h3 id="format-the-file">Format your file</h3>
+          <p>
+            At vero eos et accusamus et iusto odio dignissimos ducimus
+            qui blanditiis praesentium voluptatum deleniti atque
+            corrupti.
+          </p>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <p>
+            Quis autem vel eum iure reprehenderit qui in ea voluptate
+            velit esse quam nihil molestiae consequatur. See <a href="#">
+            Lorem error codes</a> for the full ipsum reference.
+          </p>
+
+          <h2 id="next-steps">Next steps</h2>
+          <p>
+            Itaque earum rerum hic tenetur a sapiente delectus, ut aut
+            reiciendis voluptatibus maiores alias.
+          </p>
+
+        </div>
+
+        <!-- Related articles footer block at the column close. -->
+        <section class="related" aria-label="Related articles">
+          <h2 class="related__title">Related</h2>
+          <ul class="related__list">
+            <li><a class="related__link" href="#">Create a Lorem audience</a></li>
+            <li><a class="related__link" href="#">Format guidelines for your ipsum file</a></li>
+            <li><a class="related__link" href="#">About dolor field types</a></li>
+            <li><a class="related__link" href="#">Manage sit-amet subscription statuses</a></li>
+          </ul>
+        </section>
+
+      </main>
+
+      <!-- Right rail: TOC + Partner promo. -->
+      <aside class="rail" aria-label="Article sidebar">
+
+        <div class="toc-card" aria-label="In this article">
+          <p class="toc-card__label">In this article</p>
+          <ul class="toc-card__list">
+            <li><a class="toc-card__link" href="#before-you-start">Before you start</a></li>
+            <li><a class="toc-card__link toc-card__link--active" href="#import-from-service">Import from another service</a></li>
+            <li><a class="toc-card__link" href="#import-from-file">Import from a CSV file</a></li>
+            <li><a class="toc-card__link" href="#troubleshooting">Troubleshooting</a></li>
+            <li><a class="toc-card__link" href="#next-steps">Next steps</a></li>
+          </ul>
+        </div>
+
+        <div class="partner-card">
+          <p class="partner-card__kicker">Need a hand</p>
+          <p class="partner-card__title">Get the job done with a pro</p>
+          <p class="partner-card__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Browse our directory of certified ipsum partners.
+          </p>
+          <a class="partner-card__cta" href="#">Hire a partner</a>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Footer is full-width, outside the page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 200px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

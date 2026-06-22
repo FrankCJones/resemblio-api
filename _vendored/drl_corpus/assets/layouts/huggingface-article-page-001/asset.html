@@ -1,0 +1,608 @@
+<!--
+  Asset: huggingface-article-page-001
+  Class: layouts (full article page)
+  Pattern: top-nav + centered-narrow-article + multi-column-footer
+  Inspired by: Hugging Face blog (/blog/huggingface/agent-traces-as-memory)
+  Notes:
+    - Wraps the huggingface-article-layout-001 shell with HF's full-page
+      chrome: a sticky top nav with the hug-emoji wordmark, primary platform
+      links (Models, Datasets, Spaces, Posts, Docs, Enterprise, Pricing) in
+      sentence-case Source Sans, plus a search affordance and Sign Up / Log
+      In CTAs on the right; a four-column footer with the wordmark, link
+      columns (Website, Company, Resources, Community), and a hairline
+      bottom strip carrying the small system status line and TOS / Privacy
+      links. Article shell body sequence reused unchanged.
+    - The yellow accent is held to the focus ring and the hug-emoji glyph
+      in the wordmark. Nav and footer use only hairline borders (#E5E7EB)
+      against the pure-white surface; no shadows, no gradient bars.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Top nav ----------------
+   * Single-row sticky nav. Hug-emoji wordmark left, primary link cluster
+   * center-left, search + auth CTAs right. Hairline bottom border, no
+   * shadow. On narrow screens the primary cluster collapses behind a
+   * disclosure (here surfaced as a static stand-in).
+   */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .nav__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-3) var(--ds-space-6);
+  }
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    text-decoration: none;
+    color: var(--ds-text);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .nav__brand-glyph {
+    font-size: 22px;
+    line-height: 1;
+    /* Inline ornament: the literal hug emoji is the HF brand mark. */
+  }
+  .nav__links {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin-left: var(--ds-space-4);
+  }
+  .nav__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: 6px 4px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover { color: var(--ds-info); }
+  .nav__spacer { flex: 1; }
+  .nav__search {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: var(--ds-surface-2);
+    border: 1px solid transparent;
+    border-radius: var(--ds-radius-md);
+    padding: 6px 12px;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    min-width: 220px;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__search:hover { border-color: var(--ds-border); }
+  .nav__search-icon {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .nav__cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: var(--ds-radius-md);
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__cta--ghost {
+    color: var(--ds-text);
+    border: 1px solid transparent;
+  }
+  .nav__cta--ghost:hover { background: var(--ds-surface-2); }
+  .nav__cta--solid {
+    color: var(--ds-text-strong);
+    background: var(--ds-accent);
+    border: 1px solid var(--ds-accent);
+  }
+  .nav__cta--solid:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .nav__divider {
+    width: 1px;
+    height: 20px;
+    background: var(--ds-border);
+    margin: 0 var(--ds-space-2);
+  }
+
+  /* ---------------- Article shell (reused from layout-001) ---------------- */
+  .article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+  .article__crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-info);
+    text-decoration: none;
+    margin-bottom: var(--ds-space-5);
+  }
+  .article__crumb:hover { text-decoration: underline; }
+  .article__header { margin-bottom: var(--ds-space-8); }
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: #FFF8DB;
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    padding: 4px 12px;
+    margin-bottom: var(--ds-space-5);
+  }
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5.5vw, var(--ds-text-5xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+  .article__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    flex-wrap: wrap;
+  }
+  .article__avatars { display: inline-flex; align-items: center; }
+  .article__avatars > * {
+    width: 32px; height: 32px;
+    border-radius: var(--ds-radius-full);
+    border: 2px solid var(--ds-bg);
+    background: var(--ds-surface-2);
+    margin-left: -8px;
+    overflow: hidden;
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .article__avatars > *:first-child { margin-left: 0; }
+  .article__authors {
+    display: flex; flex-direction: column; gap: 2px;
+    line-height: var(--ds-leading-snug);
+  }
+  .article__authors .name { font-size: var(--ds-text-sm); font-weight: 600; color: var(--ds-text); }
+  .article__authors .name a { color: var(--ds-text); text-decoration: none; }
+  .article__authors .name a:hover { color: var(--ds-info); }
+  .article__authors .org { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+  .article__authors .date { font-size: var(--ds-text-xs); color: var(--ds-text-muted); }
+  .article__follow {
+    margin-left: auto;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__follow:hover { border-color: var(--ds-text); background: var(--ds-surface-2); }
+
+  .article__body { font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); color: var(--ds-text); }
+  .article__body p { margin: 0 0 var(--ds-space-5); }
+  .article__body a {
+    color: var(--ds-info);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .article__body a:hover { color: var(--ds-text-strong); }
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.88em;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.08em 0.4em;
+    color: var(--ds-text);
+  }
+  .article__codeblock {
+    background: #1F2937; color: #F9FAFB;
+    border: 1px solid #111827;
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    margin: var(--ds-space-6) 0;
+    overflow-x: auto;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article__codeblock .comment { color: #9CA3AF; }
+  .article__codeblock .prompt { color: var(--ds-accent); margin-right: 8px; }
+  .article__embed {
+    display: flex; align-items: center; gap: var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    background: var(--ds-surface);
+    margin: var(--ds-space-5) 0;
+    text-decoration: none; color: inherit;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__embed:hover { border-color: var(--ds-text); }
+  .article__embed-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+  }
+  .article__embed-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .article__embed-id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .article__embed-meta {
+    display: inline-flex; flex-wrap: wrap; gap: var(--ds-space-3);
+    font-size: var(--ds-text-xs); color: var(--ds-text-muted);
+  }
+  .article__embed-chip {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 1px 6px;
+  }
+
+  /* ---------------- Footer ----------------
+   * Four-column link grid above a hairline bottom strip. Wordmark column
+   * carries the brand glyph plus a single-line position statement; three
+   * link columns (Website, Company, Resources). Bottom strip is system
+   * status + TOS / Privacy. Hairline top border, no background tint.
+   */
+  .footer {
+    border-top: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    margin-top: var(--ds-space-12);
+  }
+  .footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-6);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: var(--ds-space-8);
+  }
+  .footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .footer__brand-line {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+  }
+  .footer__brand-glyph { font-size: 22px; line-height: 1; }
+  .footer__brand-blurb {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-normal);
+    max-width: 320px;
+  }
+  .footer__col h4 {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .footer__col ul {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .footer__col a {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+  }
+  .footer__col a:hover { color: var(--ds-text); }
+  .footer__bottom {
+    border-top: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    flex-wrap: wrap;
+  }
+  .footer__bottom .system {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+  }
+  .footer__bottom .dot {
+    width: 8px; height: 8px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-success);
+  }
+  .footer__bottom .legal {
+    margin-left: auto;
+    display: inline-flex;
+    gap: var(--ds-space-4);
+  }
+  .footer__bottom a { color: var(--ds-text-muted); text-decoration: none; }
+  .footer__bottom a:hover { color: var(--ds-text); }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 960px) {
+    .nav__links { display: none; }
+    .nav__search { min-width: 0; flex: 1; }
+    .footer__inner { grid-template-columns: 1fr 1fr; }
+    .footer__brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-3xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+    .article__follow { margin-left: 0; }
+    .footer__inner { grid-template-columns: 1fr 1fr; padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-5); }
+    .footer__bottom { padding: var(--ds-space-4) var(--ds-space-5); }
+    .footer__bottom .legal { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a, .article__follow, .article__embed,
+    .nav__link, .nav__cta, .nav__search { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#">
+        <span class="nav__brand-glyph" aria-hidden="true">&#129303;</span>
+        <span>Hugging Face Lorem</span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a class="nav__link" href="#">Models</a>
+        <a class="nav__link" href="#">Datasets</a>
+        <a class="nav__link" href="#">Spaces</a>
+        <a class="nav__link" href="#">Posts</a>
+        <a class="nav__link" href="#">Docs</a>
+        <a class="nav__link" href="#">Enterprise</a>
+        <a class="nav__link" href="#">Pricing</a>
+      </nav>
+      <span class="nav__spacer"></span>
+      <label class="nav__search" aria-label="Search">
+        <span class="nav__search-icon" aria-hidden="true">/</span>
+        <span>Lorem ipsum models, datasets, users</span>
+      </label>
+      <span class="nav__divider" aria-hidden="true"></span>
+      <a class="nav__cta nav__cta--ghost" href="#">Log In</a>
+      <a class="nav__cta nav__cta--solid" href="#">Sign Up</a>
+    </div>
+  </header>
+
+  <article class="article">
+
+    <a class="article__crumb" href="#">&larr; Lorem articulorum</a>
+
+    <header class="article__header">
+      <span class="article__kicker">Community Article</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos.</p>
+      <div class="article__byline">
+        <div class="article__avatars" aria-label="Authors">
+          <span aria-hidden="true">LI</span>
+          <span aria-hidden="true">DA</span>
+          <span aria-hidden="true">SI</span>
+          <span aria-hidden="true">EL</span>
+          <span class="article__avatar-overflow" aria-hidden="true">+5</span>
+        </div>
+        <div class="article__authors">
+          <span class="name"><a href="#">lorem-ipsum</a> et al.</span>
+          <span class="org">org/dolor-amet</span>
+          <span class="date">Published May 19, 2026</span>
+        </div>
+        <button class="article__follow" type="button">Follow</button>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien, in posuere libero augue ac magna. Integer non nibh in odio luctus elementum. The identifier <code>org/lorem-ipsum-v1</code> carries the model reference.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum, urna velit aliquet sapien.</p>
+
+      <pre class="article__codeblock"><span class="comment"># Lorem ipsum dolor sit amet</span>
+<span class="prompt">$</span>hf buckets create lorem-sessions --private
+
+<span class="comment"># Dolor amet consectetur</span>
+<span class="prompt">$</span>hf sync ~/.lorem/projects/ hf://buckets/{username}/lorem-sessions/ipsum
+
+<span class="comment"># Adipiscing elit</span>
+<span class="prompt">$</span>hf sync ~/.dolor/sessions/ hf://buckets/{username}/lorem-sessions/dolor</pre>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+
+      <a class="article__embed" href="#">
+        <span class="article__embed-icon" aria-hidden="true">M</span>
+        <span class="article__embed-body">
+          <span class="article__embed-id">org/lorem-ipsum-v1</span>
+          <span class="article__embed-meta">
+            <span class="article__embed-chip">Automatic Speech Recognition</span>
+            <span>0.8B params</span>
+            <span>Updated 6 days ago</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="article__embed" href="#">
+        <span class="article__embed-icon" aria-hidden="true">D</span>
+        <span class="article__embed-body">
+          <span class="article__embed-id">org/dolor-amet-fineweb</span>
+          <span class="article__embed-meta">
+            <span class="article__embed-chip">Dataset</span>
+            <span>parquet</span>
+            <span>Viewer</span>
+          </span>
+        </span>
+      </a>
+
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.</p>
+
+    </div>
+
+  </article>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="footer__brand-line">
+          <span class="footer__brand-glyph" aria-hidden="true">&#129303;</span>
+          <span>Hugging Face Lorem</span>
+        </span>
+        <p class="footer__brand-blurb">The AI community building the future of lorem ipsum, dolor sit amet, consectetur adipiscing.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Website</h4>
+        <ul>
+          <li><a href="#">Models</a></li>
+          <li><a href="#">Datasets</a></li>
+          <li><a href="#">Spaces</a></li>
+          <li><a href="#">Posts</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Brand assets</a></li>
+          <li><a href="#">Jobs</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Docs</a></li>
+          <li><a href="#">Learn</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Forum</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Twitter</a></li>
+          <li><a href="#">Discord</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="system"><span class="dot" aria-hidden="true"></span>All systems lorem</span>
+      <span>(c) 2026 Lorem Ipsum, Inc.</span>
+      <span class="legal">
+        <a href="#">TOS</a>
+        <a href="#">Privacy</a>
+        <a href="#">Cookies</a>
+      </span>
+    </div>
+  </footer>
+
+</body>
+</html>

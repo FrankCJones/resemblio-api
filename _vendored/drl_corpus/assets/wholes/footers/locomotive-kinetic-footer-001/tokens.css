@@ -1,0 +1,137 @@
+/*
+ * locomotive-kinetic-footer-001 tokens
+ *
+ * Native token values for the Locomotive (locomotive.ca) studio footer:
+ * the black-inverted surface that closes the cream-paper homepage. The
+ * footer is where Locomotive's two-mode surface system commits hardest:
+ * the cream above flips entirely to black ink below, with cream type
+ * carrying menu, social, external columns, plus an oversized contact
+ * statement and a tight copyright line.
+ *
+ * Cross-checked against sibling assets locomotive-mono-001 and
+ * kinetic-headline-001, both inspected via devtools 2026-05-19 on
+ * https://locomotive.ca/en. Footer-specific structure confirmed via
+ * WebFetch of the same URL same date.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Footer runs the inverted mode of the locomotive-mono palette:
+   * pure black surface, cream paper carries text, no saturated accent.
+   * The single electric blue stays in reserve for focus only.
+   */
+  --ds-bg:           #000000;              /* Footer surface inversion; observed as the pure-black close-of-page surface against the cream body. */
+  --ds-surface:      #0A0A0A;              /* Slight lift above the bg for any optional grouping; not used aggressively in source. */
+  --ds-surface-2:    #FAF9F5;              /* Cream paper as the inverted second surface; reserved for any rare cream pill or card inside the black. */
+  --ds-text:         #FAF9F5;              /* Cream paper as ink; reads as warm-paper on black, not screen-white. */
+  --ds-text-muted:   #8A8A85;              /* Warm mid-grey for secondary copy on black; tuned to feel like print mid-tone rather than UI grey. */
+  --ds-text-strong:  #FFFFFF;              /* Pure white reserved for the contact statement and any moment that must out-punch the cream. */
+  --ds-border:       #FAF9F5;              /* Borders on black are cream, mirroring the cream-side rule which is black; the inversion principle holds. */
+  --ds-hairline:     rgba(250, 249, 245, 0.15);  /* Cream at 15% on black; the quiet column-break and section divider used inside the footer. */
+  --ds-accent:       #FAF9F5;              /* No saturated accent. The cream-on-black IS the accent; inversion does the work color usually does. */
+  --ds-accent-2:     #000000;              /* Black as the inverse-accent for any rare cream block sitting inside the footer. */
+  --ds-success:      #1F8A4B;              /* Reserved utility green; not observed in footer but contract-required. Tuned warm to live in this palette. */
+  --ds-warning:      #C77A1F;              /* Reserved utility amber; warm to match the cream-and-ink temperature. */
+  --ds-error:        #B83A2E;              /* Reserved utility red; brick rather than vivid, to belong in this palette. */
+  --ds-info:         #312DFB;              /* Observed rgb(49,45,251) electric blue from sibling capture; the only saturated color the system permits, reserved for focus and selection. */
+  --ds-focus-ring:   #312DFB;              /* Matches info; the electric blue is the one keyboard-state shift that signals an interactive system underneath. */
+
+  /* ---------- Type families ----------
+   * Locomotive ships a custom display face (LocomotiveNew, weight 400)
+   * for the statement moments and HelveticaNowDisplay everywhere else.
+   * The footer contact block uses the display face; column links use
+   * the body face.
+   */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Same scale as locomotive-mono-001. Footer column links sit at base
+   * (15px observed); kicker labels at xs; the contact statement borrows
+   * the kinetic featured-link size (117px observed) at 5xl/6xl steps.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;   /* Observed body / footer link computed font-size 2026-05-19. */
+  --ds-text-lg:   19px;
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  46px;
+  --ds-text-4xl:  58px;
+  --ds-text-5xl:  70px;   /* Observed H1 size on sibling pages; the contact statement target. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  140px;  /* Headroom for the kinetic featured-link size (117px observed) and beyond. */
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Footer kickers ("MENU" / "SOCIAL" / "EXTERNAL") open up to wider;
+   * column links stay at normal. Display contact statement stays
+   * slightly tight per the source.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base; the footer uses generous vertical rhythm with 96-128px
+   * blocks between contact, columns, and the copyright line.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Observed: every interactive footer element renders with 0 radius.
+   * The system commits to hard edges; pills are kept available for
+   * downstream adopters but unused here.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Footer is flat; no shadow elevation in the source. Scale kept for
+   * downstream adopters.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.40);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.50);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.55);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.60);
+
+  /* ---------- Motion ----------
+   * Locomotive runs Lenis smooth scroll plus an all-property transition
+   * on featured links. Standard easing and a normal duration carry the
+   * hover lift on the contact statement.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

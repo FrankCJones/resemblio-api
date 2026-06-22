@@ -1,0 +1,144 @@
+/*
+ * webflow-about-page-001 tokens
+ *
+ * Native token values for Webflow's about/company page (webflow.com/about),
+ * inherited from the canonical Webflow alphabet. Pure white surface with
+ * near-black ink (#080808), one saturated Webflow Blue (#146EF5) accent,
+ * single variable-axis humanist sans (WF Visual Sans Variable), 8px card
+ * radius, 4px CTA radius, hairline-driven chrome with no resting shadows.
+ *
+ * The about page reads as a wider canvas of the same vocabulary: numbered
+ * core-values list, By-the-Numbers stat band, press grid, leadership
+ * portrait grid, founders highlight, social-proof rating row. The eyebrow
+ * style is normal-case sans 500 weight, not the uppercase mono kicker
+ * dev-tool sites use; that distinction is the Webflow signature.
+ *
+ * Values cross-checked against the live Webflow marketing CSS bundle and
+ * the homepage @font-face declarations captured 2026-05-20.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure white body with near-black ink #080808 and Webflow Blue #146EF5.
+   * Card edges sit on gray-200 #D8D8D8; section dividers and secondary
+   * panels use gray-100 #F0F0F0. Text-secondary is gray-600 #5A5A5A.
+   */
+  --ds-bg:           #FFFFFF;   /* --colors--background; pure white. */
+  --ds-surface:      #FFFFFF;   /* Card surface; flat against bg with hairline border. */
+  --ds-surface-2:    #F0F0F0;   /* --colors--secondary-background; gray-100 panel. */
+  --ds-text:         #080808;   /* --colors--text; near-black, not pure #000. */
+  --ds-text-muted:   #5A5A5A;   /* --colors--text-secondary; gray-600. */
+  --ds-text-strong:  #080808;   /* Display ink matches body ink; no separate emphasis. */
+  --ds-border:       #D8D8D8;   /* --colors--border; gray-200, the visible card edge. */
+  --ds-hairline:     #F0F0F0;   /* Subtler still; section breaks and faint dividers. */
+  --ds-accent:       #146EF5;   /* --_color---primary--webflow-blue; the brand. */
+  --ds-accent-2:     #0055D4;   /* --_color---primary--blue-600; pressed / hover state. */
+  --ds-success:      #00C875;   /* Operational green; reserved status indicator. */
+  --ds-warning:      #F5A623;   /* Amber warning; reserved status indicator. */
+  --ds-error:        #EE0000;   /* Red error; reserved status indicator. */
+  --ds-info:         #146EF5;   /* Matches accent. */
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * WF Visual Sans Variable carries both display and body. Inconsolata is
+   * loaded only for inline code in rich-text content; the about page does
+   * not show code, but the mono slot stays declared for contract
+   * compliance and so the same alphabet drives any future composition.
+   */
+  --ds-font-display: "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-mono:    "WFVisualSans-Mono", "Inconsolata", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "WFVisualSans-Mono", "Inconsolata", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * Desktop ceilings of the fluid clamps. About-page hero lands at the H1
+   * step (80px ceiling) rather than the H0 editorial statement step; the
+   * surface stays a marketing canvas, not a manifesto.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;  /* 0.8rem; caption / metadata. */
+  --ds-text-sm:   14px;    /* 0.875rem; paragraph-sm. */
+  --ds-text-base: 16px;    /* 1rem; paragraph-body. */
+  --ds-text-lg:   20px;    /* 1.25rem; paragraph-lg ceiling. */
+  --ds-text-xl:   32px;    /* 2rem; section-title smaller ceiling. */
+  --ds-text-2xl:  40px;    /* 2.5rem; H3 ceiling. */
+  --ds-text-3xl:  56px;    /* 3.5rem; H2 ceiling, section heads. */
+  --ds-text-4xl:  64px;    /* Intermediate display step. */
+  --ds-text-5xl:  80px;    /* 5rem; H1 ceiling, the about hero. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;   /* 7rem; H0 editorial statement, not used here. */
+
+  /* ---------- Line heights ----------
+   * Display sits at 1.04. Body at 1.6 (the loosest reading height in any
+   * dev-tool-adjacent system in the corpus); supporting paragraphs feel
+   * spacious by default.
+   */
+  --ds-leading-tight:   1.04;   /* H1 / H2 display. */
+  --ds-leading-snug:    1.2;    /* H3 / H4. */
+  --ds-leading-normal:  1.6;    /* Paragraph body and sm reading. */
+  --ds-leading-relaxed: 1.5;    /* Paragraph lg lead. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Only H1 carries -0.01em. Every other display head and the body sit
+   * at 0em. Buttons match H1 at -0.01em on labels.
+   */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * Rem-based rhythm (0.25 / 0.5 / 1 / 1.5 / 2 / 3 / 4 / 6 / 8 rem) mapped
+   * to contract steps. Marketing section rhythm lands at 64px (4rem);
+   * major section breaks at 96px (6rem); hero band at 128px (8rem).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;     /* Card horizontal padding. */
+  --ds-space-8:  48px;     /* Card vertical padding. */
+  --ds-space-10: 64px;     /* Marketing section rhythm. */
+  --ds-space-12: 96px;     /* Major section break. */
+  --ds-space-16: 128px;    /* Hero band. */
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * 8px card surface, 4px CTA. Featured panels climb to 16px. No pills
+   * outside small badges; Webflow's chrome is subtle rounding, never the
+   * fully-rounded Linear shape.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;    /* CTA button radius. */
+  --ds-radius-md:   8px;    /* Card surface. */
+  --ds-radius-lg:   16px;   /* Featured panel. */
+  --ds-radius-full: 9999px; /* Small badges, status dots, founder portraits. */
+
+  /* ---------- Shadows ----------
+   * Hairline-driven, not shadow-driven. Cards at rest carry a 1px solid
+   * border; lift only on hover at 2px / 8% black. Most of the about page
+   * shows no elevation at all.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* ---------- Motion ----------
+   * Standard cubic-bezier(0.4,0,0.2,1) for most UI; emphasis curve on
+   * hero reveals. Dropdown transitions run at 300ms ease.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

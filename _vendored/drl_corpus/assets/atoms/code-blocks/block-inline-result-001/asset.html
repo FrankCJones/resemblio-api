@@ -1,0 +1,113 @@
+<!--
+  Asset: block-inline-result-001
+  Class: code-blocks
+  Pattern: (REPL-style code panel followed by inline result preview)
+  Inspired by: Supabase Docs
+  Notes:
+    - Two stacked panels under a single border: input code above, output result below.
+    - A hairline rule separates input from output; a small "Result" kicker with a brand-green dot labels the output band.
+    - The kicker tracking and the dot color are tokens; the dot size (8px) is inline ornament.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>block-inline-result-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    display: flex;
+    justify-content: center;
+  }
+  .panel {
+    width: 100%;
+    max-width: 620px;
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .panel__code {
+    padding: var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    overflow-x: auto;
+  }
+  .panel__divider {
+    height: 1px;
+    background: var(--ds-hairline);
+  }
+  .panel__result {
+    background: var(--ds-surface);
+    padding: var(--ds-space-3) var(--ds-space-4) var(--ds-space-4);
+  }
+  .result__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-2);
+  }
+  /* Inline ornament: 8px brand-green dot that signals a successful run. */
+  .result__label::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+  }
+  .result__output {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    white-space: pre-wrap;
+  }
+  pre { margin: 0; font: inherit; color: inherit; }
+  .tok-keyword { color: #7C3AED; }
+  .tok-string  { color: #166534; }
+  .tok-number  { color: #B45309; }
+  .tok-comment { color: #737373; font-style: italic; }
+  .tok-fn      { color: #2563EB; }
+</style>
+</head>
+<body>
+  <section class="panel" aria-label="Lorem ipsum code with inline result">
+    <div class="panel__code">
+<pre><span class="tok-comment"># Lorem ipsum dolor sit amet</span>
+<span class="tok-keyword">from</span> lorem <span class="tok-keyword">import</span> generate
+
+result = <span class="tok-fn">generate</span>(
+    paragraphs=<span class="tok-number">2</span>,
+    seed=<span class="tok-string">"adipiscing"</span>,
+)
+<span class="tok-fn">print</span>(result.summary())</pre>
+    </div>
+    <div class="panel__divider" role="separator" aria-hidden="true"></div>
+    <div class="panel__result" role="region" aria-label="Code result">
+      <div class="result__label">Result</div>
+      <pre class="result__output">{
+  "paragraphs": 2,
+  "words": 87,
+  "preview": "Lorem ipsum dolor sit amet, consectetur..."
+}</pre>
+    </div>
+  </section>
+</body>
+</html>

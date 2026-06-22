@@ -1,0 +1,392 @@
+<!--
+  Asset: dev-tool-status-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet, mono-eyebrow, mono-uppercase-wordmark
+  Inspired by: Vercel (https://vercel.com/contact/sales)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001     (severe-restraint palette spirit; tokens here use Vercel light values)
+    - type-pairings/grotesk-mono-001      (Geist sans body, Geist Mono labels)
+    - links/footer-link-mono-001          (footer link rest/hover behavior)
+    - kickers/mono-eyebrow-001            (uppercase mono column headers)
+    - wordmarks/mono-uppercase-001        (triangle plus mono uppercase wordmark)
+    - status-indicators/inline-status-001 (dot plus label plus separator plus timestamp)
+    - dividers/hairline-rule-001          (hairline separating link grid from meta row)
+  Notes:
+    - Mega-footer composition: six link columns above a hairline meta row carrying
+      wordmark, status link, theme picker, social icons, and copyright.
+    - Variable: every color, every type size, every spacing step. Inline:
+      the SVG triangle geometry in the wordmark and the pulsing-dot keyframes.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>dev-tool-status-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist (Vercel's sans + mono pair) via Google Fonts approximation. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+  }
+
+  /* The footer shell: a content-width wrapper so the rule and the columns
+   * share a measure. Vercel uses an outer max around 1200px on this page. */
+  .ftr {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--ds-text-muted);
+  }
+
+  /* Column grid: six columns at the wide bound, collapsing on narrower
+   * viewports. The asymmetry of "two thin columns + four wider" that
+   * Vercel uses comes from list length, not template weighting. */
+  .ftr__grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--ds-space-8) var(--ds-space-6);
+    padding-bottom: var(--ds-space-10);
+  }
+  @media (max-width: 960px) {
+    .ftr__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .ftr__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Column header: from atoms/kickers/mono-eyebrow-001.
+   * Geist Mono uppercase at 12px with wider tracking. Ink (not muted) so
+   * the column groupings read cleanly above the muted link list. */
+  .ftr__col-h {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Column link list: from atoms/links/footer-link-mono-001.
+   * Geist sans 14px weight 400 in mid-gray, lifts to ink on hover.
+   * No underline at rest; underline reveals on hover. */
+  .ftr__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-2); }
+  .ftr__link {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    line-height: 1.4;
+    text-decoration: none;
+    padding: 2px 0;                       /* Vercel hit-area padding. */
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__link:hover { color: var(--ds-text-strong); text-decoration: underline; text-underline-offset: 3px; }
+  .ftr__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+    color: var(--ds-text-strong);
+  }
+
+  /* "New" badge inline with link text. */
+  .ftr__new {
+    display: inline-block;
+    margin-left: var(--ds-space-2);
+    padding: 1px 6px;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Hairline rule between link grid and meta row.
+   * From atoms/dividers/hairline-rule-001. 1px on the rgba border so it
+   * reads as a single hair on the paper bg. */
+  .ftr__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-border);
+    margin: 0;
+  }
+
+  /* Meta row: wordmark on the left, status + theme + socials on the right.
+   * Flex with wrap so smaller viewports stack cleanly. */
+  .ftr__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    padding-top: var(--ds-space-6);
+    flex-wrap: wrap;
+  }
+
+  /* Wordmark cluster: from atoms/wordmarks/mono-uppercase-001.
+   * Triangle glyph plus "LOREM" lettering in Geist sans (Vercel's wordmark
+   * is technically Geist sans not mono; the *labels* on the page are mono).
+   * Inline ornament: the triangle SVG geometry is hand-tuned, not tokenized. */
+  .ftr__brand { display: inline-flex; align-items: center; gap: var(--ds-space-2); color: var(--ds-text-strong); text-decoration: none; }
+  .ftr__brand svg { width: 22px; height: 20px; }
+  .ftr__brand-name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* Meta-right cluster: status row, divider dot, theme picker, socials. */
+  .ftr__meta-r {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    flex-wrap: wrap;
+  }
+
+  /* Status row: from atoms/status-indicators/inline-status-001.
+   * Adapted for footer surface: green dot at 8px, "All systems normal"
+   * label, dim separator (an interpunct), relative timestamp at the tail.
+   * The whole row is a link to a status subdomain. */
+  .ftr__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    font-size: var(--ds-text-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__status:hover { color: var(--ds-text-strong); }
+  .ftr__status-dot {
+    width: 8px; height: 8px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-success);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ds-success) 18%, transparent);
+    /* Inline ornament: the breathing pulse uses a hand-tuned keyframe set,
+     * not tokenized because the pulse character is unique to this row. */
+    animation: ftrPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes ftrPulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ds-success) 18%, transparent); }
+    50%      { box-shadow: 0 0 0 5px color-mix(in oklab, var(--ds-success) 8%,  transparent); }
+  }
+  .ftr__status-sep, .ftr__status-time {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+  }
+
+  /* Theme picker: three-segment pill. */
+  .ftr__theme {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+  }
+  .ftr__theme-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--ds-text-muted);
+    width: 28px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color      var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__theme-btn:hover { color: var(--ds-text-strong); }
+  .ftr__theme-btn[aria-pressed="true"] {
+    background: var(--ds-surface-2);
+    color: var(--ds-text-strong);
+  }
+  .ftr__theme-btn svg { width: 14px; height: 14px; display: block; }
+
+  /* Social icon row. Small square hit areas; icons in muted gray; lift on hover. */
+  .ftr__socials { display: inline-flex; align-items: center; gap: var(--ds-space-1); }
+  .ftr__social {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ftr__social:hover { color: var(--ds-text-strong); }
+  .ftr__social svg { width: 16px; height: 16px; display: block; }
+
+  /* Copyright: smallest, mono, all-the-way-muted. */
+  .ftr__copy {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    padding-top: var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ftr__status-dot { animation: none; }
+    .ftr__link, .ftr__status, .ftr__theme-btn, .ftr__social { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="ftr" aria-labelledby="ftr-heading">
+    <h2 id="ftr-heading" style="position:absolute;left:-9999px">Lorem ipsum footer</h2>
+
+    <!-- Six-column link grid: column headers are mono uppercase; links are muted sans. -->
+    <div class="ftr__grid">
+      <div>
+        <h3 class="ftr__col-h">Lorem</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Ipsum dolor</a></li>
+          <li><a class="ftr__link" href="#">Sit amet</a></li>
+          <li><a class="ftr__link" href="#">Consectetur</a></li>
+          <li><a class="ftr__link" href="#">Adipiscing elit</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Ipsum</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Sed do eiusmod</a></li>
+          <li><a class="ftr__link" href="#">Tempor incididunt</a></li>
+          <li><a class="ftr__link" href="#">Ut labore</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Dolor</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Magna aliqua</a></li>
+          <li><a class="ftr__link" href="#">Enim ad minim</a></li>
+          <li><a class="ftr__link" href="#">Veniam quis nostrud</a></li>
+          <li><a class="ftr__link" href="#">Exercitation <span class="ftr__new">New</span></a></li>
+          <li><a class="ftr__link" href="#">Ullamco laboris <span class="ftr__new">New</span></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Sit Amet</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Nisi ut aliquip</a></li>
+          <li><a class="ftr__link" href="#">Ex ea commodo</a></li>
+          <li><a class="ftr__link" href="#">Consequat duis</a></li>
+          <li><a class="ftr__link" href="#">Aute irure <span class="ftr__new">New</span></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Consectetur</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Reprehenderit</a></li>
+          <li><a class="ftr__link" href="#">Voluptate velit</a></li>
+          <li><a class="ftr__link" href="#">Esse cillum</a></li>
+          <li><a class="ftr__link" href="#">Fugiat nulla</a></li>
+          <li><a class="ftr__link" href="#">Pariatur excepteur</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="ftr__col-h">Adipiscing</h3>
+        <ul class="ftr__list">
+          <li><a class="ftr__link" href="#">Sint occaecat</a></li>
+          <li><a class="ftr__link" href="#">Cupidatat non</a></li>
+          <li><a class="ftr__link" href="#">Proident sunt</a></li>
+          <li><a class="ftr__link" href="#">Culpa qui</a></li>
+          <li><a class="ftr__link" href="#">Officia deserunt</a></li>
+          <li><a class="ftr__link" href="#">Mollit anim</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Hairline between link grid and meta row. -->
+    <hr class="ftr__rule"/>
+
+    <!-- Meta row: wordmark left; status + theme + socials right. -->
+    <div class="ftr__meta">
+      <a class="ftr__brand" href="#" aria-label="Lorem home">
+        <!-- Inline ornament: triangle glyph, equilateral with a slight optical lift. -->
+        <svg viewBox="0 0 22 20" aria-hidden="true" focusable="false">
+          <path d="M11 1 L21 19 L1 19 Z" fill="currentColor"/>
+        </svg>
+        <span class="ftr__brand-name">Lorem</span>
+      </a>
+
+      <div class="ftr__meta-r">
+        <a class="ftr__status" href="#" aria-label="System status, all systems normal">
+          <span class="ftr__status-dot" aria-hidden="true"></span>
+          <span>All systems normal</span>
+          <span class="ftr__status-sep" aria-hidden="true">·</span>
+          <span class="ftr__status-time">updated 3m ago</span>
+        </a>
+
+        <div class="ftr__theme" role="group" aria-label="Theme">
+          <button type="button" class="ftr__theme-btn" aria-label="System theme" aria-pressed="true">
+            <!-- monitor icon -->
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <rect x="1.5" y="2.5" width="13" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M5 14 H11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="ftr__theme-btn" aria-label="Light theme" aria-pressed="false">
+            <!-- sun icon -->
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"
+                    stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="ftr__theme-btn" aria-label="Dark theme" aria-pressed="false">
+            <!-- moon icon -->
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M13 9.5A5 5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="ftr__socials">
+          <a class="ftr__social" href="#" aria-label="GitHub">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M8 .2a8 8 0 0 0-2.5 15.6c.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1 0-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.6 7.6 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.5.8 1.2.8 2.1 0 3-1.8 3.7-3.6 3.9.3.3.6.8.6 1.6v2.3c0 .2.1.5.5.4A8 8 0 0 0 8 .2z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="LinkedIn">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M3 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zM3.2 6h2.6v8H3.2V6zm4.4 0H10v1.1c.4-.7 1.3-1.3 2.5-1.3 2 0 2.7 1.3 2.7 3.1V14H12.6V9.4c0-1-.4-1.7-1.4-1.7-.9 0-1.4.6-1.4 1.7V14H7.6V6z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="X">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M11.7 1.5h2.4l-5.3 6.1 6.2 7.9h-4.8l-3.8-4.9-4.3 4.9H-.3l5.6-6.5L-.6 1.5h4.9l3.4 4.5 4-4.5zm-.8 12.6h1.3L4.3 2.8H2.9l8 11.3z"/>
+            </svg>
+          </a>
+          <a class="ftr__social" href="#" aria-label="YouTube">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
+              <path d="M15.4 4.6a2 2 0 0 0-1.4-1.4C12.7 2.9 8 2.9 8 2.9s-4.7 0-6 .3a2 2 0 0 0-1.4 1.4C.3 5.9.3 8 .3 8s0 2.1.3 3.4a2 2 0 0 0 1.4 1.4c1.3.3 6 .3 6 .3s4.7 0 6-.3a2 2 0 0 0 1.4-1.4c.3-1.3.3-3.4.3-3.4s0-2.1-.3-3.4zM6.5 10.6V5.4l4.3 2.6-4.3 2.6z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <p class="ftr__copy">© 2026 Lorem Ipsum, Inc. · Dolor sit amet consectetur.</p>
+  </footer>
+</body>
+</html>

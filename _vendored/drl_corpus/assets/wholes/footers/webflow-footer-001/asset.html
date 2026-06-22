@@ -1,0 +1,411 @@
+<!--
+  Asset: webflow-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet, wordmark-with-mark
+  Inspired by: Webflow
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001              (near-white surface, near-black text, brand-blue accent)
+    - type-pairings/sans-system-modern-001         (Inter sans across display + body)
+    - wordmarks/display-tight-001                  (Webflow wordmark; stand-in lowercase set)
+    - links/footer-link-mono-001                   (warm gray to near-black on hover)
+    - dividers/hairline-rule-001                   (single rule above the meta row)
+  Notes:
+    - Four short link columns (Explore, Learn & get help, Company,
+      Terms & policies) plus an explicit Social column at narrow widths
+      sit on the same near-white surface as the rest of the page. The
+      footer does NOT invert to a dark band.
+    - Column headers are body-weight sans, sentence case ("Learn & get
+      help" not "RESOURCES"). Links are warm-gray at rest and lift to
+      near-black on hover. Webflow brand blue appears only on focus
+      rings and the operational status dot.
+    - Meta row: locale selector + legal cluster + copyright on the
+      left; a status indicator ("All systems normal") with a green dot
+      and six-icon social row on the right.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-footer-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter is Webflow's marketing typeface. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* The footer band. Generous vertical padding sets the breathing room. */
+  .footer {
+    width: 100%;
+    padding: var(--ds-space-12) var(--ds-space-8);
+    color: var(--ds-text-muted);
+  }
+
+  .footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Brand row: wordmark + tagline anchor the top of the footer. */
+  .footer__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    flex-wrap: wrap;
+  }
+  .footer__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    text-decoration: none;
+    color: var(--ds-text-strong);
+  }
+  /* Stand-in glyph for Webflow's W-mark. Black tile with white letter;
+   * the actual Webflow mark is a stylized monogram. */
+  .footer__mark-glyph {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;            /* one-off; sticker corner specific to this asset. */
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ds-font-display);
+    font-size: 16px;               /* one-off; glyph sits in its own type unit. */
+    font-weight: 700;
+    line-height: 1;
+  }
+  .footer__mark-text {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .footer__tagline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 32ch;
+  }
+
+  /* Upper grid: five link columns. Collapses to 3-up at tablet, 2-up at
+   * small tablet, single column on mobile. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 1100px) {
+    .footer__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+
+  .footer__col-header {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+
+  /* Footer link: warm-gray at rest; lifts to near-black on hover. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover { color: var(--ds-text); }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    color: var(--ds-text);
+  }
+
+  /* Hairline: single rule that splits the link grid from the meta row. */
+  .footer__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Meta row: locale + legal cluster + copyright on the left; status
+   * indicator and social row on the right. Stacks at narrow widths. */
+  .footer__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ds-space-6);
+    flex-wrap: wrap;
+  }
+
+  .footer__meta-left {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+
+  .footer__meta-right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+
+  .footer__lang {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 6px 12px;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__lang:hover {
+    color: var(--ds-accent);
+    border-color: var(--ds-accent);
+  }
+  .footer__lang::after {
+    content: " \25BE";   /* down chevron; menu affordance. */
+    font-size: 10px;
+  }
+
+  .footer__legal {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__legal:hover { color: var(--ds-text); }
+
+  .footer__copyright {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Status indicator: small operational dot + label. Green dot when
+   * normal; webflow surfaces this as a footer affordance linking to
+   * the third-party Statuspage. */
+  .footer__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__status:hover { color: var(--ds-text); }
+  .footer__status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--ds-success);
+    box-shadow: 0 0 0 3px rgba(0, 194, 110, 0.18); /* one-off; soft halo around the dot. */
+  }
+
+  .footer__social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--ds-space-2);
+  }
+  .footer__social a {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    border-radius: var(--ds-radius-sm);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__social a:hover {
+    color: var(--ds-text);
+    background: var(--ds-surface);
+  }
+  .footer__social svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: currentColor;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link,
+    .footer__legal,
+    .footer__lang,
+    .footer__status,
+    .footer__social a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <div class="footer__brand">
+        <a class="footer__mark" href="#" aria-label="Lorem ipsum home">
+          <span class="footer__mark-glyph" aria-hidden="true">L</span>
+          <span class="footer__mark-text">Lorem</span>
+        </a>
+        <p class="footer__tagline">Lorem ipsum dolor sit amet, the leading visual development platform for consectetur teams.</p>
+      </div>
+
+      <div class="footer__grid">
+        <nav aria-label="Explore">
+          <p class="footer__col-header">Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Ipsum dashboard</a></li>
+            <li><a class="footer__link" href="#">Sit marketplace</a></li>
+            <li><a class="footer__link" href="#">Amet designers</a></li>
+            <li><a class="footer__link" href="#">Templates</a></li>
+            <li><a class="footer__link" href="#">Made in lorem</a></li>
+            <li><a class="footer__link" href="#">Certified partners</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Learn and get help">
+          <p class="footer__col-header">Dolor &amp; ipsum</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Support</a></li>
+            <li><a class="footer__link" href="#">University</a></li>
+            <li><a class="footer__link" href="#">Courses</a></li>
+            <li><a class="footer__link" href="#">Blog</a></li>
+            <li><a class="footer__link" href="#">Ebooks</a></li>
+            <li><a class="footer__link" href="#">Forum</a></li>
+            <li><a class="footer__link" href="#">Community</a></li>
+            <li><a class="footer__link" href="#">Developers</a></li>
+            <li><a class="footer__link" href="#">Wishlist</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Company">
+          <p class="footer__col-header">Consectetur</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">About</a></li>
+            <li><a class="footer__link" href="#">Careers</a></li>
+            <li><a class="footer__link" href="#">Newsroom</a></li>
+            <li><a class="footer__link" href="#">Sitemap</a></li>
+            <li><a class="footer__link" href="#">Become an affiliate</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Terms and policies">
+          <p class="footer__col-header">Adipiscing</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Terms of service</a></li>
+            <li><a class="footer__link" href="#">Privacy policy</a></li>
+            <li><a class="footer__link" href="#">Cookie policy</a></li>
+            <li><a class="footer__link" href="#">Cookie preferences</a></li>
+            <li><a class="footer__link" href="#">Trust center</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Social">
+          <p class="footer__col-header">Elit</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">LinkedIn</a></li>
+            <li><a class="footer__link" href="#">YouTube</a></li>
+            <li><a class="footer__link" href="#">X</a></li>
+            <li><a class="footer__link" href="#">Facebook</a></li>
+            <li><a class="footer__link" href="#">Instagram</a></li>
+            <li><a class="footer__link" href="#">TikTok</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <hr class="footer__rule" aria-hidden="true"/>
+
+      <div class="footer__meta">
+        <div class="footer__meta-left">
+          <button class="footer__lang" type="button" aria-haspopup="listbox">Lorem (XX)</button>
+          <a class="footer__legal" href="#">Privacy</a>
+          <a class="footer__legal" href="#">Terms</a>
+          <a class="footer__legal" href="#">Cookies</a>
+          <p class="footer__copyright">&copy; MMXXVI Lorem Ipsum, Inc.</p>
+        </div>
+
+        <div class="footer__meta-right">
+          <a class="footer__status" href="#" aria-label="Lorem system status">
+            <span class="footer__status-dot" aria-hidden="true"></span>
+            <span>All systems normal</span>
+          </a>
+          <ul class="footer__social" aria-label="Social">
+            <li><a href="#" aria-label="Lorem on LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on YouTube">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M15.66 4.4a2 2 0 0 0-1.41-1.41C13 2.65 8 2.65 8 2.65s-5 0-6.25.34A2 2 0 0 0 .34 4.4 20.8 20.8 0 0 0 0 8a20.8 20.8 0 0 0 .34 3.6 2 2 0 0 0 1.41 1.41C3 13.35 8 13.35 8 13.35s5 0 6.25-.34a2 2 0 0 0 1.41-1.41A20.8 20.8 0 0 0 16 8a20.8 20.8 0 0 0-.34-3.6zM6.4 10.4V5.6L10.55 8 6.4 10.4z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on X">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.146 1.5h2.21l-4.83 5.52L15.2 14.5h-4.45l-3.49-4.56L3.27 14.5H1.06l5.17-5.91L0.6 1.5h4.56l3.15 4.17 3.84-4.17zm-.78 11.65h1.22L4.7 2.78H3.39l7.98 10.37z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on Facebook">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.23 2.69.23v2.97h-1.51c-1.5 0-1.96.93-1.96 1.88v2.26h3.33l-.53 3.49h-2.8V24C19.6 23.1 24 18.1 24 12.07z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.42.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.37 1.06.42 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.26 1.8-.42 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.37-2.23.42-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.26-2.23-.42-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.37-1.06-.42-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.42-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.37 2.23-.42 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.6 5.6 0 0 0-2.03 1.32A5.6 5.6 0 0 0 .79 3.98C.49 4.74.29 5.62.23 6.89.17 8.17.16 8.58.16 11.84s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.4 2.13a5.6 5.6 0 0 0 2.03 1.32c.76.3 1.64.5 2.91.56C8.33 23.79 8.74 23.8 12 23.8s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.6 5.6 0 0 0 2.03-1.32 5.6 5.6 0 0 0 1.32-2.03c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.6 5.6 0 0 0-1.32-2.03A5.6 5.6 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0zm0 5.84a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 9.9a3.9 3.9 0 1 1 0-7.8 3.9 3.9 0 0 1 0 7.8zm7.6-10.16a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on TikTok">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.69a8.16 8.16 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1.84-.07z"/></svg>
+            </a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

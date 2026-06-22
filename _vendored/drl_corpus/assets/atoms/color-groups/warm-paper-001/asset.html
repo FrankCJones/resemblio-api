@@ -1,0 +1,109 @@
+<!--
+  Asset: warm-paper-001
+  Class: color-groups
+  Pattern: paper-and-ink, warm-earth-palette
+  Inspired by: Are.na, Frank Chimero
+  Notes:
+    - Warm off-white background, near-black text, muted sage accent.
+    - Palette reads as printed matter, not screen.
+    - Inline ornament: the "second-color" hairline rule under each swatch,
+      mimicking a print spec sheet's typographic spec marks. Asset-specific;
+      not a token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>warm-paper-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    min-height: 100vh;
+  }
+
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--ds-space-2);
+  }
+
+  .swatch {
+    padding: var(--ds-space-3);
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--ds-border);
+    background: var(--c);
+    /* Inline ornament: a 2-color top rule mimicking a print color-spec mark.
+     * Asset-specific character; would clutter the variable contract. */
+    border-top: 3px solid var(--ds-accent);
+  }
+  .swatch--on-light { color: #111; }
+  .swatch--on-dark  { color: #FAF7F2; }
+  .swatch__role {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .swatch__hex {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+  }
+</style>
+</head>
+<body>
+  <div class="label">warm-paper-001 · printed matter palette</div>
+  <div class="grid">
+    <div class="swatch swatch--on-light" style="--c: var(--ds-bg);">
+      <span class="swatch__role">bg</span><span class="swatch__hex">#F5F1EB</span>
+    </div>
+    <div class="swatch swatch--on-light" style="--c: var(--ds-surface);">
+      <span class="swatch__role">surface</span><span class="swatch__hex">#FFFFFF</span>
+    </div>
+    <div class="swatch swatch--on-light" style="--c: var(--ds-surface-2);">
+      <span class="swatch__role">surface-2</span><span class="swatch__hex">#FAF7F2</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-text);">
+      <span class="swatch__role">text</span><span class="swatch__hex">#1A1A1A</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-text-muted);">
+      <span class="swatch__role">muted</span><span class="swatch__hex">#666666</span>
+    </div>
+    <div class="swatch swatch--on-light" style="--c: var(--ds-border);">
+      <span class="swatch__role">border</span><span class="swatch__hex">#D8D2C5</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-accent);">
+      <span class="swatch__role">accent</span><span class="swatch__hex">#3D5A40</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-error);">
+      <span class="swatch__role">error</span><span class="swatch__hex">#A14438</span>
+    </div>
+    <div class="swatch swatch--on-dark" style="--c: var(--ds-warning);">
+      <span class="swatch__role">warning</span><span class="swatch__hex">#B88E3A</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,151 @@
+/*
+ * vercel-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Vercel's long-form posts on the /blog
+ * surface. Inherits the Vercel/Geist system tokens already devtools-verified
+ * by the precedent vercel-hero-001 (captured 2026-05-20): white background-1
+ * canvas, Geist Gray 12 text ink, Geist Blue 9 (#0070F3) as the single
+ * chromatic accent on inline links and focus rings, Geist Gray 4 hairlines
+ * for structural chrome. Geist Sans owns display and body; Geist Mono is
+ * held in reserve for technical kickers and inline code.
+ *
+ * Source inspected via WebFetch on 2026-05-20:
+ *   https://vercel.com/blog/ai-gateway-production-index
+ * Chrome MCP is currently denied for this session; the WebFetch HTML
+ * structure inspection confirmed the article header sequence (no kicker,
+ * H1, dek lead paragraph, single-line pipe-separated authors + date,
+ * single-column body with h2 subsections, no related-post rail at the
+ * tail). Token values follow the Vercel/Geist system devtools-verified in
+ * vercel-hero-001 and are unchanged on the article chrome.
+ *
+ * Free-font analog in `asset.html`:
+ *   - Inter (Google Fonts) substitutes for Geist Sans; both are humanist
+ *     sans with screen-tuned metrics and behave identically at the steps
+ *     used here.
+ *   - JetBrains Mono substitutes for Geist Mono on the technical kicker.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Geist light surface system. Background is white; the body sits on
+   * background-1 with Gray 12 ink. Blue 9 is the single chromatic moment
+   * across the article surface, doing both inline link color and focus
+   * ring. Hairlines (Gray 4) carry every structural break.
+   */
+  --ds-bg:           #FFFFFF;   /* Geist background-1 light; the canvas. */
+  --ds-surface:      #FAFAFA;   /* Geist background-2 light; subtle inset frames. */
+  --ds-surface-2:    #F2F2F2;   /* Geist Gray 2 light; nested chrome. */
+  --ds-text:         #171717;   /* Geist Gray 12 light; H1 and body ink. */
+  --ds-text-muted:   #666666;   /* Geist Gray 9 light; dek, byline, date. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved deepest emphasis. */
+  --ds-border:       #EAEAEA;   /* Geist Gray 4 light; component borders. */
+  --ds-hairline:     #EAEAEA;   /* Same Gray 4; section break and date strip rules. */
+  --ds-accent:       #0070F3;   /* Geist Blue 9; inline links, focus ring. */
+  --ds-accent-2:     #3291FF;   /* Geist Blue 10; link hover lift. */
+  --ds-success:      #0070F3;   /* Geist convention: brand blue. */
+  --ds-warning:      #F5A623;   /* Geist Amber 9. */
+  --ds-error:        #E5484D;   /* Geist Red 9. */
+  --ds-info:         #0070F3;   /* Matches accent. */
+  --ds-focus-ring:   #0070F3;   /* Blue 9; brand focus ring. */
+
+  /* ---------- Type families ----------
+   * Geist Sans is the single variable type system across vercel.com,
+   * including the blog. Geist Mono is reserved for the technical kicker
+   * and inline code spans; it does not appear in body prose. Fallback
+   * chain mirrors the published Geist stack.
+   */
+  --ds-font-display: "Geist", "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Geist", "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Geist Mono", "Geist Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Geist Mono", "Geist Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * Vercel blog H1 sits at the 4xl step (~56px on desktop), one step below
+   * the marketing hero H1 (72-80px). Dek paragraph reads at 20-22px. Body
+   * runs at the 18px reading step, one step above Vercel's 16px UI default.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Mono kicker, byline, date. */
+  --ds-text-sm:   14px;   /* Topbar nav, helper. */
+  --ds-text-base: 18px;   /* Body reading register. */
+  --ds-text-lg:   22px;   /* Dek paragraph. */
+  --ds-text-xl:   28px;   /* Subhead (h2) inside body. */
+  --ds-text-2xl:  36px;   /* Major section heading. */
+  --ds-text-3xl:  48px;   /* Sub-hero size, not used here. */
+  --ds-text-4xl:  56px;   /* Article H1. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * H1 holds at 1.05 to keep the 56px display compact. Body at 1.6 sits
+   * in the product-reading register; one step below the Linear 1.65 and
+   * one step above the SaaS 1.5 default.
+   */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Geist display headings pull -0.04em at the marketing scale; the article
+   * H1 at 56px takes -0.03em which holds the shape without crushing the
+   * counters. Mono kicker gets +0.12em to read as a label.
+   */
+  --ds-tracking-tight:  -0.03em;
+  --ds-tracking-normal: -0.01em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Vertical rhythm between paragraphs is space-5 (24px); the
+   * header column ends with space-8 (48px) before the body. Section
+   * headings carry space-8 above and space-4 below.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Geist signature radii. The article shell carries no radius; only
+   * inline-code spans and any inset frames adopt sm (4-6px).
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   6px;
+  --ds-radius-lg:   8px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Geist on light uses hairlines, not shadows, for structural chrome.
+   * Shadow scale is held for focus glows and any raised popovers.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 2px 4px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 0 0 4px rgba(0,112,243,0.20);   /* Focus glow. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.08);
+
+  /* ---------- Motion ----------
+   * Geist is fast and standard; 150ms ease for hover, 240ms for state.
+   */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

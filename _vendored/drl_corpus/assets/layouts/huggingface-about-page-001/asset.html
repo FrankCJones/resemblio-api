@@ -1,0 +1,565 @@
+<!--
+  Asset: huggingface-about-page-001
+  Class: layouts
+  Pattern: single-cta-hero, story-card-grid, mega-footer
+  Inspired by: Hugging Face (huggingface.co/huggingface)
+  Notes:
+    - About-page skeleton drawn from the canonical HF org page, which
+      doubles as their company-narrative surface: top nav, conversational
+      emoji-led mission line with inline "join us" link to Workable, a
+      meta strip (follower count, verified team badge, social links), a
+      dense avatar grid of 185+ team members, content sections of
+      papers/articles/models/datasets/spaces as model-card atoms, and a
+      simple text-link footer. No theatrical hero, no stats band; the
+      page reads as a community profile, not a marketing brochure.
+    - Section blocks are placeholders for downstream wholes; the page
+      container width, hairline card chrome, paper canvas, and the
+      inline-yellow accent-on-text join-us treatment are the variables
+      this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Source Sans Pro is HF's longstanding marketing face;
+  IBM Plex Mono carries model-id and metric strings. System fallbacks
+  approximate the register when licensed faces are unavailable.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. HF uses a wider container than most marketing sites
+   * because the content grids (avatars, model cards) want column count.
+   * Inline values; not contract slots. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-6); }
+  }
+
+  /* Section block. Tight on top to keep the page reading as a profile,
+   * not a homepage. Hairline rule below for the editorial register. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .section--no-rule { border-bottom: none; }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-10); }
+  }
+
+  /* Nav. Flush-top, paper canvas, single hairline below. Wordmark on the
+   * left includes the HF emoji mark inline; nav links sit horizontally;
+   * sign-in pair sits on the right. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__emoji {
+    /* Inline emoji mark; HF uses the waving-hand and hugging-face emoji
+     * as wordmark partners. Size keyed to the wordmark cap height. */
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  /*
+   * Hero / mission block. Not a theatrical hero; a conversational
+   * paragraph with an inline yellow-underline accent on the join-us
+   * link. The emoji opens the line; the mission verb is the only thing
+   * weighted bold; the CTA is text-level, not a pill.
+   */
+  .mission {
+    padding-block: var(--ds-space-10) var(--ds-space-8);
+    max-width: 64ch;
+  }
+  .mission__greeting {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .mission__greeting { font-size: var(--ds-text-4xl); }
+  }
+  .mission__line {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .mission__line strong { font-weight: 700; color: var(--ds-text-strong); }
+  /*
+   * Inline yellow accent on the join-us link. The recognizable HF move:
+   * a paper-canvas line with one word painted in the brand yellow as a
+   * text-level CTA. Box-shadow underline keeps the descenders clean.
+   */
+  .mission__join {
+    color: var(--ds-text-strong);
+    font-weight: 700;
+    background: linear-gradient(transparent 60%, var(--ds-accent) 60%);  /* yellow text-highlight; one-off ornament */
+    padding-inline: 2px;
+  }
+
+  /* Meta strip. Follower count, verified team badge, social link
+   * cluster, AI-and-ML interests tag. Compact mono register. */
+  .meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-block: var(--ds-space-4) var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    padding: var(--ds-space-1) var(--ds-space-2);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text);
+  }
+  .meta-badge--verified {
+    background: #FEF9C3;             /* pale-yellow chip; verified-team register */
+    border-color: #FDE68A;
+    color: #78350F;
+  }
+  .meta-strip__counter {
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text);
+  }
+
+  /* Section heading shared style: small mono kicker above the title. */
+  .section-heading { margin-bottom: var(--ds-space-6); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-2xl); }
+  }
+  .section-heading__count {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-left: var(--ds-space-2);
+  }
+
+  /*
+   * Team avatar grid. Dense, small circles, no labels at rest; this is
+   * the load-bearing community-as-design move. HF shows 185 members
+   * as identical avatars to flatten hierarchy.
+   */
+  .avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: var(--ds-space-2);
+  }
+  .avatar {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+  }
+
+  /* Content sections (papers, articles, models, datasets, spaces). Each
+   * is a row of model-card atoms - the recurring HF card shape: a small
+   * hairline-bordered tile carrying a model id (mono), a task pill, a
+   * size, and a downloads-or-likes counter. The page repeats this shape
+   * across content types. */
+  .card-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-3);
+  }
+  @media (min-width: 640px) { .card-row { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .card-row { grid-template-columns: repeat(3, 1fr); } }
+
+  .model-card {
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .model-card__id {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-strong);
+    word-break: break-all;
+  }
+  .model-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .task-pill {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-2);
+    color: var(--ds-text);
+  }
+
+  /* Careers CTA. Tinted yellow card; the only theatrical surface on
+   * the page. HF places "join us" as the page's terminal beat. */
+  .careers-cta {
+    background: #FFFBE6;                /* pale yellow wash; tinted variant of brand accent */
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    text-align: center;
+    margin-block: var(--ds-space-10);
+  }
+  .careers-cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-3);
+    max-width: 28ch;
+    font-weight: 600;
+  }
+  .careers-cta__support {
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 48ch;
+  }
+  .careers-cta__button {
+    display: inline-block;
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-md);
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Footer band. Plain text-link footer, hairline above, paper canvas;
+   * no inversion, no theatrics. HF terminates the page as quietly as
+   * it began. */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .footer-col__title {
+    color: var(--ds-text-strong);
+    font-weight: 600;
+    margin-bottom: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+  }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; }
+  .footer-col li { margin-bottom: var(--ds-space-2); }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+</style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Nav. Stands in for wholes/navigation/huggingface-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">
+        <span class="nav__emoji" aria-hidden="true">&#x1F917;</span>
+        Lorem Face
+      </span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet consectetur
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">log-in / sign-up</span>
+        Lorem ipsum
+      </div>
+    </nav>
+
+    <!-- Mission block: emoji greeting, conversational mission line,
+         inline yellow-highlight join-us text-CTA. -->
+    <section class="mission section--no-rule" aria-label="Mission">
+      <h1 class="mission__greeting">
+        <span aria-hidden="true">&#x1F44B;</span> Lorem ipsum!
+      </h1>
+      <p class="mission__line">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et <strong>dolore magna</strong>,
+        one commit at a time.
+      </p>
+      <p class="mission__line">
+        Lorem ipsum dolor sit amet consectetur, why don&#39;t you
+        <a href="#" class="mission__join">join us</a>?
+      </p>
+
+      <!-- Meta strip: follower count, verified team badge, AI/ML tag. -->
+      <div class="meta-strip">
+        <span class="meta-badge meta-badge--verified">&#10003; Lorem · Verified</span>
+        <span class="meta-strip__counter">96,944 lorem followers</span>
+        <span class="meta-badge">@lorem</span>
+        <span class="meta-badge">github/lorem</span>
+        <span class="meta-badge">Lorem &amp; ML interests</span>
+      </div>
+    </section>
+
+    <!-- Team avatar grid. Stands in for wholes/about-team or members grid. -->
+    <section class="section" aria-label="Team members">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 — Community</span>
+        <h2 class="section-heading__title">
+          Team members
+          <span class="section-heading__count">185</span>
+        </h2>
+      </div>
+      <div class="avatar-grid" aria-hidden="true">
+        <!-- 24 placeholder avatars; live page renders 185 in a dense grid. -->
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+        <div class="avatar"></div><div class="avatar"></div><div class="avatar"></div>
+      </div>
+    </section>
+
+    <!-- Values / what-we-do, expressed through content cards. Models
+         section as a representative slice. -->
+    <section class="section" aria-label="Models">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 — What we ship</span>
+        <h2 class="section-heading__title">
+          Models
+          <span class="section-heading__count">18</span>
+        </h2>
+      </div>
+      <div class="card-row">
+        <article class="model-card">
+          <span class="model-card__id">lorem/ipsum-base</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Text Classification</span>
+            <span>1.2B</span>
+            <span>&hearts; 4.2k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/dolor-sit-amet</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Time Series</span>
+            <span>340M</span>
+            <span>&hearts; 1.8k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/consectetur-large</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Token Classification</span>
+            <span>7B</span>
+            <span>&hearts; 9.6k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/adipiscing-elit</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Image-Text-to-Text</span>
+            <span>2.1B</span>
+            <span>&hearts; 3.4k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/tempor-incididunt</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Sentence Similarity</span>
+            <span>110M</span>
+            <span>&hearts; 12k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/dolore-magna</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Translation</span>
+            <span>1.3B</span>
+            <span>&hearts; 2.7k</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Datasets section: same card shape, different content. -->
+    <section class="section" aria-label="Datasets">
+      <div class="section-heading">
+        <span class="section-heading__kicker">03 — Open data</span>
+        <h2 class="section-heading__title">
+          Datasets
+          <span class="section-heading__count">36</span>
+        </h2>
+      </div>
+      <div class="card-row">
+        <article class="model-card">
+          <span class="model-card__id">lorem/ipsum-corpus</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Viewer</span>
+            <span>4.2M rows</span>
+            <span>&darr; 18k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/dolor-bench</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Viewer</span>
+            <span>120k rows</span>
+            <span>&darr; 3.6k</span>
+          </div>
+        </article>
+        <article class="model-card">
+          <span class="model-card__id">lorem/adipiscing-corpus</span>
+          <div class="model-card__meta">
+            <span class="task-pill">Viewer</span>
+            <span>880k rows</span>
+            <span>&darr; 5.4k</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Careers CTA: pale yellow tinted card with dark button. -->
+    <section class="careers-cta" aria-label="Careers">
+      <h2 class="careers-cta__title">Lorem ipsum dolor sit amet?</h2>
+      <p class="careers-cta__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore.
+      </p>
+      <a href="#" class="careers-cta__button">Join us &rarr;</a>
+    </section>
+
+  </div>
+
+  <!-- Footer: plain four-column text-link footer, hairline above. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="footer-col__title">Website</div>
+          <ul>
+            <li>Lorem ipsum</li>
+            <li>Lorem dolor</li>
+            <li>Lorem sit</li>
+            <li>Lorem amet</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__title">Community</div>
+          <ul>
+            <li>Lorem ipsum</li>
+            <li>Lorem dolor</li>
+            <li>Lorem sit</li>
+            <li>Lorem amet</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__title">Company</div>
+          <ul>
+            <li>About</li>
+            <li>Careers</li>
+            <li>Privacy</li>
+            <li>Terms</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__title">Solutions</div>
+          <ul>
+            <li>Lorem ipsum</li>
+            <li>Lorem dolor</li>
+            <li>Lorem sit</li>
+            <li>Lorem amet</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

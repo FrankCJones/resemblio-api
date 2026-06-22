@@ -1,0 +1,350 @@
+<!--
+  Asset: cloudflare-article-layout-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, single-typeface-system, accent-on-neutral, callout-aside
+  Inspired by: Cloudflare Blog (/claude-managed-agents, /quic-death-spiral-fix)
+  Notes:
+    - Mechanic: engineering-blog longform register on a white canvas. One
+      chromatic role (Cloudflare Orange #F6821F) does inline links, the
+      category pill, and the focus ring. Humanist sans owns display and
+      body; mono carries the language-labeled fenced code block and
+      inline identifiers. Hairlines do all structural chrome.
+    - Variable: the white bg, near-black ink, Cloudflare Orange accent,
+      humanist sans family, 18px body at 1.6 leading, 44px H1, mono code
+      block on a 4-6px-radius gray inset, italic indented pull-quote.
+    - Inline ornament: the category-pill kicker shape, the 64x64 round
+      author avatar, the pipe glyph between read-time and date, the
+      language label in the top-right of the code block.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-article-layout-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter (Google Fonts) substitutes for Cloudflare's humanist sans on
+     display and body. JetBrains Mono substitutes for the code-block mono. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------------- Page shell ----------------
+   * Single article container, centered narrow measure throughout. The
+   * Cloudflare Blog runs a single column with no marginalia.
+   */
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------------- Header ---------------- */
+  .article__header {
+    max-width: 760px;
+    margin: 0 auto var(--ds-space-8);
+    text-align: left;
+  }
+
+  /* Category pill - the Cloudflare blog category kicker. Orange ring on
+   * white with mono uppercase label. Sits above the H1. */
+  .article__kicker {
+    display: inline-block;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: 4px 10px;
+    margin-bottom: var(--ds-space-5);
+    /* Inline ornament: 4px/10px pill padding holds the label compact;
+     * a single-purpose decoration tuned to the mono kicker shape. */
+  }
+
+  /* Article H1 - humanist sans at ~44px, tight leading, near-black ink. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 5vw, var(--ds-text-3xl));
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Dek paragraph - one-paragraph lead under the title. Muted gray. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    font-weight: 400;
+    margin: 0 0 var(--ds-space-6);
+  }
+
+  /* Byline strip - round author avatar + linked name, then read-time and
+   * ISO date pipe-separated. The strip sits above a hairline. */
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .article__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    /* Inline ornament: the Cloudflare blog avatar is a 64x64 face-crop;
+     * the asset shrinks to 32px in the byline strip for compact rhythm. */
+  }
+  .article__meta a {
+    color: var(--ds-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .article__meta a:hover { color: var(--ds-accent); }
+  .article__meta .pipe {
+    color: var(--ds-text-muted);
+    /* Inline ornament: pipe glyph separating read-time from date. */
+  }
+  .article__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------------- Body ----------------
+   * Centered narrow column at 720px. Cloudflare body sits a touch wider
+   * than the Vercel 680px because the engineering posts carry code blocks
+   * and inline identifiers.
+   */
+  .article__body {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .article__body p {
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /* Inline link inside prose - Cloudflare Orange, hairline underline. */
+  .article__body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .article__body a:hover,
+  .article__body a:focus-visible {
+    color: var(--ds-accent-2);
+  }
+
+  /* Subhead inside body. */
+  .article__body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-4);
+  }
+
+  /* Inline code - mono on a faint inset chip. */
+  .article__body code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.92em;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 0.06em 0.32em;
+  }
+
+  /* ---------------- Fenced code block ----------------
+   * Cloudflare Blog ships code blocks with a language label in the
+   * top-right corner. The block sits on a light gray surface with a
+   * hairline border and 4px radius. Mono inside, scrollable on overflow.
+   */
+  .article__code {
+    position: relative;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    margin: var(--ds-space-5) 0;
+    padding: var(--ds-space-5) var(--ds-space-5) var(--ds-space-4);
+    overflow: auto;
+  }
+  .article__code pre {
+    margin: 0;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    white-space: pre;
+  }
+  .article__code .lang {
+    position: absolute;
+    top: var(--ds-space-2);
+    right: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    /* Inline ornament: the language-label glyph in the top-right.
+     * Cloudflare ships this on every fenced block (e.g. "cubic.rs"). */
+  }
+
+  /* ---------------- Pull-quote / callout aside ----------------
+   * Cloudflare engineering posts use an indented italic block for
+   * commit-message excerpts and other quoted source material. The shape
+   * is a left-edge accent rule plus italic body type.
+   */
+  .article__callout {
+    border-left: 3px solid var(--ds-accent);
+    margin: var(--ds-space-5) 0;
+    padding: var(--ds-space-2) var(--ds-space-5);
+    font-style: italic;
+    color: var(--ds-text);
+    background: transparent;
+  }
+  .article__callout p {
+    margin: 0 0 var(--ds-space-3);
+  }
+  .article__callout p:last-child { margin-bottom: 0; }
+
+  /* ---------------- Tag list (article tail) ----------------
+   * Cloudflare tags sit as small orange-ringed pills at the end of the
+   * article body. The shape mirrors the category kicker, just smaller.
+   */
+  .article__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin: var(--ds-space-8) 0 0;
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .article__tags a {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-accent);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: 4px 10px;
+    text-decoration: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__tags a:hover {
+    border-color: var(--ds-accent);
+  }
+
+  /* ---------------- Focus + responsive ---------------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  @media (max-width: 760px) {
+    .article { padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-12); }
+    .article__title { font-size: var(--ds-text-2xl); }
+    .article__dek { font-size: var(--ds-text-base); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a,
+    .article__meta a,
+    .article__tags a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+
+    <header class="article__header">
+      <span class="article__kicker">Lorem Ipsum</span>
+      <h1 class="article__title">Lorem ipsum dolor sit amet consectetur adipiscing elit per saecula sapientiae</h1>
+      <p class="article__dek">Vivamus sit amet sapien velit curabitur nec libero non nisi convallis fringilla et fermentum velit faucibus inceptos lectus.</p>
+      <div class="article__meta">
+        <span class="article__avatar" aria-hidden="true"></span>
+        <a href="#">Lorem Ipsum</a>,
+        <a href="#">Dolor Amet</a>
+        <span class="pipe" aria-hidden="true">|</span>
+        <span>7 min read</span>
+        <span class="pipe" aria-hidden="true">|</span>
+        <time datetime="2026-05-19">2026-05-19</time>
+      </div>
+    </header>
+
+    <div class="article__body">
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, et fermentum velit faucibus. <a href="#">Aenean fermentum magna</a> at suscipit lacinia, ipsum lectus malesuada ante, vitae varius lorem est in turpis.</p>
+
+      <p>Phasellus consequat, sapien at ultrices ullamcorper, lectus risus dignissim sapien. The identifier <code>edge_request_handler</code> carries the technical role inside this paragraph.</p>
+
+      <h2>Lorem ipsum dolor sit amet</h2>
+
+      <p>Mauris vitae diam in tortor cursus tincidunt sed eu sapien. Donec id arcu non nibh elementum tincidunt. Curabitur euismod, magna nec varius condimentum.</p>
+
+      <div class="article__code" role="figure" aria-label="Code sample">
+        <span class="lang">lorem.rs</span>
+<pre>fn lorem_ipsum(input: &amp;str) -&gt; Result&lt;Dolor, Sit&gt; {
+    let amet = parse(input)?;
+    let consectetur = amet.adipiscing();
+    Ok(Dolor::new(consectetur))
+}</pre>
+      </div>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+
+      <div class="article__callout">
+        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. The callout aside carries an italic indented voice and an orange left rule. Used here for commit-message excerpts and quoted source material.</p>
+      </div>
+
+      <h2>Consectetur adipiscing elit</h2>
+
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.</p>
+
+      <h2>Pellentesque habitant morbi tristique</h2>
+
+      <p>Donec ullamcorper nulla non metus auctor fringilla. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Maecenas faucibus mollis interdum.</p>
+
+      <nav class="article__tags" aria-label="Tags">
+        <a href="#">Lorem</a>
+        <a href="#">Ipsum</a>
+        <a href="#">Dolor Sit</a>
+        <a href="#">Amet</a>
+        <a href="#">Consectetur</a>
+      </nav>
+
+    </div>
+
+  </article>
+</body>
+</html>

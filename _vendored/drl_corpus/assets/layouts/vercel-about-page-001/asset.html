@@ -1,0 +1,345 @@
+<!--
+  Asset: vercel-about-page-001
+  Class: layouts
+  Pattern: top-bar-nav, single-cta-hero, logo-wall, portrait-grid, mega-footer
+  Inspired by: Vercel (vercel.com/about)
+  Notes:
+    - About-page skeleton: top-bar nav, mission hero with three supporting
+      principles, institutional-investor logo wall, individual-investor
+      portrait grid, recruitment CTA, eight-column mega-footer. The page
+      reads as evidence-of-credibility rather than evidence-of-product:
+      the load-bearing block is who already bet on the company, not what
+      the company ships.
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, gutter, padding rhythm, and section sequence
+      are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Geist Sans and Geist Mono are Vercel's open-source family.
+  Inter and JetBrains Mono are the substitutes if Geist is not available.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1248px (Vercel runs slightly wider than
+   * Linear); gutter 24px on mobile, 48px on desktop. Inline value:
+   * 1248px; not a contract slot.
+   */
+  .page {
+    max-width: 1248px;            /* page container max-width */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Hero gets the extra vertical breathing room. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /*
+   * Top-bar nav. Sits flush at the top with a hairline rule beneath,
+   * no floating-pill chrome. The Vercel canonical: a flat full-width
+   * bar with the wordmark left, link cluster center, and auth controls
+   * right. Inline values: the 56px height and the sticky top offset
+   * are inline ornament specific to this nav shell, not contract slots.
+   */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.8);                /* glass over white; inline ornament */
+    backdrop-filter: saturate(180%) blur(20px);          /* inline ornament; not a slot */
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 56px;                                        /* nav bar height, inline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Hero statement. Sans display at 5xl on desktop; tight leading;
+   * narrow measure. Left-aligned, with three supporting principles
+   * stacked underneath as a small mono-labeled list. */
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__principles {
+    margin-top: var(--ds-space-10);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .hero__principles { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-8); }
+  }
+
+  /* Institutional-investor logo wall. Six-column grid on desktop,
+   * three on tablet, two on mobile. Muted greyscale logos against
+   * the white surface with hairline cell borders. */
+  .logo-wall {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 640px) { .logo-wall { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .logo-wall { grid-template-columns: repeat(6, 1fr); } }
+  .logo-wall .slot {
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    border-radius: 0;
+    aspect-ratio: 5 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Individual-investor portrait grid. Five-column on desktop, three
+   * on tablet, two on mobile. Square portrait + small name and role
+   * caption under each. */
+  .portrait-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .portrait-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .portrait-grid { grid-template-columns: repeat(5, 1fr); } }
+
+  /* CTA section: centered closing call-to-action, narrow measure. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 24ch;
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+
+  /* Section heading shared style: small mono kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Footer band: full-width, sits outside .page container, single
+   * hairline rule above, white surface continues. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/vercel-nav-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 520px;">
+          <span class="slot__label">nav-link-cluster</span>
+          Lorem ipsum dolor sit amet
+        </div>
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">auth-controls</span>
+          Log in / Sign up
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: hero. Left-aligned mission line, supporting copy, three supporting principles in a three-column band. -->
+    <section class="section section--hero" aria-label="Hero">
+      <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+        enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+      <div class="hero__principles">
+        <div class="slot"><span class="slot__label">principle-01</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">principle-02</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="slot"><span class="slot__label">principle-03</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+      </div>
+    </section>
+
+    <!-- Section: institutional-investor logo wall. Six-column hairline grid. -->
+    <section class="section" aria-label="Institutional investors">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 / Investors</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="logo-wall">
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+        <div class="slot"><span class="slot__label">logo</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: individual-investor portrait grid. Five-column on desktop, square portraits, name + linked accomplishment under each. -->
+    <section class="section" aria-label="Individual investors">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 / Individuals</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="portrait-grid">
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+        <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait</span>Lorem</div>
+      </div>
+    </section>
+
+    <!-- Section: recruitment cta. Centered closing call-to-action, one primary button. -->
+    <section class="section section--cta" aria-label="Recruitment">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h2>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 160px;">
+          <span class="slot__label">primary-cta</span>
+          Open Lorem
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/vercel-footer-001. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer (8 link columns + status + theme selector)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

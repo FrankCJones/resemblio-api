@@ -1,0 +1,107 @@
+/*
+ * cursor-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the Cursor marketing homepage. Tokens
+ * calibrated to Cursor's near-white surface with an electric cyan accent
+ * (the AI-coding-tool canonical register documented in systems/cursor/
+ * system.json). Restraint dominates: hairline chrome, no shadows on the
+ * page body, code-editor screenshots as the imagery vocabulary, mono
+ * utility reserved for shortcuts and CLI moments.
+ *
+ * WebFetch returned the full top-to-bottom section sequence verbatim from
+ * the live HTML (Nav, Hero, Interactive Demo, Brand Statement, Timeline,
+ * Agents feature, Autonomy/parallel processing, Multi-tool integration,
+ * Tab autocomplete, Enterprise trust, Testimonials, Model selection,
+ * Codebase understanding, Changelog, Careers, Blog highlights, Final CTA,
+ * five-column Footer). Computed-style values for the Cursor build (Next.js
+ * CSS-modules) were stripped at the WebFetch boundary, so numeric tokens
+ * map to the Cursor canon already documented in the system manifest and
+ * sibling system-tagged atoms (cursor-ui-tooltip-001, ai-frontier-eyebrow-001,
+ * cursor-products-grid-001) rather than verbatim devtools reads.
+ *
+ * The slots that actually carry this layout: --ds-bg (near-white page
+ * surface), --ds-text (near-black ink), --ds-accent (Cursor cyan; CTAs,
+ * links, focus moments), --ds-hairline (the rule that separates feature
+ * rows from each other), --ds-space-10 / --ds-space-12 (section rhythm),
+ * --ds-font-display (Inter Display / GT America-class sans), --ds-font-mono
+ * (the code-block and shortcut face).
+ */
+:root {
+  /* Colors. Near-white page, near-black ink, single cyan accent. Hairlines
+   * (not shadows) do every piece of separation work on the page. */
+  --ds-bg:           #FFFFFF;   /* Near-white page surface; the Cursor marketing default. */
+  --ds-surface:      #FAFAFA;   /* Raised surface for feature cards and product-screenshot frames. */
+  --ds-surface-2:    #F4F4F5;   /* Second-level surface; code-well fill, blog-card hover. */
+  --ds-text:         #0A0A0A;   /* Near-black reading ink; body and feature copy. */
+  --ds-text-muted:   #6B6B6B;   /* Secondary text; nav labels, blog metadata, timeline dates. */
+  --ds-text-strong:  #000000;   /* Pure black for the hero statement and section headings. */
+  --ds-border:       #EAEAEA;   /* Card edges, framework cell borders, footer column rules. */
+  --ds-hairline:     #EAEAEA;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #1FB6FF;   /* Cursor cyan; CTA fill highlight, link accent, focus moments. */
+  --ds-accent-2:     #00A3E0;   /* Lifted cyan for hover and focused states. */
+  --ds-success:      #22C55E;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E00000;
+  --ds-info:         #1FB6FF;
+  --ds-focus-ring:   #1FB6FF;
+
+  /* Type. Cursor's display register is a tight modern sans (Inter Display
+   * class in the marketing build); body uses the same family at smaller
+   * sizes. Mono carries shortcuts, CLI examples, code wells, and the
+   * timeline year markers. */
+  --ds-font-display: "Inter Display", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-mono:    "GeistMono", "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Display", "Inter", sans-serif;
+
+  /* Type scale. Hero statement sits between 5xl and 6xl on desktop (the
+   * "Built to make you extraordinarily productive..." line); section
+   * headings at 3xl; body at base; metadata at xs in mono. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 18px;   --ds-text-xl: 22px;
+  --ds-text-2xl: 28px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 112px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.6;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.03em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.14em;
+
+  /* Spacing. Section rhythm: 96px between feature rows on desktop
+   * (--ds-space-12), 64px on tablet (--ds-space-10), 48px on mobile
+   * (--ds-space-8). The hero band gets one extra step (128px). */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Cursor's chrome is small-radius: feature cards and buttons land
+   * around 8px; nothing on the marketing page uses pill geometry. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 12px;  --ds-radius-full: 9999px;
+
+  /* Shadows. The page itself is flat; hairlines do the work. Cards take
+   * essentially no elevation; product-screenshot frames carry one soft
+   * shadow to lift them off the near-white surface. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:  0 4px 16px rgba(0,0,0,0.06);
+  --ds-shadow-lg:  0 16px 40px rgba(0,0,0,0.08);
+  --ds-shadow-2xl: 0 24px 64px rgba(0,0,0,0.12);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

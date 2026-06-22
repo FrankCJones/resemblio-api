@@ -1,0 +1,216 @@
+<!--
+  Asset: codrops-text-reveal-motion-001
+  Class: motion-primitives
+  Pattern: scroll-driven-reveal
+  Inspired by: Codrops (Tympanus) - "A Playful Clip Menu with GSAP's easeReverse"
+  Notes:
+    - Demonstrates the clip-path text reveal mechanic: a display block starts
+      at polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%) (zero-area, centered)
+      and tweens to polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) over 800ms on
+      an exponential ease (cubic-bezier(0.16, 1, 0.3, 1)). The text underneath
+      is untouched; only its clip window grows.
+    - Variables in tokens.css carry the contract values. The four polygon
+      vertices, the staggered per-line delay (60ms), and the trigger threshold
+      are inline character values specific to this demo stage.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>codrops-text-reveal-motion-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- VT323 is the closest free fallback to 'lores-12' (Adobe Fonts kit). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-6) var(--ds-space-5);
+    display: grid;
+    place-items: center;
+    text-transform: uppercase;
+  }
+
+  /* Stage frame: holds the reveal lines plus the controls below. */
+  .stage {
+    width: min(880px, 100%);
+    display: grid;
+    gap: var(--ds-space-8);
+  }
+
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+  }
+
+  /* The display block being revealed. Stack three lines vertically. */
+  .reveal-stack {
+    display: grid;
+    gap: var(--ds-space-3);
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* Each line is its own clip-path animation target.
+   * The clip-path starts as a zero-area centered diamond and animates out to
+   * the full rectangle. The text inside is fully drawn from first paint;
+   * only the clipping window expands.
+   * 60ms per-line stagger is inline character: tight enough to feel like one
+   * gesture, loose enough that the eye can track each line landing. */
+  .reveal-line {
+    font-family: var(--ds-font-display);
+    font-size: clamp(2rem, 7vw, var(--ds-text-5xl));
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.1); /* Native to the source. */
+    margin: 0;
+    will-change: clip-path;
+
+    /* Closed state: zero-area polygon at the center. */
+    clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
+    transition: clip-path var(--ds-duration-slow) var(--ds-ease-emphasize);
+  }
+
+  /* Open state: full rectangle, four corners.
+   * This is the demo's open polygon, copied verbatim. */
+  .reveal-line.is-open {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+
+  /* Per-line stagger: each subsequent line waits one beat longer.
+   * 60ms is the inline character value. */
+  .reveal-line:nth-child(2) { transition-delay: 60ms; }
+  .reveal-line:nth-child(3) { transition-delay: 120ms; }
+
+  /* Bracket affordance taken from the source's menu__item ::before / ::after.
+   * Pure CSS hover ornament; only used on the middle "interactive" line. */
+  .reveal-line.has-brackets::before,
+  .reveal-line.has-brackets::after {
+    content: '[';
+    display: inline-block;
+    transition: transform var(--ds-duration-normal) var(--ds-ease-standard),
+                opacity var(--ds-duration-normal) var(--ds-ease-standard);
+    color: var(--ds-accent-2);
+    margin: 0 var(--ds-space-3);
+  }
+  .reveal-line.has-brackets::after { content: ']'; }
+  .reveal-line.has-brackets:hover::before { transform: translateX(-6px); opacity: 0.6; }
+  .reveal-line.has-brackets:hover::after  { transform: translateX( 6px); opacity: 0.6; }
+
+  /* Replay button styled in the source's pixel-arcade voice. */
+  .controls {
+    display: flex;
+    gap: var(--ds-space-4);
+    justify-content: center;
+    align-items: center;
+  }
+  .replay {
+    cursor: pointer;
+    border: 0;
+    background: var(--ds-accent);
+    color: var(--ds-text);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    text-transform: uppercase;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: inset -4px -4px rgba(255, 255, 255, 0.16); /* Native to the source toggle. */
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .replay:hover { background: var(--ds-accent-2); }
+  .replay:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Bottom metadata row reads like the source's frame__credits. */
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    justify-content: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+  }
+  .meta-row b { color: var(--ds-text); font-weight: 500; }
+
+  /* Reduced motion: instant reveal, no clip-path animation. */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-line {
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="stage" role="region" aria-label="Clip-path text reveal demonstration">
+
+    <div class="label">motion &middot; codrops-text-reveal-motion-001</div>
+
+    <div class="reveal-stack" id="stack">
+      <p class="reveal-line">Lorem ipsum dolor</p>
+      <p class="reveal-line has-brackets">Sit amet consectetur</p>
+      <p class="reveal-line">Adipiscing elit sed</p>
+    </div>
+
+    <div class="controls">
+      <button class="replay" id="replay" type="button" aria-label="Replay reveal">Replay</button>
+    </div>
+
+    <div class="meta-row">
+      <span>ease &middot; <b>cubic-bezier(0.16, 1, 0.3, 1)</b></span>
+      <span>duration &middot; <b>800ms (slow)</b></span>
+      <span>stagger &middot; <b>60ms per line</b></span>
+      <span>clip &middot; <b>polygon 50% &rarr; 0/100%</b></span>
+    </div>
+
+  </div>
+
+  <script>
+    /* Drive the reveal once on load, and again on replay.
+     * Toggling the .is-open class is enough; the transition values declared
+     * in CSS handle the curve, duration, and per-line stagger. */
+    (function () {
+      var lines = document.querySelectorAll('.reveal-line');
+      var replay = document.getElementById('replay');
+
+      function open() {
+        lines.forEach(function (el) { el.classList.add('is-open'); });
+      }
+      function close() {
+        lines.forEach(function (el) { el.classList.remove('is-open'); });
+      }
+      function replayReveal() {
+        close();
+        // Force a reflow so the transition restarts cleanly.
+        // Accessing offsetWidth on each line is a well-known reflow trigger.
+        lines.forEach(function (el) { void el.offsetWidth; });
+        // Allow a frame before reopening so the close state commits.
+        requestAnimationFrame(function () { requestAnimationFrame(open); });
+      }
+
+      // Initial reveal on next frame so the closed state paints first.
+      requestAnimationFrame(function () { requestAnimationFrame(open); });
+
+      replay.addEventListener('click', replayReveal);
+    })();
+  </script>
+</body>
+</html>

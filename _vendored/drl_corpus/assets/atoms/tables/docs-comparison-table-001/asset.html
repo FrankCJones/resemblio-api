@@ -1,0 +1,145 @@
+<!--
+  Asset: docs-comparison-table-001
+  Class: tables
+  Pattern: (two-column docs reference table; hairline dividers, mono cells, faint uppercase header)
+  Inspired by: Tailwind CSS Docs (utility reference table on /docs/font-size and /docs/padding)
+  Notes:
+    - Two columns: a class name on the left, the rendered CSS on the right.
+    - Hairline divider between rows is the only chrome; no zebra striping, no outer border.
+    - Header row sits in muted uppercase mono-tracked label; mono is the load-bearing typeface here.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>docs-comparison-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    display: flex;
+    justify-content: center;
+  }
+  .frame {
+    width: 100%;
+    max-width: 760px;
+  }
+  /* The "Quick reference" eyebrow that sits above the table in Tailwind's docs. */
+  .frame__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin: 0 0 var(--ds-space-3) 0;
+  }
+  .frame__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: var(--ds-leading-snug);
+    margin: 0 0 var(--ds-space-5) 0;
+  }
+  table.ref {
+    width: 100%;
+    border-collapse: collapse;
+    /* No outer border on the table itself; the hairline between rows does the work. */
+  }
+  table.ref thead th {
+    text-align: left;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    /* Header sits on the page background; no fill. Sticky in real docs; left static here for the demo. */
+  }
+  table.ref tbody td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-border);
+    vertical-align: top;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-strong);
+  }
+  /* The class column reads as the spine; gives it a slightly stronger color to anchor scanning. */
+  table.ref tbody td.class-col { color: var(--ds-text-strong); }
+  /* The styles column is the rendered CSS; same mono family, with comment color softened. */
+  table.ref tbody td.styles-col { color: var(--ds-text); }
+  /* Inline-comment fragment inside the styles cell, e.g. /* 0.75rem (12px) */ /. Softened so the value reads first. */
+  .comment { color: var(--ds-text-muted); }
+  /* Last row drops its bottom border so the table ends cleanly against the page. */
+  table.ref tbody tr:last-child td { border-bottom: 0; }
+  /* Row hover lifts the cell text only; no background flash. Costly to do well on dense pages. */
+  table.ref tbody tr { transition: background var(--ds-duration-fast) var(--ds-ease-standard); }
+  table.ref tbody tr:hover { background: var(--ds-surface); }
+  /* The first column pulls left to align flush; second column gets to breathe to the right. */
+  table.ref col.col-class { width: 30%; }
+  table.ref col.col-styles { width: 70%; }
+  /* Accessibility focus state if a row is wrapped in a link in real docs. */
+  table.ref tbody tr:focus-within { outline: 2px solid var(--ds-focus-ring); outline-offset: -2px; }
+</style>
+</head>
+<body>
+  <section class="frame" aria-labelledby="ref-title">
+    <p class="frame__eyebrow">Quick reference</p>
+    <h2 class="frame__title" id="ref-title">Lorem ipsum dolor sit amet</h2>
+    <table class="ref" aria-describedby="ref-title">
+      <colgroup>
+        <col class="col-class"/>
+        <col class="col-styles"/>
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Class</th>
+          <th scope="col">Styles</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="class-col">lorem-xs</td>
+          <td class="styles-col">font-size: var(--lorem-xs); <span class="comment">/* 0.75rem (12px) */</span></td>
+        </tr>
+        <tr>
+          <td class="class-col">lorem-sm</td>
+          <td class="styles-col">font-size: var(--lorem-sm); <span class="comment">/* 0.875rem (14px) */</span></td>
+        </tr>
+        <tr>
+          <td class="class-col">lorem-base</td>
+          <td class="styles-col">font-size: var(--lorem-base); <span class="comment">/* 1rem (16px) */</span></td>
+        </tr>
+        <tr>
+          <td class="class-col">lorem-lg</td>
+          <td class="styles-col">font-size: var(--lorem-lg); <span class="comment">/* 1.125rem (18px) */</span></td>
+        </tr>
+        <tr>
+          <td class="class-col">lorem-xl</td>
+          <td class="styles-col">font-size: var(--lorem-xl); <span class="comment">/* 1.25rem (20px) */</span></td>
+        </tr>
+        <tr>
+          <td class="class-col">lorem-2xl</td>
+          <td class="styles-col">font-size: var(--lorem-2xl); <span class="comment">/* 1.5rem (24px) */</span></td>
+        </tr>
+        <tr>
+          <td class="class-col">lorem-3xl</td>
+          <td class="styles-col">font-size: var(--lorem-3xl); <span class="comment">/* 1.875rem (30px) */</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

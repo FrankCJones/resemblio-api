@@ -1,0 +1,389 @@
+<!--
+  Asset: robin-sloan-about-page-001
+  Class: layouts
+  Pattern: centered-narrow-column, small-caps-lead-in, writings-index, venue-parenthetical
+  Inspired by: Robin Sloan (robinsloan.com/about)
+  Notes:
+    - Personal-writer about-page skeleton: minimal text nav, single page
+      title in serif display, portrait with "It's me" caption, opening
+      bio paragraph with small-caps sans lead-in, narrative continuation,
+      a Projects list where each line carries an inline muted parenthetical
+      for venue/year, a secondary bio paragraph for career history, a
+      closing subscribe + email + colophon footer. The reading column sits
+      at ~32em (about 540px at the Filosofia body register) per Sloan's
+      "speed and privacy of the printed page" aspiration.
+    - Variable: section sequence, page measure, vertical rhythm, role
+      assignments per slot. Inline: column measure (32em), portrait frame
+      sizing and shadow, asterism glyph between sections, sans small-caps
+      lead-in tracking on the opening sentence.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan-about-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Filosofia, Kyrios, Trade Gothic Next, and Vollkorn are
+  documented in robinsloan.com/colophon. Faces are not loaded in the
+  asset; the fallback chains in tokens.css (Georgia, system-ui) carry the
+  register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Narrow centered column at 32em; this is the load-
+   * bearing measure for a personal-writer about page. The container
+   * itself is the column; there is no wider page-grid containing it.
+   * Inline value because the column character is layout-specific.
+   */
+  .page {
+    max-width: 32em;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .page { padding-block: var(--ds-space-12); }
+  }
+
+  /* Nav: text-only horizontal line at the top, hairline below. Sloan
+   * keeps this to four or five items in serif body. */
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    padding-bottom: var(--ds-space-5);
+    margin-bottom: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-style: italic;
+    color: var(--ds-text);
+  }
+  .nav a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--ds-accent);
+  }
+
+  /* Page title: serif display, left-aligned in column. */
+  .page-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+
+  /*
+   * Portrait. Sits at the top of the column under the title; a linked
+   * image with a one-line italic caption beneath. Frame sits at sm
+   * radius, carries the only shadow on the page. Sloan's published
+   * portrait is roughly 7:8 (840x960); the asset preserves that ratio.
+   */
+  .portrait {
+    margin: 0 0 var(--ds-space-8);
+  }
+  .portrait__frame {
+    width: 100%;
+    aspect-ratio: 7 / 8;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    box-shadow: var(--ds-shadow-md);
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .portrait__caption {
+    margin-top: var(--ds-space-3);
+    font-family: var(--ds-font-body);
+    font-style: italic;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * Bio paragraphs. The opening paragraph carries a small-caps sans
+   * lead-in for the first phrase: Trade Gothic Next at sm size with
+   * wider tracking, set in the same dark ink as the body. Inline rule
+   * because the lead-in length varies per page.
+   */
+  .bio {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .bio > * + * { margin-top: var(--ds-space-5); }
+  .bio .lead-in {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+    margin-right: 0.25em;
+  }
+  .bio a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .bio em { font-style: italic; }
+
+  /*
+   * Section break. Sloan uses an asterism (three asterisks centered) to
+   * separate movements of the about page. Inline ornament; the glyph
+   * carries character that no token slot expresses.
+   */
+  .asterism {
+    text-align: center;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    letter-spacing: 0.5em;
+    margin: var(--ds-space-10) 0;
+    user-select: none;
+  }
+
+  /* Section heading for the projects list. Sans accent eyebrow style,
+   * not display serif. */
+  .section-eyebrow {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+
+  /*
+   * Projects list. Each line: project title (linked, serif italic in
+   * accent cocoa), then a muted parenthetical with venue and year on
+   * the same line. List has no bullets and sits at body rhythm.
+   */
+  .projects {
+    list-style: none;
+    margin: 0 0 var(--ds-space-10);
+    padding: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .projects > li + li { margin-top: var(--ds-space-4); }
+  .projects a.project__title {
+    font-style: italic;
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .projects .project__venue {
+    color: var(--ds-text-muted);
+    font-style: normal;
+  }
+
+  /*
+   * Subscribe + contact footer. Sits below an asterism. Block carries
+   * an email mailto, a one-line subscribe pitch with input + button,
+   * and a one-line colophon link in italic at the very bottom. The
+   * subscribe form is flat (no card chrome) to honor the paper-and-ink
+   * discipline of the rest of the page.
+   */
+  .footer-block {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+  }
+  .footer-block > * + * { margin-top: var(--ds-space-5); }
+  .footer-block a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .subscribe {
+    display: grid;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-6);
+  }
+  .subscribe__pitch {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .subscribe__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+  .subscribe__input {
+    flex: 1 1 240px;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+  }
+  .subscribe__input:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .subscribe__button {
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-bg);
+    background: var(--ds-accent);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+  }
+  .colophon-line {
+    margin-top: var(--ds-space-8);
+    font-family: var(--ds-font-body);
+    font-style: italic;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <!-- Section: nav. Text-only horizontal line, hairline below. -->
+    <nav class="nav" aria-label="Primary">
+      <a href="#">Lorem</a>
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit Amet</a>
+    </nav>
+
+    <!-- Section: page title. Single serif display line. -->
+    <h1 class="page-title">About Lorem Ipsum</h1>
+
+    <!-- Section: portrait. Linked image frame plus italic caption. -->
+    <figure class="portrait">
+      <a href="#" class="portrait__frame" aria-label="Portrait">
+        portrait
+      </a>
+      <figcaption class="portrait__caption">It's me.</figcaption>
+    </figure>
+
+    <!-- Section: opening bio. Small-caps sans lead-in on first phrase. -->
+    <section class="bio" aria-label="Primary bio">
+      <p>
+        <span class="lead-in">I'm the author</span> of the novels
+        <a href="#"><em>Lorem Ipsum Dolor</em></a> (a quiet bestseller
+        published in 2012), <a href="#"><em>Sit Amet</em></a> (a
+        non-bestseller published in 2017), and <a href="#"><em>Consectetur
+        Adipiscing</em></a> (forthcoming). I am working on a fourth.
+      </p>
+      <p>
+        Before that, I wrote short stories and made small digital things,
+        most of which still live online somewhere. I have lately been
+        thinking about <a href="#">long attention</a> and the printed page.
+      </p>
+    </section>
+
+    <!-- Section break: asterism. -->
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <!-- Section: projects list with venue parentheticals. -->
+    <h2 class="section-eyebrow">Projects and writing elsewhere</h2>
+    <ul class="projects" aria-label="Projects">
+      <li>
+        <a href="#" class="project__title">Lorem ipsum dolor sit amet</a>
+        <span class="project__venue">(Aeon, 2024)</span>
+      </li>
+      <li>
+        <a href="#" class="project__title">Consectetur adipiscing elit</a>
+        <span class="project__venue">(The Atlantic, 2023)</span>
+      </li>
+      <li>
+        <a href="#" class="project__title">Sed do eiusmod tempor</a>
+        <span class="project__venue">(self-published, 2022)</span>
+      </li>
+      <li>
+        <a href="#" class="project__title">Ut labore et dolore magna</a>
+        <span class="project__venue">(The Believer, 2021)</span>
+      </li>
+      <li>
+        <a href="#" class="project__title">Aliqua ut enim ad minim</a>
+        <span class="project__venue">(Wired, 2019)</span>
+      </li>
+    </ul>
+
+    <!-- Section: secondary bio. Career history paragraph. -->
+    <section class="bio" aria-label="Secondary bio">
+      <p>
+        Before I wrote novels I worked at <a href="#">Lorem Media Group</a>,
+        at <a href="#">Ipsum Television</a>, and at <a href="#">Dolor
+        Social</a>, where I helped build the publishing tools. These days
+        I am based in the Bay Area; I press olive oil with friends every
+        autumn, and I play in a small band that practices once a month.
+      </p>
+      <p>
+        I also write video game stories, tinker with programming, and keep
+        an amateur radio license that I rarely use. If you want a longer
+        version of any of this, there is a <a href="#">short bio</a> and a
+        film I made in 2004 about the future of media that has aged
+        unevenly.
+      </p>
+    </section>
+
+    <!-- Section break: asterism. -->
+    <div class="asterism" aria-hidden="true">* * *</div>
+
+    <!-- Section: contact and subscribe footer. -->
+    <section class="footer-block" aria-label="Contact and subscribe">
+      <p>
+        Reach me at <a href="mailto:lorem@ipsum.com">lorem@ipsum.com</a>.
+        I read everything; I cannot always reply.
+      </p>
+      <form class="subscribe" aria-label="Subscribe to the newsletter">
+        <p class="subscribe__pitch">
+          Or, if you would like a letter once a month or so:
+        </p>
+        <div class="subscribe__row">
+          <input class="subscribe__input" type="email" placeholder="you@example.com" aria-label="Email address"/>
+          <button class="subscribe__button" type="submit">Subscribe</button>
+        </div>
+      </form>
+      <p class="colophon-line">
+        <a href="#">Hony soyt qui mal pence</a>
+      </p>
+    </section>
+
+  </main>
+</body>
+</html>

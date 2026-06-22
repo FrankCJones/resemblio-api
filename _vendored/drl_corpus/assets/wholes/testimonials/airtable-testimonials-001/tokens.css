@@ -1,0 +1,121 @@
+/*
+ * airtable-testimonials-001 tokens
+ *
+ * Productivity-app testimonial card chrome inspired by Airtable's home page
+ * customer quote (Angela Yanes, eBay), the /enterprise carousel (LinkedIn,
+ * AWS, JetBlue), and /solutions/marketing (MGA Entertainment, Schaeffler,
+ * Fanatics). White card on a near-white page, hairline border, modest radius,
+ * company logo lockup above the quote, headshot left of the attribution row.
+ *
+ * Source extraction:
+ *   - airtable.com (2026-05-20, webfetch): home testimonial block presents
+ *     a single quote with circular headshot and attribution name/role/company
+ *     ("Airtable makes it easy to deliver AI insights to every team quickly
+ *     and without complex builds." Angela Yanes, Director of Product
+ *     Operations, eBay) followed by an "Explore all customer stories" link.
+ *   - airtable.com/enterprise (2026-05-20, webfetch): carousel of three
+ *     quotes confirms the pattern (Sarah Sgarlato Pierini, LinkedIn;
+ *     Jonathan Laniado, AWS; Tracy Bink, JetBlue Airways). Company logos
+ *     sit above each quote, light card surfaces, no heavy shadow.
+ *
+ * Color and type values cross-referenced against Airtable's public surface
+ * register: near-white page, white card, near-black ink, multi-hue accent
+ * with red as the dominant CTA (Airtable's brand red sits around #FC5C46;
+ * cross-checked against the marketing-page CTA color and the favicon mark).
+ * Inter-class humanist sans across the body and display surface.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #F7F7F5;   /* Near-white page; the warm neutral Airtable uses on quote sections. */
+  --ds-surface:      #FFFFFF;   /* Quote card body; one step brighter than the page. */
+  --ds-surface-2:    #FAFAF8;   /* Nested surface; logo lockup background tint. */
+  --ds-text:         #1D1F25;   /* Airtable near-black; quote body color. */
+  --ds-text-muted:   #6B6F76;   /* Role line, secondary attribution. */
+  --ds-text-strong:  #0B0D11;   /* Attribution name, the load-bearing line. */
+  --ds-border:       rgba(0, 0, 0, 0.08);   /* Card hairline edge. */
+  --ds-hairline:     rgba(0, 0, 0, 0.06);   /* Internal divider above attribution. */
+  --ds-accent:       #FC5C46;   /* Airtable brand red; trailing "Explore all customer stories" link. */
+  --ds-accent-2:     #E04A36;   /* Hover-state accent shift. */
+  --ds-success:      #2D7A4F;
+  --ds-warning:      #E8A93B;
+  --ds-error:        #C24238;
+  --ds-info:         #2E6BD6;
+  --ds-focus-ring:   #FC5C46;   /* Brand red doubles as focus ring. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Inter", system-ui, sans-serif;   /* Airtable ships an Inter-class humanist sans across display and body. */
+  --ds-font-body:    "Inter", system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;        /* Quote body sits here; lead-paragraph scale, conversational tone. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  30px;
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.5;    /* Quote body; sentence-case reading rhythm. */
+  --ds-leading-relaxed: 1.7;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;          /* Card padding rhythm. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Airtable frames sit at modest values; cards are softened, not pilled.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;       /* Card corner. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;     /* Headshot circle. */
+
+  /* ---------- Shadows ----------
+   * Hairline edge holds the card at rest. Subtle lift on hover.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;       /* Card at rest. */
+  --ds-shadow-md:   0 2px 10px rgba(20, 22, 28, 0.06);
+  --ds-shadow-lg:   0 8px 24px rgba(20, 22, 28, 0.08);
+  --ds-shadow-2xl:  0 24px 48px rgba(20, 22, 28, 0.14);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

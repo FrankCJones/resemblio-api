@@ -1,0 +1,132 @@
+/*
+ * sortable-grid-table-001 tokens
+ *
+ * Native token values for the Vercel-pricing-style sortable comparison table.
+ * The character: light surface, monochrome grayscale chrome, one saturated
+ * blue accent reserved for the active sort column and focus ring. Type is
+ * Geist Sans for chrome, Geist Mono / tabular-nums for numeric cells.
+ *
+ * Token values reflect the Geist design system family Vercel ships on
+ * vercel.com/pricing. WebFetch on 2026-05-19 confirmed the page renders a
+ * comparison table with sortable column headers as buttons and tabular-nums
+ * on numeric cells; specific computed pixel values were not retrievable from
+ * the JS-rendered surface, so neutral values below are the Geist-canon
+ * defaults documented on vercel.com/geist/table and widely mirrored across
+ * Geist-derived dev-tool sites.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Light-mode dev-tool palette: near-white surface, dense gray text, hairline
+   * borders, single blue accent that lights up only on the active sort column.
+   */
+  --ds-bg:           #FFFFFF;   /* Page surface; pricing comparison table sits on pure white. */
+  --ds-surface:      #FAFAFA;   /* Header row fill; one step off white to separate chrome from cells. */
+  --ds-surface-2:    #F2F2F2;   /* Zebra stripe / hovered row; two steps off white. */
+  --ds-text:         #171717;   /* Cell body text; near-black for maximum cell density. */
+  --ds-text-muted:   #666666;   /* Secondary cell text, helper labels, inactive sort glyphs. */
+  --ds-text-strong:  #000000;   /* Header label color when its column is the active sort. */
+  --ds-border:       #EAEAEA;   /* Standard table border; hairline grid between cells. */
+  --ds-hairline:     #F2F2F2;   /* Inner row divider; slightly softer than full border. */
+  --ds-accent:       #0070F3;   /* Geist signature blue; reserved for active sort indicator and focus ring. */
+  --ds-accent-2:     #3291FF;   /* Lifted blue; hover state on the sortable header button. */
+  --ds-success:      #0070F3;   /* Pricing checkmark color sometimes uses blue rather than green in Geist. */
+  --ds-warning:      #F5A623;   /* Geist amber; not used in the rendered asset but declared per contract. */
+  --ds-error:        #E00;      /* Geist red. */
+  --ds-info:         #0070F3;   /* Matches accent. */
+  --ds-focus-ring:   #0070F3;   /* Same blue at 100% on the focused sort button; doubled by a 2px white inner ring. */
+
+  /* ---------- Type families ----------
+   * Geist Sans for everything chrome-side; Geist Mono used implicitly via
+   * tabular-nums on numeric cells so columns align without monospacing the
+   * entire cell.
+   */
+  --ds-font-display: "Geist", "Geist Sans", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Geist", "Geist Sans", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Geist Mono", ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "Geist", "Geist Sans", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Dense table scale: 13px for header labels and helper text, 14px for body
+   * cells. Larger sizes declared per contract but not used in this asset.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 14px;
+  --ds-text-lg:   16px;
+  --ds-text-xl:   20px;
+  --ds-text-2xl:  24px;
+  --ds-text-3xl:  32px;
+  --ds-text-4xl:  44px;
+  --ds-text-5xl:  56px;
+  --ds-text-6xl:  72px;
+  --ds-text-7xl:  96px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Header labels in the table sit at slightly positive tracking (0.02em) to
+   * read as chrome rather than as a continuation of the cell text.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Cells use 12px vertical / 16px horizontal padding which
+   * matches the Geist Table compact density preset.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Tables in Geist sit inside a rounded outer container at 8px; cells are
+   * square.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Outer table container carries the lightest possible card shadow; rows
+   * carry none.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.08);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.12);
+
+  /* ---------- Motion ----------
+   * Sort state changes are fast; row hover is instant. The standard easing
+   * covers everything in this asset.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

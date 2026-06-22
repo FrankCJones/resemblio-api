@@ -1,0 +1,139 @@
+/*
+ * linear-article-layout-001 tokens
+ *
+ * Article-layout whole inspired by Linear's long-form posts on the /blog
+ * surface (which routes to the /now/ content hub). Inherits the Linear
+ * system tokens already verified by precedent atoms in the library:
+ * near-black surface #08090A, off-white reading ink #F7F8F8, indigo
+ * accent #5E6AD2, Inter Variable across display and body.
+ *
+ * Source inspected via WebFetch 2026-05-20 on
+ * https://linear.app/blog/how-we-hire-at-linear (which resolves into
+ * the /now/practices content hub). Chrome MCP is documented blocked
+ * for linear.app today (navigation rejected with "Navigation to this
+ * domain is not allowed"); the live HTML header sequence (breadcrumb
+ * Now > Practices, h1, dot-separated byline + date, body, full-site
+ * footer with no related-post rail) was confirmed via WebFetch prose
+ * extraction. Token values follow the Linear system already captured
+ * devtools-verified in linear-customer-logo-wall-001 (2026-05-19),
+ * unchanged on the article chrome.
+ *
+ * Free-font analog in `asset.html`:
+ *   - Inter (Google Fonts) substitutes for Inter Variable shipped by
+ *     Linear; the weight axis behaves identically across the steps
+ *     used here.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Near-black-on-off-white inverted: Linear's blog renders dark by
+   * default. Indigo doubles as inline link color, focus ring, and the
+   * single chromatic role across the article surface.
+   */
+  --ds-bg:           #08090A;   /* Linear body bg rgb(8,9,10); the canonical dark surface. */
+  --ds-surface:      #141517;   /* One step up; pull-quote inset and the figure frame. */
+  --ds-surface-2:    #1F2024;   /* Two steps up; aside callouts and hover rows. */
+  --ds-text:         #F7F8F8;   /* Body reading ink; off-white not pure white. */
+  --ds-text-muted:   #8A8F98;   /* Byline, date, breadcrumb, caption. */
+  --ds-text-strong:  #FFFFFF;   /* Display headline only; reserved emphasis. */
+  --ds-border:       #2E2E2E;   /* Card outline, figure frame edge. */
+  --ds-hairline:     #1A1A1A;   /* Section break, date strip rule, related-rail top. */
+  --ds-accent:       #5E6AD2;   /* Linear indigo rgb(94,106,210); inline links, focus ring, kicker. */
+  --ds-accent-2:     #B5BDFB;   /* Lifted indigo; accent hover and visited link tone. */
+  --ds-success:      #4CB782;
+  --ds-warning:      #F2A640;
+  --ds-error:        #E5484D;
+  --ds-info:         #5E6AD2;
+  --ds-focus-ring:   #B5BDFB;   /* Lifted indigo; visible against the dark surface. */
+
+  /* ---------- Type families ----------
+   * Linear ships Inter Variable across display and body. Display
+   * register pulls negative tracking and tighter leading; body sits at
+   * the variable's regular weight. Mono held in reserve for code blocks
+   * inside engineering posts.
+   */
+  --ds-font-display: "Inter Variable", "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter Variable", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Linear's article H1 sits at the 3xl step (~42px on desktop), one
+   * step below editorial publications (Anthropic at 52px). Body at 18px
+   * with 1.65 leading; the register is product-marketing reading, not
+   * print editorial.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;   /* Breadcrumb kicker, byline, date. */
+  --ds-text-sm:   14px;
+  --ds-text-base: 18px;   /* Body reading register. */
+  --ds-text-lg:   21px;   /* Lead paragraph / dek. */
+  --ds-text-xl:   28px;   /* Subheads (h2 inside body). */
+  --ds-text-2xl:  34px;   /* Pull-quote display. */
+  --ds-text-3xl:  42px;   /* Article H1. */
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * 1.65 body sits one step above the SaaS 1.5 default; the register
+   * tells the eye to settle in. Display tight at 1.05 keeps the H1
+   * compact at the 42px step.
+   */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Linear display tracking is negative across the H1 step; uppercase
+   * breadcrumb / kicker / focus label sits at +0.16em.
+   */
+  --ds-tracking-tight:  -0.025em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Article column hits its measure at ~680px; vertical
+   * rhythm between paragraphs is space-5 (24px) per the Linear reading
+   * register.
+   */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Linear card chrome sits at md (8px); the article shell itself
+   * carries no radius beyond the figure frame.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cool-tinted (black undertone), used sparingly; most surfaces sit
+   * flush on the near-black bg.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.5);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.6);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.7);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

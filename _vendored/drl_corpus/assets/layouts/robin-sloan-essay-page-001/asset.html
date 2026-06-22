@@ -1,0 +1,442 @@
+<!--
+  Asset: robin-sloan-essay-page-001
+  Class: layouts
+  Pattern: centered-narrow-column, small-caps-lead-in, warm-earth-palette
+  Inspired by: Robin Sloan (robinsloan.com/notes/<essay>)
+  Notes:
+    - Individual essay page skeleton on the terracotta field. Minimal header
+      wordmark and nav, essay title + dateline eyebrow + sans byline, small
+      caps lead-in opening paragraph, narrow Filosofia reading body with
+      asterism dividers between sections, terracotta block-quote with cocoa
+      bar, marginalia footnote, byline portrait closing card, newsletter
+      subscribe band, minimal essay footer.
+    - Variable: section sequence, byline composition, presence of asterism
+      vs h2 between sections. Inline: 32em essay column measure, 84px title
+      step, asterism glyph spacing, portrait avatar circle (88px).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>robin-sloan-essay-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Kyrios, Filosofia, Vollkorn, and Trade Gothic Next are the
+  documented Sloan stack (see /colophon). Faces are not loaded standalone;
+  fallback chains in tokens.css (Georgia, Times New Roman, system serif and
+  sans) carry the warm-paper register.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--ds-accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+  /*
+   * Essay column. Sloan's reading measure is narrow: about 32em (roughly
+   * 560px at 17.5px). The same column carries header, body, and footer;
+   * terracotta runs edge-to-edge behind the column so the whole page reads
+   * as one piece of colored stock. Inline measure value.
+   */
+  .page {
+    max-width: 32em;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+
+  /* Section: header. Minimal wordmark + four-link nav. */
+  .header {
+    padding-block: var(--ds-space-6) var(--ds-space-5);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+  .header__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .header__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    text-transform: lowercase;
+  }
+  .header__nav a { text-decoration: none; color: var(--ds-text); }
+
+  /* Section: essay-hero. Title + dateline eyebrow + sans byline. */
+  .essay-hero {
+    padding-block: var(--ds-space-10) var(--ds-space-6);
+    border-top: 1px solid var(--ds-border);
+  }
+  .essay-hero__eyebrow {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-4);
+  }
+  .essay-title {
+    font-family: var(--ds-font-display);
+    /* 84px is the Sloan title display step. Inline-tuned line-height keeps
+       a two-line title from over-stacking; Kyrios is set in italics here as
+       the warm-paper era convention. */
+    font-size: var(--ds-text-5xl);
+    font-style: italic;
+    font-weight: 400;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 16ch;
+  }
+  .essay-hero__byline {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Section: essay-body. Filosofia reading at 21/28. */
+  .essay-body {
+    padding-block: var(--ds-space-6) var(--ds-space-10);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .essay-body > * + * { margin-top: var(--ds-space-5); }
+  .essay-body p { margin: 0; }
+
+  /*
+   * Small-caps lead-in. The opening paragraph runs the first three or four
+   * words in small caps with positive tracking, the warm-paper era's
+   * editorial gesture for "here begins the letter." No drop cap.
+   */
+  .lead-in {
+    font-variant: small-caps;
+    letter-spacing: var(--ds-tracking-wider);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  /* Asterism divider. Three asterisks centered; the canonical Sloan section
+   * break. Generous vertical space on either side so the divider breathes. */
+  .asterism {
+    display: block;
+    text-align: center;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text);
+    letter-spacing: 0.6em;
+    margin-block: var(--ds-space-10);
+    border: none;
+  }
+  .asterism::before { content: "\002731  \002731  \002731"; }
+
+  /* H2 section head; alternative to asterism for named sections. Set in
+   * Kyrios italic to match the title voice. */
+  .essay-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-style: italic;
+    font-weight: 400;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+
+  /*
+   * Block quote. A terracotta surface tint (one step lifted from the field)
+   * with a cocoa-bar accent on the left. The quote serif sits one step up
+   * from body for editorial weight. Inline padding tuned for the narrow
+   * column; not a contract value.
+   */
+  .essay-body blockquote {
+    background: var(--ds-surface);
+    border-left: 3px solid var(--ds-accent);
+    padding: var(--ds-space-5) var(--ds-space-6);
+    margin-block: var(--ds-space-8);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-style: italic;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+  }
+  .essay-body blockquote p + p { margin-top: var(--ds-space-4); }
+
+  /*
+   * Marginalia / footnote. In a narrow-column world it sits inline as an
+   * indented small-text aside rather than in the side margin; the bar on
+   * the left preserves the "this is an aside" affordance.
+   */
+  .marginalia {
+    border-left: 1px solid var(--ds-border);
+    padding-left: var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+  }
+
+  /* Inline link picks up cocoa underline globally; underline-thickness is
+   * cocoa on terracotta for the warm-paper feel. */
+  .essay-body a { color: var(--ds-text); }
+
+  /*
+   * Byline portrait card. Closes the essay. A small round portrait, a
+   * single name and one-line bio, and a quiet sign-off. No card chrome:
+   * just the round avatar and prose.
+   */
+  .byline-card {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: var(--ds-space-5);
+    align-items: center;
+    padding-block: var(--ds-space-8);
+    border-top: 1px solid var(--ds-border);
+  }
+  .byline-card__avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .byline-card__name {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+  }
+  .byline-card__bio {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Newsletter subscribe band. A two-step-lifted surface block. Sloan's
+   * essay close-out moment: "sign up for my email newsletter." Title +
+   * one-line prompt + email input + sans subscribe button. Sits inside the
+   * essay column so the band matches the reading measure.
+   */
+  .subscribe {
+    margin-block: var(--ds-space-10);
+    padding: var(--ds-space-6);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+  }
+  .subscribe__title {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .subscribe__prompt {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .subscribe__form {
+    display: flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+  .subscribe__input {
+    flex: 1 1 220px;
+    min-width: 0;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+  }
+  .subscribe__input:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .subscribe__button {
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-bg);
+    background: var(--ds-accent);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+  }
+  .subscribe__disclaimer {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: var(--ds-space-4) 0 0;
+  }
+
+  /*
+   * Essay footer. Minimal: a one-line privacy note, a colophon link, and a
+   * single Latin motto line. No mega-footer, no link columns.
+   */
+  .essay-footer {
+    padding-block: var(--ds-space-8) var(--ds-space-10);
+    border-top: 1px solid var(--ds-border);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    text-align: center;
+  }
+  .essay-footer p { margin: 0 0 var(--ds-space-2); }
+  .essay-footer a { color: var(--ds-text-muted); text-decoration-color: var(--ds-accent-2); }
+  .essay-footer__motto {
+    font-family: var(--ds-font-body);
+    font-style: italic;
+    color: var(--ds-text);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: header. Wordmark + four-link nav. -->
+    <header class="header" aria-label="Primary">
+      <span class="header__wordmark">Lorem Ipsum</span>
+      <nav class="header__nav" aria-label="Site">
+        <a href="#">home</a>
+        <a href="#">about</a>
+        <a href="#">moonbound</a>
+        <a href="#">shop</a>
+      </nav>
+    </header>
+
+    <!-- Section: essay-hero. Eyebrow dateline + italic Kyrios title + sans byline. -->
+    <header class="essay-hero" aria-label="Essay header">
+      <p class="essay-hero__eyebrow">
+        <span>From: Lorem Ipsum</span>
+        <span>To: the lab</span>
+        <span>Sent: May 2026</span>
+      </p>
+      <h1 class="essay-title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="essay-hero__byline">Lorem Ipsum, dolor sit, adipiscing elit</p>
+    </header>
+
+    <!-- Section: essay-body. Small-caps lead-in opener, asterism dividers, block-quote, marginalia. -->
+    <article class="essay-body">
+      <p>
+        <span class="lead-in">Have you heard</span> ipsum dolor sit amet,
+        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </p>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. <a href="#">In voluptate velit</a> esse cillum dolore eu fugiat nulla
+        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+        culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <hr class="asterism" aria-hidden="true"/>
+
+      <p>
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+        proident, sunt in culpa qui officia deserunt mollit anim.
+      </p>
+
+      <blockquote>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam.
+        </p>
+      </blockquote>
+
+      <p>
+        Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+        quae ab illo inventore veritatis et quasi architecto beatae vitae.
+      </p>
+
+      <aside class="marginalia" aria-label="Aside">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. A small
+        footnote-style aside that interrupts the column with a quieter
+        register; the bar on the left carries the affordance.
+      </aside>
+
+      <hr class="asterism" aria-hidden="true"/>
+
+      <h2>Lorem ipsum dolor sit</h2>
+      <p>
+        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut
+        fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem
+        sequi nesciunt.
+      </p>
+      <p>
+        Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+        consectetur adipisci velit, sed quia non numquam eius modi tempora
+        incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+      </p>
+    </article>
+
+    <!-- Section: byline-card. Portrait + name + one-line bio. -->
+    <section class="byline-card" aria-label="About the author">
+      <div class="byline-card__avatar" aria-hidden="true"></div>
+      <div>
+        <p class="byline-card__name">Lorem Ipsum</p>
+        <p class="byline-card__bio">Lorem ipsum dolor sit amet, a writer, printer, and manufacturer.</p>
+      </div>
+    </section>
+
+    <!-- Section: subscribe band. Newsletter signup at essay close. -->
+    <section class="subscribe" aria-label="Subscribe to the newsletter">
+      <p class="subscribe__title">Lorem ipsum dolor sit amet</p>
+      <p class="subscribe__prompt">
+        The best thing to do here is sign up for an email newsletter that
+        arrives at an irregular cadence, ipsum dolor sit amet.
+      </p>
+      <form class="subscribe__form" onsubmit="return false;">
+        <input class="subscribe__input" type="email" placeholder="you@lorem.ipsum" aria-label="Email address"/>
+        <button class="subscribe__button" type="submit">Subscribe</button>
+      </form>
+      <p class="subscribe__disclaimer">
+        Lorem ipsum dolor sit amet; this site doesn't collect any information
+        about you.
+      </p>
+    </section>
+
+    <!-- Section: essay-footer. Minimal: privacy line, colophon, motto. -->
+    <footer class="essay-footer" aria-label="Footer">
+      <p>This website doesn't collect any information about you.</p>
+      <p><a href="#">Colophon</a></p>
+      <p class="essay-footer__motto">Hony soyt qui mal pence</p>
+    </footer>
+
+  </div>
+</body>
+</html>

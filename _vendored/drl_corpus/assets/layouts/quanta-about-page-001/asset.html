@@ -1,0 +1,468 @@
+<!--
+  Asset: quanta-about-page-001
+  Class: layouts
+  Pattern: top-bar-nav, single-cta-hero, story-card-grid, mono-eyebrow, mega-footer
+  Inspired by: Quanta Magazine (quantamagazine.org/about)
+  Notes:
+    - About-page skeleton for an editorially independent nonprofit
+      science magazine: top nav, mission hero, editorial mission body,
+      masthead grid (staff / featured contributors / advisory board),
+      Simons Foundation founding statement, contact + careers, newsletter
+      band, mega-footer. The load-bearing block is the masthead grid; the
+      page reads as evidence-of-people rather than evidence-of-product.
+    - Section blocks are placeholders for downstream wholes. The
+      max-width container (1100px), 64-96px section padding rhythm,
+      hairline rules, lowercase violet kickers, and the three-tier
+      masthead grid (staff -> contributors -> advisory) are the
+      variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Tiempos (Headline + Text) and GT America are the licensed
+  Quanta families. Source Serif 4 substitutes for Tiempos and Inter
+  substitutes for GT America so this asset renders without a license.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  /* Reset just what this layout needs; the harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--ds-accent); text-decoration: none; }
+  a:hover { color: var(--ds-accent-2); text-decoration: underline; }
+
+  /*
+   * Page container. Quanta's about page runs narrower than a marketing
+   * page; 1100px reads as editorial. Gutter 24px mobile, 40px desktop.
+   * Inline values; not contract slots.
+   */
+  .page {
+    max-width: 1100px;            /* editorial measure container */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: 40px; }
+  }
+
+  /* Recurring section block. 64-96px padding-block; hairline into next. */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Mission hero gets the extra step. */
+  .section--hero {
+    padding-block: var(--ds-space-12);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-bg);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .slot__label {
+    display: block;
+    color: var(--ds-accent);
+    margin-bottom: var(--ds-space-2);
+    text-transform: lowercase;
+  }
+
+  /*
+   * Top-bar nav. Quanta runs a flush full-width primary bar with the
+   * wordmark left, a category link cluster center, a search affordance
+   * right. Hairline rule underneath; no glass blur. 64px desktop height.
+   */
+  .nav-wrap {
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+    height: 64px;                                        /* nav bar height; inline ornament */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Lowercase sans kicker. The Quanta inversion of all-caps. */
+  .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-transform: lowercase;
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Mission hero. Serif headline at 4xl on desktop, narrow measure,
+   * tagline beneath in body register. */
+  .hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+  }
+  @media (min-width: 768px) {
+    .hero__headline { font-size: var(--ds-text-4xl); }
+  }
+  .hero__tagline {
+    margin: var(--ds-space-6) 0 0;
+    max-width: 56ch;
+    color: var(--ds-text);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Mission body. Stacked subsection blocks, each with a serif heading
+   * and reading-width body. Two-column grid on desktop for the prose
+   * mission + standards subsections. */
+  .mission-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .mission-body {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: var(--ds-space-12);
+    }
+  }
+  .mission-body__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .mission-body__prose p { margin: 0 0 var(--ds-space-4); max-width: 66ch; }
+  .mission-body__aside {
+    border-left: 1px solid var(--ds-hairline);
+    padding-left: var(--ds-space-6);
+  }
+
+  /* Section heading shared style: lowercase violet kicker above serif title. */
+  .section-heading { margin-bottom: var(--ds-space-8); max-width: 60ch; }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Masthead portrait grids. Staff at 4-up on desktop; featured
+   * contributors at 6-up; advisory board at 5-up. Each tile is a
+   * square portrait + name + role caption underneath. */
+  .portrait-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 640px) { .portrait-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .portrait-grid--4 { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 1024px) { .portrait-grid--5 { grid-template-columns: repeat(5, 1fr); } }
+  @media (min-width: 1024px) { .portrait-grid--6 { grid-template-columns: repeat(6, 1fr); gap: var(--ds-space-5); } }
+
+  /* Subsection spacing inside masthead. */
+  .masthead-block + .masthead-block { margin-top: var(--ds-space-12); }
+
+  /* Founding-statement band: serif paragraph at slightly larger
+   * register, narrow measure, centered. The Simons Foundation tie. */
+  .founding {
+    max-width: 64ch;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .founding__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-style: italic;
+    font-weight: 400;
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Contact + careers band: two columns, each a kicker + heading +
+   * link cluster placeholder. */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr 1fr; gap: var(--ds-space-12); }
+  }
+
+  /* Newsletter band: lifted surface, centered headline + supporting
+   * line + email-field + submit-pill. The one place a pill radius
+   * appears on the page. */
+  .section--newsletter {
+    background: var(--ds-surface);
+    border-block: 1px solid var(--ds-hairline);
+  }
+  .newsletter {
+    max-width: 56ch;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .newsletter__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .newsletter__support {
+    margin: var(--ds-space-4) 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+  }
+  .newsletter__form {
+    display: flex;
+    gap: var(--ds-space-3);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Mega-footer band: full-width, hairline above, link columns in
+   * grid, social row beneath, copyright + Simons attribution centered. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: top-bar nav. Stands in for wholes/navigation/mega-menu-quanta-001. -->
+  <div class="nav-wrap">
+    <div class="page">
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem Ipsum</span>
+        <div class="slot" style="flex: 1; max-width: 520px;">
+          <span class="slot__label">subject-link-cluster</span>
+          Lorem, Ipsum, Dolor, Sit, Amet
+        </div>
+        <div class="slot" style="min-width: 120px;">
+          <span class="slot__label">search</span>
+          Lorem
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Section: mission hero. Lowercase kicker, serif headline, body tagline. -->
+    <section class="section section--hero" aria-label="Mission hero">
+      <span class="kicker">about</span>
+      <h1 class="hero__headline">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="hero__tagline">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </section>
+
+    <!-- Section: editorial mission body. Two-column on desktop: mission prose left, editorial-standards aside right. -->
+    <section class="section" aria-label="Editorial mission">
+      <div class="section-heading">
+        <span class="kicker">our mission</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="mission-body">
+        <div class="mission-body__prose">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit
+            esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+            occaecat cupidatat non proident, sunt in culpa qui officia
+            deserunt mollit anim id est laborum.</p>
+        </div>
+        <aside class="mission-body__aside">
+          <span class="kicker">editorial standards</span>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Sed do eiusmod tempor incididunt ut labore et dolore magna
+            aliqua.</p>
+          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: masthead. Three-tier grid: Staff (4-up), Featured Contributors (6-up), Advisory Board (5-up). -->
+    <section class="section" aria-label="Masthead">
+      <div class="section-heading">
+        <span class="kicker">masthead</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+
+      <div class="masthead-block">
+        <span class="kicker">staff</span>
+        <div class="portrait-grid portrait-grid--4">
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + name + role</span>Lorem</div>
+        </div>
+      </div>
+
+      <div class="masthead-block">
+        <span class="kicker">featured contributors</span>
+        <div class="portrait-grid portrait-grid--6">
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">thumb + name</span>Lorem</div>
+        </div>
+      </div>
+
+      <div class="masthead-block">
+        <span class="kicker">advisory board</span>
+        <div class="portrait-grid portrait-grid--5">
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+          <div class="slot" style="aspect-ratio: 1 / 1;"><span class="slot__label">portrait + affiliation</span>Lorem</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: founding statement. Italic serif paragraph centered; the Simons Foundation tie. -->
+    <section class="section" aria-label="Founding statement">
+      <div class="founding">
+        <span class="kicker">our founders</span>
+        <p class="founding__body">Lorem ipsum dolor sit amet, consectetur
+          adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+          dolore magna aliqua quis nostrud exercitation ullamco laboris.</p>
+      </div>
+    </section>
+
+    <!-- Section: contact + careers. Two-column with kicker + heading + link cluster each. -->
+    <section class="section" aria-label="Contact and careers">
+      <div class="contact-grid">
+        <div>
+          <span class="kicker">get in touch</span>
+          <h2 class="section-heading__title">Lorem ipsum dolor.</h2>
+          <div class="slot" style="margin-top: var(--ds-space-5);">
+            <span class="slot__label">contact-link-cluster</span>
+            press / corrections / general
+          </div>
+        </div>
+        <div>
+          <span class="kicker">join us</span>
+          <h2 class="section-heading__title">Lorem ipsum dolor sit.</h2>
+          <div class="slot" style="margin-top: var(--ds-space-5);">
+            <span class="slot__label">careers-link-cluster</span>
+            full-time / fellowship / freelance
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Section: newsletter band. Lifted surface; full-width. -->
+  <section class="section section--newsletter" aria-label="Newsletter">
+    <div class="page">
+      <div class="newsletter">
+        <span class="kicker">the quanta newsletter</span>
+        <h2 class="newsletter__headline">Lorem ipsum dolor sit amet consectetur.</h2>
+        <p class="newsletter__support">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div class="newsletter__form">
+          <div class="slot" style="flex: 1; min-width: 220px;">
+            <span class="slot__label">email-input</span>
+            you@lorem.test
+          </div>
+          <div class="slot" style="min-width: 140px;">
+            <span class="slot__label">submit (pill)</span>
+            Subscribe
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer band; full-width, outside .page container. Stands in for wholes/footers/quanta-footer-*. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (link columns + social row + simons attribution + copyright)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

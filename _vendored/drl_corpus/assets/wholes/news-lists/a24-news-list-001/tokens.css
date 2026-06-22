@@ -1,0 +1,131 @@
+/*
+ * a24-news-list-001 tokens
+ *
+ * News-list whole. Composes the A24 cinema-register atom set:
+ *   - color-groups/a24-cinematic-palette-001 (cinema-black field, paper-white type)
+ *   - type-pairings/a24-cinematic-pair-001   (humanist sans display + mono kicker)
+ *   - buttons/a24-cinematic-001              (inverse white-on-black slab CTA)
+ *
+ * Native context: a24films.com/notes. The page is A24's editorial index
+ * (articles, zines, podcasts). Cards are a flat grid of thumb + kicker
+ * + sans title + Read More / Listen Now CTA. No card chrome, no date
+ * shown on the card face, no author byline on the card face. A
+ * horizontal filter bar (All / Articles / Zines / Podcast) sits above
+ * the grid; a "Show More" affordance pages the list.
+ *
+ * Tokens mirror the constituent A24 atoms so the page stays self-
+ * consistent with the rest of the system. Per AGENT_BRIEFING: variable
+ * names track the contract slots; per-site builds override these names
+ * in one place.
+ *
+ * Provenance: a24films.com/notes (live) plus the /notes?category=articles
+ * filtered view, inspected via WebFetch. Chrome MCP refuses the
+ * a24films.com domain family. Score B (webfetch_html_inspection),
+ * matching the precedent set by the A24 hero, button, palette, and
+ * type-pairing atoms.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cinema-black field with paper-white type. No chromatic accent; the
+   * inverse "accent" is the pure-white slab reserved for primary CTAs. */
+  --ds-bg:           #0A0908;   /* Cinema black; warm-tinted near-black, not pure #000. */
+  --ds-surface:      #14110F;   /* Card-on-dark; the thumb tile container. */
+  --ds-surface-2:    #1E1A17;   /* Hover lift on a row. */
+  --ds-text:         #F5F1EA;   /* Paper-white reading color on the cinema field. */
+  --ds-text-muted:   #9C968A;   /* Kicker labels, secondary metadata. */
+  --ds-text-strong:  #FFFFFF;   /* Card headlines that need the lift. */
+  --ds-border:       #2A2522;   /* Hairline on the thumb frame. */
+  --ds-hairline:     #1A1714;   /* Filter-bar underline, section dividers. */
+  --ds-accent:       #FFFFFF;   /* Inverse slab: pure paper on the black field. */
+  --ds-accent-2:     #F5F1EA;   /* Warm hover step for the inverse CTA. */
+  --ds-success:      #4A8A5C;   /* Reserved; cinema palette refuses chromatic UI. */
+  --ds-warning:      #C49449;   /* Reserved. */
+  --ds-error:        #B24A3F;   /* Reserved. */
+  --ds-info:         #F5F1EA;   /* Info collapses to text. */
+  --ds-focus-ring:   #F5F1EA;   /* Paper outline against the dark field. */
+
+  /* ---------- Type families ----------
+   * Inter / Inter Tight stand in as open-licensed analogs for A24's
+   * GT America / Söhne register. Tiempos-class serif is reserved for
+   * the rare italic accent. */
+  --ds-font-display: "Inter Tight", "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", "GT America", "Söhne", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "Söhne Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ----------
+   * Card titles sit snug (1.18) so a two-line headline still reads as
+   * a title-card, not a paragraph. */
+  --ds-leading-tight:   1.04;
+  --ds-leading-snug:    1.18;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Mono kicker (category label) leans wider (0.18em) for cinema
+   * credits register; sans titles take a light negative tracking at
+   * larger sizes. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.18em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp corners: the thumb sits at xs (2px), matching the A24
+   * button's editorial slab register. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Cinema field refuses elevation; depth comes from value contrast.
+   * Slots present for contract conformance. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.6);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.7);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.8);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

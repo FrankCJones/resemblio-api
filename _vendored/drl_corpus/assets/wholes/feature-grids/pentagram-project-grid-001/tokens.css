@@ -1,0 +1,136 @@
+/*
+ * pentagram-project-grid-001 tokens
+ *
+ * Pentagram's project-grid is the primary surface of the studio site: the
+ * homepage opens with it, and /work is just a longer version of the same
+ * grid. Full-bleed tiles dominate the viewport; each tile carries a hero
+ * image (varied aspect, so the column reads as rhythm rather than a tray
+ * of identical thumbnails), and a hairline-ruled caption strip beneath
+ * with client name, project title, and discipline tag, occasionally
+ * punctuated by a saturated red dot.
+ *
+ * Tokens reuse the documented Pentagram palette from
+ * color-groups/swiss-red-rule-001 (cream paper, ink black, Pentagram red
+ * #E2231A) and the Neue Haas Grotesk family stack the studio has run for
+ * over a decade.
+ *
+ * Source: WebFetch HTML inspection of pentagram.com and pentagram.com/work
+ * on 2026-05-20. Both pages confirmed live; project list extracted (12
+ * featured tiles on homepage, 40+ on /work) showing the client + project
+ * title + discipline tag caption pattern. Computed style values are not
+ * accessible via WebFetch; type and color values mirror the established
+ * Pentagram color-group at score B per the rubric.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Cream paper, dense ink, Pentagram red as 1% punctuation. The red dot
+   * in the caption is the only chromatic event in the entire grid - it
+   * marks featured or active state on a small subset of tiles.
+   */
+  --ds-bg:           #FAFAF7;   /* Cream-paper page; the Swiss-poster surface the studio has run for years. */
+  --ds-surface:      #FFFFFF;   /* Tile image background fallback; one tick brighter than the page. */
+  --ds-surface-2:    #F2F2EE;   /* Sunken nested surface; reserved. */
+  --ds-text:         #111111;   /* Near-black ink; caption client and title color. */
+  --ds-text-muted:   #6B6B6B;   /* Mid-gray for discipline tags beneath the project title. */
+  --ds-text-strong:  #000000;   /* Pure black for the rare emphasized moment. */
+  --ds-border:       #111111;   /* Full-ink border for the structural rules. */
+  --ds-hairline:     #1A1A1A;   /* Caption hairline rule - drawn at 1px in near-ink so it reads as deliberate, not decorative. */
+  --ds-accent:       #E2231A;   /* Pentagram red; the dot accent on featured tiles. The single chromatic event. */
+  --ds-accent-2:     #B91C16;   /* Deeper red for pressed and hover. */
+  --ds-success:      #1F7A4D;   /* Reserved; not used in the grid. */
+  --ds-warning:      #C68A14;   /* Reserved. */
+  --ds-error:        #C0211A;   /* Distinct red kept separable from the brand red. */
+  --ds-info:         #1F4FA8;   /* Reserved single blue note. */
+  --ds-focus-ring:   #E2231A;   /* Accent red at full saturation; red ring on cream is unambiguous. */
+
+  /* ---------- Type families ----------
+   * Pentagram's marketing identity is Neue Haas Grotesk - both Display
+   * (for project titles) and Text (for captions and discipline tags).
+   * Mono is reserved; the studio site uses no mono.
+   */
+  --ds-font-display: "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Neue Haas Grotesk Text Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Captions sit modestly small. The hero image carries the visual mass;
+   * the caption is information, not display.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   11px;
+  --ds-text-sm:   14px;   /* Discipline tag size. */
+  --ds-text-base: 16px;   /* Caption client + title size. */
+  --ds-text-lg:   20px;
+  --ds-text-xl:   26px;
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  128px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;   /* Caption title leading. */
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Tags use wider tracking to read as labels rather than copy.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px grid. Tiles sit close together; the grid is dense by design.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;   /* Inter-tile gap. */
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Zero radius. The studio's hard-edge discipline is non-negotiable.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;   /* Reserved for the red dot accent. */
+
+  /* ---------- Shadows ----------
+   * No elevation. The grid is print-flat.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   none;
+  --ds-shadow-md:   none;
+  --ds-shadow-lg:   none;
+  --ds-shadow-2xl:  none;
+
+  /* ---------- Motion ----------
+   * Hover lifts caption color from muted to ink and reveals an arrow on
+   * the title. Quick, restrained.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

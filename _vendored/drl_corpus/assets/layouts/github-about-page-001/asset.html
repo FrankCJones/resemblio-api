@@ -1,0 +1,435 @@
+<!--
+  Asset: github-about-page-001
+  Class: layouts
+  Pattern: single-cta-hero, story-card-grid, mega-footer
+  Inspired by: GitHub (github.com/about)
+  Notes:
+    - About-page skeleton: nav, dark hero with mission line and stats,
+      mission narrative, four-up stats band, leadership grid, careers
+      CTA, mega-footer. The signature move is the near-black dark hero
+      sitting on the otherwise light canvas - the band carries the
+      page's load-bearing mission moment.
+    - Section blocks are placeholders for downstream wholes; the page
+      container width, gutter, padding rhythm, and dark-band-on-light-
+      canvas inversion are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Mona Sans is GitHub's licensed variable display sans
+  (publicly released as open source by GitHub Next). System fallbacks
+  approximate the register when the licensed face is unavailable.
+-->
+<style>
+  /* Reset just what the layout needs. The harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1280px, gutter 16px mobile / 32px desktop;
+   * matches GitHub's marketing container measurement. Inline values; not
+   * contract slots.
+   */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-6); }
+  }
+
+  /* Section block. 64px desktop / 48px mobile padding-block on light
+   * sections; hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-10); }
+  }
+
+  /*
+   * Hero band. Full-bleed dark surface (#0D1117); breaks out of the
+   * .page container by sitting inside its own full-width wrapper. This
+   * inversion is the signature GitHub about-page move. Inline negative
+   * margin trick keeps the band edge-to-edge while content stays gridded.
+   */
+  .hero-band {
+    background: var(--ds-surface-2);
+    color: #FFFFFF;
+    padding-block: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .hero-band { padding-block: var(--ds-space-16); }
+  }
+  .hero__statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: #FFFFFF;
+    margin: 0;
+    max-width: 18ch;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .hero__statement { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-5) 0 var(--ds-space-8);
+    max-width: 52ch;
+    color: rgba(255, 255, 255, 0.7);   /* muted-on-dark; one-off inline, no contract slot */
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .hero__cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-12);
+  }
+  /* Stats band lives at the bottom of the hero on dark surface. */
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-6) var(--ds-space-5);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);  /* hairline-on-dark; inline ornament */
+    padding-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .hero__stats { grid-template-columns: repeat(4, 1fr); }
+  }
+  .stat__numeral {
+    display: block;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: #FFFFFF;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .stat__numeral { font-size: var(--ds-text-4xl); }
+  }
+  .stat__label {
+    display: block;
+    margin-top: var(--ds-space-2);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--ds-text-sm);
+  }
+
+  /* Placeholder slot styling. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Nav. Flush-top, sits on the dark hero band on this page so its
+   * tokens invert. Border-bottom is a faint dark-on-dark hairline. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);  /* dark-band hairline */
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: #FFFFFF;
+  }
+
+  /* Section heading shared style: small kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* Mission narrative section: two-column on desktop (heading left,
+   * prose right), single column on mobile. Hairline below. */
+  .mission-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+    padding-bottom: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 900px) {
+    .mission-grid { grid-template-columns: 1fr 1.4fr; gap: var(--ds-space-12); }
+  }
+  .mission__prose {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    max-width: 56ch;
+  }
+
+  /* Leadership grid: four-column on desktop, two on tablet, one on
+   * mobile. Each cell is a leader card placeholder. */
+  .leadership-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 640px) { .leadership-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .leadership-grid { grid-template-columns: repeat(4, 1fr); } }
+  .leader-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+  }
+
+  /* Careers CTA: full-width tinted band, centered content. */
+  .section--cta {
+    text-align: center;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    margin-block: var(--ds-space-10);
+  }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 28ch;
+    font-weight: 600;
+  }
+  .cta__support {
+    margin: var(--ds-space-4) auto 0;
+    max-width: 48ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* CTA pill placeholders. Green primary, hairline secondary; live values
+   * inherited from Primer success-emphasis. */
+  .cta-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 160px;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-normal);
+    border: 1px solid transparent;
+  }
+  .cta-pill--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+  }
+  .cta-pill--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border-color: var(--ds-border);
+  }
+  .cta-pill--on-dark.cta-pill--secondary {
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.3);  /* hairline-on-dark for ghost button */
+  }
+
+  /* Footer band. Full-width dark surface (GitHub's signature footer
+   * is white-on-black with mega-columnar links). */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    background: var(--ds-surface-2);
+    color: rgba(255, 255, 255, 0.7);
+    padding-block: var(--ds-space-10);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Section: dark hero band. Full-width; nav sits on top of the band. -->
+  <header class="hero-band" aria-label="Hero">
+    <div class="page">
+
+      <!-- Nav. Stands in for wholes/navigation/github-nav-001. -->
+      <nav class="nav" aria-label="Primary">
+        <span class="nav__wordmark">Lorem</span>
+        <div class="slot" style="flex: 1; max-width: 480px; background: transparent; border-color: rgba(255,255,255,0.16); color: rgba(255,255,255,0.7);">
+          <span class="slot__label" style="color: #FFFFFF;">nav-link-cluster</span>
+          Lorem ipsum dolor sit amet
+        </div>
+        <div class="slot" style="min-width: 140px; background: transparent; border-color: rgba(255,255,255,0.16); color: rgba(255,255,255,0.7);">
+          <span class="slot__label" style="color: #FFFFFF;">sign-in</span>
+          Lorem ipsum
+        </div>
+      </nav>
+
+      <!-- Hero content: mission line, support copy, dual CTA, stats band. -->
+      <div style="padding-top: var(--ds-space-10);">
+        <h1 class="hero__statement">Lorem ipsum dolor sit amet consectetur.</h1>
+        <p class="hero__support">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua ut
+          enim ad minim veniam quis nostrud exercitation.
+        </p>
+        <div class="hero__cta-row">
+          <a href="#" class="cta-pill cta-pill--primary">Lorem ipsum</a>
+          <a href="#" class="cta-pill cta-pill--secondary cta-pill--on-dark">Lorem ipsum</a>
+        </div>
+
+        <div class="hero__stats" aria-label="Key statistics">
+          <div>
+            <span class="stat__numeral">000M+</span>
+            <span class="stat__label">Lorem ipsum dolor</span>
+          </div>
+          <div>
+            <span class="stat__numeral">0M+</span>
+            <span class="stat__label">Lorem ipsum sit amet</span>
+          </div>
+          <div>
+            <span class="stat__numeral">000M+</span>
+            <span class="stat__label">Lorem consectetur</span>
+          </div>
+          <div>
+            <span class="stat__numeral">00%</span>
+            <span class="stat__label">Lorem adipiscing elit</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+    <div class="page">
+
+      <!-- Section: mission narrative. Two-column heading + prose. -->
+      <section class="section" aria-label="Mission">
+        <div class="mission-grid">
+          <div class="section-heading">
+            <span class="section-heading__kicker">01 — Our mission</span>
+            <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+          </div>
+          <div class="mission__prose">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+              do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <p>
+              Duis aute irure dolor in reprehenderit in voluptate velit esse
+              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+              cupidatat non proident, sunt in culpa qui officia deserunt.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: leadership grid. Four-up leader cards. -->
+      <section class="section" aria-label="Leadership">
+        <div class="section-heading">
+          <span class="section-heading__kicker">02 — Leadership</span>
+          <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+        </div>
+        <div class="leadership-grid">
+          <div class="leader-card">
+            <div class="slot" style="aspect-ratio: 1 / 1; margin-bottom: var(--ds-space-4);"><span class="slot__label">portrait</span>Lorem</div>
+            <strong style="display: block; color: var(--ds-text-strong); font-size: var(--ds-text-base);">Lorem Ipsum</strong>
+            <span style="color: var(--ds-text-muted); font-size: var(--ds-text-sm);">Lorem dolor sit</span>
+          </div>
+          <div class="leader-card">
+            <div class="slot" style="aspect-ratio: 1 / 1; margin-bottom: var(--ds-space-4);"><span class="slot__label">portrait</span>Lorem</div>
+            <strong style="display: block; color: var(--ds-text-strong); font-size: var(--ds-text-base);">Lorem Ipsum</strong>
+            <span style="color: var(--ds-text-muted); font-size: var(--ds-text-sm);">Lorem dolor sit</span>
+          </div>
+          <div class="leader-card">
+            <div class="slot" style="aspect-ratio: 1 / 1; margin-bottom: var(--ds-space-4);"><span class="slot__label">portrait</span>Lorem</div>
+            <strong style="display: block; color: var(--ds-text-strong); font-size: var(--ds-text-base);">Lorem Ipsum</strong>
+            <span style="color: var(--ds-text-muted); font-size: var(--ds-text-sm);">Lorem dolor sit</span>
+          </div>
+          <div class="leader-card">
+            <div class="slot" style="aspect-ratio: 1 / 1; margin-bottom: var(--ds-space-4);"><span class="slot__label">portrait</span>Lorem</div>
+            <strong style="display: block; color: var(--ds-text-strong); font-size: var(--ds-text-base);">Lorem Ipsum</strong>
+            <span style="color: var(--ds-text-muted); font-size: var(--ds-text-sm);">Lorem dolor sit</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: careers CTA. Tinted band, centered, dual buttons. -->
+      <section class="section--cta" aria-label="Careers call to action">
+        <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+        <p class="cta__support">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore.
+        </p>
+        <div class="cta__button-wrap">
+          <a href="#" class="cta-pill cta-pill--primary">Lorem careers</a>
+          <a href="#" class="cta-pill cta-pill--secondary">See lorem</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Section: footer. Dark mega-footer. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px; background: transparent; border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7);">
+        <span class="slot__label" style="color: #FFFFFF;">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

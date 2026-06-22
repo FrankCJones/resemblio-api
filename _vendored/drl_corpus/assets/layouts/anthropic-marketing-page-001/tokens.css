@@ -1,0 +1,93 @@
+/*
+ * anthropic-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the Anthropic homepage. Tokens calibrated
+ * to the same warm paper, serif-wordmark, ink-CTA register used by the
+ * anthropic-nav-001 and other system-tagged Anthropic assets so the
+ * composed page renders consistently. WebFetch did not expose computed
+ * styles from the live document; values here are mapped to the closest
+ * contract slot from the observed character (Söhne / custom serif
+ * wordmark, warm cream surface, near-black ink, restrained editorial AI
+ * frontier voice) rather than copied verbatim from devtools.
+ *
+ * The slots that actually carry this layout are --ds-bg (page surface),
+ * --ds-text (ink), --ds-hairline (between-section rules), --ds-space-12
+ * and --ds-space-16 (the recurring section padding rhythm), and the
+ * type-display family (the hero statement face). Other slots fill the
+ * contract for downstream override.
+ */
+:root {
+  /* Colors. Warm off-white page, near-black ink, restrained chrome.
+   * No chromatic accent in the layout itself; clay accent reserved for
+   * a single mid-page feature highlight. */
+  --ds-bg:           #F5F0E8;   /* Warm paper page surface; carries the entire vertical column. */
+  --ds-surface:      #FFFFFF;   /* Raised surface for inline cards (Latest Releases tiles). */
+  --ds-surface-2:    #ECE5D8;   /* Second-level surface; hover cells, mission band tinted strip. */
+  --ds-text:         #1A1A1A;   /* Near-black ink for body and section headings. */
+  --ds-text-muted:   #6E6A60;   /* Secondary text; release dates, byline metadata. */
+  --ds-text-strong:  #0A0A0A;   /* Wordmark, hero statement, mission line. */
+  --ds-border:       #D6CFC0;   /* Card and feature-block edges. */
+  --ds-hairline:     #E4DDCB;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #1A1A1A;   /* Primary CTA fill; ink-on-paper. */
+  --ds-accent-2:     #C15F3C;   /* Anthropic clay / burst hue; single highlight per page. */
+  --ds-success:      #3F6E47;
+  --ds-warning:      #8A6A1F;
+  --ds-error:        #8E2D24;
+  --ds-info:         #1A1A1A;
+  --ds-focus-ring:   #1A1A1A;
+
+  /* Type. Custom serif display register (the Anthropic wordmark and
+   * hero statement) paired with a humanist sans for nav, cards, body.
+   * Mono reserved for technical labels. */
+  --ds-font-display: "Tiempos Headline", "Source Serif Pro", Georgia, serif;
+  --ds-font-body:    "Styrene B", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Tiempos Headline", "Source Serif Pro", serif;
+
+  /* Type scale. Hero statement sits at 5xl (72px) on desktop, releases
+   * heading at 2xl, body at base. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 42px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.08;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.16em;
+
+  /* Spacing. The page rhythm is 96px between sections on desktop
+   * (--ds-space-12), tightening to 64px (--ds-space-10) at tablet and
+   * 48px (--ds-space-8) on mobile. Section internal padding uses
+   * --ds-space-16 (128px) on the hero, --ds-space-12 elsewhere. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Page is flat. Cards lift with a soft single-layer shadow. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:  0 8px 24px rgba(0,0,0,0.08);
+  --ds-shadow-lg:  0 16px 40px rgba(0,0,0,0.12);
+  --ds-shadow-2xl: 0 32px 64px rgba(0,0,0,0.16);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

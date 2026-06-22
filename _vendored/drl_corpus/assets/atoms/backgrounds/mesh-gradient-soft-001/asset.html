@@ -1,0 +1,71 @@
+<!--
+  Asset: mesh-gradient-soft-001
+  Class: backgrounds
+  Pattern: mesh-gradient-bg
+  Inspired by: Linear, Stripe
+  Notes:
+    - Two soft indigo blobs over near-black surface. The blobs use the
+      accent and accent-2 token colors so swapping palettes recolors the
+      mesh automatically.
+    - Inline ornament: the four radial-gradient stops (positions and color
+      stops) are asset-specific character. Each is commented in place;
+      these are not contract slots because each blob's exact placement is
+      what defines this particular mesh.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mesh-gradient-soft-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    /* The mesh itself. Three layers composited:
+     *   1. A soft indigo blob in the upper-left, derived from --ds-accent.
+     *   2. A softer indigo-violet blob in the lower-right, from --ds-accent-2.
+     *   3. The base background color (--ds-bg) underneath.
+     *
+     * The position values (25% 20%, 75% 80%) and the radial sizes (60% 50%)
+     * are inline ornament: this mesh's character is exactly these placements.
+     * Moving them changes the asset.
+     */
+    background:
+      radial-gradient(60% 50% at 25% 20%,
+        color-mix(in oklab, var(--ds-accent) 35%, transparent),
+        transparent 70%),
+      radial-gradient(70% 60% at 75% 80%,
+        color-mix(in oklab, var(--ds-accent-2) 28%, transparent),
+        transparent 75%),
+      var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-mono);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Asset label so the standalone view explains itself. */
+  .label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(20, 20, 20, 0.4);   /* Inline ornament: glassy backdrop for the label only. */
+    backdrop-filter: blur(8px);
+  }
+</style>
+</head>
+<body>
+  <span class="label">mesh-gradient-soft-001 · background atom</span>
+</body>
+</html>

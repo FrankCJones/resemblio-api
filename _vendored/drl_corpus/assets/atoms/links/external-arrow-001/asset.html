@@ -1,0 +1,122 @@
+<!--
+  Asset: external-arrow-001
+  Class: links
+  Pattern: (none in TAXONOMY; external-arrow link)
+  Inspired by: Resend
+  Notes:
+    - Inline link with trailing diagonal arrow indicating outbound navigation.
+    - Arrow translates up-and-right on hover; SVG geometry is inline character, not a token.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>external-arrow-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--ds-space-10);
+    padding: var(--ds-space-8);
+  }
+  .ext {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ext__arrow {
+    display: inline-flex;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ext__arrow svg {
+    width: 14px;   /* inline: arrow sizing matched to type cap-height, not a spacing slot */
+    height: 14px;
+  }
+  .ext:hover,
+  .ext.is-hover {
+    color: var(--ds-text-strong);
+  }
+  .ext:hover .ext__arrow,
+  .ext.is-hover .ext__arrow {
+    /* Inline: diagonal translate signals outbound; magnitude is character */
+    transform: translate(2px, -2px);
+  }
+  .ext:focus-visible,
+  .ext.is-focus {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-3);
+    text-align: center;
+  }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  @media (prefers-reduced-motion: reduce) {
+    .ext, .ext__arrow { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="col">
+    <span class="state-label">rest</span>
+    <a class="ext" href="#" rel="noopener" target="_blank">
+      Lorem ipsum dolor
+      <span class="ext__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="9 7 17 7 17 15"/>
+        </svg>
+      </span>
+    </a>
+  </div>
+  <div class="col">
+    <span class="state-label">hover</span>
+    <a class="ext is-hover" href="#" rel="noopener" target="_blank">
+      Sit amet consectetur
+      <span class="ext__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="9 7 17 7 17 15"/>
+        </svg>
+      </span>
+    </a>
+  </div>
+  <div class="col">
+    <span class="state-label">focus</span>
+    <a class="ext is-focus" href="#" rel="noopener" target="_blank">
+      Adipiscing elit sed
+      <span class="ext__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="9 7 17 7 17 15"/>
+        </svg>
+      </span>
+    </a>
+  </div>
+</body>
+</html>

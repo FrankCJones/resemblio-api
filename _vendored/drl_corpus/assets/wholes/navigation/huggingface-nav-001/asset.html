@@ -1,0 +1,323 @@
+<!--
+  Asset: huggingface-nav-001
+  Class: navigation (whole)
+  Pattern: flush-top-nav
+  Inspired by: Hugging Face
+  Notes:
+    - Flush-top white-paper bar with the signature emoji-mark wordmark on the
+      left, a wide centered search input with placeholder typeahead, a single
+      row of top-level destinations (Models, Datasets, Spaces, Buckets, Docs,
+      Enterprise, Pricing), and a right cluster with Log In text plus a Sign Up
+      ghost button. Hairline border at the foot. No shadow at rest.
+    - Variable vs inline: colors, type, spacing, radii, and motion all come
+      from the contract. Inline ornaments: the 64 px bar height (a layout
+      decision specific to flush-top register), the emoji wordmark face as a
+      yellow rounded square stand-in (the actual hugging-face emoji ships as
+      an SVG; the asset captures the register, not the licensed glyph), and
+      the search input's 360 px max-width (specific to this layout).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>huggingface-nav-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Sans 3 plus Source Code Pro carry the Hugging Face community /
+     academic register. Both are Adobe open-source releases, a small
+     open-source-as-the-thesis flag in the type pairing itself. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    font-size: var(--ds-text-base);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Flush-top bar. Pinned to the top edge, hairline rule at the foot,
+   * flat against the page. */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: 64 px bar height is a layout decision for this
+     * flush register, not a contract value. */
+    height: 64px;
+  }
+
+  .nav__inner {
+    max-width: 1408px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--ds-space-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Wordmark. The hug emoji glyph (rendered here as a yellow rounded
+   * square stand-in) sits left of the words "Hugging Face" in Source
+   * Sans 3 Semibold. The emoji is the brand; the wordmark labels it. */
+  .nav__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    line-height: 1;
+  }
+  .nav__emoji {
+    /* Inline ornament: stand-in for the licensed hugging-face emoji
+     * glyph. Captures the register (warm-yellow round face) without
+     * shipping the asset. */
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+    position: relative;
+    flex: 0 0 24px;
+  }
+  .nav__emoji::before,
+  .nav__emoji::after {
+    content: "";
+    position: absolute;
+    background: var(--ds-text-strong);
+    border-radius: var(--ds-radius-full);
+    width: 3px;
+    height: 3px;
+    top: 8px;
+  }
+  .nav__emoji::before { left: 6px; }
+  .nav__emoji::after  { right: 6px; }
+
+  /* Center cluster: search input plus the primary destination links.
+   * Search anchors the left of this cluster; the link row sits to its
+   * right, both on a single row at desktop. */
+  .nav__center {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    min-width: 0;
+  }
+
+  /* Search input. Filled grey rectangle with a small radius (HF uses a
+   * 6px sub-pill, not a fully rounded pill). Placeholder reads as a
+   * typeahead hint across models / datasets / Spaces. */
+  .nav__search {
+    position: relative;
+    flex: 1 1 auto;
+    /* Inline ornament: max-width specific to this layout's center
+     * cluster width. */
+    max-width: 360px;
+  }
+  .nav__search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--ds-text-muted);
+    pointer-events: none;
+  }
+  .nav__search-input {
+    width: 100%;
+    height: 36px;
+    padding: 0 var(--ds-space-3) 0 32px;
+    background: var(--ds-surface-2);
+    border: 1px solid transparent;
+    border-radius: var(--ds-radius-sm);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: 1;
+    outline: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__search-input::placeholder { color: var(--ds-text-muted); }
+  .nav__search-input:hover { background: #ECEEF1; /* one-off hover wash, slightly darker than surface-2 */ }
+  .nav__search-input:focus-visible {
+    background: var(--ds-surface);
+    border-color: var(--ds-border);
+    box-shadow: 0 0 0 3px rgba(255, 210, 30, 0.35); /* yellow focus halo, inline because it is a tinted shadow */
+  }
+
+  /* Primary nav link cluster. Single row, low-padding pills with a hover
+   * wash. Resting state in muted ink; hovered / current in strong ink. */
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--ds-radius-sm);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__link:hover,
+  .nav__link[aria-current="page"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+  }
+  .nav__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* "new" tag beside Buckets. Mono, small caps, sits in a hairline cell. */
+  .nav__tag {
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-text-muted);
+    padding: 2px 6px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xs);
+    margin-left: 6px;
+    line-height: 1;
+  }
+
+  /* Right cluster: Log In text link, Sign Up ghost button. HF keeps Sign
+   * Up as an outlined button rather than a filled CTA, the inverse of
+   * the dev-tool register. */
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .nav__signin {
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-2) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signin:hover { color: var(--ds-text-strong); }
+
+  .nav__signup {
+    appearance: none;
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-border);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: 6px var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__signup:hover {
+    border-color: var(--ds-text);
+    background: var(--ds-surface-2);
+  }
+  .nav__signup:focus-visible,
+  .nav__signin:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Page stub so the bar sits over something. */
+  .page-stub {
+    max-width: 1248px;
+    margin: var(--ds-space-12) auto;
+    padding: 0 var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  @media (max-width: 1000px) {
+    .nav__links { display: none; }
+    .nav__center { justify-content: flex-start; }
+  }
+  @media (max-width: 720px) {
+    .nav__search, .nav__signin { display: none; }
+    .nav__inner { gap: var(--ds-space-3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__link, .nav__signup, .nav__signin, .nav__search-input { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Home">
+        <span class="nav__emoji" aria-hidden="true"></span>
+        <span>Lorem Ipsum</span>
+      </a>
+
+      <div class="nav__center">
+        <form class="nav__search" role="search" onsubmit="return false;">
+          <svg class="nav__search-icon" viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M11 11 L14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input class="nav__search-input" type="search" placeholder="Lorem ipsum, dolor, sit amet..." aria-label="Search lorem ipsum"/>
+        </form>
+
+        <ul class="nav__links">
+          <li><a class="nav__link" href="#" aria-current="page">Lorem</a></li>
+          <li><a class="nav__link" href="#">Ipsum</a></li>
+          <li><a class="nav__link" href="#">Dolor</a></li>
+          <li><a class="nav__link" href="#">Sit<span class="nav__tag">new</span></a></li>
+          <li><a class="nav__link" href="#">Amet</a></li>
+          <li><a class="nav__link" href="#">Consectetur</a></li>
+          <li><a class="nav__link" href="#">Adipiscing</a></li>
+        </ul>
+      </div>
+
+      <div class="nav__actions">
+        <a class="nav__signin" href="#">Log In</a>
+        <a class="nav__signup" href="#">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-stub">
+    <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, dolor mauris vehicula augue, et tincidunt sapien justo non magna.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </main>
+</body>
+</html>

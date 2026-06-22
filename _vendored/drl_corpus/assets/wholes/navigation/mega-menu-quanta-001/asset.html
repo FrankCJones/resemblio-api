@@ -1,0 +1,469 @@
+<!--
+  Asset: mega-menu-quanta-001
+  Class: navigation (whole)
+  Pattern: mega-menu, flush-top-nav
+  Inspired by: Quanta Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (paper-and-ink palette context)
+    - type-pairings/quanta-science-pair-001   (three-family editorial system)
+    - wordmarks/serif-italic-001              (serif italic wordmark register)
+    - kickers/quanta-section-001              (lowercase violet topic links)
+    - headings/editorial-newspaper-001        (serif subject anchor register)
+    - links/nav-link-underline-001            (secondary-row format anchor pattern)
+    - dividers/hairline-rule-001              (hairline between primary and secondary rows)
+    - inputs/search-with-icon-001             (search affordance pattern)
+    - buttons/ghost-bordered-001              (subscribe affordance pattern)
+  Notes:
+    - The bar's structure is split-rank: serif primary anchors above, sans
+      format anchors below, separated by a hairline. The Topics tab opens a
+      mega-menu panel containing the inversion-of-eyebrow lowercase topic
+      links that are Quanta's signature category surface.
+    - Variable: the violet, the family stack, the type sizes. Inline ornament:
+      the panel's drop-shadow recipe and the chevron glyph next to the Topics
+      label.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mega-menu-quanta-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Source Serif 4 substitutes for Tiempos; Inter for GT America. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    /* Demo backdrop: the nav sits at the top of a long page surface.
+     * The placeholder canvas below the nav is muted so attention reads
+     * the bar, not the body. */
+  }
+
+  /* ---------------- Nav shell ----------------
+   * Two ranks stacked vertically. The bar spans full width with a
+   * paper background; the secondary row sits below a single hairline.
+   */
+  .nav {
+    position: relative;
+    background: var(--ds-bg);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav__row {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-4) var(--ds-space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-6);
+  }
+  .nav__row--primary {
+    padding-block: var(--ds-space-5);
+  }
+  .nav__row--secondary {
+    padding-block: var(--ds-space-3);
+    border-top: 1px solid var(--ds-hairline);
+    color: var(--ds-text-muted);
+  }
+
+  /* ---------------- Wordmark ----------------
+   * From atoms/wordmarks/serif-italic-001: italic serif wordmark in
+   * near-black, sized at xl. The italic is the entire character of
+   * the mark; no glyph, no flourish.
+   */
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--ds-text-xl);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    text-decoration: none;
+    line-height: 1;
+    /* Lorem-ipsum stand-in for the canonical Quanta wordmark. */
+  }
+
+  /* ---------------- Primary anchors ----------------
+   * From atoms/headings/editorial-newspaper-001 register: serif at lg,
+   * near-black at rest, pure black on hover. No underline; the size
+   * carries the affordance.
+   */
+  .nav__anchors {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    margin-left: auto;
+    list-style: none;
+    padding: 0;
+  }
+  .nav__anchor {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    color: var(--ds-text);
+    text-decoration: none;
+    line-height: 1;
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .nav__anchor:hover,
+  .nav__anchor:focus-visible {
+    color: var(--ds-text-strong);
+  }
+  .nav__anchor:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* ---------------- Topics trigger ----------------
+   * The mega-menu opener; serif label with a small chevron glyph. The
+   * chevron is an inline ornament (not a contract slot) because it is
+   * specific to this surface and has no reusable role elsewhere.
+   */
+  .nav__topics {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 400;
+    color: var(--ds-text);
+    line-height: 1;
+  }
+  .nav__topics::after {
+    /* Inline ornament: a hand-tuned chevron at half-size of the label,
+     * rotated open. Not a contract slot. */
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+  }
+  .nav__topics[aria-expanded="true"]::after {
+    transform: translateY(2px) rotate(-135deg);
+  }
+
+  /* ---------------- Secondary row anchors ----------------
+   * From atoms/links/nav-link-underline-001 pattern but in the paper
+   * idiom: muted gray at rest, near-black on hover, 1px underline
+   * scales in from the left.
+   */
+  .nav__formats {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav__format {
+    position: relative;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    padding-block: var(--ds-space-1);
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .nav__format::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--ds-text);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .nav__format:hover,
+  .nav__format:focus-visible {
+    color: var(--ds-text);
+  }
+  .nav__format:hover::after,
+  .nav__format:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* ---------------- Mega-menu panel ----------------
+   * Sits flush below the primary row; full-width content within the
+   * 1200 grid; three columns of lowercase violet topic links plus a
+   * trailing column carrying search and subscribe.
+   */
+  .megamenu {
+    position: absolute;
+    left: 0; right: 0;
+    top: 100%;
+    background: var(--ds-surface);
+    border-top: 1px solid var(--ds-hairline);
+    box-shadow: var(--ds-shadow-md);
+    /* Inline ornament: the soft downward shadow recipe is a one-off
+     * dialed in for this surface, not a contract step. */
+    z-index: 10;
+  }
+  .megamenu__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-8) var(--ds-space-6);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) minmax(280px, 360px);
+    gap: var(--ds-space-8);
+  }
+  .megamenu__col h3 {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .megamenu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  /* The Quanta signature: from atoms/kickers/quanta-section-001.
+   * Lowercase humanist sans, deep violet, small size, positive
+   * tracking. The lowercase IS the pattern; the violet IS the brand. */
+  .megamenu__topic {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-accent);
+    text-decoration: none;
+    line-height: var(--ds-leading-snug);
+    transition: color var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .megamenu__topic:hover,
+  .megamenu__topic:focus-visible {
+    color: var(--ds-accent-2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .megamenu__topic:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* ---------------- Utility column ----------------
+   * Search input and subscribe affordance live in the trailing column.
+   */
+  .megamenu__utility {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+
+  /* Search input from atoms/inputs/search-with-icon-001 pattern,
+   * paper-ink variant. */
+  .megamenu__search {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .megamenu__search:focus-within {
+    border-color: var(--ds-accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ds-accent-2) 25%, transparent);
+    /* Inline ornament: the violet focus glow is a one-off mix to keep
+     * the ring tied to the brand violet rather than the contract ring. */
+  }
+  .megamenu__search svg {
+    flex: 0 0 auto;
+    color: var(--ds-text-muted);
+  }
+  .megamenu__search input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    outline: none;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .megamenu__search input::placeholder {
+    color: var(--ds-text-muted);
+  }
+
+  /* Newsletter pitch + subscribe button. The button takes the ghost-
+   * bordered pattern from atoms/buttons/ghost-bordered-001. */
+  .megamenu__newsletter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .megamenu__newsletter p {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .megamenu__subscribe {
+    align-self: flex-start;
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-text);
+    padding: var(--ds-space-2) var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    border-radius: var(--ds-radius-sm);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .megamenu__subscribe:hover,
+  .megamenu__subscribe:focus-visible {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+  }
+  .megamenu__subscribe:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ---------------- Demo body fill ----------------
+   * Below the nav, a placeholder slab to make the elevation read. */
+  .demo-body {
+    padding: var(--ds-space-12) var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 900px) {
+    .megamenu__inner {
+      grid-template-columns: 1fr 1fr;
+    }
+    .nav__anchors { gap: var(--ds-space-4); }
+    .nav__formats { flex-wrap: wrap; gap: var(--ds-space-4); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav__anchor,
+    .nav__format,
+    .nav__format::after,
+    .megamenu__topic,
+    .megamenu__search,
+    .megamenu__subscribe { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <nav class="nav" aria-label="Primary">
+    <div class="nav__row nav__row--primary">
+      <a class="nav__wordmark" href="#" aria-label="Lorem Ipsum, home">Lorem Ipsum</a>
+      <ul class="nav__anchors">
+        <li><a class="nav__anchor" href="#">Physica</a></li>
+        <li><a class="nav__anchor" href="#">Mathematica</a></li>
+        <li><a class="nav__anchor" href="#">Biologia</a></li>
+        <li><a class="nav__anchor" href="#">Informatica</a></li>
+        <li>
+          <button class="nav__topics" type="button" aria-expanded="true" aria-controls="topics-panel">
+            Argumenta
+          </button>
+        </li>
+        <li><a class="nav__anchor" href="#">Archivum</a></li>
+      </ul>
+    </div>
+    <div class="nav__row nav__row--secondary">
+      <ul class="nav__formats">
+        <li><a class="nav__format" href="#">Lorem blog</a></li>
+        <li><a class="nav__format" href="#">Columnae</a></li>
+        <li><a class="nav__format" href="#">Colloquia</a></li>
+        <li><a class="nav__format" href="#">Podcasts</a></li>
+        <li><a class="nav__format" href="#">Aenigmata</a></li>
+        <li><a class="nav__format" href="#">Multimedia</a></li>
+        <li><a class="nav__format" href="#">Videones</a></li>
+        <li><a class="nav__format" href="#">De nobis</a></li>
+      </ul>
+    </div>
+
+    <div class="megamenu" id="topics-panel" role="region" aria-label="Topics">
+      <div class="megamenu__inner">
+        <div class="megamenu__col">
+          <h3>Lorem ipsum dolor</h3>
+          <ul class="megamenu__list">
+            <li><a class="megamenu__topic" href="#">astronomia</a></li>
+            <li><a class="megamenu__topic" href="#">cosmologia</a></li>
+            <li><a class="megamenu__topic" href="#">particula fundamentalis</a></li>
+            <li><a class="megamenu__topic" href="#">materia condensata</a></li>
+            <li><a class="megamenu__topic" href="#">quantum mechanica</a></li>
+            <li><a class="megamenu__topic" href="#">gravitas</a></li>
+          </ul>
+        </div>
+        <div class="megamenu__col">
+          <h3>Consectetur adipiscing</h3>
+          <ul class="megamenu__list">
+            <li><a class="megamenu__topic" href="#">algebra</a></li>
+            <li><a class="megamenu__topic" href="#">topologia</a></li>
+            <li><a class="megamenu__topic" href="#">geometria</a></li>
+            <li><a class="megamenu__topic" href="#">theoria numerorum</a></li>
+            <li><a class="megamenu__topic" href="#">cryptographia</a></li>
+            <li><a class="megamenu__topic" href="#">probabilitas</a></li>
+          </ul>
+        </div>
+        <div class="megamenu__col">
+          <h3>Sed do eiusmod</h3>
+          <ul class="megamenu__list">
+            <li><a class="megamenu__topic" href="#">genetica</a></li>
+            <li><a class="megamenu__topic" href="#">neuroscientia</a></li>
+            <li><a class="megamenu__topic" href="#">evolutio</a></li>
+            <li><a class="megamenu__topic" href="#">ecologia</a></li>
+            <li><a class="megamenu__topic" href="#">physiologia</a></li>
+            <li><a class="megamenu__topic" href="#">intelligentia artificialis</a></li>
+          </ul>
+        </div>
+        <div class="megamenu__utility">
+          <form class="megamenu__search" role="search" onsubmit="event.preventDefault()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.5-3.5"></path>
+            </svg>
+            <input type="search" placeholder="Lorem ipsum dolor sit amet" aria-label="Search"/>
+          </form>
+          <div class="megamenu__newsletter">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Get the latest delivered to your inbox.</p>
+            <button class="megamenu__subscribe" type="button">Subscribe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="demo-body">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, ipsum lectus malesuada ante.</p>
+  </main>
+</body>
+</html>

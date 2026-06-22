@@ -1,0 +1,132 @@
+<!--
+  Asset: initials-placeholder-001
+  Class: avatars
+  Pattern: (none)
+  Inspired by: Notion
+  Notes:
+    - Initials-only fallback chip with a single uppercase letter on a saturated color, sized for 24-40px chips.
+    - The hash-to-color rule is the variable part: same input string always picks the same color from the palette of six.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>initials-placeholder-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- NotionInter is Notion's branded Inter; system Inter fallback via tokens. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .panel-title {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-4);
+  }
+  .row {
+    display: flex;
+    gap: var(--ds-space-5);
+    align-items: center;
+    margin-bottom: var(--ds-space-6);
+    flex-wrap: wrap;
+  }
+  /* Initials chip - rounded square with saturated bg and centered uppercase initial. */
+  .initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ds-radius-sm); /* Notion's small workspace chip lives at 4px */
+    font-family: var(--ds-font-body);
+    font-weight: 600;
+    color: #FFFFFF; /* inline: chip text is always pure white on the saturated bg */
+    text-transform: uppercase;
+    letter-spacing: 0;
+    user-select: none;
+    line-height: 1;
+  }
+  /* Size variants */
+  .size-24 { width: 24px; height: 24px; font-size: var(--ds-text-xs); }
+  .size-32 { width: 32px; height: 32px; font-size: var(--ds-text-sm); }
+  .size-40 { width: 40px; height: 40px; font-size: var(--ds-text-lg); }
+
+  /* Color slots map to the canonical Notion product palette of six saturated tones. */
+  .c-blue { background: var(--ds-accent); }
+  .c-orange { background: var(--ds-warning); }
+  .c-green { background: var(--ds-success); }
+  .c-pink { background: var(--ds-accent-2); }
+  .c-purple { background: var(--ds-info); }
+  .c-red { background: var(--ds-error); }
+
+  .with-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  .with-label .name {
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+  }
+  .with-label .meta {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <div class="panel-title">Size scale</div>
+    <div class="row">
+      <span class="initial size-24 c-blue">L</span>
+      <span class="initial size-32 c-orange">I</span>
+      <span class="initial size-40 c-green">D</span>
+    </div>
+
+    <div class="panel-title">Palette of six (hash-to-color)</div>
+    <div class="row">
+      <span class="initial size-32 c-blue">A</span>
+      <span class="initial size-32 c-orange">M</span>
+      <span class="initial size-32 c-green">E</span>
+      <span class="initial size-32 c-pink">T</span>
+      <span class="initial size-32 c-purple">Q</span>
+      <span class="initial size-32 c-red">F</span>
+    </div>
+
+    <div class="panel-title">Inline use in a member row</div>
+    <div class="row">
+      <span class="with-label">
+        <span class="initial size-32 c-purple">L</span>
+        <span>
+          <div class="name">Lorem ipsum</div>
+          <div class="meta">workspace owner</div>
+        </span>
+      </span>
+    </div>
+    <div class="row">
+      <span class="with-label">
+        <span class="initial size-32 c-green">D</span>
+        <span>
+          <div class="name">Dolor sit amet</div>
+          <div class="meta">editor</div>
+        </span>
+      </span>
+    </div>
+
+  </div>
+</body>
+</html>

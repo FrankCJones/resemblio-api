@@ -1,0 +1,334 @@
+<!--
+  Asset: cabinet-scholarly-essay-001
+  Class: article-layouts (whole)
+  Pattern: centered-narrow-column, serif-display-sans-body (Garamond throughout), drop-cap, pull-quote-breakout, marginalia
+  Inspired by: Cabinet Magazine
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/terracotta-cream-001         (palette family)
+    - type-pairings/dual-serif-001              (single-family serif system)
+    - headings/display-editorial-serif-001      (article H1 register)
+    - kickers/numbered-section-001              (issue + section label)
+    - body-text/lead-paragraph-001              (dek paragraph)
+    - body-text/drop-cap-editorial-001          (opening drop cap)
+    - body-text/pull-quote-breakout-001         (full-width quote)
+    - body-text/marginalia-sidenote-001         (right-margin footnotes)
+    - dividers/hairline-rule-001                (section dividers)
+  Notes:
+    - The single-family approach (EB Garamond for both display and body) is
+      the scholarly move: hierarchy via size and italic, not via family swap.
+    - Cabinet orange is held to three places only: the drop cap, the
+      footnote markers, and a single rule above the byline. Everywhere else
+      is ink-on-cream.
+    - The measure is 33em (about 600px at 19px base), the longform reading
+      width. Marginalia sit in the right gutter on wide viewports.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cabinet-scholarly-essay-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- EB Garamond carries both display and body. Italic and small-caps are
+     required for editorial typography of this register. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    padding: var(--ds-space-10) var(--ds-space-5) var(--ds-space-16);
+  }
+
+  /* Article container. Centered narrow column with a right gutter that
+   * carries marginalia on wider viewports. The gutter collapses below
+   * 900px and sidenotes inline into the column. */
+  .article {
+    display: grid;
+    grid-template-columns: minmax(0, 33em) 14em;
+    column-gap: var(--ds-space-8);
+    max-width: 56em;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .article > * { grid-column: 1; }
+  .article > .margin { grid-column: 2; }
+
+  /* Header block. Issue line, then title, then byline. */
+  .article__header { margin-bottom: var(--ds-space-8); }
+
+  /* Kicker: issue number plus section name. Composition of
+   * kickers/numbered-section-001 with the small-caps italic editorial cue
+   * from Cabinet's masthead vernacular. */
+  .article__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-3);
+  }
+  .article__kicker__num {
+    color: var(--ds-accent);
+    font-weight: 500;
+  }
+
+  /* H1: editorial display Garamond. Italic last word picks up the
+   * scholarly convention of italicizing the operative noun. */
+  .article__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 6vw, var(--ds-text-5xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .article__title em {
+    font-style: italic;
+    font-weight: 500;
+    /* Inline ornament: italic accent stays in ink color, not orange. The
+     * orange punctuation is reserved for the drop cap and footnotes. */
+  }
+
+  /* Dek paragraph: from atoms/body-text/lead-paragraph-001. Italic
+   * Garamond at lg size, muted color. Sits between title and byline. */
+  .article__dek {
+    font-family: var(--ds-font-body);
+    font-style: italic;
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+    max-width: 38ch;
+  }
+
+  /* Byline block. Author name in small caps, then a thin orange rule
+   * (the single chromatic punctuation in the header), then the date. */
+  .article__byline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-10);
+  }
+  .article__byline__author {
+    font-variant-caps: small-caps;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+  }
+  .article__byline__rule {
+    /* Inline ornament: hairline rule in accent orange, 24px wide. The only
+     * orange element in the byline; the rest of the line is ink. */
+    width: 24px;
+    height: 1px;
+    background: var(--ds-accent);
+  }
+  .article__byline__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Body prose. */
+  .article__body p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0 0 var(--ds-space-5);
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* Drop cap: from atoms/body-text/drop-cap-editorial-001. Three-line
+   * descending cap in Cabinet orange on the first paragraph. */
+  .article__body > p:first-of-type::first-letter {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: 4.4em;        /* Inline: hand-tuned to land three baselines. */
+    line-height: 0.88;
+    float: left;
+    color: var(--ds-accent);
+    padding: 4px 10px 0 0;
+    /* The drop cap is the loudest orange in the article. */
+  }
+
+  /* Section divider: from atoms/dividers/hairline-rule-001 (centered
+   * variant). A short tan rule with one small ornamental dot. */
+  .article__divider {
+    border: 0;
+    width: 64px;
+    margin: var(--ds-space-8) auto;
+    border-top: 1px solid var(--ds-hairline);
+    position: relative;
+  }
+  .article__divider::after {
+    /* Inline ornament: the centered tan dot above the rule is a Cabinet
+     * convention borrowed from print quarterlies. */
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -3px;
+    width: 5px;
+    height: 5px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-hairline);
+    transform: translateX(-50%);
+  }
+
+  /* Pull quote: from atoms/body-text/pull-quote-breakout-001. Breaks the
+   * column to full container width, italic, with hairline borders top
+   * and bottom. */
+  .article__pullquote {
+    grid-column: 1 / -1;
+    margin: var(--ds-space-8) 0;
+    padding: var(--ds-space-6) var(--ds-space-5);
+    font-family: var(--ds-font-display);
+    font-style: italic;
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    text-align: center;
+    color: var(--ds-text);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    max-width: 36em;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .article__pullquote::before,
+  .article__pullquote::after {
+    /* Inline ornament: classical opening and closing quote glyphs in
+     * accent orange, sized larger than the surrounding text. */
+    color: var(--ds-accent);
+    font-family: var(--ds-font-display);
+    font-size: 1.4em;
+    line-height: 0;
+    vertical-align: -0.3em;
+  }
+  .article__pullquote::before { content: "\201C"; margin-right: 0.1em; }
+  .article__pullquote::after  { content: "\201D"; margin-left: 0.1em; }
+
+  /* Marginalia: from atoms/body-text/marginalia-sidenote-001. Sits in
+   * the right gutter, smaller, muted. Footnote marker matches a number
+   * in the body in accent orange. */
+  .margin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-5);
+    padding-left: var(--ds-space-4);
+    border-left: 1px solid var(--ds-hairline);
+  }
+  .margin__num {
+    color: var(--ds-accent);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    margin-right: var(--ds-space-2);
+  }
+
+  /* In-body footnote marker. Superscript orange number that pairs with
+   * a margin entry. */
+  .fn {
+    color: var(--ds-accent);
+    font-family: var(--ds-font-mono);
+    font-size: 0.7em;
+    vertical-align: super;
+    line-height: 0;
+    margin-left: 2px;
+    font-weight: 500;
+  }
+
+  /* Inline link inside prose. Underline at rest in muted color, deepens
+   * to accent rust on hover. */
+  .article__body a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-decoration-color: var(--ds-hairline);
+    text-underline-offset: 3px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                text-decoration-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .article__body a:hover {
+    color: var(--ds-accent-2);
+    text-decoration-color: var(--ds-accent);
+  }
+  .article__body a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Responsive: collapse the gutter, inline the sidenotes. */
+  @media (max-width: 900px) {
+    .article { grid-template-columns: minmax(0, 1fr); }
+    .article > .margin {
+      grid-column: 1;
+      max-width: 33em;
+      margin-left: 0;
+    }
+    .article__body > p:first-of-type::first-letter { font-size: 3.6em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article__body a { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="article">
+    <header class="article__header">
+      <p class="article__kicker">
+        <span class="article__kicker__num">No. 63</span>
+        <span>Lorem Ipsum Dolor</span>
+      </p>
+      <h1 class="article__title">On the curious history of <em>lorem ipsum</em></h1>
+      <p class="article__dek">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud.</p>
+      <p class="article__byline">
+        <span class="article__byline__author">Lorem Ipsum</span>
+        <span class="article__byline__rule" aria-hidden="true"></span>
+        <span class="article__byline__date">Spring 2026</span>
+      </p>
+    </header>
+
+    <div class="article__body">
+      <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat<span class="fn">1</span>. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut <a href="#">fugit, sed quia consequuntur</a> magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+
+      <hr class="article__divider" aria-hidden="true"/>
+
+      <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem<span class="fn">2</span>. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.</p>
+    </div>
+
+    <aside class="margin" aria-label="Footnotes and sidenotes">
+      <p><span class="margin__num">1</span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. The marginalia carry citation and aside material, freeing the main column from footnote weight.</p>
+      <p><span class="margin__num">2</span>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud exercitation.</p>
+    </aside>
+
+    <blockquote class="article__pullquote">
+      Vivamus sit amet sapien velit; curabitur nec libero non nisi convallis fringilla, aenean fermentum magna at suscipit lacinia.
+    </blockquote>
+
+    <div class="article__body">
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+
+      <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+    </div>
+  </article>
+</body>
+</html>

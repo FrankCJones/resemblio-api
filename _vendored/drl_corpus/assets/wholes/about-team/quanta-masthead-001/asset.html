@@ -1,0 +1,375 @@
+<!--
+  Asset: quanta-masthead-001
+  Class: about-team (whole)
+  Pattern: editorial-hero, paper-and-ink, serif-display-sans-body
+  Inspired by: Quanta Magazine (quantamagazine.org/about)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (paper canvas + near-black ink)
+    - type-pairings/quanta-science-pair-001   (Tiempos serif + GT America sans)
+    - headings/display-editorial-serif-001    (about-page H1 serif display)
+    - kickers/quanta-section-001              (lowercase violet section kicker)
+    - cards/hairline-flat-001                 (portrait card frame; hairline, no fill)
+  Notes:
+    - Quanta's about page renders the publication as a roster: three
+      tiers (Staff, Featured Contributors, Advisory Board) each laid
+      out as a grid of square portraits, each card carrying a Tiempos
+      serif name and a humanist-sans role line in Gray 9. The section
+      label is the editorial signature: lowercase, deep violet, slightly
+      tracked, sitting above a Tiempos H2. Violet holds back entirely
+      from the resting state; it surfaces only on the kicker and on
+      role-link hover.
+    - Variable parts: every --ds-* token, including the signature deep
+      violet kicker and the Tiempos-versus-sans pairing. Inline ornament:
+      the placeholder portrait fill (production cards carry the real
+      <img>), the single hairline rule between tiers, and the 4-up grid
+      breakpoints. All marked with comments at use site.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>quanta-masthead-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Source Serif 4 stands in for Tiempos Headline/Text (Quanta's licensed
+     faces); Inter stands in for GT America. Both load from Google Fonts;
+     the tokens.css fallback chain renders a faithful substitute if the
+     network is unavailable. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: var(--ds-space-12) var(--ds-space-5) var(--ds-space-16);
+  }
+
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-12);
+  }
+
+  /* ---------- About hero ----------
+   * Single oversized serif statement plus a Tiempos Text dek. No CTA,
+   * no kicker on the hero itself; the page opens quiet. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 760px;
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: 0;
+  }
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 640px;
+  }
+
+  /* ---------- Section header ----------
+   * The editorial signature: lowercase violet kicker above a Tiempos
+   * H2. The kicker is humanist sans, lowercase, slightly tracked. This
+   * inversion of the standard uppercase mono kicker is Quanta's tell. */
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-8);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .section-head__kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: lowercase;
+    color: var(--ds-accent);
+    font-weight: 500;
+    margin: 0;
+  }
+  .section-head__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: 0;
+  }
+  .section-head__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 580px;
+  }
+
+  /* ---------- Roster grid ----------
+   * 4-column grid of person cards. Each card: square portrait, serif
+   * name, sans role line. No card chrome at rest; hover lifts the
+   * portrait edge to the violet accent and bumps the role into a link
+   * underline. */
+  .roster {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-6) var(--ds-space-5);
+  }
+  @media (max-width: 920px) { .roster { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 680px) { .roster { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .roster { grid-template-columns: 1fr; } }
+
+  /* Tighter 6-up grid for the long contributors tier; same card, more
+   * columns, smaller portraits. Production Quanta uses ~5-6 across. */
+  .roster--dense {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--ds-space-5) var(--ds-space-4);
+  }
+  @media (max-width: 1040px) { .roster--dense { grid-template-columns: repeat(5, 1fr); } }
+  @media (max-width: 880px)  { .roster--dense { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 640px)  { .roster--dense { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 420px)  { .roster--dense { grid-template-columns: repeat(2, 1fr); } }
+
+  .person {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .person__portrait {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border-radius: var(--ds-radius-none);
+    border: 1px solid var(--ds-border);
+    /* Inline ornament: paper-toned placeholder stands in for the real
+       <img> Quanta loads from its CDN. Tiered desaturation hints at the
+       photographic register. */
+    background:
+      radial-gradient(circle at 35% 30%, #ECE6F0 0%, #DCD2E3 45%, #C7B9D1 100%);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .person:hover .person__portrait {
+    border-color: var(--ds-accent);
+  }
+  .person__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    font-weight: 600;
+    margin: var(--ds-space-1) 0 0;
+  }
+  .person__role {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .person__role a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .person__role a:hover {
+    color: var(--ds-accent);
+    border-bottom-color: var(--ds-accent);
+  }
+  .person__role a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* Dense tier shrinks the name a step. */
+  .roster--dense .person__name { font-size: var(--ds-text-base); }
+  .roster--dense .person__role { font-size: var(--ds-text-xs); }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+      <p class="hero__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.</p>
+    </section>
+
+    <section aria-labelledby="staff-title">
+      <header class="section-head">
+        <p class="section-head__kicker">staff</p>
+        <h2 id="staff-title" class="section-head__title">Lorem ipsum dolor sit amet</h2>
+      </header>
+
+      <div class="roster" role="list">
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Aenean Tristique</h3>
+          <p class="person__role">Editor in Chief</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Vivamus Lacinia</h3>
+          <p class="person__role">Executive Editor</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Curabitur Mollis</h3>
+          <p class="person__role">Managing Editor</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Phasellus Iaculis</h3>
+          <p class="person__role">Mathematics Editor</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Maecenas Sapien</h3>
+          <p class="person__role">Senior Editor</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Suspendisse Auctor</h3>
+          <p class="person__role">Physics Editor</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Praesent Volutpat</h3>
+          <p class="person__role">Biology Editor</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Quisque Faucibus</h3>
+          <p class="person__role">Art Director</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="contributors-title">
+      <header class="section-head">
+        <p class="section-head__kicker">featured contributors</p>
+        <h2 id="contributors-title" class="section-head__title">Lorem ipsum dolor sit amet consectetur.</h2>
+        <p class="section-head__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </header>
+
+      <div class="roster roster--dense" role="list">
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Donec Posuere</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Etiam Porta</h3>
+          <p class="person__role"><a href="#">Contributing Columnist</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Fusce Dapibus</h3>
+          <p class="person__role"><a href="#">Contributing Correspondent</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Integer Posuere</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Nullam Quis</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Cras Justo</h3>
+          <p class="person__role"><a href="#">Contributing Columnist</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Sed Posuere</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Magna Aliqua</h3>
+          <p class="person__role"><a href="#">Contributing Correspondent</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Lorem Ipsum</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Tempor Incididunt</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Labore Dolore</h3>
+          <p class="person__role"><a href="#">Contributing Columnist</a></p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Veniam Nostrud</h3>
+          <p class="person__role"><a href="#">Contributing Writer</a></p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="advisors-title">
+      <header class="section-head">
+        <p class="section-head__kicker">advisory board</p>
+        <h2 id="advisors-title" class="section-head__title">Lorem ipsum dolor sit amet.</h2>
+      </header>
+
+      <div class="roster" role="list">
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Ut Aliquip</h3>
+          <p class="person__role">Director, Institute for Lorem</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Ex Ea Commodo</h3>
+          <p class="person__role">Professor of Ipsum, Dolor University</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Consequat Duis</h3>
+          <p class="person__role">Senior Fellow, Sit Amet Foundation</p>
+        </article>
+        <article class="person" role="listitem">
+          <div class="person__portrait" aria-hidden="true"></div>
+          <h3 class="person__name">Aute Irure</h3>
+          <p class="person__role">Chair Emeritus, Adipiscing Society</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

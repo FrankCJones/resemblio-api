@@ -1,0 +1,459 @@
+<!--
+  Asset: cloudflare
+  Class: alphabets
+  Pattern: mono-utility-pair, mono-eyebrow, sku-mono-row, status-mono-uppercase, display-tight, hairline-as-chrome
+  Inspired by: Cloudflare (cloudflare.com, /plans/)
+  Notes:
+    - The complete Cloudflare 2026 typography vocabulary as one specimen.
+      Display and body run on FT Kunst Grotesk (the new F37 brand face,
+      ?cfFont=kunst default); STK Bureau Sans is the alternate brand
+      register kept live behind .font-stk-bureau-sans. Apercu Mono Pro
+      carries any value being measured or recorded: edge-location codes,
+      latency numbers, region IDs, plan SKU labels, code snippets.
+    - Editorial moves: signature orange #F6821F as the single chromatic
+      punctuation in marketing chrome, mono uppercase status indicators
+      (PROXIED / ACTIVE / DEPLOYED), snake_case plan-SKU rows on /plans/,
+      the latency-and-region footer line that prints colo code + RTT in
+      mono metadata.
+    - Inline ornament: the Cloudflare orange used in focus rings, accent
+      pills, and link underlines. Status colors (info blue, success
+      green, warning amber, danger red) sit in the kumo theme block and
+      only show up on dashboard-leaking surfaces.
+    - Web-font substitutes: FT Kunst Grotesk and Apercu Mono Pro are
+      licensed faces; Inter and JetBrains Mono are the metric-approximate
+      fallbacks. STK Bureau Sans is documented in the cascade but kept
+      as an accent face here.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  FT Kunst Grotesk and Apercu Mono Pro are licensed faces served from
+  cloudflare.com/fonts. For specimen rendering we substitute Inter and
+  JetBrains Mono as the documented fallbacks; both approximate the
+  metrics of the brand faces.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-10) var(--ds-space-6);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .specimen {
+    max-width: 72ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Marketing hero block ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .eyebrow {
+    /* Mono uppercase kicker; Apercu Mono Pro 12px / 500 / wider tracking. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: the orange "New" pill beside feature announcements;
+     Cloudflare orange background, white mono text. */
+  .eyebrow .pill {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-full);
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);            /* 60px hero ceiling. */
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);     /* 1.25 - looser than peers. */
+    letter-spacing: var(--ds-tracking-tight); /* -0.025em verbatim. */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* Inline ornament: the orange word emphasis on hero H1. Kunst Grotesk
+     stays clean enough that color (not weight) carries the accent. */
+  .title em {
+    font-style: normal;
+    color: var(--ds-accent);
+  }
+
+  .lead {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);             /* 20px lead paragraph. */
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- CTA row (orange primary + outlined secondary) ---------- */
+  .cta-row { display: flex; gap: var(--ds-space-3); align-items: center; }
+  .cta {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    background: var(--ds-accent);              /* Cloudflare orange primary. */
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-md);         /* 6px small radius, not pill. */
+    padding: 10px 18px;
+    cursor: pointer;
+  }
+  .cta-secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    border: 0;
+    box-shadow: var(--ds-shadow-sm);           /* 1px ring; hairline-as-chrome. */
+    border-radius: var(--ds-radius-md);
+    padding: 10px 18px;
+    cursor: pointer;
+  }
+
+  /* ---------- Pricing tier card (hairline ring, mono SKU rows) ---------- */
+  .tier {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+  }
+  .tier-card {
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-sm);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-6) var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+  .tier-card .tier-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);            /* 24px tier title. */
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .tier-card .tier-blurb {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+  .tier-card .tier-price {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);            /* 30px price. */
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+  .tier-card .tier-price span {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    letter-spacing: 0;
+  }
+
+  /* Plan-SKU rows: snake_case mono key + sans value. */
+  .sku-rows {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .sku-rows .row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--ds-space-4);
+    align-items: baseline;
+    font-size: var(--ds-text-sm);
+  }
+  .sku-rows .key {
+    font-family: var(--ds-font-mono);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .sku-rows .val {
+    font-family: var(--ds-font-body);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* ---------- Edge-status footer line (the most Cloudflare moment) ---------- */
+  .edge-line {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .edge-line .status {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-success);
+  }
+  /* Inline ornament: 8px dot indicator; the operational-edge marker. */
+  .edge-line .status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: currentColor;
+    display: inline-block;
+  }
+  .edge-line .meta {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .edge-line .meta .sep { padding: 0 0.4em; opacity: 0.5; }
+  .edge-line .meta b { color: var(--ds-text); font-weight: 500; }
+
+  /* ---------- Type scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 128px 112px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+
+  /* ---------- Wordmark specimen ---------- */
+  .wordmark {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+  }
+  /* Inline ornament: the orange cloud-glyph stand-in. Real Cloudflare
+     ships an SVG cloud mark; this is the proportional reference. */
+  .wordmark .mark {
+    width: 28px;
+    height: 18px;
+    background: var(--ds-accent);
+    border-radius: 9999px 9999px 4px 4px / 9999px 9999px 4px 4px;
+    display: inline-block;
+  }
+
+  /* ---------- Footnote ---------- */
+  .footnote {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 64ch;
+  }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <header class="head">
+      <p class="eyebrow">
+        <span class="pill">New</span>
+        <span>Lorem ipsum edge announcement</span>
+      </p>
+      <h1 class="title">Lorem ipsum dolor sit amet <em>consectetur</em>.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+      <div class="cta-row">
+        <button class="cta" type="button">Lorem ipsum</button>
+        <button class="cta-secondary" type="button">Dolor sit amet</button>
+      </div>
+    </header>
+
+    <section class="tier" aria-label="Pricing tier specimen">
+      <div class="tier-card">
+        <h2 class="tier-name">Lorem</h2>
+        <p class="tier-blurb">Curabitur nec libero non nisi convallis fringilla aenean fermentum magna at suscipit.</p>
+        <p class="tier-price">$20 <span>/ month</span></p>
+        <div class="sku-rows">
+          <div class="row"><span class="key">edge_requests</span><span class="val">10M included</span></div>
+          <div class="row"><span class="key">workers_invocations</span><span class="val">10M included</span></div>
+          <div class="row"><span class="key">zero_trust_seats</span><span class="val">50 included</span></div>
+          <div class="row"><span class="key">cache_reserve</span><span class="val">available</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="edge-line" aria-label="Edge status footer">
+      <span class="status"><span class="dot"></span>Proxied</span>
+      <span class="meta">
+        <b>iad</b><span class="sep">·</span><span>rtt 12ms</span><span class="sep">·</span><span>cf-ray a1b2c3d4e5f6</span><span class="sep">·</span><span>2026-05-20 09:14</span>
+      </span>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">6xl display</span>
+        <span class="step-size">60 / 1.25 / 500</span>
+        <span class="step-sample" style="font-size:60px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">48 / 1.25 / 500</span>
+        <span class="step-sample" style="font-size:48px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl display</span>
+        <span class="step-size">36 / 1.25 / 500</span>
+        <span class="step-sample" style="font-size:36px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">30 / 1.375 / 500</span>
+        <span class="step-sample" style="font-size:30px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">24 / 1.375 / 500</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">20 / 1.375 / 500</span>
+        <span class="step-sample" style="font-size:20px;">Lorem ipsum dolor sit amet consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg body</span>
+        <span class="step-size">16 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base ui</span>
+        <span class="step-size">14 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm caption</span>
+        <span class="step-size">13 / 1.5 / 400</span>
+        <span class="step-sample body" style="font-size:13px;">Lorem ipsum dolor sit amet consectetur.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono·u</span>
+        <span class="step-size">12 / 1.5 / 500</span>
+        <span class="step-sample mono" style="font-size:12px;">Lorem ipsum edge label</span>
+      </div>
+    </section>
+
+    <section class="wordmark" aria-label="Wordmark specimen">
+      <span class="mark" aria-hidden="true"></span>
+      <span>cloudflare</span>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>FT Kunst Grotesk, wght 500</b></span>
+      <span>body · <b>FT Kunst Grotesk, wght 400 / 500</b></span>
+      <span>mono · <b>Apercu Mono Pro, wght 400 / 500</b></span>
+      <span>accent · <b>STK Bureau Sans (alternate brand)</b></span>
+      <span>base ui · <b>14px / 21px (1.50)</b></span>
+      <span>body reading · <b>16px / 24px (1.50)</b></span>
+      <span>H1 · <b>60px / 75px / -1.5px / wght 500</b></span>
+      <span>cta · <b>14px / wght 500 / radius 6px</b></span>
+      <span>scale · <b>~1.25 ratio through body, wider at display tier</b></span>
+      <span>chrome · <b>1px ring box-shadow #E8E8E8; no drop shadow at rest</b></span>
+    </section>
+
+    <section class="footnote" aria-label="Footnote specimen">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Specimen footnote shown at xs / relaxed leading; the legal register on Cloudflare marketing surfaces.
+    </section>
+
+  </article>
+</body>
+</html>

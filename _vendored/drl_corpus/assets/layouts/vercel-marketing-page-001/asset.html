@@ -1,0 +1,581 @@
+<!--
+  Asset: vercel-marketing-page-001
+  Class: layouts
+  Pattern: dual-cta-hero, flush-top-nav, bento-grid, mega-footer, mono-utility-pair
+  Inspired by: Vercel (vercel.com)
+  Notes:
+    - Marketing homepage skeleton: announcement bar, flush-top nav,
+      dual-CTA hero, logo + metric strip, use-case tabs, product feature
+      grid (bento), framework-defined-infrastructure strip, stacked
+      infrastructure feature blocks, AI Gateway code-well moment,
+      quick-start template grid, triple-link CTA block, mega-footer with
+      status indicator. Container caps at 1280px; full-bleed bands
+      stretch beyond.
+    - Variable: section sequence, container width, vertical rhythm,
+      typographic role per slot. Inline: container max-width (1280px),
+      announcement bar height, code-well aspect, framework strip cell
+      grid (6-up desktop), feature bento break.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Geist and Geist Mono are the Vercel marketing faces. Faces
+  are not loaded in the asset; the fallback chains in tokens.css (Inter,
+  JetBrains Mono) carry the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Page container. Max-width 1280px so the bento grid, framework
+   * strip cells, and footer columns breathe. Inline value. */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Announcement bar. Flush-top, full-bleed, hairline below, mono
+   * register for the dev-tool register. Inline 40px height. */
+  .announce-bar {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    text-align: center;
+    padding-block: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-10);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled { border-bottom: 1px solid var(--ds-hairline); }
+
+  /* Hero. Dual-CTA, no imagery; type carries the moment. */
+  .hero {
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-10);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--ds-space-16);
+      padding-bottom: var(--ds-space-12);
+    }
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 18ch;
+  }
+  @media (min-width: 1024px) {
+    .hero__title { font-size: var(--ds-text-5xl); }
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-8);
+    max-width: 56ch;
+  }
+  .hero__cta-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    justify-content: center;
+  }
+  .cta--primary {
+    background: var(--ds-accent-2);
+    color: var(--ds-bg);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-accent-2);
+  }
+  .cta--ghost {
+    background: transparent;
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    border: 1px solid var(--ds-border);
+  }
+
+  /* Logo + metric strip. Hairline above and below; cells separated by
+   * vertical hairlines on desktop. */
+  .metric-strip {
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-block: var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .metric-strip { grid-template-columns: repeat(3, 1fr); }
+  }
+  .metric {
+    text-align: center;
+  }
+  .metric__value {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-3xl);
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .metric__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /* Section heading register. */
+  .section-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 24ch;
+  }
+  .section-kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    display: block;
+    margin-bottom: var(--ds-space-3);
+  }
+
+  /* Use-case tabs. Horizontal pill row at top of section. */
+  .tab-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    padding-bottom: var(--ds-space-5);
+    margin-bottom: var(--ds-space-8);
+  }
+  .tab {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    border-radius: var(--ds-radius-sm);
+  }
+  .tab[aria-selected="true"] {
+    color: var(--ds-text-strong);
+    background: var(--ds-surface-2);
+  }
+
+  /* Feature bento grid. Five cards, asymmetric: one wide, four std. */
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .bento { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .bento { grid-template-columns: repeat(3, 1fr); }
+    .bento__cell--wide { grid-column: span 2; }
+  }
+  .bento__cell {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .bento__head {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .bento__body {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .bento__arrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-accent);
+  }
+
+  /* Framework strip. Six logo cells with hairline frame and inner
+   * separators. Heading sits above. */
+  .framework-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  @media (min-width: 640px) { .framework-strip { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .framework-strip { grid-template-columns: repeat(6, 1fr); } }
+  .framework-cell {
+    padding: var(--ds-space-8) var(--ds-space-5);
+    border-right: 1px solid var(--ds-border);
+    border-bottom: 1px solid var(--ds-border);
+    text-align: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /* Infrastructure stacked blocks. Two-up split: heading-left,
+   * description-right. */
+  .infra-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+    padding-block: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .infra-row { grid-template-columns: 1fr 2fr; gap: var(--ds-space-10); }
+  }
+  .infra-row__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .infra-row__body {
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-relaxed);
+    margin: 0;
+  }
+
+  /* AI Gateway code-well moment. Tinted surface card with mono fill. */
+  .code-well {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Template grid. Six small cards. */
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 640px) { .template-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .template-grid { grid-template-columns: repeat(6, 1fr); } }
+  .template-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    text-align: center;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  /* CTA block. Three-link triple. */
+  .cta-trio {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 768px) {
+    .cta-trio { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer band: full-width, outside .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-12);
+    border-top: 1px solid var(--ds-hairline);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Announcement bar: full-bleed mono ribbon at the very top. -->
+  <div class="announce-bar">Lorem ipsum dolor sit amet</div>
+
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a vercel-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit
+      </div>
+      <div class="slot" style="min-width: 200px;">
+        <span class="slot__label">auth-cta-pair</span>
+        Log In / Sign Up
+      </div>
+    </nav>
+
+    <!-- Section: hero. Dual-CTA, no imagery, type-led. -->
+    <header class="hero" aria-label="Hero">
+      <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-row">
+        <a href="#" class="cta--primary">Lorem ipsum</a>
+        <a href="#" class="cta--ghost">Dolor sit amet</a>
+      </div>
+    </header>
+
+    <!-- Section: metric strip. Hairline-framed three-up. -->
+    <section class="metric-strip" aria-label="Customer metrics">
+      <div class="metric">
+        <span class="metric__value">7m to 40s</span>
+        <span class="metric__label">Lorem ipsum metric</span>
+      </div>
+      <div class="metric">
+        <span class="metric__value">95%</span>
+        <span class="metric__label">Lorem reduction</span>
+      </div>
+      <div class="metric">
+        <span class="metric__value">24x</span>
+        <span class="metric__label">Dolor sit amet</span>
+      </div>
+    </section>
+
+    <!-- Section: use-case tabs + bento feature grid. -->
+    <section class="section section--ruled" aria-label="Use cases">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      <div class="tab-row" role="tablist">
+        <span class="tab" role="tab" aria-selected="true">AI Apps</span>
+        <span class="tab" role="tab" aria-selected="false">Web Apps</span>
+        <span class="tab" role="tab" aria-selected="false">Ecommerce</span>
+        <span class="tab" role="tab" aria-selected="false">Marketing</span>
+        <span class="tab" role="tab" aria-selected="false">Platforms</span>
+      </div>
+      <div class="bento" role="list">
+        <article class="bento__cell bento__cell--wide" role="listitem">
+          <h3 class="bento__head">Lorem ipsum dolor sit</h3>
+          <p class="bento__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <span class="bento__arrow">Lorem ipsum -&gt;</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Lorem ipsum</h3>
+          <p class="bento__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor.
+          </p>
+          <span class="bento__arrow">Dolor sit -&gt;</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Dolor sit amet</h3>
+          <p class="bento__body">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco.
+          </p>
+          <span class="bento__arrow">Sit amet -&gt;</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Consectetur adipiscing</h3>
+          <p class="bento__body">
+            Duis aute irure dolor in reprehenderit in voluptate velit.
+          </p>
+          <span class="bento__arrow">Adipiscing -&gt;</span>
+        </article>
+        <article class="bento__cell" role="listitem">
+          <h3 class="bento__head">Eiusmod tempor</h3>
+          <p class="bento__body">
+            Excepteur sint occaecat cupidatat non proident sunt in culpa.
+          </p>
+          <span class="bento__arrow">Tempor -&gt;</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: framework strip. Six-up logo grid in a hairline frame. -->
+    <section class="section section--ruled" aria-label="Framework support">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Framework-defined infrastructure.</h2>
+      <div class="framework-strip" role="list">
+        <div class="framework-cell" role="listitem">Lorem</div>
+        <div class="framework-cell" role="listitem">Ipsum</div>
+        <div class="framework-cell" role="listitem">Dolor</div>
+        <div class="framework-cell" role="listitem">Sit</div>
+        <div class="framework-cell" role="listitem">Amet</div>
+        <div class="framework-cell" role="listitem">Adipiscing</div>
+      </div>
+    </section>
+
+    <!-- Section: infrastructure stacked rows. Heading-left / body-right. -->
+    <section class="section" aria-label="Infrastructure capabilities">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet.</h2>
+      <div class="infra-row">
+        <h3 class="infra-row__title">Lorem ipsum dolor</h3>
+        <p class="infra-row__body">
+          Sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+          incididunt ut labore et dolore magna aliqua. Ut enim ad minim.
+        </p>
+      </div>
+      <div class="infra-row">
+        <h3 class="infra-row__title">Consectetur adipiscing</h3>
+        <p class="infra-row__body">
+          Excepteur sint occaecat cupidatat non proident, sunt in culpa
+          qui officia deserunt mollit anim id est laborum.
+        </p>
+      </div>
+      <div class="infra-row">
+        <h3 class="infra-row__title">Duis aute irure</h3>
+        <p class="infra-row__body">
+          In voluptate velit esse cillum dolore eu fugiat nulla pariatur
+          excepteur sint occaecat cupidatat non proident.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: AI Gateway code-well. Heading + tinted mono block. -->
+    <section class="section section--ruled" aria-label="AI Gateway feature">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Lorem ipsum dolor sit amet consectetur.</h2>
+      <pre class="code-well">// Lorem ipsum dolor sit amet
+import { lorem } from "ipsum/dolor";
+
+const result = await lorem({
+  model: "sit-amet-001",
+  prompt: "Consectetur adipiscing elit",
+});
+</pre>
+    </section>
+
+    <!-- Section: quick-start template grid. -->
+    <section class="section section--ruled" aria-label="Quick start">
+      <span class="section-kicker">Lorem ipsum</span>
+      <h2 class="section-heading">Deploy your lorem in seconds.</h2>
+      <div class="template-grid" role="list">
+        <div class="template-card" role="listitem">Lorem</div>
+        <div class="template-card" role="listitem">Ipsum</div>
+        <div class="template-card" role="listitem">Dolor</div>
+        <div class="template-card" role="listitem">Sit</div>
+        <div class="template-card" role="listitem">Amet</div>
+        <div class="template-card" role="listitem">Adipiscing</div>
+      </div>
+    </section>
+
+    <!-- Section: end-of-page CTA block. -->
+    <section class="section" aria-label="Final CTA">
+      <h2 class="section-heading" style="max-width: 32ch;">
+        Lorem ipsum dolor sit amet consectetur adipiscing elit.
+      </h2>
+      <div class="cta-trio">
+        <a href="#" class="cta--primary" style="text-align: center;">Lorem ipsum</a>
+        <a href="#" class="cta--ghost" style="text-align: center;">Dolor sit amet</a>
+        <a href="#" class="cta--ghost" style="text-align: center;">Consectetur elit</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. Stands in for
+       a vercel-tagged footers/* whole (dev-tool-status-footer-001). -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

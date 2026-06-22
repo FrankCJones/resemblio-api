@@ -1,0 +1,159 @@
+<!--
+  Asset: avatar-stack-001
+  Class: avatars
+  Pattern: (none)
+  Inspired by: Vercel
+  Notes:
+    - Overlapping circle avatars with a page-bg ring that fences each chip into the one behind it.
+    - The ring uses box-shadow not border so the photo fills the full circle and the ring sits outside the silhouette.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avatar-stack-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Geist is Vercel's body face; system fallback via tokens. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .panel-title {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-4);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin-bottom: var(--ds-space-8);
+  }
+  /* Stack container - children overlap left-to-right via negative margin. */
+  .stack {
+    display: inline-flex;
+    align-items: center;
+    /* The first child has no shift; later children pull left to overlap. */
+  }
+  .stack > * + * {
+    margin-left: -10px; /* inline: 10px overlap on 32px chips gives a clear 22px stride */
+  }
+  /* Avatar - 32px circle with a 2px page-bg ring via box-shadow so each chip carves out the one behind. */
+  .av {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    box-shadow: 0 0 0 2px var(--ds-bg); /* inline: the ring is bg-colored, not white */
+    background: var(--ds-surface-2);
+    overflow: hidden;
+  }
+  .av .photo {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  /* Gradient stand-ins for portraits; the variable parts are size, overlap, and ring. */
+  .p1 { background: linear-gradient(135deg, #FF8A4C 0%, #FFD166 100%); }
+  .p2 { background: linear-gradient(135deg, #4C8BFF 0%, #7B5EFF 100%); }
+  .p3 { background: linear-gradient(135deg, #50E3C2 0%, #4CB782 100%); }
+  .p4 { background: linear-gradient(135deg, #FF4C8B 0%, #B14CFF 100%); }
+  .p5 { background: linear-gradient(135deg, #171717 0%, #4D4D4D 100%); }
+
+  /* Counter chip - "+N" follows the stack and uses the same ring */
+  .counter {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    box-shadow: 0 0 0 2px var(--ds-bg);
+    background: var(--ds-surface);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    border: 1px solid var(--ds-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Caption beside the stack */
+  .caption {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .caption strong { color: var(--ds-text); font-weight: 500; }
+
+  /* Size variants on the same pattern */
+  .stack-sm .av { width: 24px; height: 24px; }
+  .stack-sm > * + * { margin-left: -8px; }
+  .stack-sm .counter { width: 24px; height: 24px; font-size: var(--ds-text-2xs); }
+  .stack-lg .av { width: 40px; height: 40px; }
+  .stack-lg > * + * { margin-left: -12px; }
+  .stack-lg .counter { width: 40px; height: 40px; font-size: var(--ds-text-sm); }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <div class="panel-title">Three avatars</div>
+    <div class="row">
+      <div class="stack">
+        <div class="av"><div class="photo p1"></div></div>
+        <div class="av"><div class="photo p2"></div></div>
+        <div class="av"><div class="photo p3"></div></div>
+      </div>
+      <div class="caption"><strong>3 people</strong> online now</div>
+    </div>
+
+    <div class="panel-title">Four plus counter</div>
+    <div class="row">
+      <div class="stack">
+        <div class="av"><div class="photo p1"></div></div>
+        <div class="av"><div class="photo p2"></div></div>
+        <div class="av"><div class="photo p3"></div></div>
+        <div class="av"><div class="photo p4"></div></div>
+        <div class="counter">+12</div>
+      </div>
+      <div class="caption"><strong>16 collaborators</strong> on lorem ipsum dolor</div>
+    </div>
+
+    <div class="panel-title">Small size variant</div>
+    <div class="row">
+      <div class="stack stack-sm">
+        <div class="av"><div class="photo p2"></div></div>
+        <div class="av"><div class="photo p3"></div></div>
+        <div class="av"><div class="photo p5"></div></div>
+      </div>
+      <div class="caption">Lorem ipsum sit amet</div>
+    </div>
+
+    <div class="panel-title">Large size variant</div>
+    <div class="row">
+      <div class="stack stack-lg">
+        <div class="av"><div class="photo p1"></div></div>
+        <div class="av"><div class="photo p4"></div></div>
+        <div class="av"><div class="photo p5"></div></div>
+        <div class="counter">+5</div>
+      </div>
+      <div class="caption">Dolor sit amet consectetur</div>
+    </div>
+
+  </div>
+</body>
+</html>

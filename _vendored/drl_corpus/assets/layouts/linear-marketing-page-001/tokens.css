@@ -1,0 +1,99 @@
+/*
+ * linear-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the Linear homepage. Tokens calibrated to
+ * the dark-mode-native register the rest of the Linear system uses: near-
+ * black page surface, off-white reading ink, single saturated indigo
+ * accent, hairline chrome with no shadows, mono only for metadata and
+ * kickers. WebFetch returned the page's section sequence and structural
+ * markup but stripped the inline-CSS-module styles the Next.js build
+ * ships, so individual hex values are mapped to the closest contract slot
+ * from the source's known design canon (the dark indigo register Linear
+ * has shipped since 2021) and from sibling system-tagged assets, rather
+ * than copied verbatim from devtools.
+ *
+ * The slots that actually carry this layout are --ds-bg (page surface),
+ * --ds-text (reading ink), --ds-accent (indigo CTA + focus ring),
+ * --ds-hairline (between-section rules and section-edge chrome),
+ * --ds-space-12 / --ds-space-16 (section padding rhythm), and
+ * --ds-font-display + --ds-font-mono (the Inter / SF-Mono pair that
+ * carries every page surface in the Linear system).
+ */
+:root {
+  /* Colors. Near-black page, off-white ink, single indigo accent.
+   * No chromatic accent in the structural chrome; the indigo lives in
+   * primary CTAs, focus rings, and the mesh-gradient blob inside hero. */
+  --ds-bg:           #08090A;   /* Near-black page surface; the Linear baseline since 2021. */
+  --ds-surface:      #101113;   /* Raised surface for cards (customer quote tiles, pricing strip). */
+  --ds-surface-2:    #16181C;   /* Second-level surface; integrations grid cells, nav-pill fill. */
+  --ds-text:         #E6E8EB;   /* Off-white reading ink; body and section copy. */
+  --ds-text-muted:   #8A8F98;   /* Secondary text; nav links, supporting paragraphs, metadata. */
+  --ds-text-strong:  #F7F8F8;   /* Hero statement, mission line, wordmark. */
+  --ds-border:       #1F2126;   /* Card and pricing-row edges. */
+  --ds-hairline:     #1A1C20;   /* Between-section divider; defines the page rhythm. */
+  --ds-accent:       #5E6AD2;   /* Linear indigo; CTA fill, link, focus ring, hero gradient blob. */
+  --ds-accent-2:     #B5BDFB;   /* Lifted indigo for hover and focus contrast. */
+  --ds-success:      #4CB782;
+  --ds-warning:      #F2C94C;
+  --ds-error:        #EB5757;
+  --ds-info:         #5E6AD2;
+  --ds-focus-ring:   #B5BDFB;
+
+  /* Type. Inter (or its custom "Inter Display" variant) carries every
+   * display moment on Linear's marketing surface; the same family also
+   * sets body copy, so display and body share a family. Mono is reserved
+   * for the small uppercase kickers and the version-number metadata. */
+  --ds-font-display: "Inter Display", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-mono:    "Berkeley Mono", "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Display", "Inter", sans-serif;
+
+  /* Type scale. Hero statement sits at 5xl (72px) on desktop; section
+   * headings at 3xl; lead support at lg; body at base. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 30px;   --ds-text-3xl: 44px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.022em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.18em;
+
+  /* Spacing. Section rhythm: 96px between sections on desktop
+   * (--ds-space-12), 64px tablet (--ds-space-10), 48px mobile
+   * (--ds-space-8). Hero takes one extra step (128px / --ds-space-16). */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Linear's chrome is medium-soft; pricing rows and integration
+   * cells use 12px, the floating nav pill uses 9999px, hero CTA uses 8px. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 12px;  --ds-radius-lg: 20px;  --ds-radius-full: 9999px;
+
+  /* Shadows. The layout itself is flat; hairlines do the separation work.
+   * Cards take a very subtle elevation only on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(255,255,255,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:  0 8px 24px rgba(0,0,0,0.5);
+  --ds-shadow-lg:  0 16px 40px rgba(0,0,0,0.6);
+  --ds-shadow-2xl: 0 32px 64px rgba(0,0,0,0.7);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

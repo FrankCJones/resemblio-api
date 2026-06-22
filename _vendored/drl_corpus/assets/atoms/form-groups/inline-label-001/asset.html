@@ -1,0 +1,125 @@
+<!--
+  Asset: inline-label-001
+  Class: form-groups
+  Pattern: label-above
+  Inspired by: Resend
+  Notes:
+    - Label sits inline (to the left of the input) on the same row, not stacked above.
+    - Help text sits below the row and right-aligns to the trailing edge of the input.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>inline-label-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter is Resend's shipped face; system fallback chain is the closest available. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+  .panel {
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .panel:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .state-label {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin-bottom: var(--ds-space-4);
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 140px 1fr;     /* inline: 140px label rail keeps short labels aligned vertically across rows */
+    align-items: center;
+    column-gap: var(--ds-space-3);
+  }
+  .field-label {
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    text-align: right;
+  }
+  .field-input {
+    background: var(--ds-surface);
+    color: var(--ds-text-strong);
+    border: 0.8px solid var(--ds-border); /* inline: 0.8px sub-pixel hairline as on Resend */
+    border-radius: var(--ds-radius-lg);
+    padding: 0 12px;
+    height: 32px;                         /* inline: matches Resend's compact 32px input row */
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+    outline: none;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    width: 100%;
+  }
+  .field-input::placeholder { color: var(--ds-text-muted); }
+  .field-input:focus-visible,
+  .field-input.is-focus {
+    border-color: var(--ds-focus-ring);
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 1px;
+  }
+  .field-help {
+    grid-column: 2;                       /* aligns help to the input column */
+    text-align: right;                    /* right-align to the trailing edge of the input */
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-xs);
+    margin-top: var(--ds-space-1);
+  }
+  .field.is-error .field-input { border-color: var(--ds-error); }
+  .field.is-error .field-help { color: var(--ds-error); }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="panel">
+      <div class="state-label">rest</div>
+      <div class="field">
+        <label class="field-label" for="i1">Lorem nomen</label>
+        <input class="field-input" id="i1" type="text" placeholder="Ipsum dolor"/>
+        <p class="field-help">Lorem ipsum, optional.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="state-label">filled + focus</div>
+      <div class="field">
+        <label class="field-label" for="i2">Lorem electronicus</label>
+        <input class="field-input is-focus" id="i2" type="email" value="lorem@ipsum.dev"/>
+        <p class="field-help">Lorem ipsum dolor sit.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="state-label">error</div>
+      <div class="field is-error">
+        <label class="field-label" for="i3">Lorem electronicus</label>
+        <input class="field-input" id="i3" type="email" value="not-an-email"/>
+        <p class="field-help">Lorem ipsum dolor sit amet.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!--
+  Asset: linear-hero-001
+  Class: heroes (whole)
+  Pattern: single-cta-hero, no-imagery (above the headline), product-screenshot-frame (below)
+  Inspired by: Linear
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/mono-electric-001         (near-black + indigo accent system)
+    - type-pairings/sans-system-modern-001   (Inter Variable across display + body)
+    - headings/display-tight-001             (64-72px tight-tracked H1)
+    - kickers/mono-eyebrow-001               (uppercase eyebrow above the H1)
+    - buttons/primary-pill-001               (white pill primary CTA)
+    - cards/hairline-flat-001                (the product screenshot frame)
+  Notes:
+    - Native context: linear.app homepage opening viewport, captured via
+      WebFetch 2026-05-20 for element text and CDN screenshot frame; tokens
+      corroborated against the Linear mono-electric and sans-system-modern
+      atoms (devtools 2026-05-19). Near-black surface, display-tight headline
+      stacked over a single-paragraph dek, single white-pill CTA, product
+      screenshot frame sitting one step above the body bg with a hairline
+      ring (no drop shadow on a dark surface).
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the indigo mesh blob behind the H1 is a one-off
+      gradient stop arrangement specific to this hero (no token slot for
+      gradient geometry); the screenshot panel's inner sub-frame and chrome
+      bars are demo furniture standing in for the real product UI capture.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Inter Variable. The variable axis weight 510 is
+     approximated as 500 on the static webfont. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Near-black surface with a single, low-opacity indigo blob
+   * sitting behind the H1. The blob is the only chromatic moment above the
+   * screenshot frame; everything else in the first viewport is the
+   * neutral palette. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Inline: the indigo mesh blob. Hero-specific ornament; the gradient stop
+   * positions are an asset-level character choice, not a contract slot. */
+  body::before {
+    content: "";
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1200px;
+    height: 800px;
+    background:
+      radial-gradient(closest-side at 50% 50%,
+        rgba(94, 106, 210, 0.22) 0%,
+        rgba(94, 106, 210, 0.08) 40%,
+        rgba(94, 106, 210, 0) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Top bar: wordmark left, sparse uppercase nav center-right, sign-in
+   * affordance at the far right. A single hairline underline separates the
+   * chrome from the canvas. */
+  .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__cta {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero shell. Centered column; max content width ~720px so the dek holds
+   * a measured line. Generous vertical padding above so the H1 starts well
+   * below the chrome and the indigo blob has room to breathe. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-12);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Kicker: a small uppercase pill-style label sitting above the H1. The
+   * kicker is enclosed in a hairline-bordered chip rather than a free-
+   * standing label; the chip itself is a 1px ring with no fill. */
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: 6px 12px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* H1: the display-tight signature. 64px at the baseline, scaling to 72px
+   * on wide viewports via clamp. text-wrap: balance holds the three-line
+   * shape that Linear's headline writers pace toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-4xl), 6.5vw, var(--ds-text-6xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence, 19px on 1.5 leading, in the muted reading tone.
+   * Single paragraph; no bullet list, no second sentence on a separate
+   * line. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  /* Single CTA. White pill on the near-black surface; the contrast does the
+   * work. composition_atom: buttons/primary-pill-001. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+  }
+  .btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    padding: 12px 20px;
+    border-radius: var(--ds-radius-full);
+    border: 1px solid transparent;
+    background: var(--ds-text);
+    color: var(--ds-bg);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn-pill:hover {
+    /* Inline: one step toward strong-text for the hover lift; matches the
+     * primary-pill-001 button atom convention. */
+    background: var(--ds-text-strong);
+  }
+  .btn-pill:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  /* Product screenshot frame. composition_atom: cards/hairline-flat-001
+   * adapted to a dark surface: surface fill one step above bg, single
+   * hairline ring expressed as box-shadow, generous corner radius. The
+   * inner chrome (window-bar dots, fake sidebar, fake content panel) is
+   * demo furniture standing in for the real product UI. */
+  .frame {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto var(--ds-space-16);
+    padding: 0 var(--ds-space-8);
+  }
+  .frame__panel {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    overflow: hidden;
+  }
+  .frame__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .frame__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+  }
+  .frame__body {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 360px;
+  }
+  .frame__sidebar {
+    border-right: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .frame__row {
+    height: 8px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+  }
+  .frame__row--short { width: 60%; }
+  .frame__row--mid   { width: 80%; }
+  .frame__content {
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .frame__content .frame__row { height: 12px; }
+  .frame__content .frame__row:first-child { width: 40%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-pill, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .frame__body { grid-template-columns: 1fr; }
+    .frame__sidebar { border-right: 0; border-bottom: 1px solid var(--ds-hairline); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">Lorem</a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+    </nav>
+    <a href="#" class="topbar__cta">Adipiscing</a>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__kicker">Lorem Ipsum Dolor</span>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut
+      enim ad minim veniam.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn-pill">Lorem Ipsum</a>
+    </div>
+  </section>
+
+  <div class="frame" aria-label="Lorem ipsum product preview">
+    <div class="frame__panel">
+      <div class="frame__bar" aria-hidden="true">
+        <span class="frame__dot"></span>
+        <span class="frame__dot"></span>
+        <span class="frame__dot"></span>
+      </div>
+      <div class="frame__body">
+        <aside class="frame__sidebar" aria-hidden="true">
+          <span class="frame__row frame__row--mid"></span>
+          <span class="frame__row frame__row--short"></span>
+          <span class="frame__row frame__row--mid"></span>
+          <span class="frame__row frame__row--short"></span>
+          <span class="frame__row frame__row--mid"></span>
+        </aside>
+        <main class="frame__content" aria-hidden="true">
+          <span class="frame__row"></span>
+          <span class="frame__row frame__row--mid"></span>
+          <span class="frame__row"></span>
+          <span class="frame__row frame__row--mid"></span>
+          <span class="frame__row frame__row--short"></span>
+          <span class="frame__row"></span>
+        </main>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

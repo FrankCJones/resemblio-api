@@ -1,0 +1,615 @@
+<!--
+  Asset: mailchimp-customer-story-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: Mailchimp (mailchimp.com/case-studies/<slug>)
+  Notes:
+    - Customer-story page skeleton: flush-top nav with primary CTA pill in
+      Cavendish Yellow, hero (customer wordmark kicker + display title +
+      sentence-case dek + photo band at 16:10), metadata chip band
+      (Published / Industry / Location) sitting beneath the hero, narrative
+      body laid out as a single ~66ch reading column with H2 section heads
+      shaped as interview questions, full-bleed pull quote with speaker
+      attribution and headshot, products-used aside on desktop, two-up
+      related-stories grid, dark-on-yellow CTA block, mega-footer in five
+      columns. Reading column is ~66ch; page widens to 1240px.
+    - Variable: section sequence, page max-width, vertical rhythm,
+      typographic role per slot, color slot mapping. Inline: article-column
+      measure (66ch), page max-width (1240px), hero photo aspect (16/10),
+      metadata-chip pill geometry, CTA tile aspect.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-customer-story-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Graphik is the Mailchimp marketing face (Commercial Type).
+  Not loaded inline; the fallback chain in tokens.css (Helvetica Neue,
+  Inter) carries the register so the asset opens standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1240px so nav, metadata band, related-grid,
+   * and footer breathe; the reading column inside is narrower. Inline.
+   */
+  .page {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Narrative reading column. The body sits at ~66ch (about 680px at
+   * 17px Graphik). Page-grid character, not a contract slot, so inline.
+   */
+  .column {
+    max-width: 66ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, sits in the page container, hairline rule below. The
+   * primary action is the yellow Sign-Up pill on the right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .nav__cta {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border: 1px solid var(--ds-text-strong);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-2) var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+  }
+
+  /* Recurring section. Padding-block scales up on desktop. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section--ruled {
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /*
+   * Hero. Customer wordmark eyebrow above the display title, then a
+   * sentence-case dek, then a wide photo band at 16:10. The photo carries
+   * the Cavendish Yellow color block as an inline ornament corner.
+   */
+  .hero { padding-top: var(--ds-space-10); padding-bottom: var(--ds-space-8); }
+  @media (min-width: 768px) {
+    .hero { padding-top: var(--ds-space-16); padding-bottom: var(--ds-space-10); }
+  }
+  .hero__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    max-width: 22ch;
+  }
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-8);
+    max-width: 56ch;
+  }
+  /*
+   * Hero photo band. 16:10 aspect; sits at page width (not column width).
+   * A Cavendish Yellow swatch peeks out top-left as inline ornament -
+   * stands in for the brand-color block Mailchimp pairs with hero photos.
+   */
+  .hero__photo {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+  }
+  .hero__photo::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    left: -16px;
+    width: 25%;
+    height: 35%;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    z-index: 0;
+  }
+  .hero__photo .slot { position: relative; z-index: 1; height: 100%; }
+
+  /*
+   * Metadata chip band. Sits just below the hero photo. Three to five
+   * pill chips: Published date, Industry, Location, Categories. Each
+   * chip is a warm-grey pill with mono-uppercase label inside.
+   */
+  .meta-band {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-6);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+  }
+  .chip__label {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+  }
+
+  /*
+   * Body grid. Desktop: 2-column with narrow products-used aside on the
+   * right; mobile: aside stacks above the body.
+   */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 1024px) {
+    /* Aside ratio: ~260px aside / 1fr body. Inline. */
+    .body-grid { grid-template-columns: 1fr 260px; gap: var(--ds-space-10); align-items: start; }
+  }
+
+  /*
+   * Body column. Lead paragraph sits one step larger. Body uses Graphik
+   * at 17px on 1.6 leading. H2 section heads are shaped as interview
+   * questions in the Mailchimp customer-story convention.
+   */
+  .body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    max-width: 66ch;
+  }
+  .body > * + * { margin-top: var(--ds-space-5); }
+  .body .lead {
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+  .body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .body a {
+    color: var(--ds-text-strong);
+    border-bottom: 2px solid var(--ds-accent);
+    padding-bottom: 1px;
+  }
+
+  /*
+   * Pull quote. Mailchimp's customer-story convention: full-width breakout
+   * with an oversized opening glyph in Cavendish Yellow, quote body in
+   * display sans, and a stacked attribution block beneath.
+   */
+  .pull-quote {
+    margin: var(--ds-space-12) 0;
+    padding: var(--ds-space-8) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    position: relative;
+  }
+  .pull-quote::before {
+    content: "\201C";
+    position: absolute;
+    top: -8px;
+    left: 0;
+    font-family: var(--ds-font-display);
+    font-size: 120px;
+    line-height: 1;
+    color: var(--ds-accent);
+    font-weight: 700;
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-8) 0 var(--ds-space-5);
+    padding-left: var(--ds-space-8);
+  }
+  .pull-quote__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-left: var(--ds-space-8);
+  }
+  .pull-quote__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .pull-quote__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .pull-quote__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Aside / sidebar. Sentence-case label per group (Industry, Location,
+   * Products, Categories). On desktop, sticks just below the metadata
+   * band as the body scrolls.
+   */
+  .aside {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  @media (min-width: 1024px) {
+    .aside { position: sticky; top: var(--ds-space-8); }
+  }
+  .aside__group + .aside__group { margin-top: var(--ds-space-5); }
+  .aside__label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    font-weight: 600;
+    margin: 0 0 var(--ds-space-2);
+  }
+  .aside__value {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .aside__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .aside__tag {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text);
+    background: var(--ds-bg);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-1) var(--ds-space-3);
+  }
+
+  /*
+   * CTA block. Yellow-on-ink inversion: Cavendish Yellow surface, ink
+   * text, white pill primary. Stand-in for mailchimp-cta-block-001.
+   */
+  .cta {
+    background: var(--ds-accent);
+    color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    align-items: end;
+  }
+  @media (min-width: 768px) {
+    .cta { grid-template-columns: 1.4fr 1fr; gap: var(--ds-space-10); }
+  }
+  .cta__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .cta__body {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+  }
+  .cta__primary, .cta__secondary {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    padding: var(--ds-space-3) var(--ds-space-6);
+    border-radius: var(--ds-radius-full);
+    border: 1px solid var(--ds-text-strong);
+  }
+  .cta__primary { background: var(--ds-text-strong); color: var(--ds-bg); }
+  .cta__secondary { background: transparent; color: var(--ds-text-strong); }
+
+  /*
+   * Related stories. Two-up card grid. Mailchimp favors two-up over
+   * three-up on customer-story pages to give each card room to breathe.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); font-weight: 600; }
+
+  /* Footer: full-width band, sits outside the .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a mailchimp-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px; min-height: 32px;">
+        <span class="slot__label">nav-link-cluster</span>
+      </div>
+      <a class="nav__cta" href="#">Sign Up Free</a>
+    </nav>
+
+    <!-- Section: hero. Kicker + display title + dek + photo band. -->
+    <header class="hero" aria-label="Customer story hero">
+      <div class="column">
+        <p class="hero__kicker">Customer Story . Lorem Customer</p>
+        <h1 class="hero__title">Lorem ipsum dolor sit amet by being authentic with their audience.</h1>
+        <p class="hero__dek">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+      </div>
+      <figure class="hero__photo" aria-label="Customer photograph">
+        <div class="slot">
+          <span class="slot__label">customer-photo</span>
+          Lorem ipsum dolor sit amet (16:10)
+        </div>
+      </figure>
+      <!-- Metadata chip band: published / industry / location / categories. -->
+      <div class="meta-band">
+        <span class="chip"><span class="chip__label">Published</span> Nov 12, 2026</span>
+        <span class="chip"><span class="chip__label">Industry</span> Lorem Ipsum</span>
+        <span class="chip"><span class="chip__label">Location</span> Dolor, US</span>
+        <span class="chip"><span class="chip__label">Categories</span> Sit Amet, Consectetur</span>
+      </div>
+    </header>
+
+    <!-- Section: narrative body + products-used aside. Two-column on desktop. -->
+    <section class="section section--ruled" aria-label="Narrative body">
+      <div class="body-grid">
+        <article class="body">
+          <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <a href="#">In voluptate velit esse</a> cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+          </p>
+          <h2>What's the role of lorem at your company?</h2>
+          <p>
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+            nostrud exercitation ullamco laboris nisi ut aliquip.
+          </p>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt.
+          </p>
+          <h2>How do you measure success with email marketing?</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+            quae ab illo inventore veritatis et quasi architecto beatae.
+          </p>
+          <blockquote class="pull-quote">
+            <p class="pull-quote__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. This
+              year's campaign earned a 110 percent lift compared to last
+              year, which speaks to the value of being patient and authentic.
+            </p>
+            <footer class="pull-quote__attribution">
+              <span class="pull-quote__avatar" aria-hidden="true"></span>
+              <span>
+                <p class="pull-quote__name">Lorem Ipsum</p>
+                <p class="pull-quote__role">Director of Marketing, Lorem Customer</p>
+              </span>
+            </footer>
+          </blockquote>
+          <h2>Do you experiment with send times?</h2>
+          <p>
+            Mollit anim id est laborum. Sed ut perspiciatis unde omnis iste
+            natus error sit voluptatem accusantium doloremque laudantium.
+          </p>
+          <h2>How do you approach the holidays?</h2>
+          <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+            aut fugit, sed quia consequuntur magni dolores eos qui ratione
+            voluptatem sequi nesciunt.
+          </p>
+        </article>
+
+        <!-- Aside: metadata + products used. -->
+        <aside class="aside" aria-label="Customer details">
+          <div class="aside__group">
+            <p class="aside__label">Industry</p>
+            <p class="aside__value">Lorem Ipsum</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Location</p>
+            <p class="aside__value">Dolor Sit, US</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Use Case</p>
+            <p class="aside__value">Consectetur Adipiscing</p>
+          </div>
+          <div class="aside__group">
+            <p class="aside__label">Products Used</p>
+            <ul class="aside__tags">
+              <li class="aside__tag">Email</li>
+              <li class="aside__tag">Automations</li>
+              <li class="aside__tag">Audience</li>
+              <li class="aside__tag">Landing Pages</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: CTA block. Yellow inversion. Stands in for mailchimp-cta-block-001. -->
+    <section class="section" aria-label="Call to action">
+      <div class="cta">
+        <div>
+          <p class="cta__title">Lorem ipsum dolor sit, get started with Lorem.</p>
+          <p class="cta__body">
+            Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Sign up free, no card required.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <a class="cta__primary" href="#">Sign Up Free</a>
+          <a class="cta__secondary" href="#">Talk to Sales</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: related stories. Two-up grid. -->
+    <section class="section section--ruled" aria-label="Related stories">
+      <h2 class="related-heading">More customer stories</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 240px;">
+        <span class="slot__label">mega-footer (5 columns)</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

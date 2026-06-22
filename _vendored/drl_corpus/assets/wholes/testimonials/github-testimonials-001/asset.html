@@ -1,0 +1,379 @@
+<!--
+  Asset: github-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, mono-eyebrow, monochrome-palette, paper-and-ink
+  Inspired by: GitHub (customer-stories index, Copilot page proof strip)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (white surface + near-black ink + green accent)
+    - type-pairings/sans-system-modern-001    (Mona Sans across display and body)
+    - cards/hairline-flat-001                 (1px ring chrome, no drop shadow at rest)
+    - body-text/pull-quote-breakout-001       (oversized customer quote interrupting the column)
+    - kickers/mono-eyebrow-001                (Monaspace uppercase "Customer Story" eyebrow)
+    - dividers/hairline-rule-001              (Primer Gray 200 hairline above attribution row)
+    - avatars/circle-photo-001                (48px circular customer headshot with 1px ring)
+  Notes:
+    - Native context: github.com/customer-stories testimonial carousel,
+      captured via WebFetch 2026-05-20. Four real quotes inspected on that
+      surface (Uber / Ali-Reza Adl-Tabatabai, Redfin / Jen Peck, Veritas /
+      Santosh Lolyeker, Costco / Avdesh Rai); the structure is a Mona Sans
+      pull quote, a divider rule, then an avatar-plus-attribution row with
+      name and role / company on separate lines. The Copilot page
+      (github.com/features/copilot, same date) carries the logo strip
+      counterpart (Coyote Logistics, Duolingo, GM, Mercado Libre, Shopify,
+      Stripe, Coca Cola) which the asset includes as a press-strip band
+      below the cards.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the customer wordmark SVG geometries in the logo
+      strip and the trailing arrow SVG path. Avatar uses an inline SVG
+      placeholder (no real photo bundled per asset rules).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>github-testimonials-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Mona Sans on machines without the licensed face;
+     the variable axes (wght 200-900, opsz) are absent in the fallback but
+     the metrics read close enough. JetBrains Mono carries Monaspace Neon
+     on the kicker and company line. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White Primer canvas; the customer-stories grid sits here. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .section {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* Section heading band. Sits above the card grid; sentence-case
+   * Mona Sans display. */
+  .section__head {
+    margin: 0 0 var(--ds-space-8);
+    text-align: center;
+  }
+  .section__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .section__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-2xl), 4vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* The grid. Two-up at >=900px, single column below. Each card is a
+   * clickable link to the case study. */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .quote-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* The card. White surface with a 1px Border-default ring; 12px radius
+   * outer; no drop shadow at rest. Sub-pixel lift on hover. */
+  .quote-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-6);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform  var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .quote-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+  .quote-card:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg), 0 0 0 1px var(--ds-border);
+  }
+
+  /* Mono kicker. "CUSTOMER STORY" at 12px Monaspace, wider tracking. */
+  .quote-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* The quote body. Mona Sans at 24-28px clamp, snug leading, slight
+   * negative tracking. No curly quote glyph; the size carries the
+   * punctuation work. text-wrap: pretty holds the rag. */
+  .quote-card__quote {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 2.2vw, var(--ds-text-2xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Divider rule above the attribution row. Matches the card's outer
+   * hairline so the card reads as one ruled system. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Attribution row. Avatar on the left; name + role / company stack
+   * on the right. This is the GitHub differentiator: the human face is
+   * the proof, not the company wordmark. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Avatar slot. 48px circle with a 1px Border-default ring so the
+   * photo reads cleanly on the white card. The wash sits inside the
+   * ring at canvas.subtle so the placeholder reads as an empty seat,
+   * not a missing image. */
+  .quote-card__avatar {
+    width: var(--ds-space-8);
+    height: var(--ds-space-8);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-muted);
+  }
+  .quote-card__avatar svg { width: 60%; height: 60%; display: block; }
+
+  /* Name + role / company stack. Name in Mona Sans semibold at 16px;
+   * role + company at 14px Primer fg.muted. Stacked vertically; baseline
+   * cluster reads as one attribution unit. */
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Trailing "Read story" affordance. Muted at rest; Primer green on
+   * card hover - the only chromatic moment. */
+  .quote-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-1);
+    transition:
+      color     var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .quote-card:hover .quote-card__link { color: var(--ds-accent); }
+  .quote-card:hover .quote-card__link svg { transform: translateX(2px); }
+  .quote-card__link svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+
+  /* Logo proof strip. Captured from the Copilot page; a single hairline-
+   * bordered band below the cards holding the customer wordmarks in
+   * Primer fg.muted so they read as proof, not brand moments. */
+  .logo-strip {
+    margin-top: var(--ds-space-10);
+    padding: var(--ds-space-6) var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-8);
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+  }
+  .logo-strip__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .logo-strip__mark svg { width: 22px; height: 22px; display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-card__link,
+    .quote-card__link svg { transition: none; }
+    .quote-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="section" aria-label="Lorem ipsum customer stories">
+
+    <header class="section__head">
+      <p class="section__kicker">Customer Stories</p>
+      <h2 class="section__title">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h2>
+    </header>
+
+    <div class="quote-grid">
+
+      <a href="#" class="quote-card" aria-label="Read Lorem Ipsum customer story">
+        <p class="quote-card__kicker">Customer Story / Lorem</p>
+        <blockquote class="quote-card__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, a fermentum lacinia magna.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true">
+            <!-- Inline ornament: avatar placeholder glyph; no real photo bundled. -->
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4" fill="currentColor"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21" fill="currentColor"/></svg>
+          </span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Lorem Ipsum</span>
+            <span class="quote-card__role">Senior Director of Engineering, Dolor</span>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="quote-card" aria-label="Read Dolor Sit customer story">
+        <p class="quote-card__kicker">Customer Story / Sit</p>
+        <blockquote class="quote-card__quote">
+          Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4" fill="currentColor"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21" fill="currentColor"/></svg>
+          </span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Consectetur Adipiscing</span>
+            <span class="quote-card__role">Senior Director of Engineering, Amet</span>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="quote-card" aria-label="Read Amet customer story">
+        <p class="quote-card__kicker">Customer Story / Amet</p>
+        <blockquote class="quote-card__quote">
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur, excepteur sint occaecat cupidatat.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4" fill="currentColor"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21" fill="currentColor"/></svg>
+          </span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Tempor Incididunt</span>
+            <span class="quote-card__role">VP, Engineering Fellow, Veritas Lorem</span>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="quote-card" aria-label="Read Magna customer story">
+        <p class="quote-card__kicker">Customer Story / Magna</p>
+        <blockquote class="quote-card__quote">
+          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum sed ut perspiciatis.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4" fill="currentColor"/><path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21" fill="currentColor"/></svg>
+          </span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Ullamco Laboris</span>
+            <span class="quote-card__role">Enterprise Solutions Engineer, Aliqua</span>
+          </span>
+        </figcaption>
+        <span class="quote-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+    </div>
+
+    <!-- Logo proof strip from the Copilot page (github.com/features/copilot).
+         Stand-in mono wordmarks; no real brand SVGs bundled. -->
+    <div class="logo-strip" aria-label="Lorem ipsum customer logos">
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="6" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>Lorem</span>
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="2"/></svg>Ipsum</span>
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 22 L16 6 L26 22 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>Dolor</span>
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 8 L24 8 L24 24 L8 24 Z M8 16 L24 16" stroke="currentColor" stroke-width="2" fill="none"/></svg>Sit</span>
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="8" y="12" width="16" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>Amet</span>
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 16 L26 16 M16 6 L16 26" stroke="currentColor" stroke-width="2"/></svg>Consectetur</span>
+      <span class="logo-strip__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="12" cy="16" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="16" r="5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Adipiscing</span>
+    </div>
+
+  </section>
+</body>
+</html>

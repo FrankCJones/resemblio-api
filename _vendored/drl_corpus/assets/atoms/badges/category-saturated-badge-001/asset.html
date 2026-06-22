@@ -1,0 +1,137 @@
+<!--
+  Asset: category-saturated-badge-001
+  Class: badges
+  Pattern: (none)
+  Inspired by: The Markup (themarkup.org)
+  Notes:
+    - Flat saturated coral rectangle holding a small uppercase humanist sans label; the editorial publication "category flag" pattern.
+    - Variable: coral fill, cream label color, padding, tracking, font. Inline: zero-radius (square corners), the small uppercase transform, the slight font-weight bump that keeps the small label legible on saturated bg.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>category-saturated-badge-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Inter as Messina stand-in: humanist sans with similar x-height and aperture at small uppercase sizes. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Newsreader:wght@500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Demo stage: cream card on navy field, the canonical context. */
+  body {
+    background: var(--ds-surface-2);  /* navy field */
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    padding: var(--ds-space-8);
+    display: grid;
+    place-items: center;
+  }
+
+  .stage {
+    background: var(--ds-bg);          /* cream card */
+    padding: var(--ds-space-8) var(--ds-space-6);
+    width: min(640px, 100%);
+    display: grid;
+    gap: var(--ds-space-6);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    align-items: center;
+  }
+
+  /* The badge itself.
+   * Inline rules below are the badge-specific character that does NOT belong
+   * in the token contract: the uppercase transform, the exact letter-spacing,
+   * and the chosen weight for legibility at this size on a saturated fill.
+   */
+  .cat {
+    display: inline-block;
+    background: var(--ds-accent);                /* hot coral */
+    color: var(--ds-bg);                         /* cream label */
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);                /* 12px */
+    font-weight: 700;                            /* inline: small uppercase on saturated bg needs the weight */
+    line-height: 1;                              /* inline: badges sit tight; one-off character */
+    text-transform: uppercase;                   /* inline: uppercase is the badge convention, not a token */
+    letter-spacing: var(--ds-tracking-wide);
+    padding: 6px var(--ds-space-2);              /* 6px is between --ds-space-1 and --ds-space-2; tuned to keep the badge feeling square not tall */
+    border-radius: var(--ds-radius-xs);          /* 0 - square corners are load-bearing */
+    text-decoration: none;
+  }
+
+  .cat:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Variant: badge sitting on the navy field (header / divider context). */
+  .row--on-navy {
+    background: var(--ds-surface-2);
+    margin: 0 calc(var(--ds-space-6) * -1);
+    padding: var(--ds-space-5) var(--ds-space-6);
+  }
+
+  /* Variant: inverted (cream badge with coral label) for muted secondary use. */
+  .cat--inverted {
+    background: var(--ds-bg);
+    color: var(--ds-accent);
+    box-shadow: inset 0 0 0 1px var(--ds-accent);  /* inline: hairline keyline so the inverted variant has edge against cream */
+  }
+
+  /* Label above a story title, the canonical use. */
+  .story {
+    display: grid;
+    gap: var(--ds-space-3);
+  }
+  .story h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 36ch;
+  }
+</style>
+</head>
+<body>
+  <main class="stage">
+
+    <!-- Row 1: the badge in isolation, multiple categories. -->
+    <div class="row" aria-label="Category badges">
+      <a class="cat" href="#">Lorem Privacy</a>
+      <a class="cat" href="#">Ipsum Election</a>
+      <a class="cat" href="#">Dolor Machine Learning</a>
+      <a class="cat" href="#">Sit Amet AI</a>
+    </div>
+
+    <!-- Row 2: badge over a story title, the canonical context. -->
+    <article class="story">
+      <a class="cat" href="#">Consectetur</a>
+      <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor</h3>
+    </article>
+
+    <!-- Row 3: inverted variant. -->
+    <div class="row" aria-label="Inverted variant">
+      <a class="cat cat--inverted" href="#">Adipiscing</a>
+      <a class="cat cat--inverted" href="#">Tempor</a>
+    </div>
+
+    <!-- Row 4: badge on navy field. -->
+    <div class="row row--on-navy" aria-label="On navy field">
+      <a class="cat" href="#">Excepteur</a>
+      <a class="cat" href="#">Cupidatat</a>
+    </div>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!--
+  Asset: maggie-garden-pair-001
+  Class: type-pairings
+  Pattern: single-typeface-system, sans-display-serif-body
+  Inspired by: Maggie Appleton (maggieappleton.com)
+  Notes:
+    - Fraunces (open-licensed analog to Commercial Type's Canela) carries
+      both display and body. Lato carries the small supporting sans moments
+      (kicker, metadata). This mirrors the colophon-documented stack:
+      Canela Display + Canela Text + Lato.
+    - Inline ornament: the small green leaf glyph before the kicker is an
+      asset-specific digital-garden cue; not a token. The italic terracotta
+      accent word in the display headline is also an inline character moment.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>maggie-garden-pair-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Fraunces is the open-licensed analog. Pulling opsz (optical sizing),
+  SOFT, and WONK axes so display sizes can soften into a Canela-like
+  warmth while body stays composed.
+  Lato 400/700 covers kicker and metadata.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0..100,0..1;1,9..144,400..700,0..100,0..1&family=Lato:wght@400;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    /* Enable Fraunces's variable optical-size axis so display sizes
+     * automatically render with the tighter, warmer optical face. */
+    font-optical-sizing: auto;
+    padding: var(--ds-space-8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+  }
+
+  .kicker {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ds-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  /* Inline ornament: a small leaf glyph in forest green, cueing the
+   * digital-garden metaphor. Asset-specific character moment. */
+  .kicker::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--ds-accent);
+    /* Hand-cut leaf silhouette via a clip-path; not a token. */
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  .display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    /* Inline: Fraunces axes tuned for a warmer, classical display face
+     * to approximate Canela Display's flat-terminal feel. */
+    font-variation-settings: "opsz" 96, "SOFT" 60, "WONK" 0;
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 18ch;
+  }
+  /* Italic terracotta accent word; characteristic personal-writer move. */
+  .display em {
+    font-style: italic;
+    color: var(--ds-accent-2);
+    font-weight: 400;
+  }
+
+  .body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    /* Inline: Fraunces at reading optical size, softer than display. */
+    font-variation-settings: "opsz" 14, "SOFT" 100, "WONK" 0;
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .body em { font-style: italic; color: var(--ds-text-strong); }
+  .body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: 0.02em;
+  }
+  .meta-row b { color: var(--ds-text); font-weight: 700; }
+</style>
+</head>
+<body>
+  <span class="kicker">type pairing · maggie-garden-pair-001</span>
+  <h1 class="display">Lorem ipsum <em>dolor sit</em> amet consectetur.</h1>
+  <p class="body">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, <em>eros nibh</em> sodales lacus, ut placerat orci nulla in arcu. <a href="#">Pellentesque habitant</a> morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+  <div class="meta-row">
+    <span>display · <b>Fraunces 500 (opsz 96)</b></span>
+    <span>body · <b>Fraunces 400 (opsz 14)</b></span>
+    <span>sans · <b>Lato 700</b></span>
+  </div>
+</body>
+</html>

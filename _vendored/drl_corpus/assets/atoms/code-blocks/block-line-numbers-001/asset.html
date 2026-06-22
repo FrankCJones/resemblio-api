@@ -1,0 +1,99 @@
+<!--
+  Asset: block-line-numbers-001
+  Class: code-blocks
+  Pattern: (line-number gutter on left, divided from code by a hairline rule)
+  Inspired by: GitHub Docs / GitHub canonical code rendering
+  Notes:
+    - Two-column grid: gutter (line numbers) and code body, separated by a hairline.
+    - Gutter numerals are mono, smaller and muted; code lines align to a tight leading.
+    - The hairline rule and the gutter fill are tokens; the line-height match between gutter and code is the load-bearing detail.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>block-line-numbers-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    display: flex;
+    justify-content: center;
+  }
+  .panel {
+    width: 100%;
+    max-width: 640px;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto 1fr;     /* Gutter sizes to its widest numeral; code takes the rest. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .gutter {
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+    padding: var(--ds-space-4) var(--ds-space-3);
+    text-align: right;
+    border-right: 1px solid var(--ds-hairline);
+    user-select: none;                   /* Numerals shouldn't get caught in copy-selections. */
+    font-variant-numeric: tabular-nums;  /* Locks numeral width so the gutter doesn't shimmer. */
+    font-size: var(--ds-text-xs);
+  }
+  .gutter span {
+    display: block;
+    line-height: var(--ds-leading-relaxed);
+  }
+  .code {
+    padding: var(--ds-space-4);
+    color: var(--ds-text-strong);
+    overflow-x: auto;
+  }
+  pre { margin: 0; font: inherit; color: inherit; }
+  .tok-keyword { color: #CF222E; }
+  .tok-string  { color: #0A3069; }
+  .tok-number  { color: #0550AE; }
+  .tok-comment { color: #6E7781; font-style: italic; }
+  .tok-fn      { color: #8250DF; }
+</style>
+</head>
+<body>
+  <section class="panel" aria-label="Lorem ipsum code with line numbers">
+    <div class="gutter" aria-hidden="true">
+      <span>1</span>
+      <span>2</span>
+      <span>3</span>
+      <span>4</span>
+      <span>5</span>
+      <span>6</span>
+      <span>7</span>
+      <span>8</span>
+      <span>9</span>
+      <span>10</span>
+    </div>
+    <div class="code">
+<pre><span class="tok-comment">// Lorem ipsum dolor sit amet, consectetur.</span>
+<span class="tok-keyword">function</span> <span class="tok-fn">formatLorem</span>(items) {
+  <span class="tok-keyword">if</span> (!items || items.length === <span class="tok-number">0</span>) {
+    <span class="tok-keyword">return</span> <span class="tok-string">"empty"</span>;
+  }
+  <span class="tok-keyword">return</span> items
+    .<span class="tok-fn">map</span>((item) =&gt; item.name.<span class="tok-fn">toUpperCase</span>())
+    .<span class="tok-fn">filter</span>(Boolean)
+    .<span class="tok-fn">join</span>(<span class="tok-string">", "</span>);
+}
+
+<span class="tok-keyword">export default</span> formatLorem;</pre>
+    </div>
+  </section>
+</body>
+</html>

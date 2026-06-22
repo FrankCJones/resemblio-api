@@ -1,0 +1,208 @@
+<!--
+  Asset: pentagram-hero-001
+  Class: heroes (whole)
+  Pattern: editorial-hero, no-imagery (inverted: image-only with hairline caption), kicker-with-rule
+  Inspired by: Pentagram
+  Notes:
+    - Native context: pentagram.com homepage opening viewport, captured via
+      WebFetch 2026-05-20. The hero is a single full-bleed featured project
+      tile (current cover: Isomorphic Labs, "Beautiful Symmetry") filling
+      the first viewport beneath a sparse top bar. There is no oversized
+      statement headline, no CTA button, no body copy block; the work is
+      the statement. The caption beneath the image carries (in order): a
+      hairline rule, a sector tag in uppercase tracked Neue Haas, the
+      project name as a 26-34px caption headline, a single-sentence
+      descriptive subtitle. Pentagram red is reserved for the sector tag
+      on hover, the active link in the top bar, and link affordances; the
+      hero ships with zero chromatic moments at rest.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the featured project image is a CSS gradient placeholder
+      standing in for the real case-study cover (a binding-binding biology
+      composition in the Isomorphic Labs feature). The wordmark glyph is set
+      in F37 Plain via system fallback - F37 Plain is a commercial font and
+      cannot be loaded from a public CDN, so the asset uses the font stack
+      and degrades to Helvetica Neue Display where F37 is absent.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pentagram-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Neue Haas Grotesk is a commercial face; Inter and a Helvetica fallback
+     stand in for the marketing body and caption headline. The wordmark
+     degrades to Helvetica Neue Display where F37 Plain is absent. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Cream paper canvas; no shadows, no chromatic accent at
+   * rest. The whole hero is structural restraint: image carries the
+   * weight, hairlines carry the order. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar. Pentagram wordmark left, sparse Neue Haas nav right. A single
+   * full-ink hairline separates chrome from the cream canvas. The active
+   * link is the only red moment at rest in the entire opening viewport. */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-border);
+  }
+  .wordmark {
+    /* F37 Plain Display via fallback chain; the Pentagram wordmark sets at
+     * 22-26px on the live site, all caps, full-ink. */
+    font-family: var(--ds-font-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    text-transform: none;
+  }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-6);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+  }
+  .topbar__nav a {
+    color: var(--ds-text);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-accent); }
+  /* The current section gets the only red moment at rest. Pentagram uses
+   * red as a wayfinding event, not as decoration. */
+  .topbar__nav a[aria-current="page"] { color: var(--ds-accent); }
+
+  /* Hero. Full-bleed featured project tile. The image fills the column
+   * (max 1440px) and runs nearly to the bottom of the first viewport;
+   * the caption block sits beneath, ruled by a single full-ink hairline. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-5) var(--ds-space-8) var(--ds-space-8);
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* The image is a 16:9-ish tile. Pentagram's homepage covers run wider
+   * than tall, holding the full bleed across the column. Inline gradient
+   * placeholder stands in for the real Isomorphic Labs cover. */
+  .hero__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    background:
+      /* Inline ornament: standing in for the real case-study cover with a
+       * cream-and-ink composition that reads as a print plate. No contract
+       * slot for arbitrary illustration; this is asset-specific character. */
+      radial-gradient(circle at 30% 40%, #E2231A 0%, transparent 18%),
+      radial-gradient(circle at 70% 65%, #111111 0%, transparent 25%),
+      linear-gradient(135deg, #F2F2EE 0%, #FAFAF7 50%, #E8E8E2 100%);
+    background-color: var(--ds-surface);
+    overflow: hidden;
+  }
+
+  /* Caption block. Hairline rule on top; sector tag uppercase tracked; the
+   * project name as a 26-34px caption headline in tight Neue Haas; a single
+   * descriptive subtitle in muted ink. No date stamp on the homepage hero
+   * (Pentagram's calendar lives on /news, not on the project caption). */
+  .hero__caption {
+    border-top: 1px solid var(--ds-border);
+    padding-top: var(--ds-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 880px;
+  }
+  .hero__tag {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+    width: max-content;
+  }
+  .hero__tag:hover { color: var(--ds-accent); }
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 3.2vw, var(--ds-text-2xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .hero__subtitle {
+    font-family: var(--ds-font-body);
+    font-size: clamp(var(--ds-text-base), 1.4vw, var(--ds-text-lg));
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  /* Focus styling. Red ring on cream is unambiguous; the brand color
+   * carries keyboard wayfinding the same way it carries the active link. */
+  a:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .topbar__nav a, .hero__tag { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar { padding: var(--ds-space-3) var(--ds-space-4); }
+    .topbar__nav { gap: var(--ds-space-4); }
+    .hero { padding: var(--ds-space-4); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="wordmark" aria-label="Lorem wordmark">Lorem</a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#" aria-current="page">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum featured project">
+    <a href="#" class="hero__media" aria-label="Lorem ipsum dolor sit amet"></a>
+    <div class="hero__caption">
+      <a href="#" class="hero__tag">Lorem Ipsum</a>
+      <h1 class="hero__title">Lorem Ipsum Dolor</h1>
+      <p class="hero__subtitle">
+        Sit amet consectetur adipiscing elit: lorem studio's new identity
+        for ipsum creates a new visual language for dolor sit amet.
+      </p>
+    </div>
+  </section>
+</body>
+</html>

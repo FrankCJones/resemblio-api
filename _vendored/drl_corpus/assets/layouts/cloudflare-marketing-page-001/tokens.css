@@ -1,0 +1,116 @@
+/*
+ * cloudflare-marketing-page-001 tokens
+ *
+ * Page-level layout skeleton for the cloudflare.com marketing homepage.
+ * Cloudflare's marketing register sits on a paper-white body throughout
+ * (no dark-hero bookend), with signature orange (#F6821F) as the single
+ * chromatic accent against neutral surfaces. Display moments run on a
+ * humanist sans at hero-statement sizes; the mono utility face carries
+ * edge-location metadata, latency stats, and the technical kicker
+ * register that leaks from the dev dashboard onto marketing.
+ *
+ * Chrome MCP refused cloudflare.com at the safety layer this session;
+ * WebFetch returned the Workers-platform positioning, product portfolio
+ * categories (Compute / Storage / AI / Media / Network), the "330+ data
+ * centers / 330+ cities" stat that anchors the network-map section, and
+ * the long product list under the footer Products column verbatim from
+ * the live HTML. The page returned by WebFetch heavily emphasizes the
+ * Workers / serverless positioning the assignment names. Numeric token
+ * values (1280px container, 64-72px display, 8-12px card radii, hairline
+ * border, no shadows at rest) inherit Cloudflare's published canon and
+ * the systems/cloudflare/system.json design_principles rather than from
+ * devtools reads. Section sequence captured per the assignment brief
+ * (nav, hero, product portfolio grid, customer trust strip, feature
+ * deep-dives, stats / network-map, testimonials, CTA, footer).
+ *
+ * The slots that carry this layout: --ds-bg (paper white throughout),
+ * --ds-text / --ds-text-strong (near-black ink), --ds-accent (signature
+ * orange), --ds-hairline + --ds-border (hairline card chrome, no
+ * shadows at rest), --ds-space-10 / --ds-space-12 (section rhythm),
+ * --ds-font-display + --ds-font-mono (humanist sans plus mono utility).
+ */
+:root {
+  /* Colors. Paper-white body throughout, signature Cloudflare orange as
+   * the single chromatic accent, hairline borders doing all the card
+   * chrome work (no shadows at rest is a Cloudflare signature). The
+   * network-map / stats section uses a faint surface tint to break the
+   * white rhythm without going dark. */
+  --ds-bg:           #FFFFFF;   /* Paper-white page surface; carries the whole homepage. */
+  --ds-surface:      #F8F8F8;   /* Faint raised tint; stats / network-map band, customer-logo strip. */
+  --ds-surface-2:    #1D1D1F;   /* Near-black footer surface and dark testimonial band fallback. */
+  --ds-text:         #404041;   /* Cloudflare body grey on white; the default reading ink. */
+  --ds-text-muted:   #6E6E73;   /* Secondary text; supporting body, footer link rest state. */
+  --ds-text-strong:  #1D1D1F;   /* Near-black display ink for hero and section heads. */
+  --ds-border:       #E5E5E7;   /* Card and feature-tile hairline on white surface. */
+  --ds-hairline:     #E5E5E7;   /* Between-section divider and nav underline. */
+  --ds-accent:       #F6821F;   /* Signature Cloudflare orange; primary CTA fill, link emphasis, accent rules. */
+  --ds-accent-2:     #FBAD41;   /* Lifted orange for hover / pressed and the network-map gradient stop. */
+  --ds-success:      #00A85A;
+  --ds-warning:      #FBAD41;
+  --ds-error:        #BD2426;
+  --ds-info:         #2C7CB0;
+  --ds-focus-ring:   #F6821F;   /* Orange focus ring; reads as a brand cue, not a warning. */
+
+  /* Type. Cloudflare's marketing ships on a humanist sans (the published
+   * stack runs through Inter / system-ui in the canonical canon since the
+   * 2022 refresh); the mono utility face carries every edge-location
+   * stat, latency figure, and snake_case product key. Fallbacks chain
+   * through system stacks so the asset opens standalone. */
+  --ds-font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --ds-font-accent:  "Inter", sans-serif;
+
+  /* Type scale. Hero statement at 4xl-5xl (60-72px) on desktop; product
+   * portfolio category heads at 2xl-3xl; stat figures at 4xl mono. The
+   * Cloudflare scale is one step quieter than GitHub at the top (no
+   * 90px+ hero) and one step louder in the mono utility row. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 44px;  --ds-text-4xl: 60px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 96px;  --ds-text-7xl: 128px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide: 0.06em;
+  --ds-tracking-wider: 0.14em;
+
+  /* Spacing. Section rhythm: 96px between product-portfolio category
+   * blocks, 128px around the stats / network-map band. Dense product
+   * tile rhythm inside each category block uses 24-32px gutters. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Cloudflare uses subtle rounded corners (8-12px) on product
+   * tiles and customer-story cards; the primary CTA takes a 6px small
+   * radius, not a pill. Signature: rounded, not pill. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;  --ds-radius-lg: 16px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Hairline-as-chrome canon; no shadows at rest. A barely
+   * visible elevation appears on hover and on the floating product
+   * portfolio cards over the network-map background. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(29,29,31,0.06);
+  --ds-shadow-sm:  0 1px 2px rgba(29,29,31,0.06);
+  --ds-shadow-md:  0 3px 12px rgba(29,29,31,0.08);
+  --ds-shadow-lg:  0 12px 28px rgba(29,29,31,0.12);
+  --ds-shadow-2xl: 0 24px 48px rgba(29,29,31,0.16);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

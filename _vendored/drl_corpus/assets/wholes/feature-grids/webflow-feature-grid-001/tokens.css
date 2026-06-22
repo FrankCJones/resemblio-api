@@ -1,0 +1,148 @@
+/*
+ * webflow-feature-grid-001 tokens
+ *
+ * Native token values for Webflow's recurring feature-capability tile grid
+ * as it appears across webflow.com (homepage feature blocks grouped under
+ * Agility / Impact / Scale) and webflow.com/design (the "All Features"
+ * grid grouped under Build and Design / Manage / Optimize / Extend).
+ *
+ * Character: light, near-white body with near-black ink. WF Visual Sans
+ * Variable carries the whole register at modest weight (500-600), tight
+ * 1.04 leading on the tile heading, 1.6 leading on the dek. Tiles are
+ * flat against the page with a 1px gray-200 border; corner radius lands
+ * at 8px (0.5rem) for the card and 4px for the inner screenshot bezel.
+ * Webflow Blue #146EF5 is the single chromatic punctuation, reserved
+ * for the trailing arrow link and the focus ring; the rest of the
+ * surface stays monochrome.
+ *
+ * Source: WebFetch on webflow.com (homepage, capability tile grid) and
+ * webflow.com/design (All Features bento grid) 2026-05-20. Token values
+ * cross-referenced against the live marketing-main.webflow.css bundle
+ * inspected for the webflow alphabet asset (also 2026-05-20). Score B.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Pure white body with near-black ink and one saturated blue. Card
+   * surface is flat against the page; the only visible card chrome is
+   * the 1px gray-200 hairline. The blue lives on the trailing arrow.
+   */
+  --ds-bg:           #FFFFFF;   /* --colors--background light mode; pure white. */
+  --ds-surface:      #FFFFFF;   /* Tile surface; flat against bg, hairline only. */
+  --ds-surface-2:    #F0F0F0;   /* Inner screenshot bezel fill; gray-100. */
+  --ds-text:         #080808;   /* --colors--text; near-black, not pure #000. */
+  --ds-text-muted:   #5A5A5A;   /* --colors--text-secondary; gray-600 for the tile dek. */
+  --ds-text-strong:  #080808;   /* Tile heading ink matches body; no separate emphasis. */
+  --ds-border:       #D8D8D8;   /* --colors--border; gray-200, the only tile chrome at rest. */
+  --ds-hairline:     #F0F0F0;   /* Subtler still; section breaks and faint dividers. */
+  --ds-accent:       #146EF5;   /* --_color---primary--webflow-blue; arrow + focus ring. */
+  --ds-accent-2:     #0055D4;   /* --_color---primary--blue-600; pressed / hover state. */
+  --ds-success:      #00C875;   /* Operational green; reserved status indicator. */
+  --ds-warning:      #F5A623;   /* Amber warning; reserved status indicator. */
+  --ds-error:        #EE0000;   /* Red error; reserved status indicator. */
+  --ds-info:         #146EF5;   /* Matches accent. */
+  --ds-focus-ring:   #146EF5;   /* Webflow Blue at full strength for :focus-visible. */
+
+  /* ---------- Type families ----------
+   * WF Visual Sans Variable is Webflow's foundry-proprietary humanist
+   * sans with weight (wght) and optical size (opsz) axes. Arial is the
+   * documented fallback. WFVisualSans-Mono is reserved for the homepage
+   * "Machine Mode" demo and a handful of caption rows; the feature grid
+   * does not use it.
+   */
+  --ds-font-display: "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-body:    "WF Visual Sans Variable", Arial, system-ui, sans-serif;
+  --ds-font-mono:    "WFVisualSans-Mono", "Inconsolata", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "WFVisualSans-Mono", "Inconsolata", ui-monospace, monospace;
+
+  /* ---------- Type sizes ----------
+   * The grid uses a small slice of the larger Webflow scale: section
+   * eyebrow at sm (14px), section head at 2xl (40px) or 3xl (56px),
+   * tile heading at xl (32px) clamped down to lg (20px) in narrow tiles,
+   * tile dek at base (16px), trailing arrow label at sm.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12.8px;  /* 0.8rem; caption font-size. */
+  --ds-text-sm:   14px;    /* 0.875rem; paragraph-sm and arrow label. */
+  --ds-text-base: 16px;    /* 1rem; tile dek and paragraph body. */
+  --ds-text-lg:   20px;    /* Tile heading at narrow widths. */
+  --ds-text-xl:   24px;    /* Tile heading at desktop width. */
+  --ds-text-2xl:  40px;    /* Section head desktop ceiling. */
+  --ds-text-3xl:  56px;    /* Larger section head ceiling. */
+  --ds-text-4xl:  64px;
+  --ds-text-5xl:  80px;
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  112px;
+
+  /* ---------- Line heights ----------
+   * Display sits at 1.04 (Webflow's signature tight ratio). Tile heading
+   * relaxes to 1.2. Body dek breathes at 1.6, the most generous reading
+   * height of any dev-tool-adjacent marketing system in the corpus.
+   */
+  --ds-leading-tight:   1.04;   /* Section head display. */
+  --ds-leading-snug:    1.2;    /* Tile heading. */
+  --ds-leading-normal:  1.6;    /* Tile dek and body. */
+  --ds-leading-relaxed: 1.5;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Only the section H1 carries non-zero tracking (-0.01em). Tile head
+   * and dek both sit at 0em. The face has enough personality on its own
+   * that the tracking stays neutral.
+   */
+  --ds-tracking-tight:  -0.01em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * Webflow's native rhythm is rem-based. Tile internal padding lands at
+   * space-6 (32px / 2rem); inter-tile gap is space-4 (16px / 1rem);
+   * section margin above the grid is space-10 (64px / 4rem).
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;    /* Inter-tile gap. */
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;    /* Tile internal padding. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;    /* Marketing section rhythm; 4rem. */
+  --ds-space-12: 96px;    /* 6rem; major section break. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Card surface lands at 8px (0.5rem); the inner screenshot bezel
+   * matches at 4px (0.25rem) for the subtle nested rounding. Webflow
+   * never uses pills outside small badges and status dots.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;    /* Inner screenshot bezel; matches CTA radius. */
+  --ds-radius-md:   8px;    /* Tile surface; 0.5rem. */
+  --ds-radius-lg:   16px;   /* Featured panel; reserved. */
+  --ds-radius-full: 9999px; /* Status dots only. */
+
+  /* ---------- Shadows ----------
+   * Webflow's marketing chrome is hairline-driven, not shadow-driven.
+   * Tiles at rest carry a 1px solid border and no shadow; hover lifts
+   * via a soft 2px / 4% black plus a deeper ring.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 2px 4px rgba(8,8,8,0.04), 0 0 0 1px var(--ds-border);
+  --ds-shadow-lg:   0 8px 24px rgba(8,8,8,0.08), 0 0 0 1px var(--ds-border);
+  --ds-shadow-2xl:  0 24px 48px rgba(8,8,8,0.12);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  300ms;
+  --ds-duration-slow:    500ms;
+}

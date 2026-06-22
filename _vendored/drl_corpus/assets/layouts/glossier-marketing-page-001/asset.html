@@ -1,0 +1,644 @@
+<!--
+  Asset: glossier-marketing-page-001
+  Class: layouts
+  Pattern: paper-and-ink, accent-on-neutral, serif-display-sans-body, mega-footer, story-card-grid
+  Inspired by: Glossier (glossier.com)
+  Notes:
+    - Marketing homepage skeleton: announcement bar, primary nav, oversized
+      serif hero ("you look good."), FRAGRANCE product strip on tinted pink,
+      BALMS product strip on tinted pink, social-proof testimonial carousel,
+      GET THE LOOK editorial feature on deeper rose, brand statement block,
+      mega-footer with multi-column links + alphabetical product index +
+      legal row. Section breaks come from band fill and editorial whitespace,
+      not hairlines. Hero is paper; product strips are pink bands; editorial
+      sits on deeper rose; footer returns to paper.
+    - Variable: section sequence, band fill, all type sizes via tokens.
+      Inline: 1280px container cap, hero serif H1 at 5xl with tight leading,
+      mono-uppercase section kickers at sm with wider tracking, 4-up product
+      grid, 6-column footer mega-grid, square-radius cards (no pills).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>glossier-marketing-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Glossier Display (custom serif) and Glossier Sans (humanist
+  sans) are the brand faces. Neither face is loaded in the asset; the
+  fallback chains in tokens.css (Canela / Times New Roman for display,
+  Inter / system-ui for body) carry the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Container. Glossier runs roughly 1440px wide on desktop; content caps
+   * at 1280px and breathes inside. Inline value. */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .container { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Announcement bar. Thin paper-on-ink ribbon, sentence-case body. */
+  .announce-bar {
+    background: var(--ds-text-strong);
+    color: var(--ds-bg);
+    text-align: center;
+    padding-block: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Nav. Paper field, ink text, humanist sans, no chrome below; the
+   * paper-to-paper transition gives the hero breathing room. */
+  .nav {
+    background: var(--ds-bg);
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    letter-spacing: -0.005em;
+  }
+  .nav__links {
+    display: none;
+    gap: var(--ds-space-6);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    letter-spacing: 0.02em;
+  }
+  @media (min-width: 900px) { .nav__links { display: flex; } }
+  .nav__utility {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+
+  /* Hero. Paper field, oversized serif headline center-bottom, soft
+   * fragrance photography placeholder above. */
+  .hero {
+    background: var(--ds-bg);
+    text-align: center;
+    padding-block: var(--ds-space-12) var(--ds-space-10);
+  }
+  .hero__media {
+    background: var(--ds-accent-2);
+    aspect-ratio: 16 / 7;
+    border-radius: var(--ds-radius-sm);
+    margin-bottom: var(--ds-space-8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-strong);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .hero__h1 {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: var(--ds-text-5xl);
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-5);
+    max-width: 18ch;
+  }
+  .hero__sub {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 44ch;
+  }
+
+  /* Section kicker. Mono-style uppercase eyebrow used on every product
+   * strip and editorial section ("FRAGRANCE", "BALMS", "GET THE LOOK"). */
+  .kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-strong);
+    display: block;
+    margin-bottom: var(--ds-space-5);
+    text-align: center;
+  }
+
+  /* Full-bleed band. Each product strip and editorial section gets its
+   * own field; transitions are color-on-color, no hairline between. */
+  .band {
+    padding-block: var(--ds-space-12);
+  }
+  @media (min-width: 768px) {
+    .band { padding-block: var(--ds-space-16); }
+  }
+  .band--paper { background: var(--ds-bg); }
+  .band--pink  { background: var(--ds-accent); }
+  .band--rose  { background: var(--ds-surface-2); }
+
+  /* Product strip. 4-up grid of product cards on tinted pink. */
+  .strip-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-5);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .strip-grid { grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-6); }
+  }
+  .product-card {
+    background: transparent;
+    text-align: center;
+  }
+  .product-card__photo {
+    aspect-ratio: 4 / 5;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-sm);
+    margin-bottom: var(--ds-space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+  }
+  .product-card__badge {
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-2);
+  }
+  .product-card__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-2);
+    line-height: var(--ds-leading-snug);
+  }
+  .product-card__price {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-4);
+  }
+
+  /* Button. Square-radius ink-on-paper, the brand chrome is restraint;
+   * no pill CTAs anywhere on this surface. */
+  .btn {
+    display: inline-block;
+    padding: 12px 28px;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-text-strong);
+    cursor: pointer;
+  }
+  .btn--primary { background: var(--ds-text-strong); color: var(--ds-bg); }
+  .btn--ghost   { background: transparent; color: var(--ds-text-strong); }
+
+  /* Editorial display heading. Section H2 in serif display, larger on
+   * editorial bands. */
+  .display-h2 {
+    font-family: var(--ds-font-display);
+    font-weight: 400;
+    font-size: var(--ds-text-3xl);
+    line-height: var(--ds-leading-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 22ch;
+    text-align: center;
+  }
+
+  /* Social-proof testimonial carousel. Three quote cards on paper. */
+  .testimonials {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .testimonials { grid-template-columns: repeat(3, 1fr); }
+  }
+  .quote-card {
+    background: var(--ds-bg);
+    padding: var(--ds-space-8) var(--ds-space-6);
+    text-align: center;
+  }
+  .quote-card__stars {
+    color: var(--ds-text-strong);
+    margin-bottom: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    letter-spacing: 0.2em;
+  }
+  .quote-card__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+    line-height: var(--ds-leading-snug);
+  }
+  .quote-card__who {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Editorial feature ("GET THE LOOK"). Three-card linked grid on rose
+   * band. */
+  .look-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .look-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .look-card__photo {
+    aspect-ratio: 4 / 5;
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-sm);
+    margin-bottom: var(--ds-space-4);
+  }
+  .look-card__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Brand statement. Centered narrative copy on paper. */
+  .statement {
+    text-align: center;
+    max-width: 56ch;
+    margin: 0 auto;
+  }
+  .statement__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+    margin: 0;
+  }
+
+  /* Mega-footer. Paper field, 5-column link grid + alphabetical product
+   * index strip + legal row. Warm hairline between sections. */
+  .footer-band {
+    background: var(--ds-bg);
+    padding-block: var(--ds-space-12);
+    color: var(--ds-text);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: repeat(4, 1fr) 1.3fr; }
+  }
+  .footer-col__title {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    margin: 0 0 var(--ds-space-4);
+    color: var(--ds-text-strong);
+  }
+  .footer-col__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  .product-index {
+    margin-top: var(--ds-space-12);
+    padding-top: var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .product-index__title {
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-4);
+    color: var(--ds-text-strong);
+  }
+  .product-index__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3) var(--ds-space-5);
+  }
+  .footer-legal {
+    margin-top: var(--ds-space-8);
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .footer-wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    color: var(--ds-text-strong);
+    line-height: 1;
+    margin-bottom: var(--ds-space-4);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Announcement bar: ink ribbon on top with a sentence-case shipping note. -->
+  <div class="announce-bar">
+    Lorem ipsum dolor sit amet $40+
+  </div>
+
+  <!-- Nav: paper field, serif wordmark + center link cluster + utility cluster. -->
+  <nav class="nav" aria-label="Primary">
+    <div class="container nav__inner">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="nav__links">
+        <a href="#">Skincare</a>
+        <a href="#">Makeup</a>
+        <a href="#">Balms</a>
+        <a href="#">Body</a>
+        <a href="#">Fragrance</a>
+        <a href="#">Sets</a>
+        <a href="#">Shop all</a>
+      </div>
+      <div class="nav__utility">
+        <a href="#">Search</a>
+        <a href="#">US</a>
+        <a href="#">Account</a>
+        <a href="#">Bag (0)</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero: paper field, oversized serif statement H1, soft tinted product
+       photography slot above. -->
+  <header class="hero" aria-label="Hero">
+    <div class="container">
+      <div class="hero__media">lorem ipsum fragrance photography</div>
+      <h1 class="hero__h1">lorem ipsum dolor.</h1>
+      <p class="hero__sub">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore.
+      </p>
+      <a href="#" class="btn btn--primary">Shop lorem</a>
+    </div>
+  </header>
+
+  <!-- Section: FRAGRANCE product strip on tinted pink band. -->
+  <section class="band band--pink" aria-label="Fragrance">
+    <div class="container">
+      <span class="kicker">Lorem ipsum</span>
+      <div class="strip-grid">
+        <article class="product-card">
+          <div class="product-card__photo">lorem bottle</div>
+          <div class="product-card__badge">Best seller</div>
+          <h3 class="product-card__name">Lorem ipsum</h3>
+          <p class="product-card__price">$82</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+        <article class="product-card">
+          <div class="product-card__photo">lorem bottle</div>
+          <div class="product-card__badge">New</div>
+          <h3 class="product-card__name">Ipsum dolor</h3>
+          <p class="product-card__price">$98</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+        <article class="product-card">
+          <div class="product-card__photo">lorem bottle</div>
+          <div class="product-card__badge">Coming soon</div>
+          <h3 class="product-card__name">Sit amet</h3>
+          <p class="product-card__price">$116</p>
+          <a href="#" class="btn btn--ghost">Notify me</a>
+        </article>
+        <article class="product-card">
+          <div class="product-card__photo">lorem bottle</div>
+          <div class="product-card__badge">Engrave it</div>
+          <h3 class="product-card__name">Consectetur</h3>
+          <p class="product-card__price">$98</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: BALMS product strip on tinted pink band (repeats the
+       strip pattern with a different kicker). -->
+  <section class="band band--pink" aria-label="Balms">
+    <div class="container">
+      <span class="kicker">Dolor sit amet</span>
+      <div class="strip-grid">
+        <article class="product-card">
+          <div class="product-card__photo">lorem balm</div>
+          <div class="product-card__badge">Best seller</div>
+          <h3 class="product-card__name">Lorem balm</h3>
+          <p class="product-card__price">$14</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+        <article class="product-card">
+          <div class="product-card__photo">lorem balm</div>
+          <h3 class="product-card__name">Ipsum balm</h3>
+          <p class="product-card__price">$14</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+        <article class="product-card">
+          <div class="product-card__photo">lorem balm</div>
+          <h3 class="product-card__name">Dolor balm</h3>
+          <p class="product-card__price">$14</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+        <article class="product-card">
+          <div class="product-card__photo">lorem balm</div>
+          <h3 class="product-card__name">Sit balm</h3>
+          <p class="product-card__price">$16</p>
+          <a href="#" class="btn btn--ghost">Add to bag</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: testimonial / social-proof carousel on paper. -->
+  <section class="band band--paper" aria-label="Testimonials">
+    <div class="container">
+      <span class="kicker">Lorem stories</span>
+      <h2 class="display-h2">lorem ipsum dolor sit amet</h2>
+      <div class="testimonials">
+        <article class="quote-card">
+          <div class="quote-card__stars">* * * * *</div>
+          <p class="quote-card__body">"Lorem ipsum dolor sit amet, consectetur adipiscing elit."</p>
+          <span class="quote-card__who">Lorem I.</span>
+        </article>
+        <article class="quote-card">
+          <div class="quote-card__stars">* * * * *</div>
+          <p class="quote-card__body">"Sed do eiusmod tempor incididunt ut labore et dolore magna."</p>
+          <span class="quote-card__who">Ipsum D.</span>
+        </article>
+        <article class="quote-card">
+          <div class="quote-card__stars">* * * * *</div>
+          <p class="quote-card__body">"Ut enim ad minim veniam, quis nostrud exercitation ullamco."</p>
+          <span class="quote-card__who">Dolor S.</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: GET THE LOOK editorial feature on deeper rose band. -->
+  <section class="band band--rose" aria-label="Get the look">
+    <div class="container">
+      <span class="kicker">Lorem ipsum</span>
+      <div class="look-grid">
+        <a href="#" class="look-card">
+          <div class="look-card__photo"></div>
+          <h3 class="look-card__title">Lorem ipsum</h3>
+        </a>
+        <a href="#" class="look-card">
+          <div class="look-card__photo"></div>
+          <h3 class="look-card__title">Dolor sit amet</h3>
+        </a>
+        <a href="#" class="look-card">
+          <div class="look-card__photo"></div>
+          <h3 class="look-card__title">Consectetur</h3>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: brand statement centered narrative copy on paper. -->
+  <section class="band band--paper" aria-label="Brand statement">
+    <div class="container">
+      <div class="statement">
+        <p class="statement__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mega-footer on paper. 5-column link grid + alphabetical product
+       index + legal row. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h3 class="footer-col__title">How can we help?</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Lorem contact</a></li>
+            <li><a href="#">Ipsum returns</a></li>
+            <li><a href="#">Help and faq</a></li>
+            <li><a href="#">Student discount</a></li>
+            <li><a href="#">International</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__title">About lorem</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">About us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Into the lorem</a></li>
+            <li><a href="#">Events</a></li>
+            <li><a href="#">For good</a></li>
+            <li><a href="#">Membership</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__title">Stores</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Find a store</a></li>
+            <li><a href="#">Lorem flagship</a></li>
+            <li><a href="#">Ipsum pop-up</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-col__title">Social</h3>
+          <ul class="footer-col__links">
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">Pinterest</a></li>
+            <li><a href="#">Tiktok</a></li>
+            <li><a href="#">Youtube</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-wordmark">Lorem</div>
+          <p style="max-width: 30ch; font-size: var(--ds-text-sm);">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </p>
+        </div>
+      </div>
+
+      <div class="product-index">
+        <div class="product-index__title">Lorem product index</div>
+        <div class="product-index__list">
+          <a href="#">Lorem a</a>
+          <a href="#">Ipsum b</a>
+          <a href="#">Dolor c</a>
+          <a href="#">Sit d</a>
+          <a href="#">Amet e</a>
+          <a href="#">Consectetur f</a>
+          <a href="#">Adipiscing g</a>
+          <a href="#">Elit h</a>
+          <a href="#">Sed i</a>
+          <a href="#">Eiusmod j</a>
+          <a href="#">Tempor k</a>
+          <a href="#">Incididunt l</a>
+        </div>
+      </div>
+
+      <div class="footer-legal">
+        <span>(c) Lorem ipsum 2026</span>
+        <div style="display:flex; gap: var(--ds-space-5); flex-wrap: wrap;">
+          <a href="#">Privacy policy</a>
+          <a href="#">Terms of use</a>
+          <a href="#">Accessibility</a>
+          <a href="#">Privacy choices</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

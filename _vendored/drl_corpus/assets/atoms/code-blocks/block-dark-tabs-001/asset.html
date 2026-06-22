@@ -1,0 +1,151 @@
+<!--
+  Asset: block-dark-tabs-001
+  Class: code-blocks
+  Pattern: (multi-language tab switcher on dark code panel)
+  Inspired by: Stripe Docs (canonical, blocked) and Supabase Docs (live tab chrome)
+  Notes:
+    - Dark code panel on a light docs page; tab row across the top switches language.
+    - Active tab carries an accent under-rule; inactive tabs are muted text on the dark band.
+    - Toggle is JS only at the asset demo level; the contract is the chrome and the dark surface.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>block-dark-tabs-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    padding: var(--ds-space-8) var(--ds-space-5);
+    display: flex;
+    justify-content: center;
+  }
+  .panel {
+    width: 100%;
+    max-width: 640px;
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-border);
+    overflow: hidden;
+    box-shadow: var(--ds-shadow-md);
+  }
+  .panel__tabs {
+    display: flex;
+    gap: 0;
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-border);
+    padding: 0 var(--ds-space-3);
+  }
+  .panel__tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    cursor: pointer;
+    /* Bottom border doubles as the active-tab under-rule when selected. */
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .panel__tab:hover {
+    color: var(--ds-text-strong);
+  }
+  .panel__tab[aria-selected="true"] {
+    color: var(--ds-text-strong);
+    border-bottom-color: var(--ds-accent);
+  }
+  .panel__tab:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: -2px;
+  }
+  .panel__body {
+    padding: var(--ds-space-5);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-strong);
+    overflow-x: auto;
+  }
+  pre { margin: 0; font: inherit; color: inherit; }
+  /* Syntax tokens map to contract accents; one-off light blue for params kept inline. */
+  .tok-keyword  { color: var(--ds-info); }
+  .tok-string   { color: var(--ds-success); }
+  .tok-number   { color: var(--ds-warning); }
+  .tok-comment  { color: #6B7884; font-style: italic; }   /* Inline: comment grey, one-off ornament. */
+  .tok-fn       { color: var(--ds-accent-2); }
+  .panel__pane { display: none; }
+  .panel__pane[data-active="true"] { display: block; }
+</style>
+</head>
+<body>
+  <section class="panel" aria-label="Lorem ipsum code example">
+    <div class="panel__tabs" role="tablist">
+      <button class="panel__tab" role="tab" aria-selected="true" aria-controls="pane-js" id="tab-js">JavaScript</button>
+      <button class="panel__tab" role="tab" aria-selected="false" aria-controls="pane-py" id="tab-py">Python</button>
+      <button class="panel__tab" role="tab" aria-selected="false" aria-controls="pane-rb" id="tab-rb">Ruby</button>
+    </div>
+    <div class="panel__body">
+      <div class="panel__pane" id="pane-js" role="tabpanel" aria-labelledby="tab-js" data-active="true">
+<pre><span class="tok-comment">// Lorem ipsum dolor sit amet</span>
+<span class="tok-keyword">const</span> client = <span class="tok-keyword">new</span> <span class="tok-fn">Client</span>(<span class="tok-string">"lorem_ipsum_key"</span>);
+
+<span class="tok-keyword">const</span> result = <span class="tok-keyword">await</span> client.<span class="tok-fn">create</span>({
+  amount: <span class="tok-number">2400</span>,
+  currency: <span class="tok-string">"usd"</span>,
+  description: <span class="tok-string">"Consectetur adipiscing"</span>,
+});
+
+console.<span class="tok-fn">log</span>(result.id);</pre>
+      </div>
+      <div class="panel__pane" id="pane-py" role="tabpanel" aria-labelledby="tab-py">
+<pre><span class="tok-comment"># Lorem ipsum dolor sit amet</span>
+client = <span class="tok-fn">Client</span>(<span class="tok-string">"lorem_ipsum_key"</span>)
+
+result = client.<span class="tok-fn">create</span>(
+    amount=<span class="tok-number">2400</span>,
+    currency=<span class="tok-string">"usd"</span>,
+    description=<span class="tok-string">"Consectetur adipiscing"</span>,
+)
+
+<span class="tok-fn">print</span>(result.id)</pre>
+      </div>
+      <div class="panel__pane" id="pane-rb" role="tabpanel" aria-labelledby="tab-rb">
+<pre><span class="tok-comment"># Lorem ipsum dolor sit amet</span>
+client = <span class="tok-fn">Client</span>.<span class="tok-fn">new</span>(<span class="tok-string">"lorem_ipsum_key"</span>)
+
+result = client.<span class="tok-fn">create</span>(
+  amount: <span class="tok-number">2400</span>,
+  currency: <span class="tok-string">"usd"</span>,
+  description: <span class="tok-string">"Consectetur adipiscing"</span>,
+)
+
+<span class="tok-fn">puts</span> result.id</pre>
+      </div>
+    </div>
+  </section>
+  <script>
+    // Minimal tab switcher; the asset demonstrates the chrome, not the toggle library.
+    const tabs = document.querySelectorAll('.panel__tab');
+    const panes = document.querySelectorAll('.panel__pane');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.setAttribute('aria-selected', 'false'));
+        panes.forEach(p => p.setAttribute('data-active', 'false'));
+        tab.setAttribute('aria-selected', 'true');
+        document.getElementById(tab.getAttribute('aria-controls')).setAttribute('data-active', 'true');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!--
+  Asset: substack-feature-grid-001
+  Class: feature-grids
+  Pattern: story-card-grid
+  Inspired by: Substack (substack.com; substack.com/going-paid)
+  Notes:
+    - Three-tile creator-economics grid as it ships on substack.com/going-paid:
+      illustration anchor at top, serif headline (sentence-case, period-ended),
+      humanist-sans dek with a numbers-driven sentence in the lead tile. White
+      paper surface; hairline-bordered tile; orange reserved for inline link.
+    - Variable: every color, font, spacing, radius from the contract.
+      Inline: the SVG illustration placeholders inside each tile head (a
+      per-tile ornament, not chrome), and the orange wordmark mark glyph.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-feature-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Substack ships a system serif (often resolving to Georgia/Charter on the
+  reader surface) paired with a humanist sans for product chrome. The asset
+  uses Georgia for display and Inter (loaded from Google Fonts) as the body
+  stand-in; the fallback chain in tokens.css preserves the pair when neither
+  is available.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  /* Reset only what the asset needs. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. Generous vertical breathing; Substack does not crowd. */
+  .fg {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-5);
+  }
+
+  /* Section head: editorial serif title, restrained dek. */
+  .fg__head {
+    margin-bottom: var(--ds-space-8);
+    max-width: 32ch;
+  }
+
+  .fg__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+
+  .fg__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Grid: three-up on desktop, stacks on narrow. */
+  .fg__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  @media (max-width: 880px) {
+    .fg__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. Flat hairline chrome; no shadow at rest. */
+  .fg__tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    transition: border-color var(--ds-duration-normal) var(--ds-ease-standard);
+  }
+
+  .fg__tile:hover {
+    border-color: rgba(0, 0, 0, 0.22);
+  }
+
+  /* Illustration anchor. Substack's going-paid grid uses small flat
+     illustrations (shopping cart, flag, cat). The asset uses inline SVG
+     placeholders sized to fit a square top region. */
+  .fg__illus {
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-sm);
+    aspect-ratio: 1 / 1;
+    width: 96px;             /* One-off ornament size; the illustration is
+                                content, not chrome, so it lives inline. */
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .fg__illus svg {
+    width: 64px;
+    height: 64px;
+    display: block;
+  }
+
+  .fg__tile-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: var(--ds-space-2) 0 0;
+  }
+
+  .fg__tile-dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  /* Optional in-tile link. Orange-on-white with underline-on-hover; the
+     accent is rationed, so links are where it earns its keep. */
+  .fg__link {
+    margin-top: auto;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    border-bottom: 1px solid transparent;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    align-self: flex-start;
+  }
+
+  .fg__link:hover {
+    color: var(--ds-accent-2);
+    border-bottom-color: currentColor;
+  }
+
+  .fg__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  .fg__link::after {
+    content: "→";
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__link:hover::after { transform: translateX(2px); }
+</style>
+</head>
+<body>
+  <section class="fg" aria-labelledby="fg-title">
+    <header class="fg__head">
+      <h2 id="fg-title" class="fg__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      <p class="fg__dek">Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.</p>
+    </header>
+
+    <div class="fg__grid">
+      <!-- Tile 1: shopping-cart illustration, payment-directly headline. -->
+      <article class="fg__tile">
+        <div class="fg__illus" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#FF6719" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 10 L14 10 L20 40 L52 40 L58 18 L18 18"/>
+            <circle cx="24" cy="52" r="4"/>
+            <circle cx="48" cy="52" r="4"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Lorem ipsum dolor sit.</h3>
+        <p class="fg__tile-dek">Consectetur adipiscing elit sed do eiusmod tempor. Incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam.</p>
+        <a href="#" class="fg__link">Lorem more</a>
+      </article>
+
+      <!-- Tile 2: flag illustration, independence headline. -->
+      <article class="fg__tile">
+        <div class="fg__illus" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#FF6719" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="14" y1="6" x2="14" y2="58"/>
+            <path d="M14 10 L46 10 L40 22 L46 34 L14 34" fill="#FF6719" fill-opacity="0.12"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Lorem independentia.</h3>
+        <p class="fg__tile-dek">Ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit. Voluptate velit esse cillum dolore.</p>
+        <a href="#" class="fg__link">Lorem more</a>
+      </article>
+
+      <!-- Tile 3: data illustration, economics headline (the numbers tile). -->
+      <article class="fg__tile">
+        <div class="fg__illus" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#FF6719" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="56" x2="56" y2="56"/>
+            <rect x="14" y="38" width="8" height="18" rx="1" fill="#FF6719" fill-opacity="0.18"/>
+            <rect x="28" y="26" width="8" height="30" rx="1" fill="#FF6719" fill-opacity="0.18"/>
+            <rect x="42" y="14" width="8" height="42" rx="1" fill="#FF6719" fill-opacity="0.18"/>
+          </svg>
+        </div>
+        <h3 class="fg__tile-title">Lorem modelus melior.</h3>
+        <p class="fg__tile-dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit. Anim id est laborum sed perspiciatis.</p>
+        <a href="#" class="fg__link">Lorem more</a>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!--
+  Asset: cloudflare-about-page-001
+  Class: layouts
+  Pattern: editorial-hero, story-card-grid, mega-footer
+  Inspired by: Cloudflare (cloudflare.com/about/)
+  Notes:
+    - About-page skeleton: nav, mission hero with lava-lamps backdrop,
+      network-scale stats grid (four big mono numerals), service-pillars
+      tri-column, milestone timeline rail, offices grid, careers CTA,
+      mega-footer. The hero is type-led with a signature-orange accent
+      line; stats grid is the load-bearing moment of the page.
+    - Section blocks are placeholders for downstream wholes; the
+      max-width container, padding rhythm, section sequence, and the
+      hairline-card chrome are the variables this asset captures.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>cloudflare-about-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Cloudflare ships Inter for all marketing surfaces. The
+  fallback chain drops to system-ui so the layout renders cleanly
+  without a network font load.
+-->
+<style>
+  /* Reset just what the layout needs. Harness owns cross-asset reset. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px; gutter 24px on mobile, 48px on
+   * desktop. Inline value: 1200px; not a contract slot.
+   */
+  .page {
+    max-width: 1200px;            /* container max-width matches cloudflare.com marketing pages */
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /* Recurring section block. 96px desktop / 48px mobile padding-block,
+   * with a hairline rule into the next section. */
+  .section {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+  .section:last-child { border-bottom: 0; }
+
+  /* Tinted band for the stats grid; second-level surface. */
+  .section--tinted {
+    background: var(--ds-surface-2);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+
+  /* Hero gets the extra vertical breathing room. Lava-lamps visual
+   * sits behind; this skeleton uses a soft gradient placeholder. */
+  .section--hero {
+    padding-block: var(--ds-space-10);
+    /* Inline ornament: gradient placeholder standing in for the
+     * lava-lamps wall photograph. Not a contract slot. */
+    background:
+      radial-gradient(60% 80% at 20% 30%, rgba(246,130,31,0.10) 0%, rgba(246,130,31,0) 70%),
+      radial-gradient(50% 70% at 80% 70%, rgba(250,174,64,0.12) 0%, rgba(250,174,64,0) 70%),
+      var(--ds-bg);
+  }
+  @media (min-width: 768px) {
+    .section--hero { padding-block: var(--ds-space-16); }
+  }
+
+  /* Placeholder slot. Each slot names the whole it stands in for. */
+  .slot {
+    background: var(--ds-surface);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Nav. Flush-top, sits inside the page container. */
+  .nav {
+    padding-block: var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  /* Inline ornament: small accent dot before wordmark mirrors the
+   * cloudflare logo cloud-mark color stop. Not a contract slot. */
+  .nav__wordmark::before {
+    content: "";
+    display: inline-block;
+    width: 10px; height: 10px;
+    background: var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    margin-right: var(--ds-space-2);
+    transform: translateY(-1px);
+  }
+
+  /* Mission hero. Single humanist-sans display, near-black, tight
+   * leading, narrow centered measure. Lead paragraph in muted text. */
+  .hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 18ch;
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .hero__headline { font-size: var(--ds-text-5xl); }
+  }
+  .hero__support {
+    margin: var(--ds-space-6) auto 0;
+    max-width: 52ch;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    text-align: center;
+  }
+  .hero__cta-wrap {
+    margin-top: var(--ds-space-8);
+    display: flex;
+    justify-content: center;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+  }
+
+  /* Stats grid. Four large mono numerals with caption beneath each.
+   * Two-up on tablet, four-up on desktop. Signature orange numerals
+   * are the load-bearing moment. */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    margin-top: var(--ds-space-8);
+  }
+  @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-8); } }
+  .stat {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+  }
+  .stat__numeral {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-3xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-accent);
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .stat__numeral { font-size: var(--ds-text-4xl); }
+  }
+  .stat__caption {
+    margin-top: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Service pillars. Three columns on desktop, single on mobile. */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .pillars-grid { grid-template-columns: repeat(3, 1fr); gap: var(--ds-space-8); } }
+
+  /* Milestone timeline. Single column with year-led entries; left rail
+   * is a 2px hairline rule in the accent color. */
+  .timeline {
+    margin-top: var(--ds-space-6);
+    padding-left: var(--ds-space-6);
+    border-left: 2px solid var(--ds-accent);
+    display: grid;
+    gap: var(--ds-space-6);
+  }
+  .timeline__item { display: grid; gap: var(--ds-space-2); }
+  .timeline__year {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .timeline__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .timeline__body { color: var(--ds-text-muted); font-size: var(--ds-text-base); }
+
+  /* Offices grid. Dense tile rhythm: two-up on mobile, three-up on
+   * tablet, four-up on desktop. Each tile is a city label plus a
+   * region kicker. */
+  .offices-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ds-space-4);
+  }
+  @media (min-width: 640px) { .offices-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1024px) { .offices-grid { grid-template-columns: repeat(4, 1fr); gap: var(--ds-space-5); } }
+  .office-tile {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+  }
+  .office-tile__region {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .office-tile__city {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+  }
+
+  /* Section heading shared style: mono kicker above title. */
+  .section-heading { margin-bottom: var(--ds-space-8); }
+  .section-heading__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-2);
+  }
+  .section-heading__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .section-heading__title { font-size: var(--ds-text-3xl); }
+  }
+
+  /* CTA section: centered closing call-to-action, narrow measure. */
+  .section--cta { text-align: center; }
+  .cta__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 auto;
+    max-width: 28ch;
+  }
+  .cta__button-wrap {
+    margin-top: var(--ds-space-6);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+  }
+
+  /* Footer band: full-width, outside .page container. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-surface-2);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for wholes/navigation/cloudflare-nav-001. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 480px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem ipsum dolor sit amet
+      </div>
+      <div class="slot" style="min-width: 160px;">
+        <span class="slot__label">cta-button</span>
+        Sign up Lorem
+      </div>
+    </nav>
+
+    <!-- Section: mission hero. Centered display headline with subhead
+         and dual CTA. Lava-lamps photograph sits behind on live page;
+         skeleton uses a soft accent-tinted gradient placeholder. -->
+    <section class="section section--hero" aria-label="Mission">
+      <h1 class="hero__headline">Lorem ipsum dolor sit amet consectetur adipiscing.</h1>
+      <p class="hero__support">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="hero__cta-wrap">
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">primary-cta</span>
+          Read Lorem
+        </div>
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">secondary-cta</span>
+          See Lorem
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: network-scale stats grid. Four orange mono numerals,
+         captioned in muted body. Tinted band sets it apart from the
+         flat-white sections above and below. -->
+    <section class="section section--tinted" aria-label="Network scale">
+      <div class="section-heading">
+        <span class="section-heading__kicker">01 — Network scale</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur.</h2>
+      </div>
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="stat__numeral">000M</span>
+          <p class="stat__caption">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div class="stat">
+          <span class="stat__numeral">000</span>
+          <p class="stat__caption">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div class="stat">
+          <span class="stat__numeral">00%</span>
+          <p class="stat__caption">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+        <div class="stat">
+          <span class="stat__numeral">000B+</span>
+          <p class="stat__caption">Lorem ipsum dolor sit amet consectetur adipiscing.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: service pillars. Three-column feature row. -->
+    <section class="section" aria-label="Service pillars">
+      <div class="section-heading">
+        <span class="section-heading__kicker">02 — Platform</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet consectetur adipiscing.</h2>
+      </div>
+      <div class="pillars-grid">
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">pillar-01</span>Lorem ipsum dolor sit amet.</div>
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">pillar-02</span>Lorem ipsum dolor sit amet.</div>
+        <div class="slot" style="min-height: 200px;"><span class="slot__label">pillar-03</span>Lorem ipsum dolor sit amet.</div>
+      </div>
+    </section>
+
+    <!-- Section: milestone timeline. Year-led entries on an accent rail. -->
+    <section class="section" aria-label="History">
+      <div class="section-heading">
+        <span class="section-heading__kicker">03 — Story</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <ol class="timeline" style="list-style: none; padding-left: var(--ds-space-6); margin: 0;">
+        <li class="timeline__item">
+          <span class="timeline__year">2009 — Lorem</span>
+          <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+          <p class="timeline__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__year">2014 — Lorem</span>
+          <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+          <p class="timeline__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__year">2019 — Lorem</span>
+          <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+          <p class="timeline__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__year">2025 — Lorem</span>
+          <h3 class="timeline__title">Lorem ipsum dolor sit amet.</h3>
+          <p class="timeline__body">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Section: global offices. Dense tile grid keyed by region. -->
+    <section class="section" aria-label="Offices">
+      <div class="section-heading">
+        <span class="section-heading__kicker">04 — Offices</span>
+        <h2 class="section-heading__title">Lorem ipsum dolor sit amet.</h2>
+      </div>
+      <div class="offices-grid">
+        <div class="office-tile"><span class="office-tile__region">HQ</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">Americas</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">Americas</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">Americas</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">EMEA</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">EMEA</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">EMEA</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">APAC</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">APAC</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">APAC</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">APAC</span><span class="office-tile__city">Lorem</span></div>
+        <div class="office-tile"><span class="office-tile__region">APAC</span><span class="office-tile__city">Lorem</span></div>
+      </div>
+    </section>
+
+    <!-- Section: careers CTA. Centered closing call. -->
+    <section class="section section--cta" aria-label="Careers">
+      <h2 class="cta__headline">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h2>
+      <div class="cta__button-wrap">
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">primary-cta</span>
+          Join Lorem
+        </div>
+        <div class="slot" style="min-width: 180px;">
+          <span class="slot__label">secondary-cta</span>
+          See Lorem
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer band; full-width, outside .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 260px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

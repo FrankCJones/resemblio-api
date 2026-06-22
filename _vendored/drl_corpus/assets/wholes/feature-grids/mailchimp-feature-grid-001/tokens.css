@@ -1,0 +1,115 @@
+/*
+ * mailchimp-feature-grid-001 tokens
+ *
+ * Mailchimp's recurring product-capability tile grid, captured across the
+ * homepage ("Recommended for your business" 9-tile grid) and /features
+ * (six stacked category grids: Marketing Essentials, Content Creation,
+ * Audience Management, Marketing Automation, Reporting & Analytics, AI
+ * Marketing Tools). The signature move is Cavendish Yellow as the page
+ * or section accent fill, Peppercorn near-black for text, and a calm
+ * paper-white tile body with a subtle hairline border and minimal shadow.
+ * Hand-illustration vocabulary (envelopes, mailboxes, postcards) lives in
+ * the tile artwork slot; on the /features sub-grids the illustration
+ * shrinks to a small line icon. Captured 2026-05-20 via WebFetch against
+ * mailchimp.com and mailchimp.com/features/. Computed CSS is not
+ * retrievable from those WebFetch responses because Mailchimp serves a
+ * Contentful-rendered marketing surface without inline styles or
+ * accessible class-name CSS in the WebFetch markdown payload; tokens
+ * approximate the published Cavendish Yellow / Peppercorn brand pair
+ * documented on mailchimp.com/about/brand-assets/. Score B.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFE01B;   /* Cavendish Yellow; Mailchimp's signature page accent. Used as a section fill on hero and feature-band moments; tiles sit on a white surface inside the yellow band. */
+  --ds-surface:      #FFFFFF;   /* Paper-white tile body. Tiles defeat the yellow background and host the illustration plus copy. */
+  --ds-surface-2:    #F6F6F4;   /* Inner artwork frame inside the lead tiles; a half-step off white. */
+  --ds-text:         #241C15;   /* Peppercorn; Mailchimp's accent-black for body copy. */
+  --ds-text-muted:   #5C544B;   /* Warm muted brown-gray for dek copy under tile headlines. */
+  --ds-text-strong:  #000000;   /* Section heads above the grid; full black for the heaviest weight. */
+  --ds-border:       rgba(36, 28, 21, 0.12);  /* Tile hairline; a Peppercorn-tinted alpha border. */
+  --ds-hairline:     rgba(36, 28, 21, 0.06);  /* Inner-frame hairline under the tile illustration. */
+  --ds-accent:       #007C89;   /* Mailchimp link teal; used on the in-tile arrow link. */
+  --ds-accent-2:     #00525C;   /* Hover variant of the link teal. */
+  --ds-success:      #2F7E5B;
+  --ds-warning:      #C77926;
+  --ds-error:        #C73C2E;
+  --ds-info:         #007C89;
+  --ds-focus-ring:   #241C15;   /* Peppercorn focus ring against the yellow surface; passes contrast. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "Cooper Light", Georgia, "Times New Roman", serif;  /* Mailchimp ships Cooper Light for display moments; serif fallback preserves the soft display character. */
+  --ds-font-body:    "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;  /* Helvetica body across the marketing surface. */
+  --ds-font-mono:    "Menlo", "Consolas", ui-monospace, monospace;
+  --ds-font-accent:  "Cooper Light", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;   /* Section title above the grid; Cooper Light at display weight. */
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;     /* Tile padding. */
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ---------- */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;   /* Tile corner; subtle-rounded, not pill. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Shadows are restrained on Mailchimp; the yellow surface carries most
+   * of the chrome work, and tiles depend on the hairline border plus a
+   * very soft elevation hint.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(36, 28, 21, 0.04);
+  --ds-shadow-sm:   0 2px 6px rgba(36, 28, 21, 0.06);   /* Tile at rest. */
+  --ds-shadow-md:   0 4px 12px rgba(36, 28, 21, 0.08);  /* Tile on hover. */
+  --ds-shadow-lg:   0 8px 22px rgba(36, 28, 21, 0.10);
+  --ds-shadow-2xl:  0 24px 48px rgba(36, 28, 21, 0.16);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

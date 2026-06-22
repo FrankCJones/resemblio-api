@@ -1,0 +1,153 @@
+<!--
+  Asset: avatar-with-name-001
+  Class: avatars
+  Pattern: (none)
+  Inspired by: Anthropic
+  Notes:
+    - Compact horizontal row pairing a 40px circle photo with a sans name and serif role/title below.
+    - The typeface switch between name and role is the editorial signal; both sit on a baseline aligned to the avatar center.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>avatar-with-name-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- anthropicSerif and anthropicSans are Anthropic's branded faces; fallbacks via tokens. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-10) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .panel-title {
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    margin-bottom: var(--ds-space-4);
+  }
+  /* The byline row: avatar plus a two-line stack of name and role */
+  .byline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-6);
+  }
+  .av {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .av .photo {
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(135deg, #CC785C 0%, #D9A689 100%);
+    /* inline gradient stands in for a portrait; the variable part is the size and shape */
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* inline: 2px is tighter than space-1 to keep name and role visually paired */
+  }
+  .name {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    color: var(--ds-text);
+    line-height: 1.2;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  /* Variant: vertically stacked card (centered) */
+  .card-byline {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-6) var(--ds-space-8);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+    margin-bottom: var(--ds-space-6);
+  }
+  .card-byline .av { width: 56px; height: 56px; }
+  .card-byline .text { align-items: center; }
+  .card-byline .name { font-size: var(--ds-text-lg); }
+  .card-byline .role { font-size: var(--ds-text-base); }
+
+  /* Variant: bold accent name (used for hero quote attributions) */
+  .hero-byline .av { width: 48px; height: 48px; }
+  .hero-byline .name { font-size: var(--ds-text-lg); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <div class="panel-title">Inline byline</div>
+    <div>
+      <span class="byline">
+        <span class="av"><div class="photo"></div></span>
+        <span class="text">
+          <span class="name">Lorem Ipsum</span>
+          <span class="role">Researcher, Lorem team</span>
+        </span>
+      </span>
+    </div>
+    <div>
+      <span class="byline">
+        <span class="av"><div class="photo" style="background-image:linear-gradient(135deg,#5C7A8C,#9FB4C2)"></div></span>
+        <span class="text">
+          <span class="name">Dolor Sit Amet</span>
+          <span class="role">Engineering lead</span>
+        </span>
+      </span>
+    </div>
+
+    <div class="panel-title">Hero byline</div>
+    <div>
+      <span class="byline hero-byline">
+        <span class="av"><div class="photo" style="background-image:linear-gradient(135deg,#BD5D3A,#E0A88E)"></div></span>
+        <span class="text">
+          <span class="name">Consectetur Adipiscing</span>
+          <span class="role">Author, Lorem ipsum dolor</span>
+        </span>
+      </span>
+    </div>
+
+    <div class="panel-title">Card byline</div>
+    <div>
+      <span class="card-byline">
+        <span class="av"><div class="photo" style="background-image:linear-gradient(135deg,#5C8C6E,#A3C2A8)"></div></span>
+        <span class="text">
+          <span class="name">Aliquam Tincidunt</span>
+          <span class="role">Director of Lorem operations</span>
+        </span>
+      </span>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!--
+  Asset: studio-contact-cta-001
+  Class: cta-blocks (whole)
+  Pattern: editorial-footer, paper-and-ink, oversized-statement
+  Inspired by: Pentagram
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001       (palette context: paper, ink, hairline)
+    - type-pairings/grotesk-mono-001        (geometric-sans + mono substitute for F37 Plain + mono)
+    - headings/oversized-statement-001      (the viewport-spanning invitation line)
+    - kickers/mono-eyebrow-001              (the 'New Business' label at extended tracking)
+    - dividers/hairline-rule-001            (single rule above the office grid)
+    - links/footer-link-mono-001            (mono email row discipline)
+  Notes:
+    - The CTA is three bands: a single oversized invitation, a hairline,
+      and a four-office grid where each office is an address block plus a
+      mono email mailto. There are no button-styled CTAs anywhere; the
+      email link itself is the conversion.
+    - Variable: every color, type size, spacing step lives in tokens.css and
+      can be reskinned per-site. Inline: the invitation statement uses a
+      clamp() range and a hand-tuned tracking value that lives in this
+      asset only, because the statement scale is not a contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>studio-contact-cta-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Manrope is the open-license stand-in for F37 Plain's geometric-sans register;
+     JetBrains Mono carries the email rows. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The CTA shell. Sits as a band, not raised. The outer max-width matches
+   * the studio measure used by the related footer asset for visual continuity. */
+  .cta {
+    padding: var(--ds-space-16) var(--ds-space-8) var(--ds-space-12);
+  }
+  .cta__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* Kicker. Small uppercase mono-style label above the invitation. Tracks
+   * wide; reads as a section flag, not as part of the headline. */
+  .cta__kicker {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    margin: 0 0 var(--ds-space-6) 0;
+  }
+
+  /* The invitation statement. Pentagram's contact moment is a single
+   * sentence set very large, not a button. Inline ornament: the clamp range
+   * and the tight tracking are hand-tuned for the statement scale. */
+  .cta__statement {
+    font-family: var(--ds-font-display);
+    /* clamp scales the statement from a comfortable mobile size up to the
+     * upper contract step on desktop. */
+    font-size: clamp(var(--ds-text-3xl), 9vw, var(--ds-text-6xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: -0.035em;   /* Inline: tighter than --ds-tracking-tight; the statement scale demands it. */
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-12) 0;
+    max-width: 22ch;            /* Forces a balanced two-line set at typical desktop widths. */
+    text-wrap: balance;
+  }
+
+  /* Optional support line. Reads as the studio voice; muted so the offices
+   * grid is the next thing the eye lands on. */
+  .cta__support {
+    max-width: 56ch;
+    margin: calc(-1 * var(--ds-space-10)) 0 var(--ds-space-12) 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+  }
+
+  /* Hairline above the office grid. Borrows from dividers/hairline-rule-001. */
+  .cta__rule {
+    border: 0;
+    border-top: 1px solid var(--ds-hairline);
+    margin: 0 0 var(--ds-space-10) 0;
+  }
+
+  /* Office contact grid. Four columns at desktop, two at tablet, one on
+   * mobile. Each office: a city label, an address block, a mono email link. */
+  .cta__offices {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ds-space-8);
+  }
+  @media (max-width: 900px) { .cta__offices { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .cta__offices { grid-template-columns: 1fr; gap: var(--ds-space-6); } }
+
+  .office__label {
+    display: block;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    margin-bottom: var(--ds-space-3);
+  }
+  .office__lines {
+    margin: 0 0 var(--ds-space-4) 0;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+  }
+  /* The mailto email. Set in mono at the lg step so it reads as the unit's
+   * action, not as metadata. Underline-on-hover discipline. */
+  .office__email {
+    display: inline-block;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+    word-break: break-all;   /* Prevents long lorem emails from overflowing on mobile. */
+  }
+  .office__email:hover { border-bottom-color: var(--ds-text); }
+  .office__email:focus-visible { outline: 2px solid var(--ds-focus-ring); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .office__email { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-statement">
+    <div class="cta__inner">
+
+      <span class="cta__kicker">Lorem Ipsum Inquiries</span>
+
+      <h2 class="cta__statement" id="cta-statement">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </h2>
+
+      <p class="cta__support">
+        Curabitur lorem est, rhoncus quis sapien id, viverra placerat lorem.
+        Aenean fermentum, magna at suscipit lacinia, sapien ipsum sodales
+        libero, nec viverra nulla turpis quis lectus.
+      </p>
+
+      <hr class="cta__rule" aria-hidden="true"/>
+
+      <div class="cta__offices" role="list">
+        <section role="listitem">
+          <span class="office__label">Londinium</span>
+          <p class="office__lines">11 Lorem Street<br/>Ipsumshire LO1 2AB</p>
+          <a class="office__email" href="#">londinium@lorem.example</a>
+        </section>
+        <section role="listitem">
+          <span class="office__label">Novum Eboracum</span>
+          <p class="office__lines">204 Ipsum Avenue<br/>New Ipsum NY 10010</p>
+          <a class="office__email" href="#">novum@lorem.example</a>
+        </section>
+        <section role="listitem">
+          <span class="office__label">Austinia</span>
+          <p class="office__lines">88 Dolor Boulevard<br/>Austinia TX 78701</p>
+          <a class="office__email" href="#">austinia@lorem.example</a>
+        </section>
+        <section role="listitem">
+          <span class="office__label">Berolinum</span>
+          <p class="office__lines">Lorem Strasse 14<br/>10117 Berolinum</p>
+          <a class="office__email" href="#">berolinum@lorem.example</a>
+        </section>
+      </div>
+
+    </div>
+  </section>
+</body>
+</html>

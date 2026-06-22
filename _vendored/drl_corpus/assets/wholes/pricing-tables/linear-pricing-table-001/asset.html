@@ -1,0 +1,398 @@
+<!--
+  Asset: linear-pricing-table-001
+  Class: pricing-tables (whole)
+  Pattern: tiered-pricing-grid, mono-eyebrow, numbered-section, primary-pill, ghost-button, segmented-switch
+  Inspired by: Linear (linear.app/pricing)
+  Notes:
+    - Linear pricing surface composes the same dark-mode-native system
+      the rest of the site carries: near-black bg rgb(8,9,10), off-white
+      text rgb(247,248,248), indigo #5E6AD2 doing all chromatic work.
+      Hairline-as-chrome refuses shadow lift; the recommended tier is
+      marked with a 1px indigo inset stroke instead of an elevation
+      trick.
+    - Four tiers shown (Free / Basic / Business / Enterprise) per the
+      live pricing-page composition. Business carries the recommended
+      stroke as the middle-emphasis B2B SaaS tier; Enterprise prices as
+      "Custom" and ends with a Contact-sales CTA.
+    - Variable: tier count, price values, feature lists, billing toggle
+      target, CTA text. Inline ornament: the recommended-tier 1px
+      indigo inset stroke; the per-tier numbered mono kicker
+      (01 / 02 / 03 / 04); the SVG check glyph geometry on feature
+      rows in muted off-white.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>linear-pricing-table-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter Variable is the open substitute for Linear's own Inter build.
+     JetBrains Mono substitutes for Berkeley Mono (licensed) on metadata. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;538;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Near-black paper, generous vertical breathing room. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+
+  .pricing {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* Section head. Mono kicker, tight-tracked display H2, muted lede.
+   * Linear's signature: H1/H2 land at weight 510 with -0.022em tracking.
+   */
+  .pricing__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-4);
+    max-width: 720px;
+  }
+  .pricing__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .pricing__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 5vw, var(--ds-text-4xl));
+    /* Inline ornament: weight 510 is the Linear signature; sits between
+     * 500 and 600 and is the specific value devtools returned on
+     * captured H1. Not a contract slot. */
+    font-weight: 510;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pricing__sub {
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    max-width: 56ch;
+  }
+
+  /* Billing toggle. Segmented switch on the dark-mode register: hairline
+   * border container, off-white pill on the selected segment. Sits below
+   * the head, left-aligned. */
+  .pricing__toggle {
+    align-self: flex-start;
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface);
+  }
+  .pricing__toggle-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 510;
+    color: var(--ds-text-muted);
+    padding: 8px var(--ds-space-4);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard),
+                color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .pricing__toggle-btn[aria-pressed="true"] {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+  }
+
+  /* Tier grid. Four cards collapse cleanly via auto-fit + minmax.
+   * Wide screens: four across; tablet: two; mobile: one. */
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--ds-space-4);
+    align-items: stretch;
+  }
+
+  /* Tier card. Flat surface on near-black paper, hairline border, no
+   * shadow. Linear's restraint: structural chrome only. */
+  .tier {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    position: relative;
+  }
+
+  /* Inline ornament: recommended-tier indigo 1px inset stroke replaces
+   * the hairline border on one card. Lift is brand-chromatic, not
+   * elevation-based. */
+  .tier--recommended {
+    border-color: var(--ds-accent);
+    box-shadow: inset 0 0 0 1px var(--ds-accent);
+    background: var(--ds-surface-2);
+  }
+
+  /* Per-tier numbered mono kicker running across the head of each card.
+   * The "01 / 04" form is the numbered-section move: anchors the reader
+   * in the tier ladder. */
+  .tier__number {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+
+  .tier__name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 538;   /* Linear's bold-ish weight; between 500 and 600. */
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Price block. Display digit at 56px in the same Inter Variable that
+   * carries the rest of the surface; weight 510 holds the Linear
+   * register. Cadence label baseline-aligned to its right. */
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--ds-space-2);
+    flex-wrap: wrap;
+  }
+  .tier__price-digit {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 510;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+  .tier__price-cadence {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+  }
+  .tier__tagline {
+    margin: 0;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    min-height: 2.8em;
+  }
+
+  /* Hairline between price block and feature list. */
+  .tier__rule {
+    height: 1px;
+    background: var(--ds-hairline);
+    margin: 0;
+    border: 0;
+  }
+
+  /* Feature list. Each row: small check glyph + body text. The check is
+   * a muted off-white stroke; Linear refuses chromatic checks. */
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    flex: 1;
+  }
+  .tier__features li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--ds-space-2);
+    align-items: start;
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+  }
+  .tier__features li::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    /* Inline ornament: muted off-white SVG check glyph at 16px stroke
+     * geometry. Not a shared icon atom; this row's compact scale lives
+     * only on Linear-pricing-feature rows. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%238A8F98' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 4.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 3px;
+  }
+
+  /* CTA row. Pill not square: Linear's off-white pill convention sits at
+   * full radius. Recommended tier carries the indigo accent fill; other
+   * tiers ride the off-white pill; Enterprise is a ghost-bordered
+   * Contact-sales CTA. */
+  .tier__cta {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 510;
+    padding: 10px var(--ds-space-5);
+    border-radius: var(--ds-radius-full);
+    cursor: pointer;
+    transition:
+      background var(--ds-duration-instant) var(--ds-ease-standard),
+      border-color var(--ds-duration-instant) var(--ds-ease-standard),
+      transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tier__cta--pill {
+    background: var(--ds-text);
+    color: var(--ds-bg);
+  }
+  .tier__cta--pill:hover {
+    background: #FFFFFF;
+  }
+  .tier__cta--accent {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+  }
+  .tier__cta--accent:hover {
+    background: var(--ds-accent-2);
+  }
+  .tier__cta--ghost {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .tier__cta--ghost:hover {
+    border-color: var(--ds-text);
+  }
+  .tier__cta:active { transform: translateY(1px); }
+  .tier__cta:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tier__cta, .pricing__toggle-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="pricing" aria-label="Lorem ipsum pricing tiers">
+    <header class="pricing__head">
+      <span class="pricing__kicker">Lorem &middot; pricing</span>
+      <h2 class="pricing__h2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+      <p class="pricing__sub">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean lacinia ipsum eu tortor consequat dictum.</p>
+      <div class="pricing__toggle" role="group" aria-label="Billing period">
+        <button type="button" class="pricing__toggle-btn" aria-pressed="true">Annual</button>
+        <button type="button" class="pricing__toggle-btn" aria-pressed="false">Monthly</button>
+      </div>
+    </header>
+
+    <div class="pricing__grid" role="list">
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">01 / 04</span>
+        <h3 class="tier__name">Lorem</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$0</span>
+          <span class="tier__price-cadence">free for everyone</span>
+        </div>
+        <p class="tier__tagline">For dolor sit amet getting started with the system.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Unlimited lorem members.</li>
+          <li>Two ipsum teams.</li>
+          <li>Two hundred and fifty issues.</li>
+          <li>Agent platform access.</li>
+          <li>Lorem Agent (beta).</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--pill">Get started</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">02 / 04</span>
+        <h3 class="tier__name">Ipsum</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$10</span>
+          <span class="tier__price-cadence">/ user / month, billed yearly</span>
+        </div>
+        <p class="tier__tagline">All Lorem features, plus expanded capacity for growing teams.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Five ipsum teams.</li>
+          <li>Unlimited issues.</li>
+          <li>Unlimited file uploads.</li>
+          <li>Admin roles.</li>
+          <li>Vestibulum molestie lacus.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--pill">Get started</button>
+      </article>
+
+      <article class="tier tier--recommended" role="listitem">
+        <span class="tier__number">03 / 04</span>
+        <h3 class="tier__name">Dolor</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">$16</span>
+          <span class="tier__price-cadence">/ user / month, billed yearly</span>
+        </div>
+        <p class="tier__tagline">All Ipsum features, plus consectetur tools for the whole organization.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Unlimited teams.</li>
+          <li>Private teams and guests.</li>
+          <li>Triage Intelligence.</li>
+          <li>Lorem Agent automations (beta).</li>
+          <li>Code Intelligence (beta).</li>
+          <li>Lorem Insights and Asks.</li>
+          <li>Integrations for support tools.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--accent">Get started</button>
+      </article>
+
+      <article class="tier" role="listitem">
+        <span class="tier__number">04 / 04</span>
+        <h3 class="tier__name">Consectetur</h3>
+        <div class="tier__price">
+          <span class="tier__price-digit">Custom</span>
+          <span class="tier__price-cadence">annual billing</span>
+        </div>
+        <p class="tier__tagline">All Dolor features, plus premium support for large organizations.</p>
+        <hr class="tier__rule"/>
+        <ul class="tier__features">
+          <li>Invoice and purchase-order billing.</li>
+          <li>SAML and SCIM provisioning.</li>
+          <li>Granular admin controls.</li>
+          <li>Enterprise-grade security posture.</li>
+          <li>Advanced organization modeling.</li>
+          <li>Migration and onboarding support.</li>
+          <li>Priority support and account management.</li>
+        </ul>
+        <button type="button" class="tier__cta tier__cta--ghost">Contact sales</button>
+      </article>
+
+    </div>
+  </section>
+</body>
+</html>

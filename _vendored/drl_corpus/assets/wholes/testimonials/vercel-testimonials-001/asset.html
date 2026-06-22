@@ -1,0 +1,324 @@
+<!--
+  Asset: vercel-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, mono-eyebrow, monochrome-palette, paper-and-ink
+  Inspired by: Vercel (customers index page)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001         (white surface + Gray 12 ink + Blue 9 accent)
+    - type-pairings/sans-system-modern-001    (Geist Sans across display and body)
+    - cards/hairline-flat-001                 (1px ring chrome, no drop shadow at rest)
+    - body-text/pull-quote-breakout-001       (oversized customer quote interrupting the column)
+    - kickers/mono-eyebrow-001                (Geist Mono uppercase "Customer Story" eyebrow)
+    - dividers/hairline-rule-001              (Gray 4 hairline above the attribution row)
+  Notes:
+    - Native context: vercel.com/customers grid card, captured via WebFetch
+      2026-05-20. Each card is a clickable link to a case study; the surface
+      composition is a Geist Mono uppercase kicker, an oversized Geist Sans
+      customer quote (24-32px clamp, snug leading, slight negative tracking),
+      a hairline rule, then an attribution row holding the customer company
+      mono wordmark on the left and the name/role stack on the right. The
+      monochrome surface holds until hover, when the trailing arrow shifts
+      to Geist Blue 9 — the only chromatic moment.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the company wordmark SVG geometries (three monochrome
+      glyphs standing in for real customer marks) and the trailing arrow SVG
+      path — neither has a contract slot for arbitrary path data.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-testimonials-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Geist Sans on machines without the official Geist
+     woff2. JetBrains Mono carries Geist Mono on the kicker and company
+     line. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White Geist background-1 canvas; the customers grid sits
+   * here. Padding lets a single card breathe at the gallery-level harness. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* The grid. Two-up at >=900px, single column below. Each card is a
+   * clickable link. */
+  .quote-grid {
+    width: 100%;
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 900px) {
+    .quote-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* The card. Light Geist surface (background-2), 1px Gray 4 hairline ring
+   * via box-shadow so the 8px corner radius stays crisp. No drop shadow at
+   * rest; a sub-pixel lift on hover. The card IS the link — the whole
+   * surface is clickable, the only chromatic moment is the trailing
+   * arrow shifting to Geist Blue on hover. */
+  .quote-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-6) var(--ds-space-6);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform  var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  @media (min-width: 720px) {
+    .quote-card { padding: var(--ds-space-8); }
+  }
+  .quote-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+  .quote-card:focus-visible {
+    outline: none;
+    box-shadow: var(--ds-shadow-lg), 0 0 0 1px var(--ds-border);
+  }
+
+  /* Kicker: Geist Mono uppercase "Customer Story" label. Mono + wide
+   * tracking is the dev-tool metadata cue; the kicker is what tells the
+   * visitor this is a case study before they read the quote. */
+  .quote-card__kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* The quote body. Geist Sans at 24-32px clamp, snug leading, slight
+   * negative tracking so it reads as a pull-quote rather than oversized
+   * paragraph copy. No quote glyph — Vercel suppresses the curly mark and
+   * lets the type size do the punctuation work. text-wrap: pretty holds
+   * the line shape across viewports. */
+  .quote-card__quote {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 2.6vw, var(--ds-text-2xl));
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Hairline rule above the attribution row. The only chrome separator
+   * inside the card; matches the card's outer hairline so the surface
+   * reads as one ruled system. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Attribution row. Customer company wordmark on the left, name + role
+   * stack on the right. The mono company line is the dev-tool signal;
+   * the sans name line is the human signal. Both sit on the same baseline
+   * cluster. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+
+  /* Company wordmark slot. Inline SVG at 18px optical height, rendered in
+   * Gray 9 so it reads as attribution chrome, not a brand moment. */
+  .quote-card__company {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .quote-card__company svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+
+  /* Name + role stack. Geist Sans name at 16px Gray 12; mono role line at
+   * 14px Gray 9. Right-aligned so the attribution row reads as a
+   * two-pole composition. */
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 2px;
+  }
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Trailing affordance row. "Read case study" link with a small chevron
+   * arrow. Gray 9 at rest; Geist Blue 9 on card hover — the only chromatic
+   * moment in the asset. */
+  .quote-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    transition:
+      color     var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-instant) var(--ds-ease-standard);
+    margin-top: var(--ds-space-1);
+  }
+  .quote-card:hover .quote-card__link { color: var(--ds-accent); }
+  .quote-card:hover .quote-card__link svg { transform: translateX(2px); }
+  .quote-card__link svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-card__link,
+    .quote-card__link svg { transition: none; }
+    .quote-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="quote-grid" aria-label="Lorem ipsum customer stories">
+
+    <a href="#" class="quote-card" aria-label="Read Lorem Ipsum customer story">
+      <p class="quote-card__kicker">Customer Story / Lorem</p>
+      <blockquote class="quote-card__quote">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, a fermentum lacinia magna.
+      </blockquote>
+      <hr class="quote-card__rule" aria-hidden="true"/>
+      <figcaption class="quote-card__attribution">
+        <span class="quote-card__company" aria-label="Lorem Ipsum company">
+          <!-- Inline ornament: stand-in mono wordmark glyph. -->
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="6" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 16 L21 16" stroke="currentColor" stroke-width="2"/></svg>
+          Lorem.io
+        </span>
+        <span class="quote-card__person">
+          <span class="quote-card__name">Lorem Ipsum</span>
+          <span class="quote-card__role">Co-Founder &amp; CTO</span>
+        </span>
+      </figcaption>
+      <span class="quote-card__link">
+        Read case study
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </a>
+
+    <a href="#" class="quote-card" aria-label="Read Dolor Sit customer story">
+      <p class="quote-card__kicker">Customer Story / Dolor</p>
+      <blockquote class="quote-card__quote">
+        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.
+      </blockquote>
+      <hr class="quote-card__rule" aria-hidden="true"/>
+      <figcaption class="quote-card__attribution">
+        <span class="quote-card__company" aria-label="Dolor Sit company">
+          <!-- Inline ornament: stand-in mono wordmark glyph. -->
+          <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+          Dolor
+        </span>
+        <span class="quote-card__person">
+          <span class="quote-card__name">Consectetur Adipiscing</span>
+          <span class="quote-card__role">VP Engineering</span>
+        </span>
+      </figcaption>
+      <span class="quote-card__link">
+        Read case study
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </a>
+
+    <a href="#" class="quote-card" aria-label="Read Sit Amet customer story">
+      <p class="quote-card__kicker">Customer Story / Amet</p>
+      <blockquote class="quote-card__quote">
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur, excepteur sint occaecat cupidatat non proident.
+      </blockquote>
+      <hr class="quote-card__rule" aria-hidden="true"/>
+      <figcaption class="quote-card__attribution">
+        <span class="quote-card__company" aria-label="Sit Amet company">
+          <!-- Inline ornament: stand-in mono wordmark glyph. -->
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 22 L16 6 L26 22 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          Amet
+        </span>
+        <span class="quote-card__person">
+          <span class="quote-card__name">Tempor Incididunt</span>
+          <span class="quote-card__role">Staff Engineer</span>
+        </span>
+      </figcaption>
+      <span class="quote-card__link">
+        Read case study
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </a>
+
+    <a href="#" class="quote-card" aria-label="Read Magna Aliqua customer story">
+      <p class="quote-card__kicker">Customer Story / Magna</p>
+      <blockquote class="quote-card__quote">
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum sed ut perspiciatis unde omnis.
+      </blockquote>
+      <hr class="quote-card__rule" aria-hidden="true"/>
+      <figcaption class="quote-card__attribution">
+        <span class="quote-card__company" aria-label="Magna Aliqua company">
+          <!-- Inline ornament: stand-in mono wordmark glyph. -->
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 8 L24 8 L24 24 L8 24 Z M8 16 L24 16" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          Aliqua
+        </span>
+        <span class="quote-card__person">
+          <span class="quote-card__name">Ullamco Laboris</span>
+          <span class="quote-card__role">Director of Platform</span>
+        </span>
+      </figcaption>
+      <span class="quote-card__link">
+        Read case study
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </a>
+
+  </div>
+</body>
+</html>

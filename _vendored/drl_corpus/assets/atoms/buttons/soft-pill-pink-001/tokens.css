@@ -1,0 +1,111 @@
+/*
+ * soft-pill-pink-001 tokens
+ *
+ * Olipop-inspired primary pill: dark forest-green button living on a soft
+ * peach-pink page surface. The character is consumer DTC nostalgia: warm,
+ * approachable, mid-century soda-stand. Pairs natively with the wider
+ * Olipop palette (cream, butter-yellow, mint, brick-red as secondaries).
+ *
+ * Token strategy: the surface pink and button greens are variables; the
+ * exact pill radius (50px on the source, which reads identical to
+ * --ds-radius-full at this size) and the 1.5px outline ring used on
+ * secondary buttons are inline ornaments.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Native context: pastel peach-pink page surface; the dark forest-green
+   * button reads as the calmest possible "press me" against it. */
+  --ds-bg:           #FFE1D9;   /* Strawberry product page body bg rgb(255,225,217); the soft pill-pink surface. */
+  --ds-surface:      #FFB8B3;   /* Saturated soft pink rgb(255,184,179) used in homepage sections; one level up from bg. */
+  --ds-surface-2:    #FFFCF6;   /* Cream rgb(255,252,246) used in cards and inputs; second raised surface. */
+  --ds-text:         #14433D;   /* Body text color rgb(20,67,61); deep forest green, the brand ink. */
+  --ds-text-muted:   #6B7E78;   /* Forest-green muted at ~50% luminance against the pink bg. */
+  --ds-text-strong:  #034638;   /* Slightly cooler/deeper green rgb(3,70,56) used on the button surface. */
+  --ds-border:       #E5C9C0;   /* Borders pulled toward the bg hue so they read as soft, not severe. */
+  --ds-hairline:     #F0D6CC;   /* Subtle divider; the lightest visible separator on the pink surface. */
+  --ds-accent:       #034638;   /* The primary affordance color: deep forest green rgb(3,70,56). */
+  --ds-accent-2:     #14433D;   /* Hover state; rgb(20,67,61), a touch warmer than rest. */
+  --ds-success:      #98E1C3;   /* Mint pill rgb(152,225,195) used for secondary "Shop" buttons. */
+  --ds-warning:      #FCC100;   /* Brand butter-yellow rgb(252,193,0) used on banners and Accept buttons. */
+  --ds-error:        #D94A3F;   /* Brick red drawn from the strawberry illustration palette. */
+  --ds-info:         #FFFF7D;   /* Pale lemon rgb(255,255,125) used on subscribe and discovery CTAs. */
+  --ds-focus-ring:   #034638;   /* Same green as the button fill, used at 1.5px outline offset for focus. */
+
+  /* ---------- Type families ----------
+   * Olipop ships "Ano" as their custom display sans across the whole site;
+   * Inter is the closest open-licensed fallback for live preview. */
+  --ds-font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Tight", "Inter", sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Button label sits at --ds-text-lg (18px) on Olipop, larger than the
+   * dev-tool default of 14px. Consumer brands want the CTA to feel friendly,
+   * not utilitarian. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   18px;   /* Button label sits here; sized up vs SaaS conventions for consumer warmth. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;    --ds-space-1:  4px;  --ds-space-2:  8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Olipop uses 50px on most pills and 9999px on a few; at button heights
+   * around 40px the two values render identically. --ds-radius-full is the
+   * contract home for "fully rounded." */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * The brand keeps elevation minimal; the button has no rest shadow on
+   * Olipop. Slots are populated for contract conformance but the button
+   * only uses --ds-shadow-none and --ds-shadow-sm. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(20, 67, 61, 0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(20, 67, 61, 0.08);
+  --ds-shadow-md:   0 4px 12px rgba(20, 67, 61, 0.10);
+  --ds-shadow-lg:   0 12px 32px rgba(20, 67, 61, 0.14);
+  --ds-shadow-2xl:  0 32px 64px rgba(20, 67, 61, 0.18);
+
+  /* ---------- Motion ----------
+   * Olipop transitions are 0.25s ease-in-out across the board; mapped to
+   * --ds-duration-normal with --ds-ease-standard as the closest match. */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  250ms;
+  --ds-duration-slow:    400ms;
+}

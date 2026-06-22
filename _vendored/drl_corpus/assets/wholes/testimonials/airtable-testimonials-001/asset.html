@@ -1,0 +1,295 @@
+<!--
+  Asset: airtable-testimonials-001
+  Class: testimonials (whole)
+  Pattern: pull-quote-breakout, monochrome-palette, accent-on-neutral
+  Inspired by: Airtable (home page customer quote and /enterprise carousel)
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/warm-paper-001          (near-white page; closest existing palette atom to Airtable's neutral)
+    - type-pairings/sans-system-modern-001 (Inter across display and body)
+    - cards/warm-paper-rule-001            (hairline-edge card, modest radius, no shadow at rest)
+    - avatars/circle-photo-001             (round headshot)
+    - kickers/mono-eyebrow-001             (reserved; the company logo lockup carries the register)
+  Notes:
+    - Mechanic: company-logo-above-the-quote. Airtable opens every
+      testimonial with the customer's wordmark; the logo does the brand
+      cite, the quote does the value cite, the headshot row does the
+      human cite. Quote sits at lead-paragraph scale, sentence case.
+    - Variable: every color, type size, spacing step, radius. Inline
+      ornament: the placeholder logo chip gradient and the placeholder
+      headshot gradient.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-testimonials-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Airtable's Inter-class humanist sans across the marketing surface. Single-family system; the asset does not load mono or serif. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Warm near-white page lets the white card surface lift by
+   * the smallest possible step. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .quote-section {
+    width: 100%;
+    max-width: 1080px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-6);
+  }
+
+  /* Section eyebrow + trailing link. Airtable closes the home testimonial
+   * block with "Explore all customer stories" in brand red. */
+  .quote-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    flex-wrap: wrap;
+  }
+
+  .quote-section__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  .quote-section__more {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-section__more:hover { color: var(--ds-accent-2); }
+  .quote-section__more:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  /* Grid of quote cards. Airtable presents the carousel at desktop width
+   * showing 2-3 cards; collapses to one column below. */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--ds-space-5);
+  }
+
+  /* The card. Hairline edge stands in for the border so the 12px corner
+   * stays crisp. No drop shadow at rest. */
+  .quote-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition: box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+                transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .quote-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+
+  /* Company logo lockup at the top of the card. Airtable anchors brand
+   * recognition before the reader hits the quote. */
+  .quote-card__lockup {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+
+  .quote-card__logo-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-sm);
+    /* Inline ornament: placeholder logo chip. Real implementations swap
+     * in an SVG wordmark or product mark. */
+    background: linear-gradient(135deg, #1D1F25 0%, #4A4F58 100%);
+    flex-shrink: 0;
+  }
+
+  .quote-card__company-wordmark {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+
+  /* Quote body. Sentence-case verbatim from Airtable's source surfaces.
+   * Lead-paragraph scale, not display; the conversational tone is the point. */
+  .quote-card__quote {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Internal divider above attribution; the only hairline inside the card. */
+  .quote-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Attribution row: round headshot left, name + role stacked. */
+  .quote-card__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+
+  /* Round headshot. Placeholder warm-gradient circle stands in for a real
+   * portrait; Airtable ships actual photographs of the named person. */
+  .quote-card__headshot {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ds-radius-full);
+    background:
+      radial-gradient(circle at 30% 30%, #D8C8B0, #8A7A60);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    flex-shrink: 0;
+  }
+
+  .quote-card__person {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  /* Name: the load-bearing attribution line. */
+  .quote-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Role + company on one muted line. Airtable joins role and company
+   * with a comma ("Director of Product Operations, eBay"). */
+  .quote-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-card,
+    .quote-section__more { transition: none; }
+    .quote-card:hover { transform: none; }
+  }
+
+  @media (max-width: 520px) {
+    .quote-card { padding: var(--ds-space-4); }
+  }
+</style>
+</head>
+<body>
+  <section class="quote-section" aria-label="Customer testimonials">
+
+    <header class="quote-section__head">
+      <span class="quote-section__eyebrow">Lorem ipsum dolor</span>
+      <a class="quote-section__more" href="#">
+        Explore all lorem stories
+        <span aria-hidden="true">&rarr;</span>
+      </a>
+    </header>
+
+    <div class="quote-grid">
+
+      <figure class="quote-card">
+        <div class="quote-card__lockup">
+          <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+          <span class="quote-card__company-wordmark">Lorem</span>
+        </div>
+        <blockquote class="quote-card__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pharetra justo et lectus malesuada, sit amet vehicula libero placerat.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Aenean Tortor</span>
+            <span class="quote-card__role">Director of Product Operations, Lorem</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="quote-card">
+        <div class="quote-card__lockup">
+          <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+          <span class="quote-card__company-wordmark">Ipsum</span>
+        </div>
+        <blockquote class="quote-card__quote">
+          Curabitur eros nulla, eleifend nec consectetur a, hendrerit ac arcu. Pellentesque habitant morbi tristique senectus.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Vivamus Nullam</span>
+            <span class="quote-card__role">Senior Research Program Manager, Ipsum</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="quote-card">
+        <div class="quote-card__lockup">
+          <span class="quote-card__logo-chip" role="img" aria-label="Company logo placeholder"></span>
+          <span class="quote-card__company-wordmark">Dolor</span>
+        </div>
+        <blockquote class="quote-card__quote">
+          Suspendisse potenti. Nulla facilisi. Integer in mauris eu nibh euismod gravida, in click of a button quis lectus.
+        </blockquote>
+        <hr class="quote-card__rule" aria-hidden="true"/>
+        <figcaption class="quote-card__attribution">
+          <span class="quote-card__headshot" role="img" aria-label="Portrait placeholder"></span>
+          <span class="quote-card__person">
+            <span class="quote-card__name">Quisque Pellentesque</span>
+            <span class="quote-card__role">Director IT Strategic Programs, Dolor</span>
+          </span>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+</body>
+</html>

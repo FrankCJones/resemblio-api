@@ -1,0 +1,108 @@
+/*
+ * Locomotive library tokens
+ *
+ * Canonical Locomotive (locomotive.ca) cream-paper-with-black-ink system with
+ * electric-blue rgb(49,45,251) as the single keyboard / hover signal. Two
+ * surface modes that swap: cream paper #FAF9F5 for editorial sections, pure
+ * black #000 for hero, footer, and featured-work moments. No saturated
+ * accent except the electric blue; energy comes from contrast inversion.
+ * Hard 0px corners across the board. Hairlines run 1.6px in solid black,
+ * not 1px - the rule is a deliberate statement, not chrome.
+ *
+ * Values consolidated from the prior A-grade devtools extraction on
+ * locomotive.ca/en (assets/atoms/color-groups/locomotive-mono-001 - body
+ * 15px, H1 70px, H2 26px, .c-featured-links_title 117.333px LocomotiveNew,
+ * smooth scroll via Lenis) and this wave's WebFetch confirmation of
+ * homepage, /work, /agency, and a case-study page (Scout Motors).
+ */
+:root {
+  /* Colors - Locomotive two-surface system */
+  --ds-bg: #FAF9F5;             /* Cream paper; observed rgb(250,249,245) on featured-work surrounds. Warmer than pure white. */
+  --ds-surface: #FFFFFF;        /* Pure white raised tile fill against cream. */
+  --ds-surface-2: #000000;      /* Pure black; the hero and footer inversion surface, treated as first-class. */
+  --ds-text: #000000;           /* Pure black body and link ink on cream. */
+  --ds-text-muted: #30302E;     /* Warm dark grey rgb(48,48,46) for secondary copy; ink-on-paper, not screen-grey. */
+  --ds-text-strong: #141413;    /* Near-black warm ink for SVG fills and statements where pure black is already in play. */
+  --ds-border: #000000;         /* Section rules render in solid black 1.6px - the rule IS a statement. */
+  --ds-hairline: rgba(31, 30, 29, 0.15);  /* Warm-ink at 15% for quiet sibling-row dividers. */
+  --ds-accent: #000000;         /* No saturated brand accent; black against cream IS the accent. */
+  --ds-accent-2: #FAF9F5;       /* Cream as the inverse accent on black sections; the same two-color system reversed. */
+  --ds-success: #1F8A4B;        /* Utility green; required by contract, tuned warm. */
+  --ds-warning: #C77A1F;        /* Utility amber; warm to match palette temperature. */
+  --ds-error: #B83A2E;          /* Utility brick-red; not observed in source. */
+  --ds-info: #312DFB;           /* Observed electric blue rgb(49,45,251) on a hover / selection state. The one saturated color. */
+  --ds-focus-ring: #312DFB;     /* Matches info; the electric blue is the keyboard-state signal. */
+
+  /* Type - LocomotiveNew (custom display) + Helvetica Now Display body */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body: "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono: ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent: "LocomotiveNew", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* Type sizes - anchored to observed 15px body and 70px H1 */
+  --ds-text-2xs: 10px;
+  --ds-text-xs: 12px;
+  --ds-text-sm: 13px;
+  --ds-text-base: 15px;         /* Observed body computed font-size. */
+  --ds-text-lg: 19px;
+  --ds-text-xl: 26px;           /* Observed H2 "Featured work" size. */
+  --ds-text-2xl: 34px;
+  --ds-text-3xl: 46px;
+  --ds-text-4xl: 58px;
+  --ds-text-5xl: 70px;          /* Observed H1 size. */
+  --ds-text-6xl: 96px;
+  --ds-text-7xl: 140px;         /* .c-featured-links_title kinetic headline observed at 117.333px; stepped to 140 for the statement slot. */
+
+  /* Line heights */
+  --ds-leading-tight: 1.05;     /* Kinetic headline line-height matched its font-size in source (effectively 1.0). */
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  /* Tracking - Locomotive heads sit close to normal; only mono opens up */
+  --ds-tracking-tight: -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide: 0.06em;
+  --ds-tracking-wider: 0.14em;
+
+  /* Spacing - 4px grid; generous around featured-work tiles */
+  --ds-space-0: 0;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 24px;
+  --ds-space-6: 32px;
+  --ds-space-8: 48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* Radii - Locomotive commits to hard corners; 0 across the board */
+  --ds-radius-none: 0;
+  --ds-radius-xs: 0;
+  --ds-radius-sm: 0;
+  --ds-radius-md: 0;
+  --ds-radius-lg: 0;
+  --ds-radius-full: 9999px;     /* Kept available for partner-portrait crops if circular; source uses square. */
+
+  /* Shadows - the inversion does what elevation usually does; shadows held quiet */
+  --ds-shadow-none: none;
+  --ds-shadow-xs: 0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --ds-shadow-lg: 0 12px 32px rgba(0,0,0,0.14);
+  --ds-shadow-2xl: 0 32px 64px rgba(0,0,0,0.18);
+
+  /* Motion - Lenis-driven smooth-scroll on body; standard easing across UI */
+  --ds-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize: cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

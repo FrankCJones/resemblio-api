@@ -1,0 +1,131 @@
+/*
+ * cinematic-shadow-002 tokens
+ *
+ * Shadow scale inspired by A24 Films (a24films.com). The system refuses
+ * UI-style elevation almost entirely; what little depth exists reads as
+ * a film still sitting on a theater wall, not a card floating in space.
+ * The black field eats most of the shadow energy, so the scale leans on
+ * deep, low-spread casts rather than soft halos.
+ *
+ * Provenance note: Chrome MCP refused the a24films.com domain (same
+ * constraint observed for the a24-cinematic-001 and a24-cinematic-palette-001
+ * assets in this library); WebFetch returned summarized HTML without
+ * computed styles. The shadow values here reflect the observed character
+ * of A24's marketing surfaces (image-led, near-flat, no UI elevation)
+ * rather than extracted hex / px values. Score B per AGENT_BRIEFING and
+ * established A24 precedent.
+ *
+ * Palette is the cinema-black register so the shadow demo reads against
+ * the surface the asset is actually meant for. Non-shadow tokens carry
+ * the same values as a24-cinematic-palette-001 so the two compose cleanly.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Warm-tinted cinema black; paper text. Mirrors the A24 title-card
+   * register so the shadow visualizations sit in their native context. */
+  --ds-bg:           #0A0908;   /* Cinema black; warm-tinted near-black. */
+  --ds-surface:      #14110F;   /* Card surface; one step up from bg. */
+  --ds-surface-2:    #1E1A17;   /* Nested card surface. */
+  --ds-text:         #F5F1EA;   /* Paper-white body type. */
+  --ds-text-muted:   #9C968A;   /* Captions, scale labels. */
+  --ds-text-strong:  #FFFFFF;   /* Strongest type; reserved. */
+  --ds-border:       #2A2522;   /* Hairline frame; same warm-black family. */
+  --ds-hairline:     #1A1714;   /* Subtle divider between bg and surface. */
+  --ds-accent:       #FFFFFF;   /* The inverse-slab move; not a hue. */
+  --ds-accent-2:     #F5F1EA;   /* One step warmer than pure white. */
+  --ds-success:      #4A8A5C;   /* Reserved; muted forest. */
+  --ds-warning:      #C49449;   /* Reserved; editorial amber. */
+  --ds-error:        #B24A3F;   /* Reserved; editorial red. */
+  --ds-info:         #F5F1EA;   /* Info collapses to text color. */
+  --ds-focus-ring:   #F5F1EA;   /* Paper-white focus ring on the slab. */
+
+  /* ---------- Type families ---------- */
+  --ds-font-display: "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Near-sharp corners; the editorial-cinema register. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows (cinematic) ----------
+   * The scale refuses bright halos. Where most dark-mode shadow scales
+   * pretend light is coming from above, this one acts like the surface
+   * is already on a black field: shadows are dense, low-spread, and
+   * basically additional layers of black that consume the edge of the
+   * card rather than haloing it. The result reads as a film still
+   * resting on theater carpet, not as a UI card floating in 3D space.
+   *
+   * Color: pure black at increasing alpha. No chromatic tint (the
+   * palette refuses chromatic accent; the shadow honors that).
+   *
+   * xs: a 1px inset-like ring at very low opacity, for hairline lift.
+   * sm: tight 2px offset, low blur; almost-flat film-still rest state.
+   * md: an 8px offset, 24px blur; the deepest A24 normally goes.
+   * lg, 2xl: reserved for theatrical moments (modal over a poster grid,
+   * a single hero film still pulled forward). Wide blur, no spread.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0, 0, 0, 0.5);
+  --ds-shadow-sm:   0 2px 6px rgba(0, 0, 0, 0.55);
+  --ds-shadow-md:   0 8px 24px rgba(0, 0, 0, 0.65);
+  --ds-shadow-lg:   0 20px 56px rgba(0, 0, 0, 0.72);
+  --ds-shadow-2xl:  0 40px 96px rgba(0, 0, 0, 0.85);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

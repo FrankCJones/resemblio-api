@@ -1,0 +1,73 @@
+<!--
+  Asset: marginalia-sidenote-001
+  Class: body-text
+  Pattern: marginalia
+  Inspired by: A Working Library (Mandy Brown)
+  Notes:
+    - Side-rail sidenote pinned in the right margin via CSS Grid alongside the main reading column.
+    - Column and rail widths come from inline grid; type tokens carry the chaparral character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>marginalia-sidenote-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- A Working Library ships chaparral-pro; Georgia is the closest free fallback. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding: var(--ds-space-12) var(--ds-space-8);
+  }
+  .stage {
+    max-width: 900px;
+    margin: 0 auto;
+    /* inline: grid keeps prose column at 500px with a 240px side-rail; the gap is the gutter */
+    display: grid;
+    grid-template-columns: 500px 240px;
+    column-gap: var(--ds-space-8);
+    row-gap: var(--ds-space-5);
+  }
+  .stage > p { grid-column: 1; margin: 0; }
+  .sidenote {
+    grid-column: 2;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    font-style: italic;
+    padding-left: var(--ds-space-3);
+    border-left: 1px solid var(--ds-hairline);
+    align-self: start;
+    margin-top: 4px; /* inline: optical align to first line of adjacent paragraph */
+  }
+  .sidenote .ref {
+    font-style: normal;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    display: block;
+    margin-bottom: var(--ds-space-1);
+  }
+</style>
+</head>
+<body>
+  <article class="stage">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <aside class="sidenote"><span class="ref">Note 1</span>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</aside>
+    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+    <aside class="sidenote"><span class="ref">Note 2</span>Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.</aside>
+    <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!--
+  Asset: webflow-cta-block-001
+  Class: cta-blocks (whole)
+  Pattern: (cta-block; uses dual-cta-hero composition, accent-on-neutral, display-tight, primary-square)
+  Inspired by: Webflow (webflow.com homepage, webflow.com/pricing)
+  Notes:
+    - End-of-page conversion block on the white marketing canvas. Centered
+      narrow column at the close; the dek is a single conversational
+      sentence, not a paragraph. Webflow Blue #146EF5 fills the primary
+      button; the secondary is a hairline ghost with the same height and
+      label scale, so the pair reads as a deliberate two-action set.
+    - The optional product canvas (a gray-100 panel with rounded-lg
+      corners) sits below the action row on the homepage variant. The
+      pricing-page variant drops the canvas and runs headline + dek + dual
+      CTA only.
+    - Inline ornament: the H2 uses a fluid clamp from 32px to 56px; the
+      button radius is the 4px Webflow signature (subtle rounding, never
+      a pill); the primary button label sits at -0.01em tracking matching
+      H1 character.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-cta-block-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- WF Visual Sans Variable is foundry-proprietary. Inter is the closest
+     open-license humanist sans substitute; the fallback chain in
+     tokens.css resolves to Arial then system-ui for visitors without
+     either. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page context: the white marketing canvas. The CTA sits inline on
+   * the page surface a section above the footer. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    padding: var(--ds-space-12) var(--ds-space-6);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  /* Outer band: full-width container with a hairline section break above.
+   * The marketing surface places this where the previous section would
+   * have closed. */
+  .cta {
+    width: 100%;
+    max-width: 1200px;
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-12);
+    padding-bottom: var(--ds-space-10);
+  }
+
+  /* Content column: centered, narrow measure; the close speaks in a
+   * focused voice. */
+  .cta__content {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+  }
+
+  /* Optional kicker; sentence-case sans label per Webflow's eyebrow
+   * convention (no uppercase mono kicker). */
+  .cta__kicker {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ds-text-muted);
+    margin: 0;
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  /* Display H2: fluid clamp from 32px (mobile floor) to 56px (desktop
+   * ceiling), tight leading 1.04, -0.01em tracking. Matches the live
+   * shipped H2 scale on the marketing surface. */
+  .cta__h2 {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 5vw, var(--ds-text-3xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 20ch;
+    text-wrap: balance;
+    /* Inline ornament: text-wrap balance keeps the H2 from orphaning the
+     * trailing word; matches Webflow's marketing convention. */
+  }
+
+  /* Dek: a single conversational sentence at lg, normal leading 1.6,
+   * muted gray-600 ink. Sits between headline and action row. */
+  .cta__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+    font-weight: 400;
+  }
+
+  /* Button row: Webflow Blue primary plus hairline ghost secondary at
+   * identical dimensions. Wraps on narrow widths. */
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-3);
+  }
+
+  /* Primary: Webflow Blue fill, white label, 4px radius (the signature
+   * subtle rounding). 48px tall, comfortable padding. -0.01em tracking
+   * on the label matches H1 character. */
+  .cta__btn--primary {
+    appearance: none;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    border: 1px solid var(--ds-accent);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    height: 48px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--primary:hover {
+    background: var(--ds-accent-2);
+    border-color: var(--ds-accent-2);
+  }
+  .cta__btn--primary:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Ghost secondary: transparent fill, 1px gray-200 border, identical
+   * height and label scale to the primary so the pair reads as deliberate
+   * dual CTA, not primary plus afterthought. */
+  .cta__btn--ghost {
+    appearance: none;
+    background: transparent;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--ds-tracking-tight);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-4) var(--ds-space-6);
+    height: 48px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition:
+      background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .cta__btn--ghost:hover {
+    background: var(--ds-surface-2);
+    border-color: var(--ds-text-muted);
+  }
+  .cta__btn--ghost:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Optional product canvas: a gray-100 panel with rounded-lg corners
+   * holding a decorative screenshot or illustration. On the homepage
+   * Webflow runs a carousel of customer sites here; on pricing this
+   * panel is omitted. The asset shows the canvas as a placeholder
+   * surface so per-site libraries can swap in real imagery. */
+  .cta__canvas {
+    width: 100%;
+    max-width: 1080px;
+    margin: var(--ds-space-10) auto 0;
+    aspect-ratio: 16 / 7;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-lg);
+    position: relative;
+    overflow: hidden;
+    /* Inline ornament: the aspect-ratio 16:7 matches Webflow's homepage
+     * customer-canvas panel proportions; the gray-100 fill is the bare
+     * stage that real screenshots would render into. */
+  }
+  .cta__canvas-frame {
+    position: absolute;
+    inset: var(--ds-space-8);
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-sm);
+    display: grid;
+    place-items: center;
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__btn--primary, .cta__btn--ghost {
+      transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="cta" aria-labelledby="cta-headline">
+    <div class="cta__content">
+      <p class="cta__kicker">Lorem ipsum dolor</p>
+      <h2 class="cta__h2" id="cta-headline">Lorem ipsum dolor sit amet consectetur</h2>
+      <p class="cta__dek">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit.</p>
+      <div class="cta__actions">
+        <a class="cta__btn--primary" href="#">Lorem ipsum</a>
+        <a class="cta__btn--ghost" href="#">Dolor sit amet</a>
+      </div>
+    </div>
+    <div class="cta__canvas" aria-hidden="true">
+      <div class="cta__canvas-frame">Lorem ipsum canvas</div>
+    </div>
+  </section>
+</body>
+</html>

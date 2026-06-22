@@ -1,0 +1,118 @@
+/*
+ * notion-customer-story-page-001 tokens
+ *
+ * Native token values for the Notion customer-story skeleton, inspired by
+ * notion.com/customers/openai (inspected via WebFetch 2026-05-20). Notion's
+ * /customers pages render on a stark-white body, not the warm-paper surface
+ * documented in systems/notion/system.json design_principles - the warm-paper
+ * register lives on the homepage and product surfaces; the customer-story
+ * template runs on white with near-black type, a single muted-blue inline-link
+ * accent, and a soft-shadow framed photo as the hero anchor. The page does
+ * NOT carry a discrete KPI tile band; instead it surfaces a contributor grid
+ * (named "Insights from") that functions as the metadata aside. Numbers
+ * (column 64ch, hero title ~56px, body 16/1.6) follow Notion's marketing
+ * convention; WebFetch stripped inline computed styles. Cross-referenced
+ * against assets/atoms/cards/warm-paper-rule-001 for the radius and hairline
+ * convention, and against assets/atoms/wordmarks/lowercase-geometric-001 for
+ * the sans face fallback chain.
+ *
+ * Layout-specific notes: the narrative reading column sits at ~64ch on the
+ * body; the hero photo, contributor band, and related-stories grid widen to
+ * the ~1080px page container. Pull quotes break out of the column on a thin
+ * left rule; product-screenshot figures sit inside soft-shadow rounded frames.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Stark white body; the customer-story default. */
+  --ds-surface:      #F7F6F3;   /* Notion's warm off-white; used for soft chips and tinted callouts. */
+  --ds-surface-2:    #FBFAF7;   /* One step warmer; aside background. */
+  --ds-text:         #191919;   /* Notion near-black body reading. */
+  --ds-text-muted:   #787774;   /* Notion's warm gray for metadata and byline. */
+  --ds-text-strong:  #0F0F0F;   /* Hero title; one step heavier than body. */
+  --ds-border:       rgba(15, 15, 15, 0.1);   /* Notion's signature 10%-alpha hairline. */
+  --ds-hairline:     rgba(15, 15, 15, 0.06);  /* Subtle section rule. */
+  --ds-accent:       #2383E2;   /* Notion blue; inline links, focus. */
+  --ds-accent-2:     #191919;   /* Inversion accent; CTA pill on light surface. */
+  --ds-success:      #4DAB9A;
+  --ds-warning:      #D9730D;
+  --ds-error:        #E03E3E;
+  --ds-info:         #2383E2;
+  --ds-focus-ring:   #2383E2;   /* Notion blue at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Notion ships their own sans (Inter-derived) on the marketing surface;
+   * Inter is the open fallback and matches the geometry. Mono used for the
+   * contributor role labels and aside metadata.
+   */
+  --ds-font-display: "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "iA Writer Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter", "Helvetica Neue", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono kicker, aside label, role attribution. */
+  --ds-text-sm:   14px;   /* Byline, contributor role, caption. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   20px;   /* Lead paragraph, pull-quote body. */
+  --ds-text-xl:   24px;   /* H3 in body. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;   /* CTA block heading, related-stories heading. */
+  --ds-text-4xl:  56px;   /* Hero H1 display. */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* Hero title. */
+  --ds-leading-snug:    1.2;    /* H2 / H3 / pull quote. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;  /* Notion display squeeze; less than Geist. */
+  --ds-tracking-normal: -0.003em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;   /* Mono kicker, aside label. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Notion principle: subtle-rounded-corners-not-pills. Cards sit at 12px;
+   * the hero photo frame at 12px; the inline product screenshots at 8px;
+   * pills reserved for tag chips and the primary CTA.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;
+  --ds-radius-md:   12px;   /* Hero photo frame, aside container, related-card. */
+  --ds-radius-lg:   20px;
+  --ds-radius-full: 9999px; /* Tag chips, CTA pill, contributor avatar. */
+
+  /* ---------- Shadows ----------
+   * Notion principle: product-screenshots-in-soft-shadow-frames. Hero photo
+   * and inline product screenshots lift on a soft warm-tinted shadow rather
+   * than a hairline border.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 1px 2px rgba(15, 15, 15, 0.04);
+  --ds-shadow-sm:   0 2px 8px rgba(15, 15, 15, 0.06);
+  --ds-shadow-md:   0 8px 24px rgba(15, 15, 15, 0.08);  /* Hero photo, product figure. */
+  --ds-shadow-lg:   0 16px 48px rgba(15, 15, 15, 0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(15, 15, 15, 0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

@@ -1,0 +1,417 @@
+<!--
+  Asset: a24
+  Class: alphabets
+  Pattern: serif-display-sans-body, mono-utility-pair, mono-eyebrow, lead-paragraph, editorial-label-italic, oversized-statement
+  Inspired by: A24 Films (a24films.com, /films, /about, /films/the-zone-of-interest)
+  Notes:
+    - The full A24 typography vocabulary as one specimen: title-card serif
+      display, humanist-sans body and chrome, mono carrying the credit and
+      metadata register (NOW PLAYING, RUNTIME, RATING, YEAR).
+    - Editorial moves on display: italic accent inside upright title, oversized
+      film-title statement, mono titlecard eyebrow, paper-white serif on the
+      cinema-black field.
+    - Inline ornament: the title-card frame rule, the festival-callout small
+      caps lockup, and the credits column geometry are character moments
+      specific to this specimen; they are not tokens.
+    - Web-font substitutes: Times Now → Newsreader (high-contrast serif analog,
+      open license); GT America → Inter Tight (humanist grotesk analog);
+      Söhne Mono → JetBrains Mono. The system's structure transfers via the
+      fallback chain.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>a24 alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for the licensed Times Now / GT America / Söhne Mono:
+   - Newsreader: high-contrast serif close to Times Now / Tiempos Headline.
+   - Inter Tight: humanist grotesk close to GT America / Söhne for chrome.
+   - JetBrains Mono: stand-in for Söhne Mono on credit register.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500;1,6..72,600&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-optical-sizing: auto;
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  .specimen {
+    max-width: 70ch;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Title-card block ---------- */
+  /* Inline ornament: the title-card frame rule (1px paper hairline above
+   * and below the title) is the A24 pre-roll geometry. Not tokenized. */
+  .title-card {
+    border-top: 1px solid var(--ds-text);
+    border-bottom: 1px solid var(--ds-text);
+    padding: var(--ds-space-6) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    text-align: center;
+  }
+
+  .title-card .eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  .title-card .film-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);     /* 76px title-card display. */
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* Italic accent word inside the upright title; editorial-cinema convention. */
+  .title-card .film-title em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .title-card .credit-strip {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    display: flex;
+    justify-content: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+    margin: 0;
+  }
+  .title-card .credit-strip span { white-space: nowrap; }
+
+  /* ---------- Editorial article header ---------- */
+  .article-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  .article-head .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  .article-head .h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);        /* 60px serif display. */
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .article-head .h1 em { font-style: italic; font-weight: 400; }
+
+  .article-head .byline {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .article-head .byline .author { font-style: italic; color: var(--ds-text); }
+  .article-head .byline .sep {
+    display: inline-block;
+    width: 4px; height: 4px;
+    margin: 0 var(--ds-space-2);
+    border-radius: 50%;
+    background: var(--ds-text-muted);
+    vertical-align: middle;
+  }
+
+  /* ---------- Lead paragraph (dek) ---------- */
+  .lead {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-lg);            /* 19px lead, set in serif. */
+    font-style: italic;
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* ---------- Body article ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .body-block p em { font-style: italic; }
+  .body-block p a {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Editorial italic label, set in body serif italic. */
+  .ed-label {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-base);
+    font-style: italic;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Subhead (H2) */
+  .subhead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: var(--ds-space-5) 0 0 0;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 110px 110px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text-strong);
+    line-height: 1.04;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.sans {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* ---------- Mono technical strip (the credit register) ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .mono-strip b {
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+
+  /* ---------- Festival callout (oversized statement) ---------- */
+  .festival {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-8);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .festival .mark {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .festival .statement {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);    /* 96px oversized statement. */
+    font-weight: 500;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .festival .statement em { font-style: italic; font-weight: 400; }
+
+  @media (max-width: 720px) {
+    .scale .row { grid-template-columns: 90px 90px 1fr; }
+    .title-card .film-title { font-size: var(--ds-text-4xl); }
+    .festival .statement { font-size: var(--ds-text-4xl); }
+    .article-head .h1 { font-size: var(--ds-text-3xl); }
+  }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <section class="title-card" aria-label="Film title card">
+      <p class="eyebrow">An A24 Release · 2026</p>
+      <h1 class="film-title">Lorem Ipsum <em>Dolor</em> Sit Amet</h1>
+      <p class="credit-strip">
+        <span>Dir. Aenean Fermentum</span>
+        <span>108 Min</span>
+        <span>Rated R</span>
+        <span>1.85:1</span>
+      </p>
+    </section>
+
+    <header class="article-head">
+      <p class="kicker">Notes · Interview</p>
+      <h2 class="h1">A conversation with <em>the director</em> on light, memory, and the long take.</h2>
+      <p class="byline">
+        <span>by <span class="author">Aenean Fermentum</span></span>
+        <span class="sep" aria-hidden="true"></span>
+        <span>May 20, 2026</span>
+      </p>
+    </header>
+
+    <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus. Aenean fermentum, magna at suscipit lacinia.</p>
+
+    <section class="body-block">
+      <p>
+        Quisque eu magna at suscipit lacinia consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus. Praesent <a href="#">nec elementum nibh</a> sapien at lorem fermentum vivamus.
+      </p>
+
+      <p>Aenean fermentum magna at suscipit lacinia, <em>eros nibh sodales</em> lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus.</p>
+
+      <h3 class="subhead">Praesent nec elementum nibh sapien</h3>
+
+      <p class="ed-label">Note from the editor.</p>
+
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla. Aenean fermentum, magna at suscipit lacinia, eros nibh sodales lacus, nec elementum nibh sapien at lorem. Donec ut tortor in nisi consectetur lacinia.</p>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">7xl serif</span>
+        <span class="step-size">128 / 1.04</span>
+        <span class="step-sample" style="font-size:128px;">Aa Bb</span>
+      </div>
+      <div class="row">
+        <span class="step-label">6xl serif</span>
+        <span class="step-size">96 / 1.04</span>
+        <span class="step-sample" style="font-size:96px;">Lorem Ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">5xl serif</span>
+        <span class="step-size">76 / 1.04</span>
+        <span class="step-sample" style="font-size:76px;">Lorem Ipsum Dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl serif</span>
+        <span class="step-size">60 / 1.10</span>
+        <span class="step-sample" style="font-size:60px;">Lorem Ipsum Dolor Sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl serif</span>
+        <span class="step-size">32 / 1.18</span>
+        <span class="step-sample" style="font-size:32px;">Lorem Ipsum Dolor Sit Amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl serif</span>
+        <span class="step-size">24 / 1.18</span>
+        <span class="step-sample" style="font-size:24px;">Lorem Ipsum Dolor Sit Amet Consectetur</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg serif·it</span>
+        <span class="step-size">19 / 1.65</span>
+        <span class="step-sample" style="font-size:19px; font-style:italic;">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base sans</span>
+        <span class="step-size">16 / 1.50</span>
+        <span class="step-sample sans" style="font-size:16px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm sans</span>
+        <span class="step-size">14 / 1.50</span>
+        <span class="step-sample sans" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono</span>
+        <span class="step-size">12 / 1.50</span>
+        <span class="step-sample mono" style="font-size:12px;">Now Playing · Runtime · Rating</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Times Now / Tiempos Headline 500 / 400 italic</b></span>
+      <span>body · <b>GT America / Söhne 400 / 500</b></span>
+      <span>chrome · <b>GT America / Söhne 500 / 600</b></span>
+      <span>mono · <b>Söhne Mono / JetBrains Mono 400 / 500</b></span>
+      <span>accent · <b>Tiempos Text italic for dek and ed-label</b></span>
+      <span>base · <b>16px / 24px (1.50)</b></span>
+      <span>scale · <b>~1.40 ratio; hand-tuned title-card display steps</b></span>
+    </section>
+
+    <section class="festival" aria-label="Festival callout">
+      <p class="mark">Official Selection · 2026</p>
+      <p class="statement">In Cinemas <em>Everywhere</em></p>
+    </section>
+
+  </article>
+</body>
+</html>

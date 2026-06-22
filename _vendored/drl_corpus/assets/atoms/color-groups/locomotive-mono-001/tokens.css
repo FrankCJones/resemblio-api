@@ -1,0 +1,127 @@
+/*
+ * locomotive-mono-001 tokens
+ *
+ * Native token values for the Locomotive (locomotive.ca) studio palette: pure
+ * black, pure white, a warm cream paper tone, and a near-black warm ink as the
+ * fourth voice. Unlike a dev-tools monochrome, the cream and warm-ink shift the
+ * palette slightly toward print rather than terminal. No saturated accent;
+ * energy comes from contrast inversion (black sections punching against cream)
+ * rather than a color hit.
+ *
+ * Observed via devtools 2026-05-19 on https://locomotive.ca/en.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Locomotive runs two surface modes that swap: a cream paper surface for
+   * editorial sections and a pure-black surface for hero, footer, and
+   * featured-work moments. Both are first-class.
+   */
+  --ds-bg:           #FAF9F5;   /* Locomotive cream paper; observed rgb(250,249,245) on featured-work surrounds 2026-05-19. Warmer than #FFF. */
+  --ds-surface:      #FFFFFF;   /* Pure white; observed as raised card / project tile fill against the cream bg. */
+  --ds-surface-2:    #000000;   /* Black; observed as the hero and footer inversion surface. Treated as a second raised surface, not a passive bg. */
+  --ds-text:         #000000;   /* Pure black; observed as body and link color across the cream sections. */
+  --ds-text-muted:   #30302E;   /* Warm dark grey; observed rgb(48,48,46) on secondary copy. Reads as ink-on-paper, not screen-grey. */
+  --ds-text-strong:  #141413;   /* Near-black warm ink; observed rgb(20,20,19) and as #141413 SVG fill. Used where pure black is already in play and a slight warmth differentiates. */
+  --ds-border:       #000000;   /* Locomotive draws section rules in solid black 1.6px on cream; the border is a deliberate statement, not a chrome utility. */
+  --ds-hairline:     rgba(31, 30, 29, 0.15);  /* Observed quiet divider; the warm-ink at 15% opacity gives a visible-but-subtle separator on cream. */
+  --ds-accent:       #000000;   /* No saturated accent. The accent IS black against cream; inversion does the work color usually does. */
+  --ds-accent-2:     #FAF9F5;   /* Cream as the inverse accent on black sections; the same two-color system reversed. */
+  --ds-success:      #1F8A4B;   /* Reserved utility green; not observed in source but required by the contract. Tuned to harmonize with the warm palette. */
+  --ds-warning:      #C77A1F;   /* Reserved utility amber; warm to match the cream-and-ink temperature. */
+  --ds-error:        #B83A2E;   /* Reserved utility red; brick rather than vivid, to belong in this palette. */
+  --ds-info:         #312DFB;   /* Observed rgb(49,45,251) as a single saturated electric blue on a hover or selection state 2026-05-19. Kept as the rare info color this palette permits. */
+  --ds-focus-ring:   #312DFB;   /* Matches info; the electric blue is the one keyboard-state shift that signals an interactive system underneath. */
+
+  /* ---------- Type families ----------
+   * Locomotive ships a custom display face (LocomotiveNew, weight 400) for the
+   * statement headlines and HelveticaNowDisplay everywhere else. We mirror the
+   * stack and provide HelveticaNowDisplay-compatible fallbacks.
+   */
+  --ds-font-display: "LocomotiveNew", "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Helvetica Now Display", "HelveticaNowDisplay", -apple-system, BlinkMacSystemFont, "Helvetica Neue", helvetica, system-ui, sans-serif;
+  --ds-font-mono:    ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  --ds-font-accent:  "LocomotiveNew", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Locomotive body is 15px (observed); H1 is 70px on desktop. Scale anchors
+   * to those two and steps out in both directions.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   13px;
+  --ds-text-base: 15px;   /* Observed body computed font-size 2026-05-19. */
+  --ds-text-lg:   19px;
+  --ds-text-xl:   26px;   /* Observed H2 ("Featured work") 2026-05-19. */
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  46px;
+  --ds-text-4xl:  58px;
+  --ds-text-5xl:  70px;   /* Observed H1 size 2026-05-19. */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  140px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Locomotive heads use normal tracking; not aggressively tightened. Mono
+   * labels and overlines are the only place tracking opens up.
+   */
+  --ds-tracking-tight:  -0.015em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.06em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid; agency portfolio sites favor generous spacing for the
+   * featured-work tiles. The 1.6px hairline rule sits inside this grid.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Observed: every interactive element renders with 0px border-radius. The
+   * palette commits to hard edges as part of its statement.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   0;
+  --ds-radius-sm:   0;
+  --ds-radius-md:   0;
+  --ds-radius-lg:   0;
+  --ds-radius-full: 9999px;   /* Kept available for the rare pill, not used in the source. */
+
+  /* ---------- Shadows ----------
+   * Locomotive avoids shadow elevation; the cream-vs-black inversion does the
+   * work elevation would do. Shadow steps are kept conservative for downstream
+   * adopters who need them.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.06);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.10);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.14);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

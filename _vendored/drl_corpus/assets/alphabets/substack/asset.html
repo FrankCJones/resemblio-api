@@ -1,0 +1,415 @@
+<!--
+  Asset: substack
+  Class: alphabets
+  Pattern: serif-display-sans-body, lead-paragraph, mono-eyebrow, paper-and-ink, accent-on-neutral, wordmark-with-mark
+  Inspired by: Substack (substack.com, substack.com/going-paid)
+  Notes:
+    - Substack's full marketing typography vocabulary in one specimen:
+      Spectral-class serif at display, Source Sans Pro-class sans at body,
+      SF Mono for the rare uppercase kicker, signature orange (#FF6719)
+      reserved for the wordmark mark and the primary CTA.
+    - The serif/sans pair mirrors the writing-surface stack the platform
+      ships to publications by default; marketing reads as continuous
+      with reading.
+    - Sentence-case buttons. Primary CTA "Start your Substack" sits in a
+      4px-radius orange pill (square-ish, not a full pill).
+    - The wordmark is the word "Substack" in sans paired with the orange
+      square mark; the mark is the brand, the word names it.
+    - Inline ornament: the orange S mark glyph (SVG square with rounded
+      corners + S), the writer-card hairline border, the sentence-case
+      CTA label register.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack alphabet · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!--
+  Open-license substitutes for Substack's licensed stack:
+   - Spectral: an editorial-register serif that fills the Spectral-class
+     display role.
+   - Source Sans 3: the open continuation of Source Sans Pro, the body face.
+   - JetBrains Mono: the open mono used for the rare uppercase kicker.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    min-height: 100vh;
+  }
+
+  /* Marketing-register column. Wider than an essay; this is a landing,
+   * not a longform. Substack marketing surfaces breathe at this measure. */
+  .specimen {
+    max-width: 48rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Wordmark ---------- */
+  .wordmark-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Inline ornament: the orange Substack mark. A 32px rounded-corner square
+   * carrying a white S in the brand sans. Reproduced as inline SVG. */
+  .wordmark-row .mark {
+    width: 36px; height: 36px;
+    background: var(--ds-accent);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1;
+  }
+  .wordmark-row .wordmark {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xl);
+    font-weight: 700;
+    letter-spacing: -0.01em;        /* Inline tuning; wordmark tightens slightly. */
+    color: var(--ds-text-strong);
+  }
+
+  /* ---------- Editorial header ---------- */
+  .head { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+
+  .kicker {
+    /* Mono uppercase kicker; the only mono moment on the surface. */
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Inline ornament: trailing hairline rule after the kicker; the
+   * kicker-with-rule pattern as Substack composes it on marketing pages. */
+  .kicker::after {
+    content: "";
+    display: inline-block;
+    height: 1px;
+    width: 48px;
+    background: currentColor;
+    opacity: 0.45;
+  }
+
+  .display {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);    /* 72px serif hero. */
+    font-weight: 500;                 /* Spectral 500 carries weight without going heavy. */
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .display em { font-style: italic; font-weight: 500; }
+
+  .lead {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);      /* 20px serif italic dek. */
+    font-style: italic;
+    font-weight: 400;
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 36em;
+  }
+
+  /* ---------- CTA row ---------- */
+  .cta-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    margin-top: var(--ds-space-2);
+  }
+  .btn-primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);      /* 14px button label. */
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;              /* Sentence-case; the platform convention. */
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    cursor: pointer;
+  }
+  .btn-link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+    padding: var(--ds-space-3) var(--ds-space-2);
+  }
+
+  /* ---------- Body reading ---------- */
+  .body-block { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .body-block p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);    /* 17px sans body. */
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .body-block p a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Section head H2 in serif; marketing pages step down from hero to this. */
+  .h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);     /* 44px section heading. */
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  /* Subhead H3; a touch smaller, same family. */
+  .h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Quiet label register (UI labels, footnote labels) sits in sans 14px. */
+  .label {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Footnote / legal sits at 13px. */
+  .footnote {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* ---------- Writer card (lifted from libraries/substack atoms) ---------- */
+  .writer-card {
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    background: var(--ds-surface);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .writer-card .avatar {
+    width: 48px; height: 48px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+  }
+  .writer-card .name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-1) 0;
+  }
+  .writer-card .pub {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* ---------- Type-scale specimen ---------- */
+  .scale {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .scale .row {
+    display: grid;
+    grid-template-columns: 120px 96px 1fr;
+    align-items: baseline;
+    gap: var(--ds-space-4);
+    color: var(--ds-text);
+  }
+  .scale .step-label,
+  .scale .step-size {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .scale .step-label { text-transform: uppercase; }
+  .scale .step-sample {
+    font-family: var(--ds-font-display);
+    color: var(--ds-text-strong);
+    line-height: 1.05;
+    letter-spacing: var(--ds-tracking-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scale .step-sample.body {
+    font-family: var(--ds-font-body);
+    letter-spacing: 0;
+    line-height: var(--ds-leading-normal);
+    font-weight: 400;
+    color: var(--ds-text);
+  }
+  .scale .step-sample.mono {
+    font-family: var(--ds-font-mono);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+
+  /* ---------- Mono technical strip ---------- */
+  .mono-strip {
+    border-top: 1px solid var(--ds-hairline);
+    padding-top: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .mono-strip b { color: var(--ds-text); font-weight: 500; }
+</style>
+</head>
+<body>
+  <article class="specimen">
+
+    <div class="wordmark-row" aria-label="Substack wordmark">
+      <span class="mark" aria-hidden="true">S</span>
+      <span class="wordmark">Substack</span>
+    </div>
+
+    <header class="head">
+      <p class="kicker">For independent writers</p>
+      <h1 class="display">Lorem ipsum dolor sit amet, <em>consectetur</em> adipiscing.</h1>
+      <p class="lead">Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus.</p>
+
+      <div class="cta-row">
+        <button class="btn-primary" type="button">Start your Substack</button>
+        <a class="btn-link" href="#">Learn more</a>
+      </div>
+    </header>
+
+    <section class="body-block" aria-label="Body reading">
+      <h2 class="h2">Lorem ipsum dolor sit amet</h2>
+      <p>Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis fringilla, ut eros nibh sodales lacus, nec elementum nibh sapien at lorem. Aenean fermentum <a href="#">magna at suscipit</a> lacinia consectetur.</p>
+
+      <h3 class="h3">Praesent nec elementum</h3>
+      <p>Donec ut tortor in nisi consectetur lacinia. Cras ut sollicitudin nibh, vitae fermentum lacus. Vivamus sit amet sapien velit, curabitur nec libero non nisi convallis fringilla.</p>
+
+      <p class="label">Lorem ipsum dolor sit amet</p>
+      <p class="footnote">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent nec elementum nibh sapien.</p>
+    </section>
+
+    <section class="writer-card" aria-label="Writer card specimen">
+      <div class="avatar" aria-hidden="true"></div>
+      <div>
+        <p class="name">Lorem Ipsum</p>
+        <p class="pub">Dolor Sit Amet · 12,400 subscribers</p>
+      </div>
+    </section>
+
+    <section class="scale" aria-label="Type scale">
+      <div class="row">
+        <span class="step-label">5xl display</span>
+        <span class="step-size">72 / 1.05</span>
+        <span class="step-sample" style="font-size:72px;">Lorem ipsum</span>
+      </div>
+      <div class="row">
+        <span class="step-label">4xl display</span>
+        <span class="step-size">56 / 1.05</span>
+        <span class="step-sample" style="font-size:56px;">Lorem ipsum dolor</span>
+      </div>
+      <div class="row">
+        <span class="step-label">3xl display</span>
+        <span class="step-size">44 / 1.20</span>
+        <span class="step-sample" style="font-size:44px;">Lorem ipsum dolor sit</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xl display</span>
+        <span class="step-size">32 / 1.20</span>
+        <span class="step-sample" style="font-size:32px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xl display</span>
+        <span class="step-size">24 / 1.20</span>
+        <span class="step-sample" style="font-size:24px;">Lorem ipsum dolor sit amet</span>
+      </div>
+      <div class="row">
+        <span class="step-label">lg lead</span>
+        <span class="step-size">20 / 1.60</span>
+        <span class="step-sample" style="font-size:20px; font-style:italic; font-family:var(--ds-font-display);">Lorem ipsum dolor sit amet consectetur adipiscing.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">base body</span>
+        <span class="step-size">17 / 1.45</span>
+        <span class="step-sample body" style="font-size:17px;">Lorem ipsum dolor sit amet consectetur adipiscing elit.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">sm ui</span>
+        <span class="step-size">14 / 1.45</span>
+        <span class="step-sample body" style="font-size:14px;">Lorem ipsum dolor sit amet consectetur.</span>
+      </div>
+      <div class="row">
+        <span class="step-label">xs mono</span>
+        <span class="step-size">13 / 1.40</span>
+        <span class="step-sample mono" style="font-size:13px;">Lorem ipsum kicker</span>
+      </div>
+      <div class="row">
+        <span class="step-label">2xs footnote</span>
+        <span class="step-size">11 / 1.40</span>
+        <span class="step-sample body" style="font-size:11px;">Lorem ipsum dolor sit amet consectetur.</span>
+      </div>
+    </section>
+
+    <section class="mono-strip" aria-label="Type families">
+      <span>display · <b>Spectral 500 / 500 italic / 700</b></span>
+      <span>body · <b>Source Sans 3 400 / 500 / 600</b></span>
+      <span>mono · <b>JetBrains Mono 400 / 500 (kicker only)</b></span>
+      <span>base · <b>17px / 24.65px (1.45 leading)</b></span>
+      <span>hero · <b>72px Spectral 500 on -0.015em tracking</b></span>
+      <span>cta · <b>14px Source Sans 600, sentence-case, 4px radius, #FF6719</b></span>
+      <span>wordmark · <b>"Substack" sans 700 paired with 36px orange S mark</b></span>
+    </section>
+
+  </article>
+</body>
+</html>

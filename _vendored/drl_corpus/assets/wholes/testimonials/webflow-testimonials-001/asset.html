@@ -1,0 +1,350 @@
+<!--
+  Asset: webflow-testimonials-001
+  Class: testimonials (whole)
+  Pattern: stat-kicker, logo-attributed-quote, hairline-card, paper-and-ink
+  Inspired by: Webflow (homepage carousel + customers index)
+  Notes:
+    - Native context: webflow.com homepage runs a six-slide carousel of
+      customer quotes (Verifone / Lattice / Orangetheory Fitness style)
+      where each card carries a stat-style kicker line ("32 global sites
+      launched in 10 days"), the quote in display sans, and an attribution
+      row holding company logo + name + role. webflow.com/customers grid
+      shows the same vocabulary as static cards with read-story links.
+      Logo wordmarks identify the customer; no round avatar photos.
+    - Variable: every color, type, spacing, radius, motion via tokens.css.
+    - Inline ornament: the SVG wordmark glyphs standing in for real
+      customer brand marks and the trailing arrow geometry; neither has
+      a contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-testimonials-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for WF Visual Sans Variable on machines without the
+     proprietary woff2. Arial is the documented Webflow fallback. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. Pure-white Webflow canvas; section padding at 4rem so the
+   * grid breathes inside the gallery harness. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--ds-space-10) var(--ds-space-6);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .testimonials {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-8);
+  }
+
+  /* Section kicker. Webflow's eyebrow is a sentence-case sans label at
+   * paragraph-sm, not the uppercase mono kicker dev-tool sites use. */
+  .testimonials__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    max-width: 720px;
+  }
+  .testimonials__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+  .testimonials__heading {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 3.4vw, var(--ds-text-2xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Card grid. Three-up at >=1000px, two-up >=720px, single below. */
+  .testimonials__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 720px) {
+    .testimonials__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1000px) {
+    .testimonials__grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  /* The card. Flat white surface with a 1px gray-200 hairline ring as the
+   * sole chrome at rest. Hover lifts to a soft 2px / 4% black plus the
+   * hairline. The whole card is a link to the customer story. */
+  .testimonial-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-6);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard),
+      transform  var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  @media (min-width: 720px) {
+    .testimonial-card { padding: var(--ds-space-8); }
+  }
+  .testimonial-card:hover {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-1px);
+  }
+  .testimonial-card:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ds-focus-ring);
+  }
+
+  /* Stat kicker. The headline-sized number is the load-bearing entry
+   * point on Webflow's customer carousel; it is what makes the card read
+   * as a results story rather than a generic quote. Sits at the H4 ceiling
+   * with -0.01em tracking. */
+  .testimonial-card__stat {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-xl), 2.8vw, var(--ds-text-2xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* The quote. Display sans at paragraph-xl, snug leading, neutral
+   * tracking. Webflow does not suppress the quote glyph but keeps it
+   * implicit by typography weight; we follow the homepage card pattern. */
+  .testimonial-card__quote {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 500;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Hairline divider above attribution; matches the card's outer hairline
+   * tone so the surface reads as one ruled system. */
+  .testimonial-card__rule {
+    height: 1px;
+    border: 0;
+    background: var(--ds-hairline);
+    margin: 0;
+  }
+
+  /* Attribution row. Company logo on the left at ~28px optical, name and
+   * role stack on the right. Webflow uses customer wordmarks rendered
+   * in the customer's brand color (Verifone red, Lattice purple) or in
+   * gray; we render the stand-in wordmarks in current ink. */
+  .testimonial-card__attribution {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-4);
+    margin-top: auto;
+  }
+
+  .testimonial-card__logo {
+    display: inline-flex;
+    align-items: center;
+    color: var(--ds-text);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    letter-spacing: -0.005em; /* Inline: micro-tightening for wordmark optics; no contract slot. */
+  }
+  .testimonial-card__logo svg {
+    height: 24px;
+    width: auto;
+    display: block;
+  }
+
+  .testimonial-card__person {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 2px;
+  }
+  .testimonial-card__name {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    line-height: var(--ds-leading-snug);
+  }
+  .testimonial-card__role {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 400;
+    color: var(--ds-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  /* Read-story link. Gray at rest, brand blue on card hover. The arrow
+   * geometry is the only motion moment in the asset. */
+  .testimonial-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    transition:
+      color     var(--ds-duration-fast) var(--ds-ease-standard),
+      transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+  .testimonial-card:hover .testimonial-card__link { color: var(--ds-accent); }
+  .testimonial-card:hover .testimonial-card__link svg { transform: translateX(2px); }
+  .testimonial-card__link svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--ds-duration-instant) var(--ds-ease-standard);
+  }
+
+  /* Logo strip below the grid. Webflow's customer page shows a dense rail
+   * of brand wordmarks (monday.com, Verifone, Lattice, Samsara, etc.) at
+   * gray-600 ink. Single line on desktop; wraps below. */
+  .testimonials__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-8);
+    padding: var(--ds-space-6) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    color: var(--ds-text-muted);
+  }
+  .testimonials__logos svg {
+    height: 22px;
+    width: auto;
+    display: block;
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonial-card,
+    .testimonial-card__link,
+    .testimonial-card__link svg { transition: none; }
+    .testimonial-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="testimonials" aria-labelledby="testimonials-heading">
+
+    <header class="testimonials__header">
+      <p class="testimonials__eyebrow">Lorem ipsum customer stories</p>
+      <h2 class="testimonials__heading" id="testimonials-heading">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</h2>
+    </header>
+
+    <div class="testimonials__grid">
+
+      <a href="#" class="testimonial-card" aria-label="Read Lorem customer story">
+        <p class="testimonial-card__stat">32 lorem sites launched in 10 days</p>
+        <blockquote class="testimonial-card__quote">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sit amet sapien velit. Curabitur nec libero non nisi convallis.
+        </blockquote>
+        <hr class="testimonial-card__rule" aria-hidden="true"/>
+        <figcaption class="testimonial-card__attribution">
+          <span class="testimonial-card__logo" aria-label="Lorem company">
+            <!-- Inline ornament: stand-in wordmark glyph. -->
+            <svg viewBox="0 0 96 24" aria-hidden="true"><rect x="2" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><text x="26" y="17" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Lorem</text></svg>
+          </span>
+          <span class="testimonial-card__person">
+            <span class="testimonial-card__name">Lorem Ipsum</span>
+            <span class="testimonial-card__role">VP of Digital Marketing</span>
+          </span>
+        </figcaption>
+        <span class="testimonial-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="testimonial-card" aria-label="Read Dolor customer story">
+        <p class="testimonial-card__stat">20% increase in site-wide conversion</p>
+        <blockquote class="testimonial-card__quote">
+          Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </blockquote>
+        <hr class="testimonial-card__rule" aria-hidden="true"/>
+        <figcaption class="testimonial-card__attribution">
+          <span class="testimonial-card__logo" aria-label="Dolor company">
+            <!-- Inline ornament: stand-in wordmark glyph. -->
+            <svg viewBox="0 0 96 24" aria-hidden="true"><circle cx="10" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/><text x="26" y="17" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Dolor</text></svg>
+          </span>
+          <span class="testimonial-card__person">
+            <span class="testimonial-card__name">Consectetur Adipiscing</span>
+            <span class="testimonial-card__role">Chief Marketing Officer</span>
+          </span>
+        </figcaption>
+        <span class="testimonial-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="#" class="testimonial-card" aria-label="Read Amet customer story">
+        <p class="testimonial-card__stat">$6M in annual cost savings</p>
+        <blockquote class="testimonial-card__quote">
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur, excepteur sint occaecat cupidatat.
+        </blockquote>
+        <hr class="testimonial-card__rule" aria-hidden="true"/>
+        <figcaption class="testimonial-card__attribution">
+          <span class="testimonial-card__logo" aria-label="Amet company">
+            <!-- Inline ornament: stand-in wordmark glyph. -->
+            <svg viewBox="0 0 96 24" aria-hidden="true"><path d="M2 20 L10 4 L18 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><text x="26" y="17" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Amet</text></svg>
+          </span>
+          <span class="testimonial-card__person">
+            <span class="testimonial-card__name">Tempor Incididunt</span>
+            <span class="testimonial-card__role">Chief Information Officer</span>
+          </span>
+        </figcaption>
+        <span class="testimonial-card__link">
+          Read story
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+    </div>
+
+    <!-- Logo strip; the customers page shows a dense rail of wordmarks
+         below the case-study grid, identifying the broader roster. -->
+    <div class="testimonials__logos" aria-label="Lorem ipsum customer roster">
+      <svg viewBox="0 0 96 22" aria-hidden="true"><text x="0" y="16" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Lorem</text></svg>
+      <svg viewBox="0 0 96 22" aria-hidden="true"><text x="0" y="16" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Ipsum.io</text></svg>
+      <svg viewBox="0 0 96 22" aria-hidden="true"><text x="0" y="16" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Dolor</text></svg>
+      <svg viewBox="0 0 96 22" aria-hidden="true"><text x="0" y="16" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Sit Amet</text></svg>
+      <svg viewBox="0 0 96 22" aria-hidden="true"><text x="0" y="16" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Consectetur</text></svg>
+      <svg viewBox="0 0 96 22" aria-hidden="true"><text x="0" y="16" font-family="inherit" font-size="14" font-weight="600" fill="currentColor">Aliqua</text></svg>
+    </div>
+
+  </section>
+</body>
+</html>

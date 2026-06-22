@@ -1,0 +1,487 @@
+<!--
+  Asset: webflow-article-page-001
+  Class: layouts
+  Pattern: editorial-hero, centered-narrow-column, lead-paragraph, pull-quote-breakout, story-card-grid, mega-footer
+  Inspired by: Webflow (webflow.com/blog/introducing-webflow-aeo)
+  Notes:
+    - Single-article blog skeleton: flush-top nav, article hero (category
+      kicker + display title + author/role byline + mono date + rounded
+      feature image), narrow-column body with inline images and two
+      customer pull quotes, two-up related-posts grid, full-width
+      newsletter band, mega-footer. The reading column sits at ~68ch;
+      the page widens to 1200px.
+    - Variable: section sequence, page max-width, vertical rhythm, role
+      per slot. Inline: column measure (68ch), page max-width (1200px),
+      avatar size, figure radius, related-grid columns.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-article-page-001 . Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Inter is the Webflow marketing face. Not loaded in the asset;
+  the fallback chain in tokens.css carries the register so the asset opens
+  standalone.
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*
+   * Page container. Max-width 1200px is Webflow blog page-grid character;
+   * the article-column inside is narrower. Inline value.
+   */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+  @media (min-width: 768px) {
+    .page { padding-inline: var(--ds-space-8); }
+  }
+
+  /*
+   * Article column. The reading rhythm sits at ~68ch (about 700px at
+   * 17px sans). Article-specific character, not a contract slot.
+   */
+  .column {
+    max-width: 68ch;
+    margin: 0 auto;
+  }
+
+  /* Nav: flush-top, hairline rule below. Wordmark left, link cluster
+     center, CTA pair right. */
+  .nav {
+    padding-block: var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-6);
+  }
+  .nav__wordmark {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+  }
+
+  /* Recurring section. */
+  .section {
+    padding-block: var(--ds-space-8);
+  }
+  @media (min-width: 768px) {
+    .section { padding-block: var(--ds-space-12); }
+  }
+
+  /*
+   * Article hero. Category kicker in Webflow Blue uppercase, display
+   * title in Inter Display at 4xl with tight tracking, then a byline
+   * pair (author name + role) and a mono publish date beneath. Feature
+   * image sits below the byline at full column width with lg radius.
+   */
+  .article-hero {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .article-hero {
+      padding-top: var(--ds-space-12);
+      padding-bottom: var(--ds-space-8);
+    }
+  }
+  .kicker {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-accent);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .article-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .byline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+    align-items: center;
+    color: var(--ds-text-muted);
+    margin-bottom: var(--ds-space-8);
+  }
+  .byline-author {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    color: var(--ds-text);
+  }
+  /* Author avatar: 32px circle on the byline. Inline ornament. */
+  .byline-author__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    display: inline-block;
+  }
+  .byline-author__name { font-weight: 600; color: var(--ds-text-strong); }
+  .byline-author__role { color: var(--ds-text-muted); margin-left: var(--ds-space-1); }
+  .byline-date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  /* Feature image: full-column rounded card, 16:9. Inline character. */
+  .feature-image {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    overflow: hidden;
+  }
+
+  /*
+   * Article body. Lead paragraph one step larger than body. Body in
+   * Inter at 17px on 1.6 leading. H2 and H3 break the column with
+   * named hierarchy. Inline links pick up Webflow Blue with a thin
+   * underline.
+   */
+  .article-body { font-family: var(--ds-font-body); font-size: var(--ds-text-base); line-height: var(--ds-leading-relaxed); }
+  .article-body > * + * { margin-top: var(--ds-space-5); }
+  .article-body .lead {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .article-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-10);
+    margin-bottom: var(--ds-space-4);
+  }
+  .article-body h3 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .article-body a {
+    color: var(--ds-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .article-body figure { margin: var(--ds-space-8) 0; }
+  .article-body .inline-image {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .article-body figcaption {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin-top: var(--ds-space-3);
+  }
+
+  /*
+   * Pull quote. Webflow's customer quotes sit inside the column on a
+   * tinted surface with hairline border and md radius, accent rule on
+   * the left edge. Quote in larger sans, attribution mono below.
+   */
+  .pull-quote {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-left: 3px solid var(--ds-accent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-6) var(--ds-space-8);
+    margin: var(--ds-space-8) 0;
+  }
+  .pull-quote__body {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .pull-quote__attrib {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /*
+   * Related posts. Section heading in display sans, then two-up card
+   * grid: desktop 2 columns, mobile 1. The grid sits inside the page
+   * container (not the article column) so it breathes wider than the
+   * body.
+   */
+  .related-heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-8);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+  }
+  @media (min-width: 768px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /*
+   * Newsletter band. Full-bleed inside the page container, tinted
+   * surface, lg radius, hairline border. Heading + body + form-row
+   * placeholder. Sits between related-posts and footer.
+   */
+  .newsletter {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    padding: var(--ds-space-10) var(--ds-space-8);
+    text-align: center;
+  }
+  .newsletter__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .newsletter__body {
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text-muted);
+    margin: 0 auto var(--ds-space-6);
+    max-width: 48ch;
+  }
+
+  /* Slot placeholders (stand in for downstream wholes). */
+  .slot {
+    background: var(--ds-surface-2);
+    border: 1px dashed var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .slot__label { display: block; color: var(--ds-text); margin-bottom: var(--ds-space-2); }
+
+  /* Footer: full-width band, sits outside the .page container. Stands
+     in for a webflow-tagged mega-footer whole. */
+  .footer-band {
+    margin-top: var(--ds-space-12);
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Section: nav. Stands in for a webflow-tagged navigation/* whole. -->
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__wordmark">Lorem</span>
+      <div class="slot" style="flex: 1; max-width: 520px;">
+        <span class="slot__label">nav-link-cluster</span>
+        Lorem . Ipsum . Dolor . Sit
+      </div>
+      <div class="slot" style="min-width: 200px;">
+        <span class="slot__label">cta-pair</span>
+        Login . Get started
+      </div>
+    </nav>
+
+    <!-- Section: article-hero. Kicker + title + byline + date + feature image. -->
+    <header class="article-hero" aria-label="Article hero">
+      <div class="column">
+        <p class="kicker">Lorem Ipsum</p>
+        <h1 class="article-title">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h1>
+        <div class="byline-row">
+          <span class="byline-author">
+            <span class="byline-author__avatar" aria-hidden="true"></span>
+            <span>
+              <span class="byline-author__name">Lorem Ipsum</span><span class="byline-author__role">, Dolor Sit Amet</span>
+            </span>
+          </span>
+          <span class="byline-date">April 13, 2026</span>
+        </div>
+        <div class="feature-image" role="img" aria-label="Feature image">
+          <div class="slot" style="height: 100%; border: 0; background: transparent;">
+            <span class="slot__label">feature-image</span>
+            Lorem ipsum dolor sit amet
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: article-body. Narrow reading column with inline images and pull quotes. -->
+    <section class="section" aria-label="Article body">
+      <div class="column article-body">
+        <p class="lead">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur.
+          <a href="#">Excepteur sint occaecat cupidatat non proident</a>,
+          sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+
+        <h2>Lorem ipsum dolor sit amet consectetur</h2>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+          quae ab illo inventore veritatis et quasi architecto beatae vitae
+          dicta sunt explicabo.
+        </p>
+        <figure>
+          <div class="inline-image" role="img" aria-label="Inline product screenshot"></div>
+          <figcaption>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </figcaption>
+        </figure>
+
+        <h3>Lorem ipsum subsection</h3>
+        <p>
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+          aut fugit, sed quia consequuntur magni dolores eos qui ratione
+          voluptatem sequi nesciunt.
+        </p>
+
+        <blockquote class="pull-quote">
+          <p class="pull-quote__body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p class="pull-quote__attrib">Lorem Ipsum . Dolor Sit Amet, Consectetur</p>
+        </blockquote>
+
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+          consectetur, adipisci velit, sed quia non numquam eius modi
+          tempora incidunt ut labore et dolore magnam aliquam quaerat.
+        </p>
+        <figure>
+          <div class="inline-image" role="img" aria-label="Inline product screenshot"></div>
+          <figcaption>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </figcaption>
+        </figure>
+        <p>
+          Ut enim ad minima veniam, quis nostrum exercitationem ullam
+          corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
+          consequatur.
+        </p>
+
+        <blockquote class="pull-quote">
+          <p class="pull-quote__body">
+            Quis autem vel eum iure reprehenderit qui in ea voluptate velit
+            esse quam nihil molestiae consequatur.
+          </p>
+          <p class="pull-quote__attrib">Lorem Ipsum . Dolor Sit, Consectetur Adipiscing</p>
+        </blockquote>
+
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p>
+          Vel illum qui dolorem eum fugiat quo voluptas nulla pariatur. At
+          vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: related-posts. Two-up grid, full page width. -->
+    <section class="section" aria-label="Related posts">
+      <h2 class="related-heading">Lorem ipsum dolor</h2>
+      <div class="related-grid">
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </div>
+        <div class="slot" style="aspect-ratio: 4 / 3;">
+          <span class="slot__label">related-card</span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: newsletter band. Tinted full-width card, centered copy. -->
+    <section class="section" aria-label="Newsletter signup">
+      <div class="newsletter">
+        <h2 class="newsletter__title">Lorem ipsum dolor sit amet</h2>
+        <p class="newsletter__body">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt.
+        </p>
+        <div class="slot" style="max-width: 480px; margin: 0 auto; min-height: 64px;">
+          <span class="slot__label">subscribe-form</span>
+          Lorem ipsum email field plus submit
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer is full-width, outside the .page container. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="page">
+      <div class="slot" style="min-height: 280px;">
+        <span class="slot__label">mega-footer</span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

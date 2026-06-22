@@ -1,0 +1,331 @@
+<!--
+  Asset: webflow-feature-grid-001
+  Class: feature-grids
+  Pattern: story-card-grid
+  Inspired by: Webflow (webflow.com, webflow.com/design)
+  Notes:
+    - Webflow's feature-capability tile grid. Tiles grouped under a small
+      sentence-case section eyebrow (Agility / Impact / Scale on the
+      homepage; Build and Design / Manage / Optimize / Extend on /design).
+      Each tile carries a product-canvas screenshot stand-in, a bold sans
+      heading, a one-line sentence-case dek, and a trailing Webflow Blue
+      arrow link. Six tiles in a 3x2 grid is the canonical desktop rhythm.
+    - Variable: every color, font, spacing, radius from the contract. Inline:
+      the placeholder canvas SVGs (one-off ornaments standing in for real
+      product screenshots) and a single inline tracking on the section head.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>webflow-feature-grid-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Inter is the closest open fallback for Webflow's shipping WF Visual Sans
+  Variable face. The grid does not use a mono face; Webflow's grid runs
+  single-family throughout.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  /* Reset only what the asset needs; the harness handles cross-asset normalization. */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    letter-spacing: var(--ds-tracking-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section wrapper. Centered with rem-based breathing room. */
+  .fg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-5);
+  }
+
+  /* Section head above the grid. Sentence-case eyebrow, large display head. */
+  .fg__head {
+    margin-bottom: var(--ds-space-10);
+    max-width: 56ch;
+  }
+
+  .fg__eyebrow {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-3);
+    /* Sentence case, not uppercase. Webflow's eyebrow is a plain sans label,
+       not the wide-mono kicker that dev-tool sites lean on. */
+  }
+
+  .fg__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: -0.01em; /* Inline; the H1 tracking is the only non-zero
+                                tracking in the system, mirroring the alphabet. */
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Grid. Three columns at desktop, two at tablet, one at narrow. The 3-up
+     rhythm is what makes the surface read as a capability inventory rather
+     than a long feature list. */
+  .fg__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ds-space-4);
+  }
+
+  @media (max-width: 1024px) {
+    .fg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 560px) {
+    .fg__grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tile. 1px gray-200 border at rest; soft elevation on hover. */
+  .fg__card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+                box-shadow var(--ds-duration-normal) var(--ds-ease-standard),
+                transform var(--ds-duration-normal) var(--ds-ease-standard);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .fg__card:hover {
+    border-color: #B8B8B8; /* One step darker than --ds-border; inline because
+                              it is specific to the hover affordance. */
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* Screenshot bezel. Stands in for Webflow's product-canvas screenshots. */
+  .fg__shot {
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-hairline);
+    border-radius: var(--ds-radius-sm);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .fg__shot svg { display: block; width: 100%; height: 100%; }
+
+  /* Card text block. */
+  .fg__card-name {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-normal);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  .fg__card-dek {
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  /* Trailing arrow link. The only place Webflow Blue appears in the grid
+     at rest, sitting where the eye lands at the end of the tile. */
+  .fg__card-link {
+    margin-top: auto;
+    color: var(--ds-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__card-link:hover { color: var(--ds-accent-2); }
+  .fg__card-link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  .fg__card-link::after {
+    content: "→";
+    font-family: var(--ds-font-body);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .fg__card:hover .fg__card-link::after { transform: translateX(3px); }
+</style>
+</head>
+<body>
+  <section class="fg" aria-labelledby="fg-title">
+    <header class="fg__head">
+      <p class="fg__eyebrow">Lorem agility</p>
+      <h2 id="fg-title" class="fg__title">Ipsum dolor sit amet, the platform that turns ideas into shipped sites.</h2>
+    </header>
+
+    <div class="fg__grid">
+      <!-- Tile 1 -->
+      <a class="fg__card" href="#">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#F0F0F0"/>
+            <rect x="16" y="16" width="288" height="28" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <circle cx="32" cy="30" r="4" fill="#146EF5"/>
+            <rect x="46" y="26" width="80" height="8" rx="2" fill="#D8D8D8"/>
+            <rect x="16" y="56" width="184" height="128" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="32" y="76" width="100" height="10" rx="2" fill="#080808"/>
+            <rect x="32" y="94" width="140" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="32" y="106" width="120" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="32" y="132" width="60" height="22" rx="4" fill="#146EF5"/>
+            <rect x="208" y="56" width="96" height="62" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="208" y="126" width="96" height="58" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+          </svg>
+        </div>
+        <h3 class="fg__card-name">Lorem build and launch</h3>
+        <p class="fg__card-dek">Ship web experiences without filing a ticket.</p>
+        <span class="fg__card-link">Lorem more</span>
+      </a>
+
+      <!-- Tile 2 -->
+      <a class="fg__card" href="#">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#F0F0F0"/>
+            <rect x="16" y="16" width="92" height="168" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="28" y="32" width="60" height="6" rx="2" fill="#080808"/>
+            <rect x="28" y="48" width="68" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="28" y="60" width="56" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="28" y="72" width="64" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="28" y="92" width="68" height="4" rx="2" fill="#146EF5"/>
+            <rect x="28" y="104" width="52" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="120" y="16" width="184" height="168" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="136" y="36" width="120" height="10" rx="2" fill="#080808"/>
+            <rect x="136" y="58" width="152" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="136" y="72" width="140" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="136" y="86" width="148" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="136" y="116" width="60" height="40" rx="4" fill="#146EF5" opacity="0.12"/>
+            <rect x="204" y="116" width="60" height="40" rx="4" fill="#146EF5" opacity="0.18"/>
+          </svg>
+        </div>
+        <h3 class="fg__card-name">Lorem visual CMS</h3>
+        <p class="fg__card-dek">Manage content in a visual, composable CMS.</p>
+        <span class="fg__card-link">Lorem more</span>
+      </a>
+
+      <!-- Tile 3 -->
+      <a class="fg__card" href="#">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#F0F0F0"/>
+            <rect x="16" y="16" width="288" height="168" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="32" y="36" width="120" height="10" rx="2" fill="#080808"/>
+            <rect x="32" y="56" width="200" height="6" rx="2" fill="#D8D8D8"/>
+            <polyline points="32,150 72,120 112,138 152,96 192,108 232,72 272,84" fill="none" stroke="#146EF5" stroke-width="2"/>
+            <circle cx="72" cy="120" r="3" fill="#146EF5"/>
+            <circle cx="152" cy="96" r="3" fill="#146EF5"/>
+            <circle cx="232" cy="72" r="3" fill="#146EF5"/>
+            <rect x="32" y="160" width="44" height="14" rx="3" fill="#F0F0F0"/>
+            <rect x="84" y="160" width="44" height="14" rx="3" fill="#F0F0F0"/>
+            <rect x="136" y="160" width="44" height="14" rx="3" fill="#F0F0F0"/>
+          </svg>
+        </div>
+        <h3 class="fg__card-name">Lorem native analytics</h3>
+        <p class="fg__card-dek">Understand what is working with built-in analytics.</p>
+        <span class="fg__card-link">Lorem more</span>
+      </a>
+
+      <!-- Tile 4 -->
+      <a class="fg__card" href="#">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#F0F0F0"/>
+            <rect x="16" y="16" width="288" height="168" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <circle cx="56" cy="60" r="20" fill="#146EF5" opacity="0.12"/>
+            <circle cx="56" cy="60" r="10" fill="#146EF5"/>
+            <rect x="92" y="46" width="120" height="8" rx="2" fill="#080808"/>
+            <rect x="92" y="62" width="180" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="92" y="74" width="140" height="6" rx="2" fill="#D8D8D8"/>
+            <line x1="32" y1="100" x2="288" y2="100" stroke="#F0F0F0" stroke-width="1"/>
+            <circle cx="56" cy="132" r="20" fill="#D8D8D8" opacity="0.4"/>
+            <rect x="92" y="118" width="100" height="8" rx="2" fill="#080808"/>
+            <rect x="92" y="134" width="160" height="6" rx="2" fill="#D8D8D8"/>
+            <rect x="92" y="146" width="120" height="6" rx="2" fill="#D8D8D8"/>
+          </svg>
+        </div>
+        <h3 class="fg__card-name">Lorem personalization</h3>
+        <p class="fg__card-dek">Optimize for conversion with AI personalization.</p>
+        <span class="fg__card-link">Lorem more</span>
+      </a>
+
+      <!-- Tile 5 -->
+      <a class="fg__card" href="#">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#F0F0F0"/>
+            <circle cx="160" cy="100" r="68" fill="none" stroke="#D8D8D8" stroke-width="1"/>
+            <circle cx="160" cy="100" r="44" fill="none" stroke="#D8D8D8" stroke-width="1"/>
+            <circle cx="160" cy="100" r="20" fill="#146EF5" opacity="0.18"/>
+            <circle cx="160" cy="100" r="6" fill="#146EF5"/>
+            <circle cx="100" cy="76" r="4" fill="#080808"/>
+            <circle cx="220" cy="120" r="4" fill="#080808"/>
+            <circle cx="200" cy="60" r="4" fill="#080808"/>
+            <circle cx="120" cy="140" r="4" fill="#080808"/>
+            <rect x="20" y="170" width="60" height="14" rx="3" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="240" y="170" width="60" height="14" rx="3" fill="#FFFFFF" stroke="#D8D8D8"/>
+          </svg>
+        </div>
+        <h3 class="fg__card-name">Lorem localization</h3>
+        <p class="fg__card-dek">Reach a global audience with AI-powered localization.</p>
+        <span class="fg__card-link">Lorem more</span>
+      </a>
+
+      <!-- Tile 6 -->
+      <a class="fg__card" href="#">
+        <div class="fg__shot" aria-hidden="true">
+          <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="200" fill="#F0F0F0"/>
+            <rect x="16" y="16" width="140" height="80" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="164" y="16" width="140" height="80" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="16" y="104" width="140" height="80" rx="4" fill="#FFFFFF" stroke="#D8D8D8"/>
+            <rect x="164" y="104" width="140" height="80" rx="4" fill="#146EF5" opacity="0.08"/>
+            <rect x="32" y="32" width="60" height="6" rx="2" fill="#080808"/>
+            <rect x="32" y="48" width="84" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="180" y="32" width="60" height="6" rx="2" fill="#080808"/>
+            <rect x="180" y="48" width="84" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="32" y="120" width="60" height="6" rx="2" fill="#080808"/>
+            <rect x="32" y="136" width="84" height="4" rx="2" fill="#D8D8D8"/>
+            <rect x="180" y="120" width="60" height="6" rx="2" fill="#146EF5"/>
+            <rect x="180" y="136" width="84" height="4" rx="2" fill="#D8D8D8"/>
+          </svg>
+        </div>
+        <h3 class="fg__card-name">Lorem collaboration</h3>
+        <p class="fg__card-dek">Work together in a shared workspace for design and dev.</p>
+        <span class="fg__card-link">Lorem more</span>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

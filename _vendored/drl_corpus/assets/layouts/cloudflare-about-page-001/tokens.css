@@ -1,0 +1,98 @@
+/*
+ * cloudflare-about-page-001 tokens
+ *
+ * Page-level layout skeleton for the Cloudflare /about/ page. Tokens
+ * calibrated to the public Cloudflare register: signature orange
+ * (#F6821F) accent against a near-white page, near-black ink, humanist
+ * sans for everything (no editorial serif), mono utility reserved for
+ * network metadata (request counts, city counts, latency). Hairline
+ * card chrome, no shadows at rest, subtle 8px corners across surfaces.
+ *
+ * Chrome MCP was unavailable this session; tokens were derived from
+ * WebFetch HTML inspection of cloudflare.com/about/ and cross-checked
+ * against cloudflare.com/network/. Inline computed-style values were
+ * not exposed by WebFetch, so spacing, type sizes, and radii are
+ * mapped to the closest contract slot from the verified character
+ * (signature orange, paper-white page, hairline cards, mono stats).
+ *
+ * Slots that actually carry the layout: --ds-bg (page surface),
+ * --ds-accent (signature orange, single hairline moments and CTA),
+ * --ds-hairline (between-section rules and card edges), --ds-font-body
+ * (single humanist sans across nav, headings, body), --ds-font-mono
+ * (stats labels), --ds-space-12 / --ds-space-16 (section rhythm).
+ */
+:root {
+  /* Colors. Near-white page surface, near-black ink, signature orange
+   * as the single chromatic accent. Tinted band reserved for the
+   * stats grid section. */
+  --ds-bg:           #FFFFFF;   /* Paper-white page surface; carries the vertical column. */
+  --ds-surface:      #FFFFFF;   /* Card / office-tile fill, same as page. */
+  --ds-surface-2:    #F6F7F9;   /* Tinted strip behind the network stats grid. */
+  --ds-text:         #232324;   /* Near-black body ink. */
+  --ds-text-muted:   #595A5C;   /* Metadata, helper labels, footer secondary. */
+  --ds-text-strong:  #0F0F11;   /* Hero headline, section titles. */
+  --ds-border:       #E5E7EB;   /* Card and tile edges. */
+  --ds-hairline:     #EDEFF2;   /* Between-section divider; defines page rhythm. */
+  --ds-accent:       #F6821F;   /* Cloudflare signature orange; primary CTA, stat numerals, kicker dots. */
+  --ds-accent-2:     #FAAE40;   /* Lighter orange used in gradient stops on hero motif. */
+  --ds-success:      #0E7C3B;
+  --ds-warning:      #B36100;
+  --ds-error:        #B0271C;
+  --ds-info:         #0B6FB9;
+  --ds-focus-ring:   #F6821F;   /* Accent at full strength doubles as focus ring. */
+
+  /* Type. Single humanist-sans family across nav, headings, body. Mono
+   * reserved for network metadata strings (latency, request counts,
+   * city totals). The about page does not use a serif. */
+  --ds-font-display: "Inter", "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Inter Tight", "Inter", system-ui, sans-serif;
+
+  /* Type scale. Hero headline at 5xl on desktop; stat numerals at 4xl;
+   * section titles at 2xl; body at base. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 19px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 44px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 92px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.14em;
+
+  /* Spacing. About-page rhythm: --ds-space-12 (96px) between sections
+   * on desktop, --ds-space-8 (48px) on mobile. Hero gets --ds-space-16. */
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii. Cloudflare uses small subtle corners across cards and CTAs,
+   * never full pills. */
+  --ds-radius-none: 0;   --ds-radius-xs: 2px;   --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;   --ds-radius-lg: 12px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Page is flat at rest; cards lift only on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(15,15,17,0.04);
+  --ds-shadow-sm:  0 1px 2px rgba(15,15,17,0.05);
+  --ds-shadow-md:  0 6px 18px rgba(15,15,17,0.08);
+  --ds-shadow-lg:  0 16px 36px rgba(15,15,17,0.12);
+  --ds-shadow-2xl: 0 32px 60px rgba(15,15,17,0.18);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

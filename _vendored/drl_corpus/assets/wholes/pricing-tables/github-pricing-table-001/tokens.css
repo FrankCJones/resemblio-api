@@ -1,0 +1,101 @@
+/*
+ * github-pricing-table-001 tokens
+ *
+ * Whole pricing-tables asset modelled on GitHub's /pricing page: three tier
+ * cards (Free / Team / Enterprise) with a "Recommended" treatment on the
+ * Enterprise tier and "Most popular" on the Team tier, above a long
+ * feature-comparison table grouped by category (Code management, Code
+ * workflow, Collaboration, Secret Protection, Code Security, Platform
+ * security, Marketplace and integrations, Support and deployment).
+ *
+ * GitHub's marketing pricing surface uses Primer's light-mode functional
+ * tokens. Body sits on a near-white canvas with near-black foreground text;
+ * the primary CTA carries the signature Primer "success" green
+ * (#1f883d at rest, lifted to #1a7f37 hover). Cards carry a 1px hairline
+ * border at low alpha (Primer `border.default` is rgb(208,215,222) which
+ * resolves to #d0d7de). The "Recommended" tier inverts to the Primer
+ * canvas-inset near-black surface so the eye lands there first.
+ *
+ * Composition_atoms in meta.json:
+ *   color-groups/paper-ink-zero-001     (light surface, near-black text)
+ *   type-pairings/grotesk-mono-001      (Primer Mona Sans + Mona Mono surrogate)
+ *   cards/hairline-flat-001             (card frame: hairline border, no shadow)
+ *   buttons/primary-square-001          (primary CTA on featured tiers)
+ *   buttons/ghost-bordered-001          (secondary CTAs)
+ *   badges/status-pill-001              ("Most popular" / "Recommended" badges)
+ *   tables/docs-comparison-table-001    (the feature-comparison table layout)
+ *   headings/display-tight-001          (tier name + price display)
+ *   kickers/mono-eyebrow-001            (category band kickers in the table)
+ *   icons/stroke-line-uniform-001       (check / dash row glyphs)
+ *   dividers/hairline-rule-001          (group separator inside the table)
+ */
+:root {
+  /* Colors. Light-mode Primer functional tokens. */
+  --ds-bg:           #FFFFFF;   /* Primer canvas.default; pure white marketing canvas. */
+  --ds-surface:      #F6F8FA;   /* Primer canvas.subtle; the soft grey that band-headers and zebra rows sit on. */
+  --ds-surface-2:    #EFF2F5;   /* Hover zebra; subtle inset for table row hover. */
+  --ds-text:         #1F2328;   /* Primer fg.default; body, prices, plan names. */
+  --ds-text-muted:   #59636E;   /* Primer fg.muted; captions, "per user/month" suffix. */
+  --ds-text-strong:  #0D1117;   /* Primer fg.onEmphasis-equivalent near-black for headline emphasis. */
+  --ds-border:       #D0D7DE;   /* Primer border.default; card outlines, table cell borders. */
+  --ds-hairline:     rgba(31,35,40,0.08); /* Primer hairline alpha; rule between table rows. */
+  --ds-accent:       #1F883D;   /* Primer success.fg (the "GitHub green"); the signature primary CTA color. */
+  --ds-accent-2:     #0D1117;   /* Primer canvas.inset / near-black; the Recommended-tier inversion surface. */
+  --ds-success:      #1F883D;   /* Same as accent; check glyph color for included features. */
+  --ds-warning:      #BF8700;   /* Primer attention.fg. */
+  --ds-error:        #CF222E;   /* Primer danger.fg. */
+  --ds-info:         #0969DA;   /* Primer accent.fg (Primer blue, used for links). */
+  --ds-focus-ring:   #0969DA;   /* Primer accent.fg at full saturation; keyboard focus ring. */
+
+  /* Type. Mona Sans / Mona Mono are GitHub's marketing display faces.
+   * System fallback to Inter / JetBrains Mono so the asset renders
+   * standalone without a webfont network call. */
+  --ds-font-display: "Mona Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Mona Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "Mona Sans Mono", "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  --ds-font-accent:  "Mona Sans", "Inter", sans-serif;
+
+  /* Modular scale. Tier name lands at xl/2xl; price at 4xl; table cells at sm. */
+  --ds-text-2xs: 10px;   --ds-text-xs: 12px;   --ds-text-sm: 14px;
+  --ds-text-base: 16px;  --ds-text-lg: 20px;   --ds-text-xl: 24px;
+  --ds-text-2xl: 32px;   --ds-text-3xl: 40px;  --ds-text-4xl: 56px;
+  --ds-text-5xl: 72px;   --ds-text-6xl: 88px;  --ds-text-7xl: 120px;
+
+  --ds-leading-tight: 1.05;
+  --ds-leading-snug: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose: 1.8;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide: 0.04em;
+  --ds-tracking-wider: 0.14em;
+
+  --ds-space-0: 0;     --ds-space-1: 4px;   --ds-space-2: 8px;
+  --ds-space-3: 12px;  --ds-space-4: 16px;  --ds-space-5: 24px;
+  --ds-space-6: 32px;  --ds-space-8: 48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px; --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* Radii: cards use md (6px Primer convention); CTAs use sm (6px); pills use full. */
+  --ds-radius-none: 0;   --ds-radius-xs: 3px;   --ds-radius-sm: 6px;
+  --ds-radius-md: 6px;   --ds-radius-lg: 12px;  --ds-radius-full: 9999px;
+
+  /* Shadows. Primer marketing cards stay flat at rest; borders carry definition.
+   * sm reserved for the recommended-card's optional lift on hover. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:  0 0 0 1px rgba(31,35,40,0.04);
+  --ds-shadow-sm:  0 1px 0 rgba(31,35,40,0.04);
+  --ds-shadow-md:  0 3px 6px rgba(140,149,159,0.15);
+  --ds-shadow-lg:  0 8px 24px rgba(140,149,159,0.20);
+  --ds-shadow-2xl: 0 12px 28px rgba(140,149,159,0.30);
+
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 240ms;
+  --ds-duration-slow: 400ms;
+}

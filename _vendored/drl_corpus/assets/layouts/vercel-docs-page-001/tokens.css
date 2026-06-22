@@ -1,0 +1,117 @@
+/*
+ * vercel-docs-page-001 tokens
+ *
+ * Native token values for the Vercel docs-page skeleton, inspired by
+ * vercel.com/docs/getting-started-with-vercel. The docs surface rides
+ * the same Geist marketing chrome as the blog (paper-white body, near-
+ * black text, Geist Blue accent reserved for inline links and the
+ * active nav-item indicator) but adds two utility rails: a left nav
+ * sidebar listing the documentation tree and a right TOC rail listing
+ * the headings on the current page. Geist Mono carries the breadcrumb,
+ * inline-code, and TOC heading tags. Values mirror the system manifest
+ * (systems/vercel/system.json) and the system-tagged atoms shipped in
+ * prior waves (vercel-sales-faq-001, mono-eyebrow-001, hairline-flat-
+ * 001). WebFetch returned content roles and section sequence but
+ * stripped inline computed styles; numeric values follow the Geist
+ * system convention documented in design_principles rather than
+ * devtools reads.
+ *
+ * Layout-specific notes: the three-column grid (240px sidebar / 1fr
+ * content / 200px TOC rail) is inline page-grid character, not a
+ * contract slot. The reading column inside the content cell is the
+ * full content cell width, capped at ~80ch for code-block legibility.
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #FFFFFF;   /* Paper-white body surface; Vercel docs default. */
+  --ds-surface:      #FAFAFA;   /* Code-block surface; half-step above body. */
+  --ds-surface-2:    #F4F4F5;   /* Sidebar group label / callout tint. */
+  --ds-text:         #171717;   /* Geist near-black body reading. */
+  --ds-text-muted:   #737373;   /* Sidebar inactive item, TOC inactive, captions. */
+  --ds-text-strong:  #0A0A0A;   /* Doc title, H2 heads, active sidebar item. */
+  --ds-border:       #E5E5E5;   /* Card edges, code-block chrome. */
+  --ds-hairline:     rgba(0,0,0,0.08);  /* Vercel hairline alpha; column dividers and section rule. */
+  --ds-accent:       #0070F3;   /* Geist Blue; inline links, active nav indicator, focus ring. */
+  --ds-accent-2:     #171717;   /* Inversion accent; CTA pill in dark on light. */
+  --ds-success:      #17A34A;
+  --ds-warning:      #F5A623;
+  --ds-error:        #E5484D;
+  --ds-info:         #0070F3;
+  --ds-focus-ring:   #0070F3;   /* Geist Blue at full saturation for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Geist is the marketing face; Geist Mono carries utility metadata
+   * (breadcrumb, inline-code, TOC heading tags). Open fallbacks so the
+   * asset renders standalone without licensed faces.
+   */
+  --ds-font-display: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Geist", "Inter", system-ui, sans-serif;
+
+  /* ---------- Type sizes ---------- */
+  --ds-text-2xs:  11px;
+  --ds-text-xs:   12px;   /* Mono breadcrumb, TOC heading tag. */
+  --ds-text-sm:   14px;   /* Sidebar links, TOC links, code-block content, callout body. */
+  --ds-text-base: 16px;   /* Body reading. */
+  --ds-text-lg:   19px;   /* Lead paragraph. */
+  --ds-text-xl:   24px;   /* Body H3. */
+  --ds-text-2xl:  32px;   /* Body H2 section heads. */
+  --ds-text-3xl:  40px;
+  --ds-text-4xl:  44px;   /* Doc title (smaller than blog title; docs lead with utility). */
+  --ds-text-5xl:  72px;
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.1;    /* Doc title. */
+  --ds-leading-snug:    1.2;    /* Body H2 / H3. */
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.6;    /* Body reading. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.025em; /* Geist display squeeze. */
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.16em;   /* Mono breadcrumb / TOC tag. */
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;     --ds-space-1:  4px;   --ds-space-2:  8px;
+  --ds-space-3:  12px;  --ds-space-4:  16px;  --ds-space-5:  24px;
+  --ds-space-6:  32px;  --ds-space-8:  48px;  --ds-space-10: 64px;
+  --ds-space-12: 96px;  --ds-space-16: 128px; --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Vercel's small-radii principle: nothing past 8px on cards; pills only
+   * for status dots and avatars.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   6px;   /* Code-block, sidebar item hover. */
+  --ds-radius-md:   8px;   /* Callout surface, prev/next nav cards. */
+  --ds-radius-lg:   12px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Hairline-as-chrome principle: shadows are suppressed across docs.
+   * Code-blocks and callouts lift via 1px border on tinted surface, not
+   * via cast shadow. Values declared for contract completeness.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.06);
+  --ds-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.18);
+
+  /* ---------- Motion ---------- */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

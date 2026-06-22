@@ -1,0 +1,581 @@
+<!--
+  Asset: substack-article-page-001
+  Class: layouts
+  Pattern: editorial-article, centered-narrow-column, paper-and-ink
+  Inspired by: Substack (on.substack.com/p/the-future-of-substack)
+  Notes:
+    - Substack's canonical post-page template: publication header (brand
+      bar with wordmark + subscribe CTA), post header (title + dek +
+      author/date byline), narrow serif/sans reading body, paywall divider
+      slot, like/comment/share/restack engagement bar, subscribe CTA card,
+      comments preview, footer. The reading column at ~620px is the
+      load-bearing decision: Substack reads narrower than most modern
+      editorial layouts because its body is sans, not serif.
+    - Variable: section sequence, container max-widths, vertical rhythm,
+      type role per slot. Inline: article-column measure (620px), page
+      max-width (1100px), engagement-bar pill geometry, avatar circles.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>substack-article-page-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!--
+  Web fonts: Spectral (serif) carries the post title; Source Sans 3
+  carries body, header, and UI chrome. Both are open-source and reachable
+  via Google Fonts. Fallbacks degrade to Georgia / system-ui.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; }
+
+  /*
+   * Publication brand bar. Full-width, hairline rule below; sits flush
+   * with the viewport top. Brand + name on the left, subscribe pill on
+   * the right. Inline page-grid character, not contract.
+   */
+  .pub-bar {
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-bg);
+  }
+  .pub-bar__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--ds-space-3) var(--ds-space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+  .pub-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+  }
+  /* Publication square avatar: 32px rounded square. Inline ornament. */
+  .pub-brand__mark {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .pub-brand__name {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    letter-spacing: var(--ds-tracking-normal);
+  }
+  .pub-bar__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+  }
+
+  /* Page container for post content; narrower than the brand bar. */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-inline: var(--ds-space-5);
+  }
+
+  /*
+   * Reading column. Locked at 620px (the actual Substack measure).
+   * Narrower than most editorial layouts because the body is sans.
+   * Inline value; not a contract slot.
+   */
+  .column {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* Post header. Title + dek + byline row. */
+  .post-header {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-6);
+  }
+  @media (min-width: 768px) {
+    .post-header { padding-top: var(--ds-space-12); padding-bottom: var(--ds-space-8); }
+  }
+  .post-title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 700;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4);
+  }
+  .post-dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-6);
+  }
+  .byline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+  }
+  /* Author avatar: 36px circle. Inline ornament. */
+  .byline__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    flex: 0 0 auto;
+  }
+  .byline__author { font-weight: 600; color: var(--ds-text-strong); }
+  .byline__sep { color: var(--ds-text-muted); }
+  .byline__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /*
+   * Post body. Sans-serif reading at 18px / 1.6, generous paragraph
+   * rhythm. Inline links pick up the blue info color and a soft
+   * underline. H2 breaks the column for section heads.
+   */
+  .post-body {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    padding-bottom: var(--ds-space-8);
+  }
+  .post-body > * + * { margin-top: var(--ds-space-5); }
+  .post-body h2 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    line-height: var(--ds-leading-snug);
+    color: var(--ds-text-strong);
+    margin-top: var(--ds-space-8);
+    margin-bottom: var(--ds-space-3);
+  }
+  .post-body a {
+    color: var(--ds-info);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .post-body figure { margin: var(--ds-space-8) 0; }
+
+  /*
+   * Paywall divider. Sits mid-article when the post is gated. A tinted
+   * band with a centered lock badge and a fade-up over the preceding
+   * paragraph. Stand-in here for the gated-content boundary.
+   */
+  .paywall {
+    margin: var(--ds-space-8) 0;
+    padding: var(--ds-space-6);
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    text-align: center;
+    font-family: var(--ds-font-accent);
+    color: var(--ds-text-muted);
+    font-size: var(--ds-text-sm);
+  }
+  .paywall__label {
+    display: inline-block;
+    margin-bottom: var(--ds-space-3);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wider);
+    color: var(--ds-text);
+    font-weight: 600;
+  }
+  .paywall__cta {
+    display: inline-block;
+    margin-top: var(--ds-space-4);
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-weight: 600;
+  }
+
+  /*
+   * Engagement bar. Horizontal row of pill buttons: like, comment,
+   * restack, share. Each pill is hairline-bordered, full-radius, with
+   * a count adjacent. Sits between the body and the comments preview.
+   */
+  .engagement {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5) 0;
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    border: 1px solid var(--ds-border);
+    background: var(--ds-bg);
+    border-radius: var(--ds-radius-full);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text);
+    font-weight: 500;
+  }
+  .pill__count {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wide);
+  }
+  .pill--accent {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-color: var(--ds-accent);
+  }
+  .pill--accent .pill__count { color: rgba(255,255,255,0.85); }
+  /* Glyph stand-in: 16px square, no real icon font in the library. */
+  .pill__glyph {
+    width: 16px;
+    height: 16px;
+    border-radius: var(--ds-radius-xs);
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /*
+   * Subscribe CTA card. The conversion moment: tinted surface, post
+   * title-echoing serif headline, sans supporting copy, full-width
+   * orange CTA. Mid-page subscription is the canonical Substack mechanic.
+   */
+  .subscribe-card {
+    margin-top: var(--ds-space-8);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-6);
+    text-align: center;
+  }
+  .subscribe-card__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+    line-height: var(--ds-leading-snug);
+  }
+  .subscribe-card__copy {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    margin: 0 0 var(--ds-space-5);
+    line-height: var(--ds-leading-relaxed);
+  }
+  .subscribe-card__form {
+    display: flex;
+    gap: var(--ds-space-2);
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .subscribe-card__input {
+    flex: 1;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+  }
+  .subscribe-card__cta {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+  }
+
+  /*
+   * Comments preview. Section heading "Discussion about this post"
+   * (Substack's wording), then a short list of comment cards each with
+   * avatar + author + relative date + comment excerpt + nested actions.
+   */
+  .comments {
+    padding-top: var(--ds-space-10);
+    padding-bottom: var(--ds-space-10);
+  }
+  .comments__heading {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-lg);
+    font-weight: 700;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-5);
+  }
+  .comment {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-4) 0;
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .comment:last-of-type { border-bottom: 1px solid var(--ds-hairline); }
+  .comment__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+  }
+  .comment__meta {
+    display: flex;
+    gap: var(--ds-space-3);
+    align-items: baseline;
+    margin-bottom: var(--ds-space-2);
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-sm);
+  }
+  .comment__author { font-weight: 600; color: var(--ds-text-strong); }
+  .comment__date { color: var(--ds-text-muted); font-size: var(--ds-text-xs); }
+  .comment__body {
+    margin: 0;
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+  }
+
+  /*
+   * Footer. Two-tier: a Substack-branded promo band ("Start a Substack")
+   * on the tinted surface, then a hairline legal row with copyright and
+   * Privacy / Terms / Collection notice links in muted sans.
+   */
+  .footer-band {
+    margin-top: var(--ds-space-10);
+    background: var(--ds-surface-2);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  .footer-band__promo {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-5);
+    text-align: center;
+  }
+  .footer-band__heading {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-3);
+  }
+  .footer-band__cta {
+    display: inline-block;
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border-radius: var(--ds-radius-sm);
+    padding: var(--ds-space-3) var(--ds-space-5);
+    font-family: var(--ds-font-accent);
+    font-weight: 600;
+    margin-top: var(--ds-space-4);
+  }
+  .footer-legal {
+    border-top: 1px solid var(--ds-hairline);
+    padding: var(--ds-space-5);
+    text-align: center;
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .footer-legal a { margin: 0 var(--ds-space-2); }
+</style>
+</head>
+<body>
+
+  <!-- Section: pub-bar. Publication brand strip; stands in for wholes/navigation/substack-pubbar-001. -->
+  <header class="pub-bar" aria-label="Publication header">
+    <div class="pub-bar__inner">
+      <span class="pub-brand">
+        <span class="pub-brand__mark" aria-hidden="true"></span>
+        <span class="pub-brand__name">Lorem Newsletter</span>
+      </span>
+      <button class="pub-bar__cta">Subscribe</button>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- Section: post-header. Title + dek + byline row inside narrow column. -->
+    <header class="post-header">
+      <div class="column">
+        <h1 class="post-title">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do</h1>
+        <p class="post-dek">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <div class="byline">
+          <span class="byline__avatar" aria-hidden="true"></span>
+          <span class="byline__author">Lorem Ipsum</span>
+          <span class="byline__sep">·</span>
+          <span class="byline__date">Jul 16, 2026</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section: post-body. Narrow reading column. -->
+    <article class="post-body">
+      <div class="column">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in reprehenderit
+          <a href="#">in voluptate velit esse</a> cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+          sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+        <h2>Lorem ipsum subsection</h2>
+        <p>
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+          quae ab illo inventore veritatis et quasi architecto beatae.
+        </p>
+
+        <!-- Paywall divider. Sits where free preview ends and paid content begins. -->
+        <div class="paywall" role="note">
+          <span class="paywall__label">Subscriber-only post</span>
+          <p style="margin: 0;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Subscribe to keep reading.</p>
+          <a class="paywall__cta" href="#">Subscribe to read</a>
+        </div>
+
+        <p>
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+          aut fugit, sed quia consequuntur magni dolores eos qui ratione
+          voluptatem sequi nesciunt.
+        </p>
+      </div>
+    </article>
+
+    <!-- Section: engagement. Like, comment, restack, share pills. -->
+    <div class="column">
+      <div class="engagement" aria-label="Post engagement">
+        <button class="pill pill--accent">
+          <span class="pill__glyph" aria-hidden="true"></span>
+          Like
+          <span class="pill__count">136</span>
+        </button>
+        <button class="pill">
+          <span class="pill__glyph" aria-hidden="true"></span>
+          Comment
+          <span class="pill__count">12</span>
+        </button>
+        <button class="pill">
+          <span class="pill__glyph" aria-hidden="true"></span>
+          Restack
+          <span class="pill__count">45</span>
+        </button>
+        <button class="pill" style="margin-left: auto;">
+          <span class="pill__glyph" aria-hidden="true"></span>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Section: subscribe-card. Mid-page conversion moment. -->
+    <div class="column">
+      <aside class="subscribe-card" aria-label="Subscribe">
+        <h2 class="subscribe-card__heading">Ready for more?</h2>
+        <p class="subscribe-card__copy">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Subscribe to
+          receive every new post by email.
+        </p>
+        <form class="subscribe-card__form" onsubmit="return false;">
+          <input class="subscribe-card__input" type="email" placeholder="Your email" aria-label="Email"/>
+          <button class="subscribe-card__cta">Subscribe</button>
+        </form>
+      </aside>
+    </div>
+
+    <!-- Section: comments. "Discussion about this post" preview. -->
+    <section class="comments" aria-label="Comments">
+      <div class="column">
+        <h2 class="comments__heading">Discussion about this post</h2>
+        <article class="comment">
+          <div class="comment__avatar" aria-hidden="true"></div>
+          <div>
+            <div class="comment__meta">
+              <span class="comment__author">Lorem Reader</span>
+              <span class="comment__date">3 days ago</span>
+            </div>
+            <p class="comment__body">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+              eiusmod tempor incididunt ut labore.
+            </p>
+          </div>
+        </article>
+        <article class="comment">
+          <div class="comment__avatar" aria-hidden="true"></div>
+          <div>
+            <div class="comment__meta">
+              <span class="comment__author">Ipsum Subscriber</span>
+              <span class="comment__date">5 days ago</span>
+            </div>
+            <p class="comment__body">
+              Consectetur adipiscing elit, sed do eiusmod tempor incididunt
+              ut labore et dolore magna aliqua.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Section: footer. Full-width promo band + hairline legal row. -->
+  <footer class="footer-band" aria-label="Footer">
+    <div class="footer-band__promo">
+      <h2 class="footer-band__heading">Start your own Lorem</h2>
+      <p style="margin: 0; color: var(--ds-text-muted); font-size: var(--ds-text-sm);">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+      <a class="footer-band__cta" href="#">Start writing</a>
+    </div>
+    <div class="footer-legal">
+      <span>&copy; 2026 Lorem</span>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Collection notice</a>
+    </div>
+  </footer>
+
+</body>
+</html>

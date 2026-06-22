@@ -1,0 +1,127 @@
+/*
+ * kinetic-headline-001 tokens
+ *
+ * Locomotive-inspired kinetic display headline. The character lives in the
+ * motion: a viewport-spanning sans display sits at rest on a dark video-era
+ * surface, then translates and reveals on hover or on scroll into view. The
+ * type itself is unornamented; the kinetic behaviour is the brand.
+ *
+ * Captured via devtools on locomotive.ca/en on 2026-05-19. The site ships a
+ * custom display face named LocomotiveNew at weight 400, set at 117px with
+ * line-height 1.0 on featured-link titles, and 70px with line-height 1.1 on
+ * the homepage hero h1. Body type is HelveticaNowDisplay. Smooth-scroll runs
+ * via Lenis (the html element carries the `lenis` class).
+ */
+:root {
+  /* ---------- Colors ---------- */
+  --ds-bg:           #0A0A0A;   /* Hero video-era surface; Locomotive layers white type over a dark video background in the hero. */
+  --ds-surface:      #141414;   /* One step above bg for cards. Interpolated. */
+  --ds-surface-2:    #1F1F1F;   /* Two steps above. Interpolated. */
+  --ds-text:         #FFFFFF;   /* Hero h1 color rgb(255,255,255) observed via devtools. */
+  --ds-text-muted:   #8A8A8A;   /* Secondary copy; characteristic of the palette. */
+  --ds-text-strong:  #FFFFFF;   /* Matches text; the display moments are already at peak contrast. */
+  --ds-border:       #2A2A2A;   /* Card edges; interpolated to the dark palette. */
+  --ds-hairline:     #1A1A1A;   /* Section break hairline. */
+  --ds-accent:       #FF5B22;   /* Locomotive orange; visible in the rotating diamond glyph and brand accents. */
+  --ds-accent-2:     #FFD400;   /* Yellow accent used in the brand's secondary marks. */
+  --ds-success:      #4CB782;
+  --ds-warning:      #F2A640;
+  --ds-error:        #E5484D;
+  --ds-info:         #FF5B22;   /* Aligned with accent in this palette. */
+  --ds-focus-ring:   #FF5B22;   /* Accent doubles as focus ring on dark. */
+
+  /* ---------- Type families ----------
+   * Locomotive ships a proprietary display face (LocomotiveNew) for headlines
+   * and HelveticaNowDisplay for body. Without the licensed face, we substitute
+   * the closest free grotesque (Neue Haas Grotesk Display via system fallback;
+   * Inter Tight as a working stand-in) and document the substitution.
+   */
+  --ds-font-display: "Inter Tight", "Helvetica Now Display", "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --ds-font-body:    "Inter", "Helvetica Now Display", "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ds-font-accent:  "Inter Tight", "Helvetica Now Display", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * The 7xl slot lands at 117px to honor the captured featured-link size; the
+   * 5xl/6xl reach into the editorial range for hero secondary lines.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 15px;          /* Body bg of locomotive.ca measured at 15px / 19.5px line-height. */
+  --ds-text-lg:   20px;
+  --ds-text-xl:   26px;          /* H2 "Featured work" observed at 26px. */
+  --ds-text-2xl:  34px;
+  --ds-text-3xl:  48px;
+  --ds-text-4xl:  70px;          /* Hero h1 measured at 70px. */
+  --ds-text-5xl:  88px;
+  --ds-text-6xl:  104px;
+  --ds-text-7xl:  117px;         /* Featured-link title measured at 117.333px line-height 117.333px. */
+
+  /* ---------- Line heights ----------
+   * Locomotive sets display at 1.0 (117/117) on the kinetic titles and 1.1
+   * (77/70) on the hero h1; the tight slot honors that.
+   */
+  --ds-leading-tight:   1.0;
+  --ds-leading-snug:    1.1;
+  --ds-leading-normal:  1.4;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Observed letter-spacing on both display and body was `normal`. The
+   * tight slot exists for designers who want to push further; the asset
+   * itself uses normal tracking to mirror the source.
+   */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ---------- */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * The kinetic-headline lives in a hard-edged sans world; radii stay at 0
+   * for headings, with full reserved for incidental pills elsewhere.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   none;
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.5);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.6);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.7);
+
+  /* ---------- Motion ----------
+   * Locomotive's signature is smooth-scroll plus generous, slow easing on
+   * hover. The slow duration is dialed up to match the lingering feel of
+   * Lenis-driven motion on the source site.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    600ms;
+}

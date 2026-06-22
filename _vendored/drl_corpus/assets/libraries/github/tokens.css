@@ -1,0 +1,146 @@
+/*
+ * GitHub (Primer) library tokens
+ *
+ * GitHub's marketing-surface component vocabulary expressed as one
+ * coherent system. Two themes meet on github.com: a near-black dark hero
+ * (#0d1117 bg, white display) at the top of the homepage, and a light
+ * content body (#ffffff bg, #1f2328 ink) carrying pricing, features, and
+ * customer stories. This library uses the LIGHT surface as its base
+ * (matches /pricing and /features) and records dark-hero values inline
+ * where the marketing hero uses them.
+ *
+ * Token values consolidated from Primer Primitives documentation
+ * (primer.style/foundations/primitives/color, WebFetch 2026-05-20) plus
+ * the published typography spec (primer.style/foundations/primitives/
+ * typography, WebFetch 2026-05-20). Variable names use the --ds-*
+ * contract; the inline comment names the source Primer slot.
+ *
+ * The signature character: hairline chrome at #d1d9e0 instead of soft
+ * shadows on cards, primary-CTA green at #1f883d as the only chromatic
+ * call-to-action, Mona Sans variable as the entire display/body system
+ * paired with the system mono stack for code samples, deploy IDs, and
+ * the snake_case property keys that pepper GitHub's marketing surfaces.
+ */
+:root {
+  /* ---------- Colors (light theme — pricing, features, content) ----------
+   * GitHub's content surfaces sit on pure white with cool-gray scale
+   * neutrals. The chromatic restraint outside the green CTA is the
+   * defining mechanic: blue links, red danger, yellow caution — all
+   * reserved for state, never decoration.
+   */
+  --ds-bg:           #FFFFFF;   /* Primer --bgColor-default; content body. */
+  --ds-surface:      #F6F8FA;   /* Primer --bgColor-muted; feature tile / code block fill. */
+  --ds-surface-2:    #EAEEF2;   /* Primer --bgColor-inset hover; secondary panel. */
+  --ds-text:         #1F2328;   /* Primer --fgColor-default; near-black ink. */
+  --ds-text-muted:   #59636E;   /* Primer --fgColor-muted; metadata, captions, footer. */
+  --ds-text-strong:  #0D1117;   /* Primer canonical black; hero H1 maximum contrast. */
+  --ds-border:       #D1D9E0;   /* Primer --borderColor-default; card hairline. */
+  --ds-hairline:     #D1D9E0B3; /* Primer --borderColor-muted; subtle dividers. */
+  --ds-accent:       #1F883D;   /* Primer --button-primary-bgColor-rest; the signature CTA green. */
+  --ds-accent-2:     #1C8139;   /* Primer --button-primary-bgColor-hover; pressed state. */
+  --ds-success:      #1A7F37;   /* Primer --fgColor-success; passed checks. */
+  --ds-warning:      #9A6700;   /* Primer attention; build pending. */
+  --ds-error:        #D1242F;   /* Primer --fgColor-danger; failed checks. */
+  --ds-info:         #0969DA;   /* Primer --fgColor-accent; inline link blue. */
+  --ds-focus-ring:   #0969DA;   /* Primer accent at full strength on :focus-visible. */
+
+  /* ---------- Type families ----------
+   * Mona Sans Variable is the system across display and body (one face
+   * carrying multiple weights). The mono stack is functional, used for
+   * code blocks, deploy SHAs, and snake_case property keys.
+   */
+  --ds-font-display: "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --ds-font-body:    "Mona Sans VF", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --ds-font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --ds-font-accent:  ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ---------- Type sizes ----------
+   * Anchored to Primer's named size tokens: --text-display-size at 40px,
+   * --text-title-size-large at 32px, body-medium at 14px. Marketing-page
+   * hero pushes display headlines past Primer's documented ceiling, so
+   * the upper scale steps are seeded from observed marketing surfaces.
+   */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;    /* Primer --text-body-size-small / caption. */
+  --ds-text-sm:   14px;    /* Primer --text-body-size-medium; default UI. */
+  --ds-text-base: 16px;    /* Primer --text-body-size-large; body reading. */
+  --ds-text-lg:   20px;    /* Primer --text-title-size-medium / subtitle. */
+  --ds-text-xl:   24px;    /* Subhead. */
+  --ds-text-2xl:  32px;    /* Primer --text-title-size-large; section heading. */
+  --ds-text-3xl:  40px;    /* Primer --text-display-size; page title ceiling. */
+  --ds-text-4xl:  56px;    /* Marketing hero lower bound. */
+  --ds-text-5xl:  72px;    /* Marketing hero upper bound (homepage scale). */
+  --ds-text-6xl:  96px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * Primer documents display at 1.375 and body at 1.5; tracks Inter-class
+   * humanist sans metrics.
+   */
+  --ds-leading-tight:   1.125;
+  --ds-leading-snug:    1.25;
+  --ds-leading-normal:  1.5;     /* Primer body-lineHeight-large/medium. */
+  --ds-leading-relaxed: 1.625;   /* Primer title-lineHeight-medium / subtitle. */
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ---------- */
+  --ds-tracking-tight:  -0.02em;   /* Hero display. */
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.12em;    /* Uppercase mono kicker / status label. */
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Primer's spacer tokens (--base-size-4 / 8 / 16 / 32)
+   * compose marketing rhythm; sections breathe at space-10 (64px) on
+   * landing pages, space-12 (96px) between major bands.
+   */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Primer card radius at 12px (large) for marketing tiles, 6px (medium)
+   * for buttons and inputs. Pricing-tier cards push to 12px. Pills only
+   * for status chips and avatars.
+   */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   3px;
+  --ds-radius-sm:   6px;      /* Primer button / input radius. */
+  --ds-radius-md:   8px;      /* Primer card medium. */
+  --ds-radius-lg:   12px;     /* Pricing-tier card, feature tile. */
+  --ds-radius-full: 9999px;   /* Status pills, avatars. */
+
+  /* ---------- Shadows ----------
+   * GitHub leans on hairline rings (1px box-shadow at #d1d9e0) rather
+   * than drop shadows at rest. Hover and modal states layer a soft
+   * elevation on top of the ring.
+   */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   inset 0 0 0 1px var(--ds-hairline);
+  --ds-shadow-sm:   0 0 0 1px var(--ds-border);
+  --ds-shadow-md:   0 0 0 1px var(--ds-border), 0 1px 3px rgba(31, 35, 40, 0.04);
+  --ds-shadow-lg:   0 0 0 1px var(--ds-border), 0 8px 24px rgba(31, 35, 40, 0.10);
+  --ds-shadow-2xl:  0 0 0 1px var(--ds-border), 0 24px 48px rgba(31, 35, 40, 0.14);
+
+  /* ---------- Motion ----------
+   * Standard ease-in-out with a fast (150ms) feedback default; deploy
+   * pulses and check-state transitions favor the emphasize curve.
+   */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

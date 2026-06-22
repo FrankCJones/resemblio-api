@@ -1,0 +1,360 @@
+<!--
+  Asset: anthropic-news-list-001
+  Class: feature-grids (whole)
+  Pattern: editorial-news-index, mono-eyebrow, hairline-row, editorial-hero (hero-with-list variant)
+  Inspired by: Anthropic (https://www.anthropic.com/news)
+  Composition (declared in meta.json > composition_atoms):
+    - badges/anthropic-category-mono-001    (uppercase sans category eyebrow)
+    - badges/anthropic-date-mono-001        (mono date stamp)
+    - cards/anthropic-news-hero-001         (hero featured article frame)
+    - cards/anthropic-news-listing-001      (list row pattern)
+    - headings/editorial-newspaper-001      (serif headline scale)
+    - dividers/hairline-rule-001            (rule between list rows)
+  Notes:
+    - The list itself is what distinguishes this whole from
+      editorial-three-up-grid-001. Anthropic's newsroom does not lay rows
+      out as cards with image beds; rows are pure text, separated by
+      hairline rules, with date and category metadata stacked above the
+      headline. The hero entry at the top carries the image; the trio
+      beneath the hero is a three-up; the list below the trio is the
+      asset's defining gesture.
+    - Tokens are variable; the row stripe ornament (a tiny clay-crimson
+      square the featured category badge sits inside) is inline because
+      it is a one-off character moment.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>anthropic-news-list-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- anthropicSerif / Sans / Mono are custom Anthropic faces; this asset
+     falls back to Source Serif 4, Inter, and JetBrains Mono so the file
+     renders standalone without a license. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Page container. Anthropic's newsroom centers around a 1140px column
+   * with generous outer padding. */
+  .page {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: var(--ds-space-10) var(--ds-space-6);
+  }
+
+  /* Page head: serif title sized as section H2, sans eyebrow above. */
+  .page__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-8);
+  }
+  .page__eyebrow {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .page__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+
+  /* Hero featured article. Image bed left, copy block right at >=900px;
+   * stacks on narrow. The image carries the only soft shadow on the
+   * page; everything else sits flush on paper. */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    margin-bottom: var(--ds-space-10);
+    padding-bottom: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 900px) {
+    .hero { grid-template-columns: 1.1fr 1fr; gap: var(--ds-space-8); align-items: center; }
+  }
+  .hero__image {
+    aspect-ratio: 16 / 10;
+    background: var(--ds-surface-2);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-sm);
+    /* Inline ornament: faint diagonal hatch hints at placeholder state. */
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 14px,
+        rgba(20,20,19,0.04) 14px,
+        rgba(20,20,19,0.04) 15px);
+  }
+  .hero__body { display: flex; flex-direction: column; gap: var(--ds-space-4); }
+  .hero__meta {
+    display: flex; align-items: center; gap: var(--ds-space-3);
+  }
+  .hero__category {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .hero__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+  .hero__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-4xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Secondary featured trio. Three-up beneath the hero. Each entry is
+   * text-only: category eyebrow, serif headline, mono date. */
+  .featured-trio {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-6);
+    margin-bottom: var(--ds-space-10);
+    padding-bottom: var(--ds-space-10);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  @media (min-width: 720px) { .featured-trio { grid-template-columns: repeat(3, 1fr); } }
+  .featured {
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+    color: inherit; text-decoration: none;
+  }
+  .featured__category {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .featured__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .featured:hover .featured__headline,
+  .featured:focus-visible .featured__headline {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    color: var(--ds-accent);
+  }
+  .featured__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+
+  /* The list. Vertical stack of rows, each separated by a single
+   * hairline rule. Each row is a grid: date column (mono, fixed width on
+   * desktop), then a stack of category eyebrow and serif headline. */
+  .list { display: flex; flex-direction: column; }
+  .list__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-6) 0;
+    border-bottom: 1px solid var(--ds-hairline);
+    color: inherit;
+    text-decoration: none;
+    transition: background var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .list__row:first-child { border-top: 1px solid var(--ds-hairline); }
+  @media (min-width: 720px) {
+    .list__row {
+      grid-template-columns: 140px 160px 1fr;
+      gap: var(--ds-space-6);
+      align-items: baseline;
+    }
+  }
+  .list__row:hover { background: var(--ds-surface-2); }
+  .list__row:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 2px;
+  }
+  .list__date {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-text-muted);
+  }
+  .list__category {
+    font-family: var(--ds-font-accent);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .list__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .list__row:hover .list__headline { color: var(--ds-accent); }
+
+  /* See-more affordance at the foot of the list. Serif text, clay
+   * arrow; restrained, no button chrome. */
+  .more {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    margin-top: var(--ds-space-8);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    color: var(--ds-accent);
+    text-decoration: none;
+  }
+  .more:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .list__row { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header class="page__head">
+      <span class="page__eyebrow">Lorem Newsroom</span>
+      <h1 class="page__title">Ipsum dolor sit amet, consectetur adipiscing elit.</h1>
+    </header>
+
+    <!-- Hero featured article. Image plus large serif headline. -->
+    <a class="hero" href="#hero" aria-labelledby="hero-h">
+      <div class="hero__image" aria-hidden="true"></div>
+      <div class="hero__body">
+        <div class="hero__meta">
+          <span class="hero__category">Product</span>
+          <span class="hero__date">Apr 16, 2026</span>
+        </div>
+        <h2 class="hero__headline" id="hero-h">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
+        <p class="hero__dek">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud.</p>
+      </div>
+    </a>
+
+    <!-- Secondary featured trio. Text-only three-up. -->
+    <section class="featured-trio" aria-label="Featured stories">
+      <a class="featured" href="#a">
+        <span class="featured__category">Product</span>
+        <h3 class="featured__headline">Quis nostrud exercitation ullamco laboris nisi ut aliquip.</h3>
+        <span class="featured__date">Apr 17, 2026</span>
+      </a>
+      <a class="featured" href="#b">
+        <span class="featured__category">Announcements</span>
+        <h3 class="featured__headline">Duis aute irure dolor in reprehenderit in voluptate velit.</h3>
+        <span class="featured__date">Apr 07, 2026</span>
+      </a>
+      <a class="featured" href="#c">
+        <span class="featured__category">Research</span>
+        <h3 class="featured__headline">Excepteur sint occaecat cupidatat non proident sunt in culpa.</h3>
+        <span class="featured__date">Mar 18, 2026</span>
+      </a>
+    </section>
+
+    <!-- The list. Hairline rows. Each row is date, category, headline. -->
+    <section class="list" aria-label="All news">
+      <a class="list__row" href="#r1">
+        <span class="list__date">May 19, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">Lorem ipsum dolor sit amet consectetur adipiscing elit.</h3>
+      </a>
+      <a class="list__row" href="#r2">
+        <span class="list__date">May 19, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h3>
+      </a>
+      <a class="list__row" href="#r3">
+        <span class="list__date">May 18, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">Ut enim ad minim veniam quis nostrud exercitation.</h3>
+      </a>
+      <a class="list__row" href="#r4">
+        <span class="list__date">May 14, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</h3>
+      </a>
+      <a class="list__row" href="#r5">
+        <span class="list__date">May 14, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia.</h3>
+      </a>
+      <a class="list__row" href="#r6">
+        <span class="list__date">May 13, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">At vero eos et accusamus et iusto odio dignissimos ducimus.</h3>
+      </a>
+      <a class="list__row" href="#r7">
+        <span class="list__date">May 06, 2026</span>
+        <span class="list__category">Product</span>
+        <h3 class="list__headline">Nam libero tempore cum soluta nobis est eligendi optio cumque.</h3>
+      </a>
+      <a class="list__row" href="#r8">
+        <span class="list__date">May 05, 2026</span>
+        <span class="list__category">Research</span>
+        <h3 class="list__headline">Temporibus autem quibusdam et aut officiis debitis aut rerum.</h3>
+      </a>
+      <a class="list__row" href="#r9">
+        <span class="list__date">May 04, 2026</span>
+        <span class="list__category">Announcements</span>
+        <h3 class="list__headline">Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis.</h3>
+      </a>
+      <a class="list__row" href="#r10">
+        <span class="list__date">Apr 28, 2026</span>
+        <span class="list__category">Product</span>
+        <h3 class="list__headline">Voluptatibus maiores alias consequatur aut perferendis doloribus.</h3>
+      </a>
+    </section>
+
+    <a class="more" href="#more">Lorem more stories &rarr;</a>
+  </main>
+</body>
+</html>

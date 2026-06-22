@@ -1,0 +1,411 @@
+<!--
+  Asset: olipop
+  Class: libraries
+  Pattern: (none)
+  Inspired by: Olipop
+  Notes:
+    - Olipop's full component vocabulary on one page: announcement bar, buttons
+      (4 variants: forest pill, ghost ring, yellow CTA, mint shop), ingredient
+      pills, can-shape product card, candy-stripe band, display H2 (WindsorEF),
+      mono claims eyebrow, %DV nutrition mini-table, soft-radius email input,
+      hairline search input, customer-quote card, social-proof big number,
+      sticky mini-cart toggle.
+    - All components share tokens.css; one-off ornaments (candy stripes, can
+      silhouette gradient, badge geometry) live inline with comments.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>olipop library - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+  .page { max-width: 1080px; margin: 0 auto; padding: var(--ds-space-8) var(--ds-space-6); display: flex; flex-direction: column; gap: var(--ds-space-12); }
+
+  /* Section frame */
+  .section { display: flex; flex-direction: column; gap: var(--ds-space-5); }
+  .section-label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding-bottom: var(--ds-space-3);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-4); }
+
+  /* Announcement bar (sticky top strip) */
+  .announce {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--ds-text);
+    color: #FFF6EA;
+    font-family: var(--ds-font-body); font-weight: 700;
+    font-size: var(--ds-text-sm); letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    text-align: center;
+    padding: var(--ds-space-2) var(--ds-space-5);
+  }
+
+  /* Display headings */
+  .head h1 {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-6xl);
+    line-height: var(--ds-leading-tight);
+    font-weight: 900;
+    color: var(--ds-text);
+    margin: 0;
+  }
+  .head p {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    color: var(--ds-text);
+    margin: var(--ds-space-3) 0 0;
+    max-width: 60ch;
+  }
+  .h2-windsor {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-3xl);
+    line-height: 1.1;
+    font-weight: 900;
+    color: var(--ds-text-strong);
+    margin: 0;
+  }
+  .h2-ano {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    color: var(--ds-text);
+    margin: 0;
+  }
+
+  /* Mono claims eyebrow */
+  .eyebrow {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-strong);
+    font-weight: 700;
+  }
+
+  /* Buttons */
+  .btn { appearance: none; cursor: pointer; font-family: var(--ds-font-body); font-weight: 700; }
+  .btn-primary {
+    background: var(--ds-text-strong); color: #FFF;
+    border: 0; border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-lg);
+    padding: 12px 28px;
+  }
+  .btn-ghost {
+    background: transparent; color: var(--ds-text);
+    border: 1.6px solid var(--ds-text);
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase; letter-spacing: var(--ds-tracking-wide);
+    padding: 11px 30px;
+  }
+  .btn-yellow {
+    background: var(--ds-accent); color: var(--ds-text);
+    border: 1.6px solid var(--ds-accent);
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-xs);
+    text-transform: uppercase; letter-spacing: var(--ds-tracking-wide);
+    padding: 11px 30px;
+  }
+  .btn-mint {
+    background: var(--ds-accent-2); color: var(--ds-text-strong);
+    border: 0; border-radius: var(--ds-radius-full);
+    font-size: var(--ds-text-lg);
+    padding: 8px 24px;
+  }
+
+  /* Ingredient pills */
+  .pill-ingredient {
+    display: inline-flex; align-items: center; gap: var(--ds-space-2);
+    background: var(--ds-surface); color: var(--ds-text-strong);
+    border-radius: var(--ds-radius-full);
+    padding: 6px 14px 6px 10px;
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 700;
+  }
+  .pill-ingredient::before {
+    /* inline ornament: tiny color dot matching the ingredient */
+    content: ""; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--ds-accent-2);
+  }
+  .pill-ingredient.warm::before { background: var(--ds-accent); }
+  .pill-ingredient.red::before { background: var(--ds-error); }
+
+  /* Candy-stripe band - inline ornament; not contract-worthy */
+  .stripe-band {
+    /* inline: repeating-linear gradient at 12deg, 24px stripes, alternating
+       cream and saturated pink. Olipop uses this on promo bands and product
+       page section breaks. */
+    background-image: repeating-linear-gradient(
+      12deg,
+      var(--ds-surface) 0 24px,
+      var(--ds-surface-2) 24px 48px
+    );
+    height: 56px;
+    border-radius: var(--ds-radius-md);
+  }
+
+  /* Can-shape product card - inline ornament for the can silhouette */
+  .product-card {
+    background: var(--ds-surface); border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-3);
+    text-align: center;
+    border: 0.8px solid var(--ds-hairline);
+  }
+  .can {
+    /* inline ornament: rounded-rect can silhouette, 80x140, soft top/bottom
+       ellipses suggested via radial gradient. Real Olipop renders a PNG;
+       this is the structural slot. */
+    width: 80px; height: 140px;
+    background:
+      radial-gradient(ellipse 70% 10% at 50% 8%, rgba(255,255,255,0.4) 0 30%, transparent 31%),
+      linear-gradient(180deg, var(--ds-accent-2) 0 20%, var(--ds-surface-2) 20% 80%, var(--ds-accent) 80% 100%);
+    border-radius: 14px 14px 18px 18px;
+    box-shadow: inset 0 0 0 1px rgba(3,70,56,0.10);
+  }
+  .product-card .name { font-family: var(--ds-font-display); font-size: var(--ds-text-xl); font-weight: 900; color: var(--ds-text); margin: 0; }
+  .product-card .meta { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); color: var(--ds-text-muted); margin: 0; }
+
+  /* %DV nutrition mini-table */
+  .nutrition {
+    background: var(--ds-surface);
+    border: 1.6px solid var(--ds-text);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    max-width: 360px;
+  }
+  .nutrition__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-xl); font-weight: 900;
+    color: var(--ds-text);
+    border-bottom: 4px solid var(--ds-text);
+    padding-bottom: var(--ds-space-1); margin: 0 0 var(--ds-space-3);
+  }
+  .nutrition__row {
+    display: grid; grid-template-columns: 1fr auto;
+    padding: 6px 0;
+    border-top: 1px solid var(--ds-text);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
+  }
+  .nutrition__row:first-of-type { border-top: 0; }
+  .nutrition__row .name { font-weight: 700; }
+  .nutrition__row .dv { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Inputs */
+  .input-email {
+    background: #FFF; color: var(--ds-text-strong);
+    border: 0; border-radius: var(--ds-radius-lg);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-base);
+    padding: 14px 20px;
+    width: 320px; max-width: 100%;
+  }
+  .input-search {
+    background: transparent; color: var(--ds-text);
+    border: 0.8px solid #CCC;
+    border-radius: var(--ds-radius-xs);
+    font-family: var(--ds-font-body); font-size: var(--ds-text-base);
+    padding: 10px 14px;
+    width: 260px;
+  }
+
+  /* Customer-quote testimonial card */
+  .quote {
+    background: var(--ds-surface);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-5);
+    max-width: 360px;
+    display: flex; flex-direction: column; gap: var(--ds-space-3);
+  }
+  .quote .stars {
+    /* inline ornament: 5 stars, butter-yellow */
+    color: var(--ds-accent); font-size: var(--ds-text-lg); letter-spacing: 2px;
+  }
+  .quote p { font-family: var(--ds-font-display); font-size: var(--ds-text-lg); line-height: var(--ds-leading-snug); margin: 0; color: var(--ds-text); }
+  .quote .who { font-family: var(--ds-font-body); font-size: var(--ds-text-sm); font-weight: 700; color: var(--ds-text-strong); margin: 0; }
+
+  /* Social proof number block */
+  .proof {
+    display: flex; flex-direction: column; align-items: flex-start; gap: var(--ds-space-1);
+  }
+  .proof .num {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-5xl);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--ds-text);
+  }
+  .proof .lbl {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+  }
+
+  /* Sticky mini-cart toggle */
+  .cart-toggle {
+    position: fixed; right: 24px; bottom: 24px; z-index: 20;
+    background: var(--ds-text-strong); color: #FFF;
+    border: 0; border-radius: var(--ds-radius-full);
+    width: 64px; height: 64px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--ds-shadow-md);
+  }
+  .cart-toggle .count {
+    position: absolute; top: 2px; right: 2px;
+    width: 22px; height: 22px;
+    background: var(--ds-accent); color: var(--ds-text-strong);
+    border-radius: 50%;
+    font-family: var(--ds-font-body); font-weight: 700; font-size: var(--ds-text-xs);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="announce" role="status">Lorem ipsum free shipping on lorem dolor sit amet</div>
+
+<div class="page">
+
+  <header class="head">
+    <span class="eyebrow">Lorem ipsum / dolor</span>
+    <h1>Lorem Meets<br/>Delicious</h1>
+    <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="row" style="margin-top: 24px;">
+      <button class="btn btn-primary">Shop Lorem</button>
+      <button class="btn btn-ghost">Learn More</button>
+      <button class="btn btn-yellow">Accept All</button>
+      <button class="btn btn-mint">Shop</button>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-label">Display and section headings</div>
+    <h2 class="h2-windsor">Lorem ipsum dolor sit amet consectetur</h2>
+    <h3 class="h2-ano">Our foundational ingredients</h3>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Ingredient pills</div>
+    <div class="row">
+      <span class="pill-ingredient">Lorem</span>
+      <span class="pill-ingredient warm">Ipsum dolor</span>
+      <span class="pill-ingredient red">Sit amet</span>
+      <span class="pill-ingredient">Consectetur</span>
+      <span class="pill-ingredient warm">Adipiscing</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Candy-stripe band</div>
+    <div class="stripe-band" aria-hidden="true"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Product card (can shape)</div>
+    <div class="row">
+      <article class="product-card">
+        <div class="can" aria-hidden="true"></div>
+        <h4 class="name">Lorem Vanilla</h4>
+        <p class="meta">12 pack &middot; lorem ipsum</p>
+        <button class="btn btn-primary">Add to cart</button>
+      </article>
+      <article class="product-card">
+        <div class="can" aria-hidden="true" style="background: linear-gradient(180deg, var(--ds-error) 0 20%, var(--ds-surface-2) 20% 80%, var(--ds-accent-2) 80% 100%);"></div>
+        <h4 class="name">Dolor Sit</h4>
+        <p class="meta">12 pack &middot; consectetur</p>
+        <button class="btn btn-mint">Shop</button>
+      </article>
+      <article class="product-card">
+        <div class="can" aria-hidden="true" style="background: linear-gradient(180deg, var(--ds-accent) 0 20%, var(--ds-surface) 20% 80%, var(--ds-text-strong) 80% 100%);"></div>
+        <h4 class="name">Amet Cherry</h4>
+        <p class="meta">12 pack &middot; eiusmod</p>
+        <button class="btn btn-primary">Add to cart</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Nutrition mini-table</div>
+    <div class="nutrition">
+      <h4 class="nutrition__title">Lorem facts</h4>
+      <div class="nutrition__row"><span class="name">Lorem ipsum</span><span class="dv">35%</span></div>
+      <div class="nutrition__row"><span class="name">Dolor sit amet</span><span class="dv">9g</span></div>
+      <div class="nutrition__row"><span class="name">Consectetur</span><span class="dv">5g</span></div>
+      <div class="nutrition__row"><span class="name">Adipiscing elit</span><span class="dv">120mg</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Inputs</div>
+    <div class="row">
+      <input class="input-email" type="email" placeholder="Your Email Address" aria-label="Email"/>
+      <input class="input-search" type="search" placeholder="Search" aria-label="Search"/>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Customer quote</div>
+    <div class="row">
+      <article class="quote">
+        <div class="stars" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+        <p class="who">Lorem I., verified buyer</p>
+      </article>
+      <article class="quote">
+        <div class="stars" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+        <p class="who">Dolor S., verified buyer</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Social proof</div>
+    <div class="row" style="gap: 64px;">
+      <div class="proof">
+        <span class="num">50K+</span>
+        <span class="lbl">Lorem reviews</span>
+      </div>
+      <div class="proof">
+        <span class="num">9g</span>
+        <span class="lbl">Dolor sit</span>
+      </div>
+      <div class="proof">
+        <span class="num">4.8&#9733;</span>
+        <span class="lbl">Average rating</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<button class="cart-toggle" aria-label="Cart">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+    <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>
+  </svg>
+  <span class="count" aria-label="3 items">3</span>
+</button>
+
+</body>
+</html>

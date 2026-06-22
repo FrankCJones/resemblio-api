@@ -1,0 +1,354 @@
+<!--
+  Asset: vercel-hero-001
+  Class: heroes (whole)
+  Pattern: single-cta-hero, no-imagery, framework-strip, mono-eyebrow
+  Inspired by: Vercel
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/paper-ink-zero-001            (white surface + near-black ink + Geist Blue accent)
+    - type-pairings/sans-system-modern-001       (Geist Sans across display + body)
+    - headings/display-tight-001                 (72-80px display-tight H1)
+    - kickers/mono-eyebrow-001                   (Geist Mono uppercase event eyebrow)
+    - buttons/primary-square-001                 (Geist Blue rectangle CTA, 6px radius)
+    - dividers/hairline-rule-001                 (Gray 4 hairlines ruling the framework strip)
+  Notes:
+    - Native context: vercel.com homepage opening viewport, captured via
+      WebFetch 2026-05-20. White Geist background-1 canvas, a mono uppercase
+      event-eyebrow chip ("EVENTS / SHIP 26"), display-tight H1 stacked over
+      a single-paragraph dek, paired primary (Geist Blue solid) and
+      secondary (hairline-outline) CTAs, and a framework strip below
+      enumerating the partners (Next.js, Nuxt, Svelte, Turborepo, Vite,
+      Turbopack). Tokens corroborated against vercel-deploy-form-001's
+      Geist scale (the dark-mode sibling) and the published Geist color
+      and type system on vercel.com/geist/colors.
+    - Variable: every color, type, spacing, radius, motion value via tokens.css.
+    - Inline ornament: the framework-strip logo SVG geometry (six monochrome
+      glyphs standing in for Next.js / Nuxt / Svelte / Turborepo / Vite /
+      Turbopack); the topbar wordmark triangle is a one-off SVG path. The
+      Geist Blue focus glow on the primary CTA uses an inline rgba stop
+      because the gradient geometry has no contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>vercel-hero-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Geist Sans / Geist Mono on machines without the
+     official Geist woff2. JetBrains Mono carries the mono kicker. The
+     Geist Variable weight axis 510 is approximated as 500 here. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Page shell. White Geist background-1 canvas. The first viewport has
+   * exactly one chromatic moment: the Geist Blue primary CTA. Everything
+   * else is neutral, ruled by hairlines instead of shadows. */
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Topbar: triangle wordmark left, sparse Geist Sans nav center, sign-in
+   * + deploy affordance right. A single Gray-4 hairline separates the
+   * chrome from the canvas. */
+  .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-4) var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .topbar__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-display);
+    font-weight: 700;
+    font-size: var(--ds-text-base);
+    color: var(--ds-text-strong);
+    text-decoration: none;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  /* Inline: the Vercel triangle wordmark SVG geometry; no contract slot
+   * for arbitrary path data. */
+  .topbar__mark svg { width: 22px; height: 22px; display: block; }
+  .topbar__nav {
+    display: flex;
+    gap: var(--ds-space-5);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text-muted);
+  }
+  .topbar__nav a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .topbar__nav a:hover { color: var(--ds-text); }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+  }
+  .topbar__signin {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-text);
+    text-decoration: none;
+  }
+
+  /* Hero column. Centered, max 880px so the H1 holds a balanced two- or
+   * three-line shape. Generous vertical padding so the headline lands well
+   * below the chrome. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-10);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Mono kicker: an event eyebrow ("EVENTS / SHIP 26"), enclosed in a
+   * hairline chip. Geist Mono at 12px with the wider tracking step. */
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    padding: 6px 12px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-surface);
+  }
+  .hero__kicker__dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-accent);
+  }
+
+  /* H1: the display-tight signature. 72px baseline, scaling to 88px on
+   * wide viewports via clamp. text-wrap: balance holds the two-line
+   * shape the Vercel headline writers pace toward. */
+  .hero__title {
+    font-family: var(--ds-font-display);
+    font-size: clamp(var(--ds-text-3xl), 7vw, var(--ds-text-6xl));
+    font-weight: 600;
+    line-height: var(--ds-leading-tight);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text);
+    margin: 0;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  /* Dek: a single sentence at 20px on 1.5 leading, in muted Gray 9. */
+  .hero__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* CTA row: Geist Blue primary on the left, hairline-outline secondary on
+   * the right. Vercel uses paired CTAs (Start Deploying / Get a Demo) more
+   * than a single-CTA hero; the asset reflects that. */
+  .hero__actions {
+    margin-top: var(--ds-space-3);
+    display: inline-flex;
+    gap: var(--ds-space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    padding: 12px 18px;
+    border-radius: var(--ds-radius-md);
+    text-decoration: none;
+    transition:
+      background var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .btn--primary {
+    background: var(--ds-accent);
+    color: #FFFFFF;
+    border: 1px solid var(--ds-accent);
+  }
+  .btn--primary:hover { background: var(--ds-accent-2); border-color: var(--ds-accent-2); }
+  .btn--primary:focus-visible {
+    outline: none;
+    /* Inline: Geist Blue focus glow; the rgba stop is hero-specific and
+     * the gradient geometry has no contract slot. */
+    box-shadow: 0 0 0 4px rgba(0, 112, 243, 0.20);
+  }
+  .btn--secondary {
+    background: transparent;
+    color: var(--ds-text);
+    border: 1px solid var(--ds-border);
+  }
+  .btn--secondary:hover { background: var(--ds-surface); }
+
+  /* Framework strip: a single hairline-bordered row below the headline
+   * column, enumerating the canonical Vercel partners. Monochrome SVG
+   * stand-ins. The strip is what separates this hero from a Linear hero:
+   * Vercel never ships a hero without it. */
+  .strip {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto var(--ds-space-16);
+    padding: var(--ds-space-5) var(--ds-space-8);
+    border-top: 1px solid var(--ds-hairline);
+    border-bottom: 1px solid var(--ds-hairline);
+    background: var(--ds-surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: var(--ds-space-5);
+  }
+  .strip__label {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+  }
+  .strip__logos {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-8);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  /* Inline ornament: each logo is a glyph + wordmark pair at the same
+   * 16px optical height, all rendered in Gray 9 so the strip reads as
+   * one row rather than six brand moments. */
+  .strip__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--ds-tracking-tight);
+  }
+  .strip__logo svg { width: 18px; height: 18px; display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .topbar__nav a { transition: none; }
+  }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .strip { flex-direction: column; align-items: flex-start; }
+    .strip__logos { gap: var(--ds-space-5); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="topbar__mark" aria-label="Lorem mark">
+      <!-- Inline: triangle wordmark. -->
+      <svg viewBox="0 0 76 65" aria-hidden="true"><path fill="currentColor" d="M37.5274 0L75.0548 65H0L37.5274 0Z"/></svg>
+      <span>Lorem</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#">Ipsum</a>
+      <a href="#">Dolor</a>
+      <a href="#">Sit</a>
+      <a href="#">Amet</a>
+      <a href="#">Consectetur</a>
+      <a href="#">Adipiscing</a>
+    </nav>
+    <div class="topbar__right">
+      <a href="#" class="topbar__signin">Elit</a>
+      <a href="#" class="btn btn--primary">Sed Do</a>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Lorem ipsum hero">
+    <span class="hero__kicker">
+      <span class="hero__kicker__dot" aria-hidden="true"></span>
+      Lorem / Ipsum Dolor 26
+    </span>
+    <h1 class="hero__title">Lorem ipsum dolor sit amet consectetur.</h1>
+    <p class="hero__dek">
+      Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+      enim ad minim veniam quis nostrud exercitation ullamco laboris.
+    </p>
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary">Lorem Ipsum</a>
+      <a href="#" class="btn btn--secondary">Dolor Sit</a>
+    </div>
+  </section>
+
+  <aside class="strip" aria-label="Lorem ipsum framework partners">
+    <span class="strip__label">Lorem Ipsum</span>
+    <div class="strip__logos">
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 9v14M11 9l11 14" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        Lorem.js
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 26 L16 6 L28 26 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Ipsum
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 22 C8 14, 24 18, 24 10" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        Dolor
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="6" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+        Turborepo
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 L28 12 L16 28 L4 12 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Vite
+      </span>
+      <span class="strip__logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 16 L16 6 L26 16 L16 26 Z M11 16 L16 11 L21 16 L16 21 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Turbopack
+      </span>
+    </div>
+  </aside>
+</body>
+</html>

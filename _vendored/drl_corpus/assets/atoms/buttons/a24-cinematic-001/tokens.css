@@ -1,0 +1,128 @@
+/*
+ * a24-cinematic-001 tokens
+ *
+ * A24-inspired editorial-cinema button. The native context is a paper-white
+ * surface (the A24 shop) with film-still imagery dominating the frame; CTAs
+ * sit as restrained black slabs that defer to the artwork rather than compete
+ * with it. The films site inverts this to white-on-black; the asset adopts
+ * the shop's paper-on-ink register and renders a dark-inverse state too.
+ *
+ * Token strategy: every color, size, spacing, radius, and motion value is a
+ * variable. The single inline ornament is the subtle 0.5px underline lift on
+ * the inverse-state demo, called out where it lives.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Paper-white surface, deep ink text. A24's shop renders black-on-white at
+   * high contrast; the films site renders white-on-black. The accent is a
+   * warm off-black rather than pure #000 so the slab reads as printed ink
+   * rather than digital chrome. */
+  --ds-bg:           #FFFFFF;   /* Shop surface; paper-white. */
+  --ds-surface:      #FAFAF7;   /* One step toward warmth; for inset cards or product tiles. */
+  --ds-surface-2:    #F2F1EC;   /* Two steps; reserved for nested cards or footer band. */
+  --ds-text:         #111111;   /* Body ink; near-black, warmer than pure #000. */
+  --ds-text-muted:   #6B6B68;   /* Secondary metadata; product detail captions, "Coming Soon" labels. */
+  --ds-text-strong:  #000000;   /* Reserved for the strongest moments: large display, the button fill. */
+  --ds-border:       #111111;   /* Hairline frame on hover states; same hue as text for editorial register. */
+  --ds-hairline:     #E5E4DF;   /* Subtle paper-tone divider; films grid uses similar hue. */
+  --ds-accent:       #000000;   /* The button fill: full ink slab, no chromatic accent. The accent IS the contrast. */
+  --ds-accent-2:     #1A1A1A;   /* Hover shift; a single step lighter so the slab "warms" rather than recoloring. */
+  --ds-success:      #2F7D4F;   /* Confirmation; reserved. */
+  --ds-warning:      #B8742A;   /* Caution; reserved. */
+  --ds-error:        #B23A3A;   /* Failure; reserved. Sits in the editorial red family rather than dev-tool vivid. */
+  --ds-info:         #111111;   /* Info collapses to text color; this palette refuses chromatic UI. */
+  --ds-focus-ring:   #111111;   /* Focus ring is also ink; offset gives it visibility against the black slab. */
+
+  /* ---------- Type families ----------
+   * A24 ships a mostly-sans system with editorial restraint. Headings are
+   * sans not serif (confirmed via WebFetch inspection of /films and /shop).
+   * The asset uses a humanist sans with a serif slot reserved in case a
+   * cinematic display moment calls for it. */
+  --ds-font-display: "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-body:    "GT America", "Söhne", "Inter", system-ui, -apple-system, sans-serif;
+  --ds-font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --ds-font-accent:  "Times Now", "Tiempos Headline", "Times New Roman", Georgia, serif;
+
+  /* ---------- Type sizes ----------
+   * Button label sits at sm (14px); editorial buttons read as UI rather than
+   * shouting display. Body sits at 16; display reaches to 5xl for film
+   * titles. */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;
+  --ds-text-base: 16px;
+  --ds-text-lg:   19px;
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  60px;
+  --ds-text-5xl:  76px;
+  --ds-text-6xl:  92px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ---------- */
+  --ds-leading-tight:   1.05;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.85;
+
+  /* ---------- Tracking ----------
+   * Button label gets a tiny positive track to read as titlecard rather
+   * than UI shout. Mono kicker (small-caps "Coming Soon" register on A24)
+   * uses wider. */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide:   0.05em;
+  --ds-tracking-wider:  0.14em;
+
+  /* ---------- Spacing ----------
+   * 4px base grid. Editorial cinema marketing leans roomy; button padding
+   * uses space-5 horizontally to read as a slab not a chip. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;
+  --ds-space-12: 96px;
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * The button uses --ds-radius-xs (2px). A24 favors near-sharp corners that
+   * read as printed slab rather than UI pill. Not zero (that reads brutalist);
+   * not full (that reads dev-tool). The 2px is the editorial-cinema register. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;
+  --ds-radius-lg:   16px;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Editorial restraint: no drop shadows on the button itself. Shadow slots
+   * are present for contract conformance; the asset uses --ds-shadow-none at
+   * rest and a hairline border on hover instead of an elevation cue. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px rgba(0,0,0,0.04);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.08);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.12);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.16);
+  --ds-shadow-2xl:  0 32px 64px rgba(0,0,0,0.24);
+
+  /* ---------- Motion ----------
+   * Hover uses fast (150ms) for the slab-warm transition; press uses instant.
+   * Cinematic restraint: no theatrical reveal on a button. */
+  --ds-ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:  cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  240ms;
+  --ds-duration-slow:    400ms;
+}

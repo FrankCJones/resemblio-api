@@ -1,0 +1,280 @@
+<!--
+  Asset: airtable-feature-grid-001
+  Class: feature-grids (whole)
+  Pattern: story-card-grid, mono-eyebrow, bento-grid
+  Inspired by: Airtable (www.airtable.com home + /product)
+  Notes:
+    - Four-up tile grid that flattens to 2x2 then single column; the lead
+      tile spans wide on the desktop breakpoint to read as the featured
+      capability. The structural pattern repeats on the home AI-plays
+      strip and on the /product capabilities band.
+    - Each tile is a screenshot bezel above a stack of mono category
+      chip + sans display headline + dek + link. Chrome is hairline only
+      at rest; hover lifts the card via a soft warm-tinted shadow.
+    - Inline one-off: the section head sits above a soft coral-to-pink
+      gradient strip; the gradient is character, not a contract slot.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>airtable-feature-grid-001 - Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<!-- Domaine Sans Display is a licensed Klim Type face used by Airtable;
+     this asset falls back to Inter so the file renders standalone. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Section frame. Airtable runs a centered measure with generous outer
+   * padding; the white field carries the whole grid. */
+  .grid-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--ds-space-12) var(--ds-space-6);
+  }
+
+  /* Section head. Mono kicker + display headline + dek. The kicker rides
+   * a faint coral-to-pink gradient strip - the one chromatic moment in
+   * the section frame. Inline ornament: the gradient is character. */
+  .grid-section__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-8);
+    padding-bottom: var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .grid-section__kicker {
+    /* Inline ornament: faint coral-to-pink wash sits behind the kicker
+     * as a 4px pill. Airtable's section-head signature warmth. */
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--ds-radius-full);
+    background: linear-gradient(90deg, rgba(255,111,97,0.12), rgba(248,43,96,0.10));
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    color: var(--ds-accent);
+  }
+  .grid-section__title {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .grid-section__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  /* Grid. Single column on narrow viewports; two columns above 720px;
+   * the lead tile spans both columns on desktop to read as featured. */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ds-space-5);
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .tile--featured { grid-column: span 2; }
+  }
+
+  /* Tile. Hairline-bordered slab on a softly lifted surface. No shadow
+   * at rest; hover adds a soft warm-tinted lift and nudges the headline
+   * to the coral accent. */
+  .tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .tile:hover .tile__headline { color: var(--ds-accent); }
+  .tile:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 4px;
+  }
+
+  /* Screenshot bezel. Aspect-locked surface where Airtable drops a
+   * product-grid GIF or screenshot. Hairline beneath separates the
+   * visual from the type stack. */
+  .tile__image {
+    aspect-ratio: 16 / 9;
+    background: var(--ds-surface-2);
+    border-bottom: 1px solid var(--ds-hairline);
+    /* Inline ornament: faint dot grid signals "screenshot slot" without
+     * needing a real asset bundled into the library. */
+    background-image:
+      radial-gradient(rgba(20,15,10,0.06) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: center;
+  }
+  .tile--featured .tile__image {
+    aspect-ratio: 21 / 9;            /* Featured tile rides wider. */
+  }
+
+  /* Tile body. Padded slab; the category chip leads, then the headline,
+   * then the dek, then a small read-more affordance. */
+  .tile__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-6);
+  }
+
+  /* Category chip. Mono utility face, brand yellow background, uppercase
+   * tracked. Reserved for the lead tile; secondary tiles use a muted
+   * variant so the yellow doesn't compete. */
+  .tile__chip {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-surface-2);
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+  }
+  .tile--featured .tile__chip {
+    background: var(--ds-accent-2);   /* Airtable yellow. */
+    color: var(--ds-text-strong);
+  }
+
+  /* Headline. Sans display, snug leading, tight tracking. Featured tile
+   * sizes up to the xl tier; secondary tiles sit at lg. */
+  .tile__headline {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-lg);
+    font-weight: 600;
+    line-height: var(--ds-leading-snug);
+    letter-spacing: var(--ds-tracking-tight);
+    color: var(--ds-text-strong);
+    margin: 0;
+    text-wrap: balance;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .tile--featured .tile__headline {
+    font-size: var(--ds-text-xl);
+  }
+
+  /* Dek. Sans body, relaxed leading, muted ink. */
+  .tile__dek {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-relaxed);
+    color: var(--ds-text-muted);
+    margin: 0;
+  }
+
+  /* Read-more link. Inline coral with arrow glyph; sits at the bottom
+   * of the type stack as the conversion affordance per tile. */
+  .tile__more {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    color: var(--ds-accent);
+    margin-top: var(--ds-space-2);
+  }
+  .tile__more::after {
+    content: " \2192";              /* trailing arrow glyph */
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+    display: inline-block;
+  }
+  .tile:hover .tile__more::after { transform: translateX(3px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile, .tile__headline, .tile__more::after { transition: none; }
+    .tile:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="grid-section" aria-labelledby="grid-title">
+    <header class="grid-section__head">
+      <span class="grid-section__kicker">Lorem ipsum</span>
+      <h2 class="grid-section__title" id="grid-title">Dolor sit amet, consectetur adipiscing elit sed do.</h2>
+      <p class="grid-section__dek">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </header>
+
+    <div class="grid">
+      <a class="tile tile--featured" href="#one">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__chip">Lorem</span>
+          <h3 class="tile__headline">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h3>
+          <p class="tile__dek">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <span class="tile__more">Aliquip ex ea</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#two">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__chip">Ipsum</span>
+          <h3 class="tile__headline">Duis aute irure dolor in reprehenderit voluptate velit esse.</h3>
+          <p class="tile__dek">Cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <span class="tile__more">Voluptate velit</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#three">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__chip">Dolor</span>
+          <h3 class="tile__headline">At vero eos et accusamus et iusto odio dignissimos ducimus.</h3>
+          <p class="tile__dek">Praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati.</p>
+          <span class="tile__more">Dignissimos</span>
+        </div>
+      </a>
+
+      <a class="tile" href="#four">
+        <div class="tile__image" aria-hidden="true"></div>
+        <div class="tile__body">
+          <span class="tile__chip">Sit amet</span>
+          <h3 class="tile__headline">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.</h3>
+          <p class="tile__dek">Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit.</p>
+          <span class="tile__more">Voluptatem</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</body>
+</html>

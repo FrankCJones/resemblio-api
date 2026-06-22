@@ -1,0 +1,495 @@
+<!--
+  Asset: mailchimp-footer-001
+  Class: footers (whole)
+  Pattern: mega-footer, footer-link-quiet
+  Inspired by: Mailchimp
+  Composition (declared in meta.json > composition_atoms):
+    - color-groups/dark-editorial-001            (near-black surface with warm-paper text)
+    - type-pairings/sans-system-modern-001       (Graphik / Cerebri Sans analog in Inter)
+    - wordmarks/lowercase-geometric-001          (lowercase Mailchimp wordmark register)
+    - links/footer-link-mono-001                 (muted-warm-gray to white on hover)
+    - dividers/hairline-rule-001                 (warm hairline above legal row)
+  Notes:
+    - Five column-tile grid (Products, Resources, Community, Company, Help)
+      sits on a near-black Peppercorn band that inverts from the cream/white
+      page surface above. The inversion is the convention; the Cavendish
+      Yellow wordmark and focus ring carry the only chromatic moment.
+    - App-store badges and parent-company Intuit-family logo strip sit
+      above the link grid; social row + locale picker sit between the
+      hairline and the copyright row. That stacked structure is the
+      Mailchimp signature.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mailchimp-footer-001 · Design Reference Library</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter stands in for Graphik (display) and Cerebri Sans (body). Both are
+     paid faces; Inter is the closest open-licensed grotesk in the same
+     register. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Demo page background is light so the dark footer inversion reads as
+   * the Mailchimp convention (cream/white page body, near-black footer). */
+  body {
+    background: #FBF7EF;
+    color: var(--ds-text);
+    font-family: var(--ds-font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  /* The footer band. Inverted from the page; generous vertical padding;
+   * the warm off-white text reads as paper on Peppercorn. */
+  .footer {
+    width: 100%;
+    background: var(--ds-bg);
+    color: var(--ds-text);
+    padding: var(--ds-space-12) var(--ds-space-8) var(--ds-space-8);
+  }
+
+  .footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-10);
+  }
+
+  /* ---------- Intuit family strip ----------
+   * Sits at the top of the band; identifies the parent corporate family.
+   * Visually quiet: mono-weight wordmark glyphs separated by hairlines. */
+  .footer__family {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+    padding-bottom: var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-hairline);
+  }
+  .footer__family-label {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+    letter-spacing: var(--ds-tracking-wider);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .footer__family-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  .footer__family-list a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__family-list a:hover { color: var(--ds-text-strong); }
+
+  /* ---------- Link grid ----------
+   * Five short columns. The Mailchimp footer is information-dense
+   * (nine items in Products alone); the dark band absorbs the density. */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--ds-space-6);
+  }
+  @media (max-width: 1024px) {
+    .footer__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* Column header: body sans, sentence-case, slightly larger and heavier
+   * than the link rows; sits in pure white to anchor each column. */
+  .footer__col-header {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-base);
+    font-weight: 600;
+    color: var(--ds-text-strong);
+    margin: 0 0 var(--ds-space-4) 0;
+  }
+
+  .footer__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+
+  /* Footer link: warm muted gray at rest; lifts to off-white on hover.
+   * No underline at rest; underline appears on hover for affordance. */
+  .footer__link {
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__link:hover {
+    color: var(--ds-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .footer__link:focus-visible {
+    outline: 2px solid var(--ds-focus-ring);
+    outline-offset: 3px;
+    color: var(--ds-text-strong);
+  }
+
+  /* ---------- Apps + badges row ----------
+   * App-store badges plus a GDPR-friendly badge sit together. The badges
+   * are darker on the dark band, with a subtle warm border so they don't
+   * disappear. */
+  .footer__apps {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  .footer__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    text-decoration: none;
+    color: var(--ds-text);
+    font-size: var(--ds-text-sm);
+    font-weight: 500;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__badge:hover { border-color: var(--ds-text-muted); }
+  .footer__badge-mark {
+    /* Inline ornament; stands in for the actual app-store glyph. */
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: var(--ds-text-muted);
+    display: inline-block;
+  }
+
+  /* ---------- Wordmark band ----------
+   * Lowercase Mailchimp wordmark in Cavendish Yellow paired with the
+   * Freddie monogram (stand-in here is a circle). The yellow is the only
+   * chromatic moment on the dark band. */
+  .footer__brand {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--ds-space-6);
+    align-items: center;
+    padding-top: var(--ds-space-6);
+    border-top: 1px solid var(--ds-hairline);
+  }
+  @media (max-width: 720px) {
+    .footer__brand {
+      grid-template-columns: 1fr;
+      gap: var(--ds-space-5);
+      align-items: flex-start;
+    }
+  }
+  .footer__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    text-decoration: none;
+  }
+  .footer__mark-glyph {
+    /* Inline ornament: circular monogram tile holding a lowercase glyph.
+     * The Freddie mark is Mailchimp's; we render a generic stand-in here. */
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--ds-accent);
+    color: var(--ds-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ds-font-display);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .footer__mark-text {
+    font-family: var(--ds-font-display);
+    font-size: var(--ds-text-2xl);
+    font-weight: 700;
+    color: var(--ds-accent);
+    letter-spacing: var(--ds-tracking-tight);
+    text-transform: lowercase;
+  }
+
+  .footer__brand-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  @media (max-width: 720px) {
+    .footer__brand-right { justify-content: flex-start; }
+  }
+
+  /* Social row. Round icon tiles with warm hairline borders so they sit
+   * quietly on the dark band; hover lifts the border to off-white. */
+  .footer__social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--ds-space-2);
+  }
+  .footer__social a {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-text-muted);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-full);
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__social a:hover {
+    color: var(--ds-text-strong);
+    border-color: var(--ds-text);
+  }
+  .footer__social svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    display: block;
+  }
+
+  /* Locale picker: a small button that opens a language list. */
+  .footer__lang {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-sm);
+    padding: 6px 12px;
+    color: var(--ds-text-muted);
+    font-family: var(--ds-font-body);
+    font-size: var(--ds-text-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+                border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__lang:hover {
+    color: var(--ds-text-strong);
+    border-color: var(--ds-text);
+  }
+  .footer__lang::after {
+    content: " \25BE";
+    font-size: 10px;
+  }
+
+  /* ---------- Legal row ----------
+   * Single line of legal links plus copyright. Sits below the brand band
+   * separated by a hairline; tiny type, warm muted. */
+  .footer__legal {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+    padding-top: var(--ds-space-5);
+    border-top: 1px solid var(--ds-hairline);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-text-muted);
+  }
+  .footer__legal-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--ds-space-5);
+    flex-wrap: wrap;
+  }
+  .footer__legal-links a {
+    color: var(--ds-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .footer__legal-links a:hover {
+    color: var(--ds-text-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .footer__copyright {
+    margin: 0;
+    flex: 1;
+    min-width: 280px;
+    line-height: var(--ds-leading-normal);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__link,
+    .footer__legal-links a,
+    .footer__family-list a,
+    .footer__lang,
+    .footer__social a,
+    .footer__badge { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <footer class="footer" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" hidden>Lorem ipsum site footer</h2>
+    <div class="footer__inner">
+
+      <!-- Intuit family strip -->
+      <div class="footer__family">
+        <p class="footer__family-label">Part of the lorem family</p>
+        <ul class="footer__family-list">
+          <li><a href="#">Lorem</a></li>
+          <li><a href="#">Ipsum</a></li>
+          <li><a href="#">Dolor</a></li>
+          <li><a href="#">Sit Amet</a></li>
+          <li><a href="#">Consectetur</a></li>
+        </ul>
+      </div>
+
+      <!-- Five-column link grid -->
+      <div class="footer__grid">
+        <nav aria-label="Products">
+          <p class="footer__col-header">Lorem</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Ipsum dolor sit</a></li>
+            <li><a class="footer__link" href="#">Amet consectetur</a></li>
+            <li><a class="footer__link" href="#">Adipiscing elit</a></li>
+            <li><a class="footer__link" href="#">Sed do eiusmod</a></li>
+            <li><a class="footer__link" href="#">Tempor incididunt</a></li>
+            <li><a class="footer__link" href="#">Ut labore et</a></li>
+            <li><a class="footer__link" href="#">Dolore magna</a></li>
+            <li><a class="footer__link" href="#">Aliqua enim ad</a></li>
+            <li><a class="footer__link" href="#">Minim veniam</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Resources">
+          <p class="footer__col-header">Ipsum</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Quis nostrud</a></li>
+            <li><a class="footer__link" href="#">Exercitation</a></li>
+            <li><a class="footer__link" href="#">Ullamco laboris</a></li>
+            <li><a class="footer__link" href="#">Nisi ut aliquip</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Community">
+          <p class="footer__col-header">Dolor</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Ex ea commodo</a></li>
+            <li><a class="footer__link" href="#">Consequat duis</a></li>
+            <li><a class="footer__link" href="#">Aute irure</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Company">
+          <p class="footer__col-header">Sit Amet</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Reprehenderit in</a></li>
+            <li><a class="footer__link" href="#">Voluptate velit</a></li>
+            <li><a class="footer__link" href="#">Esse cillum</a></li>
+            <li><a class="footer__link" href="#">Dolore eu fugiat</a></li>
+            <li><a class="footer__link" href="#">Nulla pariatur</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Help">
+          <p class="footer__col-header">Consectetur</p>
+          <ul class="footer__col-list">
+            <li><a class="footer__link" href="#">Excepteur sint</a></li>
+            <li><a class="footer__link" href="#">Occaecat cupidatat</a></li>
+            <li><a class="footer__link" href="#">Non proident</a></li>
+            <li><a class="footer__link" href="#">Sunt in culpa</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- App-store + badge row -->
+      <div class="footer__apps" aria-label="Apps and badges">
+        <a class="footer__badge" href="#" aria-label="Lorem on the App Store">
+          <span class="footer__badge-mark" aria-hidden="true"></span>
+          Lorem on App Store
+        </a>
+        <a class="footer__badge" href="#" aria-label="Lorem on Google Play">
+          <span class="footer__badge-mark" aria-hidden="true"></span>
+          Lorem on Google Play
+        </a>
+        <a class="footer__badge" href="#" aria-label="Lorem trust badge">
+          <span class="footer__badge-mark" aria-hidden="true"></span>
+          Lorem friendly tools
+        </a>
+      </div>
+
+      <!-- Wordmark + social + locale band -->
+      <div class="footer__brand">
+        <a class="footer__mark" href="#" aria-label="Lorem ipsum home">
+          <span class="footer__mark-glyph" aria-hidden="true">l</span>
+          <span class="footer__mark-text">lorem</span>
+        </a>
+
+        <div class="footer__brand-right">
+          <ul class="footer__social" aria-label="Social">
+            <li><a href="#" aria-label="Lorem on Facebook">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.23 2.69.23v2.97h-1.51c-1.5 0-1.96.93-1.96 1.88v2.26h3.33l-.53 3.49h-2.8V24C19.6 23.1 24 18.1 24 12.07z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on X">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.146 1.5h2.21l-4.83 5.52L15.2 14.5h-4.45l-3.49-4.56L3.27 14.5H1.06l5.17-5.91L0.6 1.5h4.56l3.15 4.17 3.84-4.17zm-.78 11.65h1.22L4.7 2.78H3.39l7.98 10.37z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.42.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.37 1.06.42 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.26 1.8-.42 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.37-2.23.42-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.26-2.23-.42-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.37-1.06-.42-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.42-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.37 2.23-.42 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.6 5.6 0 0 0-2.03 1.32A5.6 5.6 0 0 0 .79 3.98C.49 4.74.29 5.62.23 6.89.17 8.17.16 8.58.16 11.84s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.4 2.13a5.6 5.6 0 0 0 2.03 1.32c.76.3 1.64.5 2.91.56C8.33 23.79 8.74 23.8 12 23.8s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.6 5.6 0 0 0 2.03-1.32 5.6 5.6 0 0 0 1.32-2.03c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.6 5.6 0 0 0-1.32-2.03A5.6 5.6 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0zm0 5.84a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 9.9a3.9 3.9 0 1 1 0-7.8 3.9 3.9 0 0 1 0 7.8zm7.6-10.16a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on YouTube">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M15.66 4.4a2 2 0 0 0-1.41-1.41C13 2.65 8 2.65 8 2.65s-5 0-6.25.34A2 2 0 0 0 .34 4.4 20.8 20.8 0 0 0 0 8a20.8 20.8 0 0 0 .34 3.6 2 2 0 0 0 1.41 1.41C3 13.35 8 13.35 8 13.35s5 0 6.25-.34a2 2 0 0 0 1.41-1.41A20.8 20.8 0 0 0 16 8a20.8 20.8 0 0 0-.34-3.6zM6.4 10.4V5.6L10.55 8 6.4 10.4z"/></svg>
+            </a></li>
+            <li><a href="#" aria-label="Lorem on Pinterest">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.42 7.62 11.17-.1-.95-.2-2.4.04-3.43.22-.94 1.4-5.98 1.4-5.98s-.36-.72-.36-1.78c0-1.67.97-2.91 2.18-2.91 1.02 0 1.51.77 1.51 1.69 0 1.03-.66 2.57-1 4-.28 1.19.6 2.16 1.78 2.16 2.13 0 3.78-2.25 3.78-5.5 0-2.87-2.07-4.88-5.03-4.88-3.42 0-5.43 2.57-5.43 5.22 0 1.03.4 2.14.89 2.74.1.12.11.22.08.34l-.32 1.33c-.05.22-.17.27-.39.16-1.46-.68-2.37-2.8-2.37-4.51 0-3.67 2.66-7.04 7.68-7.04 4.03 0 7.17 2.87 7.17 6.71 0 4.01-2.53 7.23-6.04 7.23-1.18 0-2.29-.61-2.67-1.34l-.73 2.77c-.26 1.02-.97 2.3-1.45 3.08C9.6 23.85 10.78 24 12 24c6.63 0 12-5.37 12-12 0-6.63-5.37-12-12-12z"/></svg>
+            </a></li>
+          </ul>
+
+          <button class="footer__lang" type="button" aria-haspopup="listbox">English (XX)</button>
+        </div>
+      </div>
+
+      <!-- Legal row -->
+      <div class="footer__legal">
+        <ul class="footer__legal-links">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Legal</a></li>
+          <li><a href="#">Cookie preferences</a></li>
+        </ul>
+        <p class="footer__copyright">&copy; MMI-MMXXVI All rights reserved. Lorem&reg; is a registered trademark of the Lorem Ipsum Group. Lorem and the Lorem logo are trademarks of Lorem Inc.</p>
+      </div>
+
+    </div>
+  </footer>
+</body>
+</html>

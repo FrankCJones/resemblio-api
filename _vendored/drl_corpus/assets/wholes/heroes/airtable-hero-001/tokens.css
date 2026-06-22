@@ -1,0 +1,151 @@
+/*
+ * airtable-hero-001 tokens
+ *
+ * Native token values for the Airtable homepage marketing hero, inspected
+ * via WebFetch on https://www.airtable.com 2026-05-20. Live programmatic
+ * inspection via Chrome MCP was rejected for this domain (the airtable.com
+ * host returns "Navigation to this domain is not allowed"); WebFetch
+ * returned the rendered DOM but stripped inline styles. Structural
+ * inspection therefore confirms composition (headline, dek, paired CTA,
+ * embedded video, trust logo strip immediately below) but token values
+ * are mapped to Airtable's published visual register rather than read
+ * from computed styles.
+ *
+ * The hero sits on a near-white canvas (an off-white wash rather than
+ * pure white, which keeps the embedded product video frame from
+ * vibrating against the page). Body and display set in a humanist sans
+ * with subtly rounded letterforms (Airtable Sans / Inter Tight family).
+ * The primary CTA is a near-black solid rectangle with a small radius;
+ * the secondary CTA is a hairline outline. The trust strip directly
+ * below the hero block runs muted grey logos at a single optical
+ * height. No characterful accent color in the first viewport: the
+ * brand vocabulary saves its primary blue and coral accents for the
+ * feature-grid sections downstream.
+ *
+ * All variable names come from TOKEN_CONTRACT.md. Per-site libraries
+ * override these by writing their own tokens.css against the same slots.
+ */
+:root {
+  /* ---------- Colors ----------
+   * Off-white canvas, near-black ink, a single muted blue reserved for
+   * link affordances and focus rings. Borders run at a 6% black wash;
+   * the trust strip uses the same hairline to demarcate top and bottom
+   * edges of the logo row. */
+  --ds-bg:           #FCFCFA;   /* Off-white canvas; warmer than #FFFFFF, the Airtable marketing-page default. */
+  --ds-surface:      #FFFFFF;   /* Pure white; raised card chrome on feature grids. */
+  --ds-surface-2:    #F4F4F1;   /* Near-cream nested surface; used on quote and stat callouts. */
+  --ds-text:         #1D1F21;   /* Near-black ink; H1 and body copy. */
+  --ds-text-muted:   #5C6066;   /* Muted slate; dek paragraph and trust strip label. */
+  --ds-text-strong:  #000000;   /* Pure black; reserved for primary CTA fill and the deepest emphasis. */
+  --ds-border:       #E6E4DF;   /* 8% warm black; default card and input borders. */
+  --ds-hairline:     #EAE8E3;   /* Slightly lighter than the border; trust strip top and bottom rules. */
+  --ds-accent:       #166EE1;   /* Airtable link blue; reserved for inline links and focus rings. */
+  --ds-accent-2:     #FFB13A;   /* Airtable workflow yellow; reserved for downstream callouts, not used in the hero. */
+  --ds-success:      #2BAF6B;   /* Status-pill green; carries successful-sync semantics in product. */
+  --ds-warning:      #F4A23B;   /* Warning amber; aligns with the workflow yellow but desaturated. */
+  --ds-error:        #E04A4A;   /* Validation red. */
+  --ds-info:         #166EE1;   /* Same as accent. */
+  --ds-focus-ring:   #166EE1;   /* Brand blue at high contrast for keyboard focus. */
+
+  /* ---------- Type families ----------
+   * Airtable Sans / Inter Tight family across display and body. The
+   * marketing surface uses a single humanist sans across H1, dek, and
+   * UI labels; mono is reserved for technical metadata and does not
+   * appear in the hero. Fallback chain mirrors what airtable.com serves
+   * browsers that lack the woff2. */
+  --ds-font-display: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-body:    "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ds-font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --ds-font-accent:  "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* ---------- Type sizes ----------
+   * Airtable marketing H1 sets at roughly 56-72px on the widest viewport,
+   * scaling down to 36-44px on mobile. The dek paragraph reads at
+   * 18-20px. The hero is paced shorter than Vercel's 80px display
+   * because the headline runs longer (sentence-cased, three-line). */
+  --ds-text-2xs:  10px;
+  --ds-text-xs:   12px;
+  --ds-text-sm:   14px;   /* Trust strip label, secondary CTA. */
+  --ds-text-base: 16px;
+  --ds-text-lg:   20px;   /* Dek paragraph below the H1. */
+  --ds-text-xl:   24px;
+  --ds-text-2xl:  32px;
+  --ds-text-3xl:  44px;
+  --ds-text-4xl:  56px;
+  --ds-text-5xl:  72px;   /* Hero H1 ceiling at widest viewport. */
+  --ds-text-6xl:  88px;
+  --ds-text-7xl:  120px;
+
+  /* ---------- Line heights ----------
+   * H1 sits at 1.1 because the sentence-cased headline runs longer
+   * than a Linear or Vercel single-line statement; tight leading would
+   * crowd the descenders. */
+  --ds-leading-tight:   1.1;
+  --ds-leading-snug:    1.2;
+  --ds-leading-normal:  1.5;    /* Dek and body. */
+  --ds-leading-relaxed: 1.65;
+  --ds-leading-loose:   1.8;
+
+  /* ---------- Tracking ----------
+   * Inter Tight ships with screen-tuned metrics; the display headline
+   * pulls -0.02em (gentler than Linear or Vercel because the headline
+   * sentence runs longer and aggressive negative tracking would cramp
+   * the multi-line shape). */
+  --ds-tracking-tight:  -0.02em;
+  --ds-tracking-normal: -0.005em;
+  --ds-tracking-wide:   0.04em;
+  --ds-tracking-wider:  0.12em;
+
+  /* ---------- Spacing ----------
+   * Airtable marketing rhythm: 24px between hero column elements,
+   * 80-96px vertical padding above the headline column, 32px between
+   * dek and the CTA row, 64px between the headline column and the
+   * trust logo strip below. */
+  --ds-space-0:  0;
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  24px;
+  --ds-space-6:  32px;    /* Dek to CTA row. */
+  --ds-space-8:  48px;
+  --ds-space-10: 64px;    /* Headline column to trust strip. */
+  --ds-space-12: 96px;    /* Top padding above the H1. */
+  --ds-space-16: 128px;
+  --ds-space-32: 192px;
+
+  /* ---------- Radii ----------
+   * Airtable signature: 8px on buttons and inputs (rounder than Vercel's
+   * 6px, less round than Linear's full pill); 12px on cards; the video
+   * frame in the hero uses a 16px radius to feel app-shell-like rather
+   * than chrome-edge. */
+  --ds-radius-none: 0;
+  --ds-radius-xs:   2px;
+  --ds-radius-sm:   4px;
+  --ds-radius-md:   8px;     /* Primary CTA rectangle. */
+  --ds-radius-lg:   16px;    /* Hero video frame. */
+  --ds-radius-full: 9999px;
+
+  /* ---------- Shadows ----------
+   * Airtable on light canvases mostly uses hairlines rather than
+   * shadows for chrome, but the embedded hero video sits on a very
+   * soft 24px-spread drop shadow so it lifts from the canvas. */
+  --ds-shadow-none: none;
+  --ds-shadow-xs:   0 0 0 1px var(--ds-border);
+  --ds-shadow-sm:   0 1px 2px rgba(0,0,0,0.04);
+  --ds-shadow-md:   0 4px 12px rgba(0,0,0,0.06);
+  --ds-shadow-lg:   0 12px 32px rgba(0,0,0,0.08);   /* Hero video frame lift. */
+  --ds-shadow-2xl:  0 24px 48px rgba(0,0,0,0.10);
+
+  /* ---------- Motion ----------
+   * Airtable transitions favor a slightly slower 200ms ease, gentler
+   * than Vercel's 150ms, to match the product's mass-market positioning. */
+  --ds-ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-emphasize:   cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+  --ds-duration-instant: 80ms;
+  --ds-duration-fast:    150ms;
+  --ds-duration-normal:  200ms;
+  --ds-duration-slow:    400ms;
+}
