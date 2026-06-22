@@ -31,9 +31,13 @@ Re-running this script against an unchanged DRL produces a byte-identical
 
 Dependencies
 ------------
-Python standard library only (datetime, hashlib, json, pathlib, shutil).
-No network.  The only cross-module import is ``DEFAULT_DRL_ROOT`` from
-``scripts.seed_from_drl``, which is also stdlib-only.
+Python standard library only (argparse, datetime, hashlib, json, logging,
+pathlib, shutil). No network, no third-party packages, no project imports.
+``DEFAULT_DRL_ROOT`` is defined locally (mirroring
+``scripts/seed_from_drl.py::DEFAULT_DRL_ROOT``) rather than imported, so the
+script runs standalone via ``python scripts/sync_drl_corpus.py`` without the
+``scripts`` package being importable on ``sys.path``. If the seed script's
+default root ever changes, update the constant here to match.
 
 Run command (from code/api/)
 ----------------------------

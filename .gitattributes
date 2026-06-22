@@ -1,0 +1,13 @@
+# Vendored DRL content snapshot: pin to LF on every platform.
+#
+# Why: manifest.json (the integrity seal for _vendored/drl_corpus/) stores a
+# sha256 per file computed over the LF bytes that scripts/sync_drl_corpus.py
+# copies from the DRL. This repo runs with core.autocrlf=true, so without an
+# explicit rule a Windows checkout would smudge these text files to CRLF, whose
+# sha256 no longer matches the manifest. The integrity gate
+# (tests/test_drl_corpus_vendored.py::test_manifest_sha256_verifies_all_files)
+# would then FAIL on a fresh Windows clone even though CI (Linux) passes.
+# Pinning eol=lf makes the checked-out bytes deterministic on every platform,
+# so the integrity seal is reproducible everywhere. See
+# _vendored/drl_corpus/README.md for the full provenance story.
+_vendored/drl_corpus/** text eol=lf
