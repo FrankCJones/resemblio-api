@@ -10,13 +10,28 @@ Resemblio library page (candidate) in two tiers:
      This is the gate that blocks Epic #35's definition of done.
 
   2. Pixel (SECONDARY, informational): screenshot SSIM against
-     PIXEL_SSIM_FLOOR. Does NOT gate the verdict; stored alongside structural
-     results for drift diagnosis and future calibration.
+     PIXEL_SSIM_FLOOR. Does NOT gate the verdict.
 
-Both tiers require Playwright + Pillow (``[browser]`` optional dep). When
-absent, the capture functions return None and tests self-skip via
-``pytest.importorskip`` - mirroring the discipline in
-``test_visual_fidelity_gate.py``.
+     STATUS - DEFERRED, NOT YET WIRED. Per decision D-5.1 ("structural gate
+     PRIMARY, SSIM informational only", ratified in Library v5 Phase 5), the
+     structural tier is the enforced gate for Epic #35 and the pixel tier is
+     informational only. The screenshot-crop + SSIM machinery is intentionally
+     NOT implemented in this step: on the current corpus the candidate is a
+     single composed node while the reference renders multiple named state
+     nodes, so a cropped-bounding-box SSIM would compare mismatched geometry
+     and produce noise, not signal - which is exactly why SSIM was demoted to
+     informational. ``PIXEL_SSIM_FLOOR``, ``FidelityVerdict.ssim``, and
+     ``tier="pixel"`` are reserved hooks for a future step that wires the
+     pixel tier once the library serves real per-state components. Until then
+     ``ssim`` is always None and ``tier`` is never "pixel". See the
+     ``PIXEL_SSIM_FLOOR`` rationale block below.
+
+The structural tier requires Playwright (``[browser]`` optional dep) for the
+live capture functions. When Playwright is absent, the capture functions
+return None and the browser-tier tests self-skip via ``pytest.importorskip``
+- mirroring the discipline in ``test_visual_fidelity_gate.py``. The pure
+comparator, map builder, corpus iterator, and chrome helpers need no browser
+and always run.
 
 State detection in reference asset.html:
   DRL assets render multiple states (rest/hover/focus/disabled) as distinct
@@ -97,15 +112,18 @@ FIDELITY_PROPERTIES: Tuple[str, ...] = (
     "transition",
 )
 
-#: SSIM floor for the secondary (pixel) tier.
+#: SSIM floor for the secondary (pixel) tier. RESERVED - the pixel tier is
+#: deferred and not yet wired (see module docstring, tier 2). This constant is
+#: the agreed starting threshold for when a future step implements the pixel
+#: tier; it does not affect any verdict today.
 #:
-#: RATIONALE: This is an initial estimate for the first baseline run.
-#: Calibration: After the first run, examine SSIM scores for structural-PASS
-#: assets (those that pass the structural tier) to find the noise floor of
-#: genuinely-matching renders. Real mismatches (token-tinted generic template
-#: vs. component-specific DRL asset) typically score < 0.5. A value of 0.85
-#: is conservative: it will reject renders that differ beyond simple font
-#: substitution noise. Update this value once real baseline data is available.
+#: RATIONALE (for the future implementer): 0.85 is a conservative initial
+#: estimate. Calibration plan: after the first real pixel run, examine SSIM
+#: scores for structural-PASS assets (those that pass the structural tier) to
+#: find the noise floor of genuinely-matching renders. Real mismatches
+#: (token-tinted generic template vs. component-specific DRL asset) typically
+#: score < 0.5. 0.85 rejects renders that differ beyond simple font
+#: substitution noise. Revisit this number once real baseline pixel data exists.
 PIXEL_SSIM_FLOOR: float = 0.85
 
 #: Viewport for both reference and candidate renders. Same as the existing harness.
@@ -113,6 +131,13 @@ ORACLE_VIEWPORT: Dict[str, int] = {"width": 1280, "height": 800}
 
 #: Post-navigation wait (ms) for fonts, transitions, and layout to settle.
 ORACLE_WAIT_MS: int = 2000
+
+#: Reduced wait (ms) used when rendering local file:// reference assets inside
+#: the batch runner.  The DOM is immediately ready; fonts (Google Fonts via
+#: CDN) typically resolve within 500 ms on a connected machine.  The full
+#: ORACLE_WAIT_MS (2000 ms) is kept for the standalone capture_* helpers used
+#: in one-off debugging calls where a conservative wait is preferable.
+_ORACLE_LOCAL_WAIT_MS: int = 500
 
 SCHEMA_VERSION = "fidelity_oracle_v1"
 BASELINE_SCHEMA_VERSION = "fidelity_baseline_map_v1"
@@ -153,10 +178,11 @@ class FidelityVerdict:
         diffs:     All mismatching (state, property) pairs. Empty on pass or
                    candidate_missing.
         tier:      "structural" - the hard tier failed (property mismatch).
-                   "pixel"      - structural passed but SSIM < PIXEL_SSIM_FLOOR.
                    "none"       - verdict is "pass".
                    "n/a"        - verdict is "candidate_missing".
-        ssim:      SSIM score from the pixel tier; None when not computed.
+                   "pixel"      - RESERVED for the deferred pixel tier; never
+                                  emitted today (see module docstring, tier 2).
+        ssim:      RESERVED for the deferred pixel tier; always None today.
         schema_version: "fidelity_oracle_v1".
     """
 
@@ -249,8 +275,21 @@ def compare_computed_styles(
     mismatching (state, property) pair. When ``candidate`` lacks a state
     entirely, a diff is emitted for every fidelity property with
     ``candidate="<missing>"``. This is intentional: the Resemblio library
-    currently serves single-state generic templates while DRL assets render
-    rest/hover/focus/disabled as distinct nodes.
+    currently serves single-state generic templates (one composed node) while
+    DRL assets render rest/hover/focus/disabled as distinct named nodes, so on
+    today's corpus most states resolve to "<missing>" - the honest RED signal
+    that the library does not yet serve real per-state components.
+
+    SCOPE NOTE (Step 1 vs the epic's final gate): this comparator implements
+    the *computed-style* half of Epic #35's hard tier - identical
+    fidelity-bearing computed values per state on the component subtree. It
+    does NOT yet assert DOM/class-tree isomorphism between reference and
+    candidate (the other half named in the epic gate). DOM-structure equality
+    is deferred to Step 6 (gate enforcement), because the candidate wrapper and
+    scoping deliberately differ in chrome and a meaningful tree-diff needs the
+    real per-asset pages that Steps 3-4 introduce. The computed-style diff is
+    the actionable signal Steps 2-4 burn down; structural-tree assertion lands
+    when there are real component trees to compare.
 
     Pure: no network, no filesystem access, no browser.
 
@@ -463,6 +502,126 @@ _CAPTURE_STYLE_JS = (
     "  return r;"
     "}"
 )
+
+
+def _extract_ref_states_from_page(
+    asset_html_path: pathlib.Path,
+    page: Any,
+    wait_ms: int = _ORACLE_LOCAL_WAIT_MS,
+) -> Optional[Dict[str, Dict[str, str]]]:
+    """Internal: render asset.html in an existing Playwright page and return computed styles.
+
+    Uses the same state-detection and style-capture logic as
+    ``capture_reference_styles`` but reuses ``page`` across calls, avoiding
+    the browser-launch/close overhead on every asset.
+
+    Args:
+        asset_html_path: Absolute path to the DRL ``asset.html`` file.
+        page:            An open Playwright ``Page`` at ORACLE_VIEWPORT.
+        wait_ms:         Post-navigation wait in ms. Default is
+                         ``_ORACLE_LOCAL_WAIT_MS`` (faster than ORACLE_WAIT_MS
+                         because local file:// URLs do not need the full
+                         font-loading budget).
+
+    Returns:
+        Dict[state_name, Dict[property, value]] or None on failure.
+    """
+    url = asset_html_path.as_uri()
+    try:
+        # Use "domcontentloaded" (not "networkidle") for local file:// assets.
+        # font-family computed style is a CSS string comparison ("Inter, sans-serif"),
+        # not a pixel metric - the value is resolved from the CSS rule immediately
+        # after DOM parsing regardless of whether the actual font file downloads.
+        # Waiting for networkidle on file:// URLs triggers a long wait while the
+        # browser fetches Google Fonts over the network (3-4 s per asset on a warm
+        # machine); domcontentloaded + a short settle wait is both faster and
+        # accurate for our comparison goals.
+        page.goto(url, wait_until="domcontentloaded", timeout=15_000)
+        page.wait_for_timeout(wait_ms)
+
+        states: Dict[str, Dict[str, str]] = {}
+        groups = page.query_selector_all(".group")
+        if groups:
+            for group in groups:
+                label_el = group.query_selector(".state-label")
+                if label_el is None:
+                    continue
+                state_name = (label_el.inner_text() or "").strip()
+                if not state_name:
+                    continue
+                siblings = group.query_selector_all(":scope > :not(.state-label)")
+                if not siblings:
+                    continue
+                raw: Optional[Dict[str, str]] = siblings[0].evaluate(
+                    _CAPTURE_STYLE_JS, list(FIDELITY_PROPERTIES)
+                )
+                if raw:
+                    states[state_name] = raw
+
+        if not states:
+            el = page.query_selector("body > :not(.state-label)")
+            if el is None:
+                el = page.query_selector("body")
+            if el:
+                raw = el.evaluate(_CAPTURE_STYLE_JS, list(FIDELITY_PROPERTIES))
+                if raw:
+                    states["default"] = raw
+
+        return states if states else None
+    except Exception as exc:
+        _log.warning("_extract_ref_states_from_page failed for %s: %s", asset_html_path, exc)
+        return None
+
+
+def _extract_cand_styles_from_page(
+    rendered_html: str,
+    page: Any,
+    wait_ms: int = _ORACLE_LOCAL_WAIT_MS,
+) -> Optional[Dict[str, Dict[str, str]]]:
+    """Internal: render a Resemblio candidate HTML fragment in an existing Playwright page.
+
+    Uses the same component-extraction and style-capture logic as
+    ``capture_candidate_styles`` but reuses ``page``.
+
+    Args:
+        rendered_html: Resemblio library-page HTML fragment.
+        page:          An open Playwright ``Page`` at ORACLE_VIEWPORT.
+        wait_ms:       Post-set_content wait in ms (default ``_ORACLE_LOCAL_WAIT_MS``).
+
+    Returns:
+        ``{"default": Dict[property, value]}`` or None on failure.
+    """
+    full_html = (
+        "<!doctype html><html><head>"
+        '<meta charset="utf-8"/>'
+        '<meta name="viewport" content="width=device-width, initial-scale=1"/>'
+        "</head><body>"
+        + rendered_html
+        + "</body></html>"
+    )
+    try:
+        page.set_content(full_html, wait_until="domcontentloaded")
+        page.wait_for_timeout(wait_ms)
+
+        selector = (
+            'article[data-rs-source="drl-component"]'
+            " > :not(aside):not(.rs-font-disclosure)"
+        )
+        el = page.query_selector(selector)
+        if el is None:
+            el = page.query_selector('article[data-rs-source="drl-component"] > *')
+        if el is None:
+            el = page.query_selector("body > *")
+        if el is None:
+            return None
+
+        raw: Optional[Dict[str, str]] = el.evaluate(
+            _CAPTURE_STYLE_JS, list(FIDELITY_PROPERTIES)
+        )
+        return {"default": raw} if raw else None
+    except Exception as exc:
+        _log.warning("_extract_cand_styles_from_page failed: %s", exc)
+        return None
 
 
 def capture_reference_styles(
@@ -720,13 +879,20 @@ def run_oracle_baseline(
        Playwright, then compare with ``compare_computed_styles``.
     4. If Playwright is unavailable: record verdict="candidate_missing".
 
-    Candidate HTML is fetched once per (brand, asset_class) pair and cached
-    for the duration of the run; multiple assets that share the same library
-    page (e.g. all of a24's button atoms) reuse the same HTML without a
-    second fetch.
+    Performance model:
+      - One Playwright browser instance is launched for all reference renders
+        and one for all candidate renders; browsers are reused across assets
+        to eliminate per-asset browser-launch overhead (~0.8 s/launch).
+      - Candidate styles are cached per (brand, asset_class): assets that
+        share the same library page (e.g. all of a24's button atoms) are
+        rendered once, not N times.
+      - Candidate HTML is cached per (brand, asset_class) to avoid redundant
+        HTTP fetches.
+      Together these reduce a 955-asset run from ~2 h (one browser per asset)
+      to ~30-40 min on a typical workstation.
 
     Args:
-        corpus_root:        Path to _vendored/drl_corpus.
+        corpus_root:        Path to _vendored/drl_corpus (absolute).
         get_candidate_html: Callable(brand, asset_class) -> rendered_html | None.
                             None means no Resemblio library page exists.
         output_dir:         Directory to write baseline_map.json + .md.
@@ -736,32 +902,77 @@ def run_oracle_baseline(
     """
     verdicts: List[Tuple[str, str, str, FidelityVerdict]] = []
     # Cache candidate HTML per (brand, asset_class) to avoid redundant fetches.
-    candidate_cache: Dict[Tuple[str, str], Optional[str]] = {}
+    candidate_html_cache: Dict[Tuple[str, str], Optional[str]] = {}
+    # Cache candidate computed styles per (brand, asset_class): all assets that
+    # share the same library page have identical candidate styles.
+    candidate_style_cache: Dict[Tuple[str, str], Optional[Dict[str, Dict[str, str]]]] = {}
 
     assets = list(iter_corpus_assets(corpus_root))
     total = len(assets)
     _log.info("Starting oracle run: %d assets, output=%s", total, output_dir)
 
-    for i, asset in enumerate(assets, 1):
-        cache_key = (asset.brand, asset.asset_class)
-        if cache_key not in candidate_cache:
-            candidate_cache[cache_key] = get_candidate_html(asset.brand, asset.asset_class)
-        candidate_html = candidate_cache[cache_key]
+    try:
+        from playwright.sync_api import sync_playwright
+        has_playwright = True
+    except ImportError:
+        has_playwright = False
+        _log.warning("Playwright not installed; all assets will be marked candidate_missing")
 
-        if candidate_html is None:
-            v: FidelityVerdict = FidelityVerdict(verdict="candidate_missing", tier="n/a")
-        else:
-            ref_styles = capture_reference_styles(asset.html_path)
-            cand_styles = capture_candidate_styles(candidate_html)
-            if ref_styles is None or cand_styles is None:
-                # Playwright unavailable or browser failed.
-                v = FidelityVerdict(verdict="candidate_missing", tier="n/a")
-            else:
-                v = compare_computed_styles(ref_styles, cand_styles)
+    if has_playwright:
+        with sync_playwright() as pw:
+            # One persistent browser per role (reference / candidate) to avoid
+            # the ~0.8 s browser-launch overhead on every asset.
+            ref_browser = pw.chromium.launch(headless=True)
+            ref_page = ref_browser.new_page(viewport=ORACLE_VIEWPORT)
+            cand_browser = pw.chromium.launch(headless=True)
+            cand_page = cand_browser.new_page(viewport=ORACLE_VIEWPORT)
 
-        verdicts.append((asset.brand, asset.asset_class, asset.asset_slug, v))
-        _log.info("[%d/%d] %s/%s/%s -> %s", i, total,
-                  asset.brand, asset.asset_class, asset.asset_slug, v.verdict)
+            for i, asset in enumerate(assets, 1):
+                cache_key = (asset.brand, asset.asset_class)
+
+                # --- candidate HTML fetch (cached) ---
+                if cache_key not in candidate_html_cache:
+                    candidate_html_cache[cache_key] = get_candidate_html(
+                        asset.brand, asset.asset_class
+                    )
+                candidate_html = candidate_html_cache[cache_key]
+
+                if candidate_html is None:
+                    v: FidelityVerdict = FidelityVerdict(
+                        verdict="candidate_missing", tier="n/a"
+                    )
+                else:
+                    # --- reference capture (one render per asset) ---
+                    ref_styles = _extract_ref_states_from_page(asset.html_path, ref_page)
+
+                    # --- candidate capture (one render per (brand, class) pair) ---
+                    if cache_key not in candidate_style_cache:
+                        candidate_style_cache[cache_key] = _extract_cand_styles_from_page(
+                            candidate_html, cand_page
+                        )
+                    cand_styles = candidate_style_cache[cache_key]
+
+                    if ref_styles is None or cand_styles is None:
+                        v = FidelityVerdict(verdict="candidate_missing", tier="n/a")
+                    else:
+                        v = compare_computed_styles(ref_styles, cand_styles)
+
+                verdicts.append((asset.brand, asset.asset_class, asset.asset_slug, v))
+                _log.info(
+                    "[%d/%d] %s/%s/%s -> %s",
+                    i, total, asset.brand, asset.asset_class, asset.asset_slug, v.verdict,
+                )
+
+            ref_browser.close()
+            cand_browser.close()
+    else:
+        # No Playwright: record every asset as candidate_missing so the map
+        # still enumerates all 955 rows and downstream tooling can diff.
+        for asset in assets:
+            verdicts.append((
+                asset.brand, asset.asset_class, asset.asset_slug,
+                FidelityVerdict(verdict="candidate_missing", tier="n/a"),
+            ))
 
     bm = build_baseline_map(verdicts)
     json_path, md_path = write_baseline_map(bm, output_dir=output_dir)
