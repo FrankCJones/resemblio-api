@@ -4,7 +4,7 @@ Revision ID: 0024_asset_components_head_html
 Revises: 0023_asset_components
 Create Date: 2026-06-23
 
-schema_version: asset_component_v2
+schema_version: asset_component_v1 (UNCHANGED - see note below)
 
 Motivation
 ----------
@@ -28,6 +28,20 @@ seeded before this migration or assets with no Google Fonts dependency.
 The empty-string default lets the application layer distinguish "no fonts"
 (correct) from NULL (data error). The indexer uses head_html when non-empty
 and falls back to the registry path for legacy empty rows.
+
+Why schema_version stays at asset_component_v1
+----------------------------------------------
+``_ASSET_COMPONENT_SCHEMA_VERSION`` in ``app/asset_versions.py`` deliberately
+remains ``"asset_component_v1"``. The 0023 contract states the version bumps
+only "if the column contract changes in a way that requires distinguishing old
+rows from new." This change does NOT require that distinction: ``head_html`` is
+an additive, optional column with a safe ``''`` default, and the indexer
+branches on ``component.head_html`` truthiness (NOT on schema_version) to pick
+the faithful-font path vs the legacy registry path. A pre-0024 row and a
+post-0024 row with no Google Fonts dependency are functionally identical
+(both carry ``head_html = ''``), so a version bump would signal a contract
+break that did not occur. The column itself is the discriminator; the version
+string is not load-bearing here.
 
 Upgrade is additive (ALTER TABLE ADD COLUMN with a server default); it does
 not lock the table for more than a metadata change on Postgres 16.

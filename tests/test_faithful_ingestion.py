@@ -222,11 +222,6 @@ _DRL_FONT_LINK = (
     'family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"/>'
 )
 
-# A trivially-detectable font alternative URL that the registry would produce
-# for any brand whose --ds-font-display resolves to a registry-known family.
-# We assert this does NOT appear when head_html is set.
-_REGISTRY_FONT_MARKER = "fonts.googleapis.com"  # both paths use Google Fonts CDN
-
 
 _BUTTONS_TOKENS: dict = {
     "bg": "#ffffff",
@@ -529,13 +524,18 @@ def test_scope_style_block_does_not_alter_property_declarations():
     assert ".rs-library-page" in scoped, (
         "Wrapper selector must appear in scoped output"
     )
-    # Bare .btn must NOT appear (would leak out of the wrapper).
-    bare_btn_matches = re.findall(r"(?<!\S)\.btn\b", scoped)
-    for match_ctx in bare_btn_matches:
-        # Allow .btn when immediately preceded by .rs-library-page
-        pass  # handled by negative lookbehind above
-    # The regex above checks that .btn always follows the wrapper.
-    # We verify the first scoped rule starts with the wrapper.
+    # Every .btn selector must be scoped: each occurrence of ".btn" in the
+    # output must be immediately preceded by the wrapper selector and a space
+    # (".rs-library-page .btn..."). A bare ".btn" at the start of a rule would
+    # leak the component's styles out of the wrapper into the page chrome.
+    for match in re.finditer(r"\.btn\b", scoped):
+        prefix = scoped[max(0, match.start() - len(".rs-library-page ")):match.start()]
+        assert prefix.endswith(".rs-library-page "), (
+            "Found a .btn selector not scoped under the wrapper at offset %d.\n"
+            "Preceding text was %r.\nScoped output: %r"
+            % (match.start(), prefix, scoped[:500])
+        )
+    # And the first rule must start with the wrapper (no leading bare selector).
     assert scoped.strip().startswith(".rs-library-page"), (
         "First rule in scoped output must start with the wrapper selector"
     )
