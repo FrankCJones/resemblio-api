@@ -613,9 +613,31 @@ def _compose_real_component(
     # into the surrounding Next.js page without this rewrite.
     scoped_styles = scope_style_block(component.component_css)
     inline_tokens_css = _emit_brand_root(tokens)
-    web_font_link = build_google_fonts_link_tag(tokens)
-    web_font_block = f"{web_font_link}\n" if web_font_link else ""
-    font_alt_root_block = build_font_alternative_root_block(tokens)
+
+    # Font loading strategy (Issue #38, AC1):
+    #
+    # When head_html is set (migration 0024+), use the DRL-curated <link> tags
+    # verbatim. This guarantees the candidate page loads exactly the same font
+    # families as the DRL reference so font-family computed styles match in the
+    # fidelity oracle. The registry-derived alternative and its :root override
+    # block are both suppressed for this path.
+    #
+    # When head_html is empty (rows seeded before migration 0024), fall back to
+    # the registry path so existing behavior is preserved for legacy data.
+    if component.head_html:
+        web_font_block = component.head_html + "\n"
+        # Suppress the secondary :root override that redirects --ds-font-* vars
+        # to the registry alternative. For real components, those vars already
+        # resolve to the brand-supplied families (which the browser then falls
+        # through to the Google Font loaded via head_html). Applying the override
+        # would change font-family away from what the DRL reference shows.
+        font_alt_root_block = ""
+    else:
+        # Legacy fallback: derive font loading from the brand font registry.
+        web_font_link = build_google_fonts_link_tag(tokens)
+        web_font_block = f"{web_font_link}\n" if web_font_link else ""
+        font_alt_root_block = build_font_alternative_root_block(tokens)
+
     disclosure_payload = build_font_disclosure_payload(tokens)
     disclosure_aside = render_font_disclosure_html(
         disclosure_payload,

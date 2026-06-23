@@ -192,6 +192,13 @@ class AssetComponentSpec:
         List of UI state names the markup demonstrates, e.g.
         ``["rest", "hover", "focus", "disabled"]``. Used by the indexer
         to annotate which interaction states are available.
+    head_html
+        Raw ``<link rel="stylesheet">`` tags extracted from the DRL
+        ``asset.html`` ``<head>`` (Google Fonts CDN only; preconnect and
+        local resource links excluded). Defaults to empty string for assets
+        with no Google Fonts dependency or rows seeded before migration 0024.
+        ``_compose_real_component`` uses this when non-empty so the candidate
+        page loads the same fonts as the DRL reference (Issue #38).
     """
 
     fragment_key: str
@@ -199,6 +206,7 @@ class AssetComponentSpec:
     component_css: str
     source_asset_path: str
     states_present: list[str]
+    head_html: str = ""
 
 
 def insert_asset_component(
@@ -250,6 +258,7 @@ def insert_asset_component(
         existing.component_css = spec.component_css
         existing.source_asset_path = spec.source_asset_path
         existing.states_present = spec.states_present
+        existing.head_html = spec.head_html
         session.flush()
         return existing
 
@@ -260,6 +269,7 @@ def insert_asset_component(
         component_css=spec.component_css,
         source_asset_path=spec.source_asset_path,
         states_present=spec.states_present,
+        head_html=spec.head_html,
         schema_version=_ASSET_COMPONENT_SCHEMA_VERSION,
     )
     session.add(row)
