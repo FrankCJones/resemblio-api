@@ -203,6 +203,16 @@ def sha256_hex(path: pathlib.Path) -> str:
     return h.hexdigest()
 
 
+def read_lf_bytes(path: pathlib.Path) -> bytes:
+    """Return file bytes with CRLF normalised to LF.
+
+    The vendored corpus is committed with LF endings via ``.gitattributes``.
+    Normalising before writes keeps Windows sync runs byte-identical to CI
+    checkouts, which is required because ``manifest.json`` stores raw file
+    hashes.
+    """
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
 def build_manifest(
     plan: list[SyncFile],
     corpus_meta: dict,
@@ -281,9 +291,9 @@ def execute_sync(
 ) -> dict:
     """Copy each SyncFile from src to dst, skipping identical files.
 
-    Idempotency: if dst already exists and is byte-identical to src, the
-    file is counted as skipped (no write). This keeps git diff clean on
-    re-runs and preserves the original mtime.
+    Idempotency: if dst already exists and is byte-identical to the LF-normalised
+    source bytes, the file is counted as skipped (no write). This keeps git diff
+    clean on re-runs and preserves the original mtime.
 
     Args:
         plan: SyncFile pairs from build_corpus_plan.
@@ -295,7 +305,8 @@ def execute_sync(
     copied = 0
     skipped = 0
     for item in plan:
-        if item.dst.exists() and item.dst.read_bytes() == item.src.read_bytes():
+        src_bytes = read_lf_bytes(item.src)
+        if item.dst.exists() and item.dst.read_bytes() == src_bytes:
             _log.debug("skip (identical): %s", item.rel)
             skipped += 1
             continue
@@ -304,7 +315,8 @@ def execute_sync(
             copied += 1
             continue
         item.dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(item.src, item.dst)
+        item.dst.write_bytes(src_bytes)
+        shutil.copystat(item.src, item.dst)
         _log.debug("copied: %s", item.rel)
         copied += 1
     return {"copied": copied, "skipped": skipped, "total": len(plan)}
@@ -334,7 +346,7 @@ def write_version(
         f"CORPUS_GENERATED: {corpus_generated}\n"
     )
     version_path = vendored_root / "VERSION"
-    version_path.write_text(content, encoding="utf-8")
+    version_path.write_bytes(content.encode("utf-8"))
     _log.info("wrote VERSION (vendored_at=%s)", vendored_at)
 
 
@@ -349,10 +361,8 @@ def write_manifest(vendored_root: pathlib.Path, manifest: dict) -> None:
         manifest: Dict from build_manifest.
     """
     manifest_path = vendored_root / "manifest.json"
-    manifest_path.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    content = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
+    manifest_path.write_bytes(content.encode("utf-8"))
     _log.info("wrote manifest.json (%d files, %d assets)", manifest["file_count"], manifest["asset_count"])
 
 
