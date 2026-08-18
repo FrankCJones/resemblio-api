@@ -390,6 +390,37 @@ def test_brand_category_canonical_happy_path(
     assert data["is_canonical"] is True
 
 
+@pytest.mark.parametrize(
+    ("request_slug", "canonical_slug", "marker_label"),
+    [
+        ("alphabets", "alphabet", "Alphabet"),
+        ("pricing-tables", "pricing-table", "Pricing Table"),
+    ],
+)
+def test_brand_category_canonical_accepts_drl_class_alias(
+    client: TestClient, session: Session,
+    request_slug: str, canonical_slug: str, marker_label: str,
+) -> None:
+    """DRL corpus class aliases resolve to the canonical public category row."""
+    av = _make_asset_version(session, url="https://a24.example/",
+                             version_label="2026-06")
+    marker_html = f'<article data-rs-source="drl-component">{marker_label}</article>'
+    _make_page(
+        session, av,
+        brand_slug="a24",
+        category_slug=canonical_slug,
+        is_canonical=True,
+        rendered_html=marker_html,
+    )
+    session.commit()
+
+    resp = client.get(f"/v1/library/brands/a24/categories/{request_slug}")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["category_slug"] == request_slug
+    assert data["rendered_html"] == marker_html
+
+
 def test_brand_category_canonical_404_on_unknown_category(
     client: TestClient, session: Session
 ) -> None:

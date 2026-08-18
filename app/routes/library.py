@@ -64,6 +64,7 @@ from starlette.responses import JSONResponse
 from app.brand_names import pretty_brand_name
 from app.constants import SCHEMA_V1_1
 from app.db import get_db
+from app.library_category_aliases import category_lookup_slugs
 from app.missing_data_notice import hub_capture_signal_from_captured_groups
 from app.models import AssetVersion, LibraryPage
 
@@ -932,17 +933,23 @@ def get_brand_category_canonical(
     """Return the canonical (latest-version) page for one category."""
     _validate_brand_slug(brand_slug)
     _validate_category_slug(category_slug)
-    stmt = (
-        select(LibraryPage, AssetVersion)
-        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.category_slug == category_slug)
-        .where(LibraryPage.is_canonical.is_(True))
-        .where(AssetVersion.is_public.is_(True))
-        .order_by(AssetVersion.fetched_at.desc())
-        .limit(1)
-    )
-    row = session.execute(stmt).first()
+    row = None
+    matched_category_slug = category_slug
+    for lookup_slug in category_lookup_slugs(category_slug):
+        stmt = (
+            select(LibraryPage, AssetVersion)
+            .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
+            .where(LibraryPage.brand_slug == brand_slug)
+            .where(LibraryPage.category_slug == lookup_slug)
+            .where(LibraryPage.is_canonical.is_(True))
+            .where(AssetVersion.is_public.is_(True))
+            .order_by(AssetVersion.fetched_at.desc())
+            .limit(1)
+        )
+        row = session.execute(stmt).first()
+        if row is not None:
+            matched_category_slug = lookup_slug
+            break
     if row is None:
         raise HTTPException(status_code=404, detail="category_not_found")
     page, asset_version = row
@@ -950,7 +957,7 @@ def get_brand_category_canonical(
         page, asset_version,
         category_slug=category_slug, version_label=None, asset_id=None,
         is_canonical=True, is_version_snapshot=False,
-        related=_related_for(session, brand_slug, exclude_category=category_slug),
+        related=_related_for(session, brand_slug, exclude_category=matched_category_slug),
     )
     return _json(dict(data), cache=CACHE_PAGE)
 
