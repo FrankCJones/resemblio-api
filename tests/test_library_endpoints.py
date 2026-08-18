@@ -20,6 +20,7 @@ Coverage:
 """
 from __future__ import annotations
 
+import json
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -479,6 +480,53 @@ def test_sitemap_omits_non_public_rows(
     assert not any("hidden-example" in p for p in paths)
 
 
+
+
+def test_sitemap_omits_internal_version_label_paths(
+    client: TestClient, session: Session
+) -> None:
+    """Sitemap excludes build-internal version routes but keeps brand/category routes."""
+    av = _make_asset_version(
+        session,
+        url="resemblio://seed/drl_v1/a24/buttons/mined",
+        version_label="drl-mined-from-a24-buttons-001",
+    )
+    _make_page(session, av, brand_slug="a24", category_slug="buttons", is_canonical=True)
+    session.commit()
+
+    resp = client.get("/v1/library/sitemap")
+    assert resp.status_code == 200
+    paths = {row["path"] for row in resp.json()["data"]["entries"]}
+    assert "/library/a24/" in paths
+    assert "/library/a24/buttons/" in paths
+    assert not any("drl-mined-from" in p for p in paths)
+
+
+def test_public_library_json_hides_seed_urns(
+    client: TestClient, session: Session
+) -> None:
+    """Public API payloads must not expose internal resemblio seed URNs."""
+    av = _make_asset_version(
+        session,
+        url="resemblio://seed/drl_v1/a24/buttons/mined",
+        version_label="drl-mined-from-a24-buttons-001",
+    )
+    _make_page(session, av, brand_slug="a24", category_slug="buttons", is_canonical=True)
+    session.commit()
+
+    paths = (
+        "/v1/library/brands",
+        "/v1/library/brands/a24",
+        "/v1/library/brands/a24/versions/drl-mined-from-a24-buttons-001",
+        "/v1/library/brands/a24/categories/buttons",
+        "/v1/library/brands/a24/categories/buttons/drl-mined-from-a24-buttons-001",
+        "/v1/library/brands/a24/categories/buttons/drl-mined-from-a24-buttons-001/primary",
+    )
+    for path in paths:
+        resp = client.get(path)
+        assert resp.status_code == 200, f"{path} expected 200, got {resp.status_code}"
+        body = json.dumps(resp.json())
+        assert "resemblio://" not in body
 # ----------------------------------------------------------------------
 # Auth posture
 # ----------------------------------------------------------------------
@@ -564,6 +612,30 @@ def test_related_excludes_current_category(
     assert any("/palette/" in h for h in hrefs) or any("/cards/" in h for h in hrefs)
 
 
+
+
+def test_related_filters_drl_mined_from_versions(
+    client: TestClient, session: Session
+) -> None:
+    """Related chips hide DRL-mined internal version labels."""
+    av_public = _make_asset_version(
+        session, url="https://a24films.com/", version_label="2026-06"
+    )
+    _make_page(session, av_public, brand_slug="a24", category_slug="buttons", is_canonical=True)
+    av_internal = _make_asset_version(
+        session,
+        url="resemblio://seed/drl_v1/a24/cards/mined",
+        version_label="drl-mined-from-a24-cards-001",
+    )
+    _make_page(session, av_internal, brand_slug="a24", category_slug="cards", is_canonical=True)
+    session.commit()
+
+    resp = client.get("/v1/library/brands/a24")
+    assert resp.status_code == 200
+    related = resp.json()["data"]["related"]
+    rendered = json.dumps(related)
+    assert "drl-mined-from" not in rendered
+    assert any(item["href"] == "/library/a24/2026-06/" for item in related)
 # ----------------------------------------------------------------------
 # Library v2 manifest fields - Phase 4 shape contract
 # ----------------------------------------------------------------------

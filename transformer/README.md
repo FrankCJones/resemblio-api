@@ -12,19 +12,20 @@ This is a **vendored copy** of the workspace-level `code/transformer/` package, 
 
 ## What this module does
 
-One-shot module that reads from the Design Reference Library (`projects/Design Reference Library/`) and produces trademark-stripped, brand-faithful entries for Resemblio's internal corpus. The output keeps the design language intact (colours, type, spacing, scale, component patterns) and strips only the trademark-bearing surface (wordmarks, monograms, logos, brand-name attribution). Inspirado, no copiado.
+One-shot module that reads from the Design Reference Library (`projects/Design Reference Library/`) and produces design-preserving, identity-scrubbed entries for Resemblio's internal corpus. The output keeps the design language intact: colors, type, spacing, scale, layout rhythm, component styling, motion, and interaction states. It removes only the protected identity layer: wordmarks, monograms, logos, trademark uses inside assets, copyrighted copy, proprietary imagery, unsafe people photos, and affiliation claims. Inspirado, no copiado.
 
 **One-way only.** Never writes back to the DRL.
 
-**Trademark-strip operations:**
+**Identity-scrub operations:**
 
-1. Replace source brand name with a neutral slug for the public-facing identifier (anthropic to warm-paper-editorial)
+1. Keep factual source attribution available for public page chrome and metadata, such as "inspired by Anthropic"
 2. Strip wordmarks, monograms, and logos from the bundle (replace with generic placeholders)
 3. Replace brand-specific copy in HTML with lorem ipsum
-4. Rename CSS classes from brand-specific to generic patterns
-5. Move source attribution into private metadata (not in deliverable)
+4. Rename CSS classes from trademark-bearing names to generic patterns when the class itself carries protected identity
+5. Preserve private source details for audit and takedown handling while exposing only safe, non-affiliating public attribution
 6. Re-render the four-file bundle (`asset.html`, `tokens.css`, `meta.json`, `README.md`) per Resemblio's schema
 
-The colours, type, spacing, weights, and component patterns themselves are preserved as the brand-faithful starting point Resemblio's public framing promises.
+The colors, type, spacing, weights, layout patterns, and component behaviors themselves are preserved as the design-faithful starting point Resemblio's public framing promises.
 
 **Run cadence:** once at v1 setup to populate Resemblio's internal corpus with the 19 DRL systems. Subsequent extractions originate inside Resemblio itself.
+

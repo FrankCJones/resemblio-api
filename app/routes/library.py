@@ -294,6 +294,7 @@ def _brand_display(brand_slug: str) -> str:
 # explicit ISO-date-only labels) is caught at the same edge.
 _INTERNAL_VERSION_LABEL_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^drl-bootstrap"),
+    re.compile(r"^drl-mined-from"),
     re.compile(r"^drl-rebuild"),
     re.compile(r"^ci-"),
     re.compile(r"^\d{4}-\d{2}-\d{2}$"),
@@ -361,6 +362,20 @@ def _source_url_for_brand(session: Session, brand_slug: str) -> str | None:
     )
     return session.execute(stmt).scalar_one_or_none()
 
+
+
+def _public_source_url(raw_source_url: str | None, brand_slug: str) -> str:
+    """Return a public-safe ``source_url`` for library API responses.
+
+    Real http(s) source URLs remain intact so the public surface can credit
+    where the design came from. Internal seed URNs such as
+    ``resemblio://seed/...`` are build provenance, not public attribution, so
+    they collapse to the same display-safe fallback the web layer already uses.
+    """
+    if raw_source_url and re.match(r"^https?://", raw_source_url, re.IGNORECASE):
+        return raw_source_url
+    pretty = _brand_display(brand_slug)
+    return f"https://{pretty}"
 
 class _BrandHubMeta(TypedDict):
     """Aggregated brand metadata for hub card rendering (internal)."""
@@ -725,7 +740,7 @@ def _page_to_data(
     payload = LibraryPageData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
         brand_slug=page.brand_slug,
-        source_url=asset_version.url,
+        source_url=_public_source_url(asset_version.url, page.brand_slug),
         category_slug=category_slug,
         category_label=_title_case(category_slug) if category_slug else None,
         category_kind=_category_kind(category_slug) if category_slug else None,
@@ -810,7 +825,7 @@ def list_brands(
         meta = _hub_meta_for_brand(session, brand_slug)
         featured.append(HubFeaturedRow(
             brand_slug=brand_slug,
-            source_url=url,
+            source_url=_public_source_url(url, brand_slug),
             category_count=int(category_count),
             palette=meta["palette"],
             display_font=meta["display_font"],
@@ -1055,7 +1070,7 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
         ts = _isoformat(fetched_at)
         _add(f"/library/{brand_slug}/", ts)
         _add(f"/library/{brand_slug}/{category_slug}/", ts)
-        if version_label:
+        if version_label and not _is_internal_version_label(version_label):
             _add(f"/library/{brand_slug}/{version_label}/", ts)
             _add(f"/library/{brand_slug}/{category_slug}/{version_label}/", ts)
     payload = {
