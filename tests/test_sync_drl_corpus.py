@@ -29,7 +29,9 @@ import pytest
 from scripts.sync_drl_corpus import (
     SyncFile,
     build_corpus_plan,
+    execute_sync,
     build_manifest,
+    read_lf_bytes,
     sha256_hex,
     verify_drl_untouched,
 )
@@ -125,6 +127,25 @@ def test_sha256_hex_changes_when_content_changes(tmp_path: pathlib.Path) -> None
     assert sha256_hex(a) != sha256_hex(b)
 
 
+
+def test_read_lf_bytes_normalises_crlf(tmp_path: pathlib.Path) -> None:
+    """read_lf_bytes must make Windows and CI hash the same content."""
+    f = tmp_path / "sample.css"
+    f.write_bytes(b"a\r\nb\r\n")
+    assert read_lf_bytes(f) == b"a\nb\n"
+
+
+def test_execute_sync_writes_lf_bytes(tmp_path: pathlib.Path) -> None:
+    """execute_sync must write vendored text files with LF endings."""
+    src = tmp_path / "src.css"
+    dst = tmp_path / "vendored" / "src.css"
+    src.write_bytes(b":root {\r\n  --x: 1;\r\n}\r\n")
+    plan = [SyncFile(src=src, dst=dst, rel="src.css")]
+
+    summary = execute_sync(plan)
+
+    assert summary == {"copied": 1, "skipped": 0, "total": 1}
+    assert dst.read_bytes() == b":root {\n  --x: 1;\n}\n"
 # ---------------------------------------------------------------------------
 # build_corpus_plan
 # ---------------------------------------------------------------------------
