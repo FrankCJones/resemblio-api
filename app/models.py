@@ -569,6 +569,12 @@ class AssetComponent(Base):
     # ["rest", "hover", "focus", "disabled"]. Used by the indexer to
     # annotate which states are present in the stored component.
     states_present: Mapped[list[str]] = mapped_column(JsonType, nullable=False)
+    # Raw <link rel="stylesheet"> tags extracted from the DRL asset.html <head>
+    # (Google Fonts CDN only; preconnect and local resource links excluded).
+    # Empty string for rows seeded before migration 0024 or assets with no
+    # Google Fonts dependency. _compose_real_component uses this when non-empty
+    # so the candidate loads the same fonts as the DRL reference (Issue #38).
+    head_html: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
     schema_version: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()

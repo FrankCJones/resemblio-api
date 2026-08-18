@@ -180,6 +180,11 @@ _BODY_BLOCK_RE = re.compile(r"<body[^>]*>(.*?)</body>", re.DOTALL | re.IGNORECAS
 _HEAD_BLOCK_RE = re.compile(r"<head[^>]*>.*?</head>", re.DOTALL | re.IGNORECASE)
 """Matches the entire ``<head>`` element (used for the no-body fallback)."""
 
+# Matches any <link> element (self-closing or not).
+# [^>]* stops at the closing >, which handles <link ... /> and <link ...>.
+_LINK_TAG_RE = re.compile(r"<link\b[^>]*>", re.IGNORECASE)
+"""Matches every ``<link>`` element in an HTML document."""
+
 
 class DrlAssetDict(TypedDict, total=False):
     """One ``assets[*]`` entry inside ``corpus.json``."""
@@ -421,6 +426,52 @@ def load_asset_html(drl_root: Path, asset: DrlAssetDict) -> str | None:
     return html_path.read_text(encoding="utf-8")
 
 
+def extract_drl_head_font_link_tags(asset_html: str) -> str:
+    """Return Google Fonts stylesheet ``<link>`` tags from a DRL ``asset.html`` document.
+
+    DRL assets link Google Fonts via ``<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=...">`` in the ``<head>``.
+    These tags are the canonical font-loading declarations for the asset:
+    when the browser loads the DRL reference, it fetches exactly these font
+    families. Carrying them verbatim into the candidate library page guarantees
+    the same fonts load, so computed ``font-family`` matches the DRL reference
+    in the fidelity oracle (Issue #38, AC1).
+
+    Only ``rel="stylesheet"`` links pointing to ``fonts.googleapis.com`` are
+    included. Preconnect hints (``<link rel="preconnect"
+    href="https://fonts.googleapis.com">``), local stylesheets (``tokens.css``),
+    and preload links are all excluded.
+
+    Args:
+        asset_html: Full text of a DRL ``asset.html`` file. May be empty.
+
+    Returns:
+        Newline-joined raw ``<link>`` tags, or empty string when no matching
+        tags are found. The returned string is suitable for verbatim inclusion
+        in the ``<article>`` wrapper rendered by ``_compose_real_component``.
+
+    Note:
+        The DRL is read-only throughout. This function never writes to any
+        DRL path.
+    """
+    if not asset_html:
+        return ""
+
+    font_links: list[str] = []
+    for match in _LINK_TAG_RE.finditer(asset_html):
+        tag = match.group(0)
+        tag_lower = tag.lower()
+        # Filter to stylesheet links only (exclude preconnect, preload, etc.)
+        if 'rel="stylesheet"' not in tag_lower and "rel='stylesheet'" not in tag_lower:
+            continue
+        # Filter to Google Fonts CDN (exclude local tokens.css and other links)
+        if "fonts.googleapis.com" not in tag_lower:
+            continue
+        font_links.append(tag)
+
+    return "\n".join(font_links)
+
+
 # --- Bundle assembly (mirrors ``app.extractor_bridge.bundle_from_token_set``) -
 
 def build_bundle(
@@ -591,6 +642,7 @@ def upsert_extraction(
             component_css = extract_component_css(html)
             component_html = extract_component_html(html)
             states = derive_states_present(component_css)
+            head_html = extract_drl_head_font_link_tags(html)
             spec = AssetComponentSpec(
                 fragment_key="default",
                 component_html=component_html,
@@ -598,6 +650,7 @@ def upsert_extraction(
                 # DRL-relative path only; never an absolute OS path.
                 source_asset_path=str(asset.get("path", "")),
                 states_present=states,
+                head_html=head_html,
             )
             insert_asset_component(session, asset_version.id, spec)
 
