@@ -9,7 +9,8 @@ Operational and one-shot scripts for the Resemblio API. Every script is run via 
 | `bootstrap_drl_library.py` | Discover every brand under `_vendored/drl/drl/_extractions/` and dispatch per-brand `seed_from_drl.apply_seed` runs. Anchors brand discovery on the DRL `_extractions/` directory. | yes (`content_hash` dedup) | `--apply` writes; default is dry-run |
 | `seed_from_drl.py` | Bulk-seed `extractions` + `asset_versions` rows from the Design Reference Library `corpus.json`. Supports `--source-system <slug>` to scope to one brand. | yes | `--apply` writes; default prints plan |
 | `verify_drl_bootstrap.py` | Post-bootstrap probe: assert every expected brand has rows + canonical `library_pages`. Read-only. | n/a | always read-only |
-| `refresh_brand_library.py` | Drop + bootstrap + drain one (or every) brand's library pages after a snapshot refresh. | yes | `--apply` writes |
+| `refresh_brand_library.py` | Drop + bootstrap + drain one (or every) brand's library pages after a snapshot refresh. | yes | `--apply` writes |
+| reconcile_library_alias_canonicals.py | Dry-run classify and optionally flip stale library canonical flags when generic canonical rows mask marker-backed component rows. | yes | apply writes; default dry-run |
 | `capture_all_button_snapshots.py` | Capture R3.1 computed-style snapshots for every DRL brand into `_vendored/drl/drl/_data/computed_styles/<slug>.json`. Live-browser pass via Playwright. | yes (overwrite per brand) | `--apply` writes |
 | `full_corpus_refresh.sh` | End-to-end orchestrator: snapshots all brands then drop+bootstrap+drain. Closes the Apple-only-snapshot gap from OPS 8.11. | yes | always live (no dry-run mode) |
 | `backfill_stripe_customers.py` | One-time reconciliation: ensure every prod `users` row has a Stripe customer in both LIVE + TEST modes. Read-then-conditionally-write. | yes | `--apply` writes |
