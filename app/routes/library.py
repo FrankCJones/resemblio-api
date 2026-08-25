@@ -64,7 +64,10 @@ from starlette.responses import JSONResponse
 from app.brand_names import pretty_brand_name
 from app.constants import SCHEMA_V1_1
 from app.db import get_db
-from app.library_category_aliases import category_lookup_slugs
+from app.library_category_aliases import (
+    canonical_public_category_slug,
+    category_lookup_slugs,
+)
 from app.missing_data_notice import hub_capture_signal_from_captured_groups
 from app.models import AssetVersion, LibraryPage
 
@@ -765,6 +768,37 @@ def _page_to_data(
     return payload
 
 
+
+def _category_version_lookup(
+    session: Session,
+    *,
+    brand_slug: str,
+    category_slug: str,
+    version_label: str,
+) -> tuple[LibraryPage, AssetVersion, str] | None:
+    """Return a category-version row, accepting DRL class aliases.
+
+    Category canonical lookup already accepts old DRL corpus class slugs such
+    as heroes for the canonical hero row. Version-scoped and asset-scoped
+    routes need the same fallback so Phase C can safely remove or reconcile
+    stale plural rows without creating 404s for old oracle-style URLs.
+    """
+    for lookup_slug in category_lookup_slugs(category_slug):
+        stmt = (
+            select(LibraryPage, AssetVersion)
+            .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
+            .where(LibraryPage.brand_slug == brand_slug)
+            .where(LibraryPage.category_slug == lookup_slug)
+            .where(LibraryPage.version_label == version_label)
+            .where(AssetVersion.is_public.is_(True))
+            .limit(1)
+        )
+        row = session.execute(stmt).first()
+        if row is not None:
+            page, asset_version = row
+            return page, asset_version, lookup_slug
+    return None
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -975,27 +1009,22 @@ def get_brand_category_version(
     _validate_brand_slug(brand_slug)
     _validate_category_slug(category_slug)
     _validate_version_label(version_label)
-    stmt = (
-        select(LibraryPage, AssetVersion)
-        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.category_slug == category_slug)
-        .where(LibraryPage.version_label == version_label)
-        .where(AssetVersion.is_public.is_(True))
-        .limit(1)
+    row = _category_version_lookup(
+        session,
+        brand_slug=brand_slug,
+        category_slug=category_slug,
+        version_label=version_label,
     )
-    row = session.execute(stmt).first()
     if row is None:
         raise HTTPException(status_code=404, detail="category_version_not_found")
-    page, asset_version = row
+    page, asset_version, matched_category_slug = row
     data = _page_to_data(
         page, asset_version,
         category_slug=category_slug, version_label=version_label, asset_id=None,
         is_canonical=False, is_version_snapshot=True,
-        related=_related_for(session, brand_slug, exclude_category=category_slug),
+        related=_related_for(session, brand_slug, exclude_category=matched_category_slug),
     )
     return _json(dict(data), cache=CACHE_PAGE)
-
 
 @router.get(
     "/library/brands/{brand_slug}/categories/{category_slug}/{version_label}/{asset_id}"
@@ -1012,31 +1041,26 @@ def get_brand_category_version_asset(
     _validate_category_slug(category_slug)
     _validate_version_label(version_label)
     _validate_asset_id(asset_id)
-    stmt = (
-        select(LibraryPage, AssetVersion)
-        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
-        .where(LibraryPage.brand_slug == brand_slug)
-        .where(LibraryPage.category_slug == category_slug)
-        .where(LibraryPage.version_label == version_label)
-        .where(AssetVersion.is_public.is_(True))
-        .limit(1)
+    row = _category_version_lookup(
+        session,
+        brand_slug=brand_slug,
+        category_slug=category_slug,
+        version_label=version_label,
     )
-    row = session.execute(stmt).first()
     if row is None:
         raise HTTPException(status_code=404, detail="asset_not_found")
-    page, asset_version = row
+    page, asset_version, matched_category_slug = row
     # The page row carries an aggregate compose render rather than per-asset
-    # markup. The mock returns a single ``LibraryPageData`` whose asset_id
-    # field is populated and rendered_html is the same compose output - we
+    # markup. The mock returns a single LibraryPageData whose asset_id
+    # field is populated and rendered_html is the same compose output. We
     # mirror that contract here so the route tree renders end-to-end.
     data = _page_to_data(
         page, asset_version,
         category_slug=category_slug, version_label=version_label, asset_id=asset_id,
         is_canonical=False, is_version_snapshot=True,
-        related=_related_for(session, brand_slug, exclude_category=category_slug),
+        related=_related_for(session, brand_slug, exclude_category=matched_category_slug),
     )
     return _json(dict(data), cache=CACHE_PAGE)
-
 
 @router.get("/library/sitemap")
 def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
@@ -1075,11 +1099,14 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
 
     for brand_slug, category_slug, version_label, fetched_at in rows:
         ts = _isoformat(fetched_at)
+        canonical_category_slug = canonical_public_category_slug(category_slug)
         _add(f"/library/{brand_slug}/", ts)
-        _add(f"/library/{brand_slug}/{category_slug}/", ts)
+        if canonical_category_slug is None:
+            continue
+        _add(f"/library/{brand_slug}/{canonical_category_slug}/", ts)
         if version_label and not _is_internal_version_label(version_label):
             _add(f"/library/{brand_slug}/{version_label}/", ts)
-            _add(f"/library/{brand_slug}/{category_slug}/{version_label}/", ts)
+            _add(f"/library/{brand_slug}/{canonical_category_slug}/{version_label}/", ts)
     payload = {
         "schema_version": LIBRARY_DATA_SCHEMA_VERSION,
         "entries": entries,

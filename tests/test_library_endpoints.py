@@ -421,6 +421,66 @@ def test_brand_category_canonical_accepts_drl_class_alias(
     assert data["rendered_html"] == marker_html
 
 
+
+@pytest.mark.parametrize(
+    ("request_slug", "canonical_slug", "marker_label"),
+    [
+        ("heroes", "hero", "Hero"),
+        ("pricing-tables", "pricing-table", "Pricing Table"),
+    ],
+)
+def test_brand_category_version_accepts_drl_class_alias(
+    client: TestClient, session: Session,
+    request_slug: str, canonical_slug: str, marker_label: str,
+) -> None:
+    """Version-scoped DRL corpus class aliases resolve to canonical rows."""
+    av = _make_asset_version(session, url="https://a24.example/",
+                             version_label="2026-06")
+    marker_html = f"<article data-rs-source=\"drl-component\">{marker_label}</article>"
+    _make_page(
+        session, av,
+        brand_slug="a24",
+        category_slug=canonical_slug,
+        is_canonical=True,
+        rendered_html=marker_html,
+    )
+    session.commit()
+
+    resp = client.get(f"/v1/library/brands/a24/categories/{request_slug}/2026-06")
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["category_slug"] == request_slug
+    assert data["version_label"] == "2026-06"
+    assert data["rendered_html"] == marker_html
+
+
+def test_brand_category_version_asset_accepts_drl_class_alias(
+    client: TestClient, session: Session,
+) -> None:
+    """Asset-scoped DRL corpus class aliases resolve to canonical rows."""
+    av = _make_asset_version(session, url="https://a24.example/",
+                             version_label="2026-06")
+    marker_html = "<article data-rs-source=\"drl-component\">Hero</article>"
+    _make_page(
+        session, av,
+        brand_slug="a24",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html=marker_html,
+    )
+    session.commit()
+
+    resp = client.get(
+        "/v1/library/brands/a24/categories/heroes/2026-06/hero-primary"
+    )
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["asset_id"] == "hero-primary"
+    assert data["category_slug"] == "heroes"
+    assert data["version_label"] == "2026-06"
+    assert data["rendered_html"] == marker_html
+
+
 def test_brand_category_canonical_404_on_unknown_category(
     client: TestClient, session: Session
 ) -> None:
@@ -512,6 +572,25 @@ def test_sitemap_omits_non_public_rows(
 
 
 
+
+
+def test_sitemap_canonicalizes_drl_category_alias_paths(
+    client: TestClient, session: Session
+) -> None:
+    """Sitemap emits canonical public category URLs for DRL class aliases."""
+    av = _make_asset_version(session, url="https://a24.example/",
+                             version_label="2026-06")
+    _make_page(session, av, brand_slug="a24", category_slug="hero", is_canonical=True)
+    _make_page(session, av, brand_slug="a24", category_slug="heroes", is_canonical=False)
+    session.commit()
+
+    resp = client.get("/v1/library/sitemap")
+    assert resp.status_code == 200
+    paths = {row["path"] for row in resp.json()["data"]["entries"]}
+    assert "/library/a24/hero/" in paths
+    assert "/library/a24/hero/2026-06/" in paths
+    assert "/library/a24/heroes/" not in paths
+    assert "/library/a24/heroes/2026-06/" not in paths
 
 def test_sitemap_omits_internal_version_label_paths(
     client: TestClient, session: Session
