@@ -120,12 +120,13 @@ _A24_TOKENS: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 
-def _make_a24_asset_version(session: Session) -> AssetVersion:
+def _make_a24_asset_version(session: Session, *, asset_class: str = "buttons") -> AssetVersion:
     """Insert an AssetVersion row representing the a24/buttons DRL asset.
 
-    The ``dtcg_json["class"]`` value ``"buttons"`` is the key that tells the
+    The ``dtcg_json["class"]`` value is the key that tells the
     indexer to use the real-component compose path when an asset_components
-    row exists for this version.
+    row exists for this version. Tests can pass a corpus class alias such as
+    ``"alphabets"`` to prove alias classes still hit the public template row.
 
     No Extraction row is created, so the quality gate is bypassed (seed
     rows with no scored extraction are treated as curatorially trusted).
@@ -133,7 +134,7 @@ def _make_a24_asset_version(session: Session) -> AssetVersion:
     dtcg: dict = {
         "schema_version": SCHEMA_V1,
         "slug": "a24",
-        "class": "buttons",
+        "class": asset_class,
         "tokens": dict(_A24_TOKENS),
     }
     av = AssetVersion(
@@ -158,6 +159,19 @@ def _fetch_buttons_page(session: Session, asset_version_id: int) -> LibraryPage 
         .where(LibraryPage.category_slug == "buttons")
     ).scalar_one_or_none()
 
+
+
+def _fetch_category_page(
+    session: Session,
+    asset_version_id: int,
+    category_slug: str,
+) -> LibraryPage | None:
+    """Return the library_pages row for an asset/category pair, or None."""
+    return session.execute(
+        select(LibraryPage)
+        .where(LibraryPage.asset_version_id == asset_version_id)
+        .where(LibraryPage.category_slug == category_slug)
+    ).scalar_one_or_none()
 
 # ---------------------------------------------------------------------------
 # Extraction-helper unit tests (validate the DRL helpers on the real asset)
@@ -357,3 +371,73 @@ def test_a24_buttons_pipeline_no_generic_chiclet_even_without_explicit_component
         "generic .b-btn chiclet appeared on a page with no asset_components row; "
         "the honest-gap path must return empty HTML, not a template stub"
     )
+
+
+def test_drl_class_alias_uses_real_component_path(session: Session) -> None:
+    """A plural DRL class such as ``alphabets`` renders through ``alphabet``."""
+    asset_html = _load_a24_asset_html()
+    component_css = extract_component_css(asset_html)
+    component_html = extract_component_html(asset_html)
+    states = derive_states_present(component_css)
+    av = _make_a24_asset_version(session, asset_class="alphabets")
+    insert_asset_component(
+        session,
+        av.id,
+        AssetComponentSpec(
+            fragment_key="default",
+            component_html=component_html,
+            component_css=component_css,
+            source_asset_path="assets/alphabets/a24",
+            states_present=states,
+        ),
+    )
+    session.commit()
+
+    job = enqueue_for_asset_version(session, av.id)
+    assert job is not None
+    session.commit()
+    drain_pending(session)
+
+    page = _fetch_category_page(session, av.id, "alphabet")
+    assert page is not None
+    html = page.rendered_html
+    assert 'data-rs-source="drl-component"' in html
+    assert ".b-btn" not in html
+
+
+def test_reconcile_prefers_real_component_over_newer_generic_page(
+    session: Session,
+) -> None:
+    """Canonical selection keeps a marker page ahead of newer generic HTML."""
+    old_real = _make_a24_asset_version(session)
+    old_real.fetched_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    real_page = LibraryPage(
+        asset_version_id=old_real.id,
+        category_slug="buttons",
+        brand_slug="a24-example",
+        version_label=old_real.version_label,
+        rendered_html='<article data-rs-source="drl-component">real</article>',
+        metadata_json={},
+        is_canonical=False,
+    )
+    newer_generic = _make_a24_asset_version(session)
+    newer_generic.fetched_at = datetime(2026, 2, 1, tzinfo=timezone.utc)
+    generic_page = LibraryPage(
+        asset_version_id=newer_generic.id,
+        category_slug="buttons",
+        brand_slug="a24-example",
+        version_label=newer_generic.version_label,
+        rendered_html='<article class="rs-library-page">generic</article>',
+        metadata_json={},
+        is_canonical=False,
+    )
+    session.add_all([real_page, generic_page])
+    session.commit()
+
+    from app.library_indexer import _reconcile_canonical
+
+    _reconcile_canonical(session, newer_generic)
+    session.flush()
+
+    assert real_page.is_canonical is True
+    assert generic_page.is_canonical is False

@@ -99,6 +99,10 @@ from app import extractor_bridge as _extractor_bridge  # noqa: F401
 from app.asset_versions import get_asset_component
 from app.brand_capture_manifest import BrandCaptureManifest, build_capture_manifest
 from app.brand_names import pretty_brand_name
+from app.library_category_aliases import (
+    DRL_COMPONENT_MARKER,
+    canonical_public_category_slug,
+)
 from app.library_render_policy import evaluate_category_render
 from app.library_style_scope import scope_style_block
 from app.missing_data_notice import build_hub_capture_signal, build_missing_notice
@@ -648,7 +652,7 @@ def _compose_real_component(
     # assert on this attribute. Do not add it to _compose_one_page output.
     fragment = (
         f'<article class="rs-library-page" data-rs-class="{class_name}"'
-        f' data-rs-brand="{brand_slug}" data-rs-source="drl-component">\n'
+        f' data-rs-brand="{brand_slug}" {DRL_COMPONENT_MARKER}>\n'
         f"{web_font_block}"
         f"<style>\n{inline_tokens_css}\n{font_alt_root_block}{scoped_styles}\n</style>\n"
         f"{disclosure_aside}\n"
@@ -716,7 +720,8 @@ def _compose_with_gate(
     # code is for ONE class. Serving it for any other class would mix concerns
     # (e.g. buttons markup on a hero page). All non-matching classes continue
     # to use the existing gate + template path below.
-    if dtcg_class is not None and class_name == dtcg_class:
+    canonical_dtcg_class = canonical_public_category_slug(dtcg_class)
+    if canonical_dtcg_class is not None and class_name == canonical_dtcg_class:
         if real_component is not None:
             return _compose_real_component(
                 real_component,
@@ -1454,16 +1459,22 @@ def _reconcile_canonical(session: Session, asset_version: AssetVersion) -> None:
     # (0). ``rendered_html`` is never NULL (the indexer writes ``""`` for
     # omitted categories), so func.length is always defined.
     _has_content = case((func.length(LibraryPage.rendered_html) > 0, 1), else_=0)
+    _is_real_component = case(
+        (LibraryPage.rendered_html.contains(DRL_COMPONENT_MARKER), 1),
+        else_=0,
+    )
 
     for category_slug in categories:
-        # Best asset_version for this (brand, category): real content first,
-        # then most recent, then highest id for a deterministic tiebreak.
+        # Best asset_version for this (brand, category): real component first,
+        # then real content, then most recent, then highest id for a
+        # deterministic tiebreak.
         winner_id = session.execute(
             select(LibraryPage.asset_version_id)
             .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
             .where(LibraryPage.brand_slug == brand_slug)
             .where(LibraryPage.category_slug == category_slug)
             .order_by(
+                _is_real_component.desc(),
                 _has_content.desc(),
                 AssetVersion.fetched_at.desc(),
                 AssetVersion.id.desc(),
@@ -1591,7 +1602,8 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
     # one page whose class_name matches dtcg["class"]. All other pages use
     # the existing generic-template path. None when the asset has no component
     # row or dtcg carries no class key (e.g. organic extractions pre-#2).
-    dtcg_class: str | None = dtcg_json.get("class")
+    raw_dtcg_class = dtcg_json.get("class")
+    dtcg_class: str | None = raw_dtcg_class if isinstance(raw_dtcg_class, str) else None
     real_component = get_asset_component(session, asset_version.id) if dtcg_class else None
     classes_to_compose: tuple[str, ...] = (
         (mined_class,) if mined_class else _all_template_classes()
