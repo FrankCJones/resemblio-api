@@ -1345,3 +1345,41 @@ def test_brand_page_metadata_fields_absent_when_not_in_dtcg(
     assert data.get("commercial_signal") is None
     assert data.get("mood") is None
     assert data.get("applicable_to") is None
+
+
+def test_brand_category_version_prefers_canonical_duplicate_row(
+    client: TestClient, session: Session,
+) -> None:
+    """Version-scoped category lookup prefers canonical rows over stale duplicates."""
+    stale_av = _make_asset_version(session, url="https://aeon.example/old",
+                                   version_label="drl-bootstrap-2026-05-21")
+    _make_page(
+        session, stale_av,
+        brand_slug="aeon",
+        category_slug="alphabet",
+        is_canonical=False,
+        rendered_html="<p>stale generic row</p>",
+    )
+    marker_av = _make_asset_version(session, url="https://aeon.example/new",
+                                    version_label="drl-bootstrap-2026-05-21")
+    marker_html = '<article data-rs-source="drl-component">Alphabet</article>'
+    _make_page(
+        session, marker_av,
+        brand_slug="aeon",
+        category_slug="alphabet",
+        is_canonical=True,
+        rendered_html=marker_html,
+    )
+    session.commit()
+
+    version_resp = client.get(
+        "/v1/library/brands/aeon/categories/alphabets/drl-bootstrap-2026-05-21"
+    )
+    assert version_resp.status_code == 200
+    assert version_resp.json()["data"]["rendered_html"] == marker_html
+
+    asset_resp = client.get(
+        "/v1/library/brands/aeon/categories/alphabets/drl-bootstrap-2026-05-21/sample-asset"
+    )
+    assert asset_resp.status_code == 200
+    assert asset_resp.json()["data"]["rendered_html"] == marker_html

@@ -791,6 +791,11 @@ def _category_version_lookup(
             .where(LibraryPage.category_slug == lookup_slug)
             .where(LibraryPage.version_label == version_label)
             .where(AssetVersion.is_public.is_(True))
+            .order_by(
+                LibraryPage.is_canonical.desc(),
+                AssetVersion.fetched_at.desc(),
+                LibraryPage.id.desc(),
+            )
             .limit(1)
         )
         row = session.execute(stmt).first()
