@@ -54,7 +54,7 @@ from __future__ import annotations
 import logging
 import re
 from datetime import datetime, timezone
-from typing import Any, TypedDict
+from typing import Any, Literal, TypedDict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Select, and_, func, select
@@ -69,6 +69,7 @@ from app.library_category_aliases import (
     category_lookup_slugs,
 )
 from app.missing_data_notice import hub_capture_signal_from_captured_groups
+from app.library_token_exports import LibraryTokenPayload, build_library_token_payload
 from app.models import AssetVersion, LibraryPage
 
 router = APIRouter()
@@ -117,6 +118,12 @@ RESERVED_BRAND_SLUGS = frozenset(
 _HUB_PALETTE_SLOTS: tuple[str, ...] = ("accent", "bg", "surface", "text")
 _HUB_PALETTE_MAX = 5
 _HEX_COLOR_RE = re.compile(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+_PUBLIC_COMPONENT_MARKER_RE = re.compile(r"\bdata-rs-source=[\"']drl-component[\"']", re.I)
+_INTERNAL_PROVENANCE_RE = re.compile(
+    r"(?:resemblio://|drl-bootstrap|drl-mined-from|drl-rebuild|urn:)",
+    re.I,
+)
+PublicReadinessStatus = Literal["ready", "hold_no_marker", "fix_leak", "unknown"]
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +154,10 @@ class LibraryPageData(TypedDict, total=False):
     rendered_html: str
     related: list[RelatedItem]
     updated_at: str
+    public_readiness_status: PublicReadinessStatus
+    is_public_indexable: bool
+    is_exportable: bool
+    library_token_export: LibraryTokenPayload
     # Library v2 D3 acknowledgment fields (Phase 4, 2026-06-07).
     # Sourced from metadata_json.missing_data_notice and
     # metadata_json.capture_manifest written by the indexer.
@@ -624,6 +635,29 @@ def _extract_page_manifest_fields(
     return missing_groups, captured_groups
 
 
+def _public_readiness_status(
+    *,
+    category_slug: str | None,
+    rendered_html: str | None,
+) -> PublicReadinessStatus:
+    """Classify whether a library page can be treated as a finished asset.
+
+    Brand overview pages remain indexable when the underlying asset_version is
+    public. Category pages need a DRL component marker because Phase F found
+    many category URLs resolving with generic render output. Leak signatures
+    override marker status because an internally contaminated page is never
+    public-ready.
+    """
+    html = rendered_html or ""
+    if _INTERNAL_PROVENANCE_RE.search(html):
+        return "fix_leak"
+    if category_slug is None:
+        return "ready"
+    if _PUBLIC_COMPONENT_MARKER_RE.search(html):
+        return "ready"
+    return "hold_no_marker"
+
+
 # Single source of truth for the curated-metadata field names (D13).
 #
 # Every component of the seam must agree on this exact set:
@@ -741,10 +775,21 @@ def _page_to_data(
 ) -> LibraryPageData:
     """Materialize the contract-shaped page payload from ORM rows."""
     missing_groups, captured_groups = _extract_page_manifest_fields(page.metadata_json)
+    readiness = _public_readiness_status(
+        category_slug=category_slug,
+        rendered_html=page.rendered_html,
+    )
+    source_url = _public_source_url(asset_version.url, page.brand_slug)
+    token_payload = build_library_token_payload(
+        asset_version.dtcg_json,
+        brand_slug=page.brand_slug,
+        source_url=source_url,
+    )
+    token_exportable = readiness == "ready" and token_payload is not None
     payload = LibraryPageData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
         brand_slug=page.brand_slug,
-        source_url=_public_source_url(asset_version.url, page.brand_slug),
+        source_url=source_url,
         category_slug=category_slug,
         category_label=_title_case(category_slug) if category_slug else None,
         category_kind=_category_kind(category_slug) if category_slug else None,
@@ -755,6 +800,9 @@ def _page_to_data(
         rendered_html=page.rendered_html or "",
         related=related,
         updated_at=_isoformat(asset_version.fetched_at),
+        public_readiness_status=readiness,
+        is_public_indexable=readiness == "ready",
+        is_exportable=token_exportable,
         missing_groups=missing_groups,
         captured_groups=captured_groups,
     )
@@ -764,6 +812,8 @@ def _page_to_data(
     # distinguish "not seeded" (key absent) from "seeded but empty" (key
     # present, value []). Both TypedDicts use total=False so the update is type
     # safe and the merged keys are a subset of LibraryPageData's optional keys.
+    if token_exportable and token_payload is not None:
+        payload["library_token_export"] = token_payload
     payload.update(_extract_curated_metadata(asset_version.dtcg_json))
     return payload
 
@@ -1083,6 +1133,7 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
             LibraryPage.brand_slug,
             LibraryPage.category_slug,
             LibraryPage.version_label,
+            LibraryPage.rendered_html,
             AssetVersion.fetched_at,
         )
         .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
@@ -1102,11 +1153,17 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
         seen_paths.add(path)
         entries.append(LibrarySitemapEntry(path=path, last_modified=last_modified))
 
-    for brand_slug, category_slug, version_label, fetched_at in rows:
+    for brand_slug, category_slug, version_label, rendered_html, fetched_at in rows:
         ts = _isoformat(fetched_at)
         canonical_category_slug = canonical_public_category_slug(category_slug)
         _add(f"/library/{brand_slug}/", ts)
         if canonical_category_slug is None:
+            continue
+        readiness = _public_readiness_status(
+            category_slug=canonical_category_slug,
+            rendered_html=rendered_html,
+        )
+        if readiness != "ready":
             continue
         _add(f"/library/{brand_slug}/{canonical_category_slug}/", ts)
         if version_label and not _is_internal_version_label(version_label):

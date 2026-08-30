@@ -67,7 +67,7 @@ def _make_page(
     brand_slug: str,
     category_slug: str,
     is_canonical: bool = True,
-    rendered_html: str = "<p>hi</p>",
+    rendered_html: str = '<article data-rs-source="drl-component">hi</article>',
 ) -> LibraryPage:
     """Insert one library_pages row for the given asset_version."""
     page = LibraryPage(
@@ -388,6 +388,13 @@ def test_brand_category_canonical_happy_path(
     assert data["category_label"] == "Buttons"
     assert data["category_kind"] == "components"
     assert data["is_canonical"] is True
+    assert data["public_readiness_status"] == "ready"
+    assert data["is_public_indexable"] is True
+    assert data["is_exportable"] is True
+    token_export = data["library_token_export"]
+    assert token_export["token_schema"] == "w3c-dtcg"
+    assert token_export["tokens"]["color"]["bg"]["$value"] == "#fff"
+    assert token_export["source_attribution"]["source_url"] == "https://stripe.com/"
 
 
 @pytest.mark.parametrize(
@@ -572,6 +579,36 @@ def test_sitemap_omits_non_public_rows(
 
 
 
+
+
+def test_sitemap_omits_non_marker_category_routes(
+    client: TestClient, session: Session
+) -> None:
+    """No-marker category pages stay reachable but are omitted from crawl discovery."""
+    av = _make_asset_version(session, url="https://draft.example/", version_label="2026-06")
+    _make_page(
+        session, av,
+        brand_slug="draft-brand",
+        category_slug="buttons",
+        is_canonical=True,
+        rendered_html="<p>generic category shell</p>",
+    )
+    session.commit()
+
+    page_resp = client.get("/v1/library/brands/draft-brand/categories/buttons")
+    assert page_resp.status_code == 200
+    page_data = page_resp.json()["data"]
+    assert page_data["public_readiness_status"] == "hold_no_marker"
+    assert page_data["is_public_indexable"] is False
+    assert page_data["is_exportable"] is False
+    assert page_data.get("library_token_export") is None
+
+    sitemap_resp = client.get("/v1/library/sitemap")
+    assert sitemap_resp.status_code == 200
+    paths = {row["path"] for row in sitemap_resp.json()["data"]["entries"]}
+    assert "/library/draft-brand/" in paths
+    assert "/library/draft-brand/buttons/" not in paths
+    assert "/library/draft-brand/buttons/2026-06/" not in paths
 
 
 def test_sitemap_canonicalizes_drl_category_alias_paths(

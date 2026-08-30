@@ -191,6 +191,13 @@ def test_redeem_magic_link_creates_new_user(
     assert keys[0].kind == API_KEY_KIND_INTERNAL_BFF
     assert keys[0].is_visible_to_user is False
     assert session.query(WebSessionKey).filter(WebSessionKey.user_id == user.id).count() == 1
+    whoami = client.get(
+        "/v1/internal/auth/whoami",
+        headers=_internal_headers({"X-Bff-Key": body["api_key"]}),
+    )
+    assert whoami.status_code == 200
+    assert whoami.json()["subscription_tier"] == "free"
+    assert whoami.json()["library_export_entitlement"] is False
 
 
 def test_redeem_magic_link_finds_existing_user(
@@ -445,6 +452,44 @@ def test_whoami_returns_credit_balance(
     assert response.json()["credit_balance_cents"] == 2000
     assert response.json()["email"] == "balance@example.com"
 
+
+
+
+def test_unknown_subscription_tier_falls_back_to_free() -> None:
+    """A legacy or corrupt tier value fails closed before entitlement math."""
+    user = User(
+        email="legacy@example.com",
+        password_hash="unused",
+        status="active",
+    )
+    user.subscription_tier = "legacy-paid"
+
+    assert internal_auth._subscription_tier_for_user(user) == "free"
+    assert internal_auth._library_export_entitlement_for_tier("legacy-paid") is False
+def test_whoami_returns_paid_library_export_entitlement(
+    client: TestClient, session: Session, fake_email_sender: _FakeEmailSender
+) -> None:
+    """A paid tier fixture receives explicit Library export entitlement."""
+    token = _request_link(client, "paid@example.com")
+    redeem = client.post(
+        "/v1/internal/auth/redeem_magic_link",
+        headers=_internal_headers(),
+        json={"token": token},
+    )
+    assert redeem.status_code == 200
+    user = session.get(User, redeem.json()["user_id"])
+    assert user is not None
+    user.subscription_tier = "solo"
+    session.commit()
+
+    response = client.get(
+        "/v1/internal/auth/whoami",
+        headers=_internal_headers({"X-Bff-Key": redeem.json()["api_key"]}),
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["subscription_tier"] == "solo"
+    assert body["library_export_entitlement"] is True
 
 def test_signup_grants_onboarding_credit(
     client: TestClient, session: Session, fake_email_sender: _FakeEmailSender

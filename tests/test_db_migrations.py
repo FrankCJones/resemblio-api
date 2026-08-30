@@ -27,6 +27,8 @@ def test_alembic_upgrade_downgrade_round_trip() -> None:
     inspector = inspect(engine)
     tables = set(inspector.get_table_names())
     assert {"users", "api_keys", "api_key_events", "extractions", "credit_ledger", "stripe_events_seen", "topup_sessions", "asset_versions"}.issubset(tables)
+    user_columns = {column["name"] for column in inspector.get_columns("users")}
+    assert "subscription_tier" in user_columns
     api_key_columns = {column["name"] for column in inspector.get_columns("api_keys")}
     assert "spend_cap_cents" in api_key_columns
     extraction_columns = {column["name"] for column in inspector.get_columns("extractions")}

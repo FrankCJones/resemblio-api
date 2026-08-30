@@ -53,6 +53,9 @@ from app.constants import (
     MAGIC_LINK_EXPIRY_MINUTES,
     MAGIC_LINK_REQUEST_COOLDOWN_SECONDS,
     MAGIC_LINK_TOKEN_BYTES,
+    LIBRARY_EXPORT_ENTITLED_TIERS,
+    SUBSCRIPTION_TIER_FREE,
+    SUBSCRIPTION_TIERS,
 )
 from app.crypto import generate_api_key, hash_api_key, hash_password
 from app.db import get_db
@@ -131,6 +134,8 @@ class WhoamiResponse(BaseModel):
     user_id: int
     email: str
     status: str
+    subscription_tier: str
+    library_export_entitlement: bool
     credit_balance_cents: int
     signup_at: datetime
 
@@ -210,6 +215,16 @@ def _resolve_bff_key(session: Session, settings: Settings, plaintext: str) -> _B
         return None
     return _BffKeyContext(api_key=api_key, user=user)
 
+
+def _subscription_tier_for_user(user: User) -> str:
+    """Return the stored subscription tier, falling back to free on drift."""
+    raw = getattr(user, "subscription_tier", None)
+    return raw if raw in SUBSCRIPTION_TIERS else SUBSCRIPTION_TIER_FREE
+
+
+def _library_export_entitlement_for_tier(tier: str) -> bool:
+    """Return true when the tier unlocks Library exports."""
+    return tier in LIBRARY_EXPORT_ENTITLED_TIERS
 
 def _error(status_code: int, code: str) -> JSONResponse:
     """Build a contract-shaped JSON error response."""
@@ -638,10 +653,13 @@ def whoami(
     ctx = _resolve_bff_key(session, settings, x_bff_key)
     if ctx is None:
         return _error(401, "invalid_bff_key")
+    tier = _subscription_tier_for_user(ctx.user)
     return WhoamiResponse(
         user_id=ctx.user.id,
         email=ctx.user.email,
         status=ctx.user.status,
+        subscription_tier=tier,
+        library_export_entitlement=_library_export_entitlement_for_tier(tier),
         credit_balance_cents=credit_balance(session, ctx.user.id),
         signup_at=ctx.user.created_at,
     )

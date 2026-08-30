@@ -112,6 +112,32 @@ BFF_KEY_LOG_PREFIX_CHARS = 8
 API_KEY_KIND_USER = "user"
 API_KEY_KIND_INTERNAL_BFF = "internal_bff"
 API_KEY_KIND_SERVICE = "service"
+# User subscription tier vocabulary. Anonymous is web-only and is not stored.
+SUBSCRIPTION_TIER_FREE = "free"
+SUBSCRIPTION_TIER_SOLO = "solo"
+SUBSCRIPTION_TIER_STUDIO = "studio"
+SUBSCRIPTION_TIER_PRO = "pro"
+SUBSCRIPTION_TIER_APIPLUS = "apiplus"
+SUBSCRIPTION_TIER_ENTERPRISE = "enterprise"
+SUBSCRIPTION_TIERS = frozenset(
+    {
+        SUBSCRIPTION_TIER_FREE,
+        SUBSCRIPTION_TIER_SOLO,
+        SUBSCRIPTION_TIER_STUDIO,
+        SUBSCRIPTION_TIER_PRO,
+        SUBSCRIPTION_TIER_APIPLUS,
+        SUBSCRIPTION_TIER_ENTERPRISE,
+    }
+)
+LIBRARY_EXPORT_ENTITLED_TIERS = frozenset(
+    {
+        SUBSCRIPTION_TIER_SOLO,
+        SUBSCRIPTION_TIER_STUDIO,
+        SUBSCRIPTION_TIER_PRO,
+        SUBSCRIPTION_TIER_APIPLUS,
+        SUBSCRIPTION_TIER_ENTERPRISE,
+    }
+)
 # schema_version literal for downstream consumers of magic-link / session
 # rows. Bumped together with the migrations if the row shape changes.
 MAGIC_LINK_SCHEMA_VERSION = "magic_link_tokens_v1"
@@ -392,4 +418,3 @@ ANON_RATE_LIMITED_MESSAGE: str = (
 """Mission target floor: '19+ pre-extracted brands'. Verify harness exits
 non-zero when the asset_versions DRL-tagged count corresponds to fewer
 than this many distinct brand slugs."""
-

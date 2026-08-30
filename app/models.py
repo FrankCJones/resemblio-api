@@ -9,7 +9,11 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
 
-from app.constants import DEFAULT_API_SCOPE, DEFAULT_EXTRACTION_CENTS
+from app.constants import (
+    DEFAULT_API_SCOPE,
+    DEFAULT_EXTRACTION_CENTS,
+    SUBSCRIPTION_TIER_FREE,
+)
 from app.db import Base
 
 BigIntType = BigInteger().with_variant(Integer, "sqlite")
@@ -32,6 +36,12 @@ class User(Base):
     # the application never reads this field at runtime. Migration 0011.
     stripe_customer_id_test: Mapped[str | None] = mapped_column(String(64), nullable=True)
     status: Mapped[str] = mapped_column(Text, nullable=False, default="active", server_default="active")
+    subscription_tier: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default=SUBSCRIPTION_TIER_FREE,
+        server_default=SUBSCRIPTION_TIER_FREE,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
 
@@ -39,7 +49,13 @@ class User(Base):
     extractions: Mapped[list[Extraction]] = relationship(back_populates="user")
     ledger_entries: Mapped[list[CreditLedger]] = relationship(back_populates="user")
 
-    __table_args__ = (Index("ix_users_email_lower", func.lower(email), unique=True),)
+    __table_args__ = (
+        CheckConstraint(
+            "subscription_tier IN ('free', 'solo', 'studio', 'pro', 'apiplus', 'enterprise')",
+            name="ck_users_subscription_tier",
+        ),
+        Index("ix_users_email_lower", func.lower(email), unique=True),
+    )
 
 
 class ApiKey(Base):
@@ -54,6 +70,7 @@ class ApiKey(Base):
     label: Mapped[str] = mapped_column(Text, nullable=False)
     scopes: Mapped[list[str]] = mapped_column(JsonType, nullable=False, default=lambda: [DEFAULT_API_SCOPE])
     status: Mapped[str] = mapped_column(Text, nullable=False, default="active", server_default="active")
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
