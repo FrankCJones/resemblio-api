@@ -1420,3 +1420,12 @@ def test_brand_category_version_prefers_canonical_duplicate_row(
     )
     assert asset_resp.status_code == 200
     assert asset_resp.json()["data"]["rendered_html"] == marker_html
+
+
+def test_public_source_url_normalises_seed_urns_and_pseudo_urls() -> None:
+    """Public library responses cite real source domains, never seed provenance."""
+    from app.routes.library import _public_source_url
+
+    assert _public_source_url("resemblio://seed/drl_v1/a24/buttons/1", "a24") == "https://a24films.com"
+    assert _public_source_url("https://A24", "a24") == "https://a24films.com"
+    assert _public_source_url("https://stripe.com/", "stripe") == "https://stripe.com/"

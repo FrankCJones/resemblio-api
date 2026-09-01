@@ -18,8 +18,10 @@ import pytest
 from app.brand_names import (
     BRAND_NAMES_SCHEMA_VERSION,
     CANONICAL_BRAND_NAMES,
+    CANONICAL_BRAND_SOURCE_URLS,
     has_canonical_entry,
     pretty_brand_name,
+    source_url_for_brand,
 )
 
 
@@ -54,6 +56,48 @@ SEED_CORPUS_SLUGS: tuple[str, ...] = (
     "the-pudding",
 )
 
+PHASE_J_SOURCE_URL_SLUGS: tuple[str, ...] = (
+    "a24",
+    "aeon",
+    "aesop",
+    "airtable",
+    "anthropic",
+    "apple",
+    "are-na",
+    "cloudflare",
+    "craig-mod",
+    "cursor",
+    "daring-fireball",
+    "figma",
+    "framer",
+    "frank-chimero",
+    "github",
+    "glossier",
+    "gwern",
+    "hugging-face",
+    "linear",
+    "locomotive",
+    "loom",
+    "maggie-appleton",
+    "mailchimp",
+    "notion",
+    "olipop",
+    "openai",
+    "patagonia",
+    "pentagram",
+    "pitch",
+    "quanta",
+    "read-cv",
+    "replit",
+    "resend",
+    "robin-sloan",
+    "stripe",
+    "substack",
+    "the-markup",
+    "the-pudding",
+    "vercel",
+    "webflow",
+)
 
 # Slugs whose canonical caps differ from naive title-case. Every entry
 # is a regression case for L-7; the test asserts the pretty form matches
@@ -78,6 +122,19 @@ def test_schema_version_locked() -> None:
     """Schema version is the v1 string downstream consumers key off."""
     assert BRAND_NAMES_SCHEMA_VERSION == "brand_names_v1"
 
+
+def test_canonical_source_url_map_uses_real_dotted_urls() -> None:
+    """Every Phase J production-corpus slug has a real public source URL."""
+    from urllib.parse import urlparse
+
+    for slug in PHASE_J_SOURCE_URL_SLUGS:
+        url = source_url_for_brand(slug)
+        parsed = urlparse(url)
+        assert slug in CANONICAL_BRAND_SOURCE_URLS
+        assert parsed.scheme in {"http", "https"}
+        assert parsed.hostname is not None
+        assert "." in parsed.hostname
+        assert " " not in url
 
 def test_canonical_map_keys_are_lowercase_dash_collapsed() -> None:
     """Every key matches the slug shape ``derive_brand_slug`` produces.

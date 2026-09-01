@@ -41,6 +41,62 @@ key off the version string for shape detection; value edits do not bump it.
 """
 
 
+CANONICAL_BRAND_SOURCE_URLS: dict[str, str] = {
+    "a24": "https://a24films.com",
+    "aeon": "https://aeon.co",
+    "aesop": "https://aesop.com",
+    "airtable": "https://airtable.com",
+    "anthropic": "https://anthropic.com",
+    "apple": "https://www.apple.com",
+    "are-na": "https://www.are.na",
+    "cloudflare": "https://cloudflare.com",
+    "craig-mod": "https://craigmod.com",
+    "cursor": "https://cursor.com",
+    "daring-fireball": "https://daringfireball.net",
+    "figma": "https://www.figma.com",
+    "framer": "https://framer.com",
+    "frank-chimero": "https://frankchimero.com",
+    "github": "https://github.com",
+    "glossier": "https://glossier.com",
+    "gwern": "https://gwern.net",
+    "hugging-face": "https://huggingface.co",
+    "linear": "https://linear.app",
+    "locomotive": "https://locomotive.ca",
+    "loom": "https://loom.com",
+    "maggie-appleton": "https://maggieappleton.com",
+    "mailchimp": "https://mailchimp.com",
+    "notion": "https://www.notion.so",
+    "olipop": "https://drinkolipop.com",
+    "openai": "https://openai.com",
+    "patagonia": "https://www.patagonia.com",
+    "pentagram": "https://www.pentagram.com",
+    "pitch": "https://pitch.com",
+    "quanta": "https://www.quantamagazine.org",
+    "read-cv": "https://read.cv",
+    "replit": "https://replit.com",
+    "resend": "https://resend.com",
+    "robin-sloan": "https://www.robinsloan.com",
+    "stripe": "https://stripe.com",
+    "substack": "https://substack.com",
+    "the-markup": "https://themarkup.org",
+    "the-pudding": "https://pudding.cool",
+    "vercel": "https://vercel.com",
+    "webflow": "https://webflow.com",
+    "openai-com": "https://openai.com",
+    "stripe-com": "https://stripe.com",
+    "github-com": "https://github.com",
+    "ebay-com": "https://www.ebay.com",
+    "wework-com": "https://www.wework.com",
+    "youtube-com": "https://www.youtube.com",
+    "linkedin-com": "https://www.linkedin.com",
+}
+"""Slug to public source URL map for seeded and common organic brands.
+
+These URLs are public citation targets, not trademarks or logos. They keep the
+"Inspired by" attribution grounded in where the design came from while avoiding
+internal seed URNs and display-only pseudo-URLs such as ``https://OpenAI``.
+"""
+
 CANONICAL_BRAND_NAMES: dict[str, str] = {
     # 24-brand DRL seed corpus, Phase A audit 2026-06-03.
     "aeon": "Aeon",
@@ -67,6 +123,21 @@ CANONICAL_BRAND_NAMES: dict[str, str] = {
     "stripe": "Stripe",
     "the-markup": "The Markup",
     "the-pudding": "The Pudding",
+    "a24": "A24",
+    "anthropic": "Anthropic",
+    "cursor": "Cursor",
+    "github": "GitHub",
+    "hugging-face": "Hugging Face",
+    "linear": "Linear",
+    "locomotive": "Locomotive",
+    "mailchimp": "Mailchimp",
+    "notion": "Notion",
+    "olipop": "OLIPOP",
+    "pentagram": "Pentagram",
+    "quanta": "Quanta",
+    "robin-sloan": "Robin Sloan",
+    "substack": "Substack",
+    "webflow": "Webflow",
     # Common organic-row slug shapes (domain-stripped). Kept here so that
     # an organic row indexed before its brand lands in the curated corpus
     # still paints canonical caps. ``derive_brand_slug`` collapses domains
@@ -147,3 +218,18 @@ def has_canonical_entry(brand_slug: str) -> bool:
     relying on string comparison against the fallback's output.
     """
     return brand_slug in CANONICAL_BRAND_NAMES
+
+
+def source_url_for_brand(brand_slug: str) -> str:
+    """Return a real public citation URL for a known brand slug.
+
+    Known seeded brands resolve through ``CANONICAL_BRAND_SOURCE_URLS``. Unknown
+    slugs fall back to a dotted ``.com`` host derived from the slug so callers
+    still emit a syntactically valid URL instead of a display-only placeholder.
+    """
+    if not brand_slug:
+        return "https://example.com"
+    canonical = CANONICAL_BRAND_SOURCE_URLS.get(brand_slug)
+    if canonical is not None:
+        return canonical
+    return f"https://{brand_slug.replace('-', '')}.com"

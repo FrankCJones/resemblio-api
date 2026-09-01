@@ -55,13 +55,14 @@ import logging
 import re
 from datetime import datetime, timezone
 from typing import Any, Literal, TypedDict
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Select, and_, func, select
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 
-from app.brand_names import pretty_brand_name
+from app.brand_names import pretty_brand_name, source_url_for_brand
 from app.constants import SCHEMA_V1_1
 from app.db import get_db
 from app.library_category_aliases import (
@@ -378,19 +379,26 @@ def _source_url_for_brand(session: Session, brand_slug: str) -> str | None:
     return session.execute(stmt).scalar_one_or_none()
 
 
+def _is_public_http_url(raw_source_url: str | None) -> bool:
+    """Return True only for http(s) URLs with a real dotted hostname."""
+    if not raw_source_url:
+        return False
+    parsed = urlparse(raw_source_url)
+    host = parsed.hostname or ""
+    return parsed.scheme.lower() in {"http", "https"} and "." in host
+
 
 def _public_source_url(raw_source_url: str | None, brand_slug: str) -> str:
     """Return a public-safe ``source_url`` for library API responses.
 
-    Real http(s) source URLs remain intact so the public surface can credit
-    where the design came from. Internal seed URNs such as
-    ``resemblio://seed/...`` are build provenance, not public attribution, so
-    they collapse to the same display-safe fallback the web layer already uses.
+    Real public source URLs remain intact so the public surface can credit
+    where the design came from. Internal seed URNs and earlier display-only
+    pseudo-URLs collapse to a canonical public source-domain fallback.
     """
-    if raw_source_url and re.match(r"^https?://", raw_source_url, re.IGNORECASE):
-        return raw_source_url
-    pretty = _brand_display(brand_slug)
-    return f"https://{pretty}"
+    if _is_public_http_url(raw_source_url):
+        return raw_source_url or source_url_for_brand(brand_slug)
+    return source_url_for_brand(brand_slug)
+
 
 class _BrandHubMeta(TypedDict):
     """Aggregated brand metadata for hub card rendering (internal)."""
