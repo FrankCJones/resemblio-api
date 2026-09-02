@@ -791,6 +791,48 @@ def test_related_excludes_current_category(
 
 
 
+def test_related_excludes_non_ready_category_links(
+    client: TestClient, session: Session
+) -> None:
+    """Related chips do not promote held category pages from Apple."""
+    av = _make_asset_version(
+        session, url="https://www.apple.com/", version_label="2026-06"
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="alphabet",
+        is_canonical=True,
+        rendered_html="<article data-rs-source=\"drl-component\">type</article>",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="buttons",
+        is_canonical=True,
+        rendered_html="<article data-rs-source=\"drl-component\">buttons</article>",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html="<article>Assets are not available yet.</article>",
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple")
+
+    assert resp.status_code == 200
+    related = resp.json()["data"]["related"]
+    hrefs = {item["href"] for item in related}
+    assert "/library/apple/buttons/" in hrefs
+    assert "/library/apple/hero/" not in hrefs
+    assert "Assets are not available" not in json.dumps(related)
+
 
 def test_related_filters_drl_mined_from_versions(
     client: TestClient, session: Session

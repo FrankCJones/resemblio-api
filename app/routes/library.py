@@ -530,7 +530,7 @@ def _related_for(session: Session, brand_slug: str,
     (capped at 4), then each known version label for the brand.
 
     Hardening notes (2026-06-02): the prior implementation gated sibling
-    categories on ``is_canonical=True``, which silently produced an empty
+    categories on `is_canonical=True`, which silently produced an empty
     list whenever the reconciler had not yet flipped canonical flags for
     a brand (e.g. seed-only corpora before the reconcile pass). We now
     fall back to the full set of categories the brand has any public page
@@ -539,23 +539,38 @@ def _related_for(session: Session, brand_slug: str,
     related-list lookup is relaxed. Every row is also filtered for non-empty
     string values defensively so a stray NULL never serialises as
     ``[None, None, ...]`` in the JSON response.
+
+    Phase B Apple pilot hardening (2026-09-01): related category chips are
+    discoverability surfaces, so they only promote marker-backed category pages.
+    Held pages remain directly reachable for audit and noindex handling, but
+    they are not advertised from public navigation.
     """
     related: list[RelatedItem] = []
 
     # Sibling categories (cap 4). No is_canonical filter: any public page
-    # for the brand contributes its category to the related set.
+    # for the brand contributes its category to the related set, but only
+    # marker-backed category pages are promoted from public navigation.
     cat_stmt = (
-        select(LibraryPage.category_slug)
+        select(LibraryPage.category_slug, LibraryPage.rendered_html)
         .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
         .where(LibraryPage.brand_slug == brand_slug)
         .where(AssetVersion.is_public.is_(True))
         .distinct()
     )
     cat_rows = session.execute(cat_stmt).all()
-    cats = sorted({
-        row[0] for row in cat_rows
-        if row[0] and isinstance(row[0], str) and row[0] != exclude_category
-    })
+    ready_cats: set[str] = set()
+    for category_slug, rendered_html in cat_rows:
+        if not category_slug or not isinstance(category_slug, str):
+            continue
+        if category_slug == exclude_category:
+            continue
+        readiness = _public_readiness_status(
+            category_slug=category_slug,
+            rendered_html=rendered_html,
+        )
+        if readiness == "ready":
+            ready_cats.add(category_slug)
+    cats = sorted(ready_cats)
     for cat in cats[:4]:
         related.append(RelatedItem(
             label=f"{_title_case(cat)} from {_brand_display(brand_slug)}",
@@ -581,7 +596,7 @@ def _related_for(session: Session, brand_slug: str,
     # chip ("Aeon design system in drl-bootstrap-2026-05-21"). The
     # version page itself remains reachable for any user that types or
     # is linked the direct URL; only the discoverability surface is
-    # filtered. See ``_is_internal_version_label`` for the pattern set.
+    # filtered. See `_is_internal_version_label` for the pattern set.
     for v in versions:
         if _is_internal_version_label(v):
             continue
