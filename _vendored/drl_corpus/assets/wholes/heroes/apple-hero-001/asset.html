@@ -4,7 +4,7 @@
   Pattern: product-shot-hero, oversized-statement
   Inspired by: Apple (https://www.apple.com)
   Notes:
-    - (no notes)
+    - Source-attributed and identity-scrubbed Apple-inspired design study.
 -->
 <!doctype html>
 <html lang="en">
@@ -14,40 +14,44 @@
 <title>apple-hero-001 · Design Reference Library</title>
 <link rel="stylesheet" href="tokens.css"/>
 <style>
-.h-hero { padding: 96px 32px; background: var(--ds-bg); color: var(--ds-text); }
-.h-hero__inner { max-width: 1100px; margin: 0 auto; }
-.h-hero__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
-                  text-transform: uppercase; letter-spacing: 0.08em;
-                  color: var(--ds-text-muted); }
-.h-hero__title { font-family: var(--ds-font-display); font-size: var(--ds-text-5xl);
-                 line-height: var(--ds-leading-tight, 1.05); letter-spacing: -0.02em;
-                 font-weight: 600; margin: 24px 0 16px; max-width: 18ch; }
-.h-hero__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
-               line-height: 1.45; color: var(--ds-text-muted);
-               margin: 0 0 32px; max-width: 56ch; }
-.h-hero__actions { display: flex; gap: 12px; }
-.h-btn { display: inline-flex; align-items: center; padding: 12px 20px;
-         font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
-         font-weight: 500; border-radius: var(--ds-radius-sm, 6px);
-         text-decoration: none; }
-.h-btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
-.h-btn--ghost { background: transparent; color: var(--ds-text);
-                border: 1px solid var(--ds-border); }
-
+.apple-hero { --hero-bg:#FBFBFD; --hero-ink:#1D1D1F; --hero-muted:#6E6E73; --hero-blue:#0066CC; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--hero-bg); color:var(--hero-ink); min-height:760px; padding:76px 24px 40px; overflow:hidden; }
+.apple-hero * { box-sizing:border-box; }
+.apple-hero .apple-hero__inner { max-width:1180px; margin:0 auto; text-align:center; }
+.apple-hero .apple-hero__eyebrow { display:block; color:#BF4800; font-size:17px; font-weight:600; margin-bottom:10px; }
+.apple-hero .apple-hero__title { font-size:80px; line-height:1.02; letter-spacing:0; font-weight:700; margin:0 auto 12px; max-width:920px; }
+.apple-hero .apple-hero__dek { color:var(--hero-muted); font-size:28px; line-height:1.25; margin:0 auto 24px; max-width:760px; }
+.apple-hero .apple-hero__actions { display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:46px; }
+.apple-hero .apple-hero__button { border-radius:9999px; background:var(--hero-blue); color:white; display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 23px; text-decoration:none; font-size:17px; font-weight:500; }
+.apple-hero .apple-hero__link { color:var(--hero-blue); font-size:21px; text-decoration:none; }
+.apple-hero .apple-hero__link::after { content:"›"; padding-left:6px; }
+.apple-hero .apple-hero__stage { position:relative; height:390px; display:flex; align-items:flex-end; justify-content:center; }
+.apple-hero .apple-hero__device { position:absolute; bottom:0; width:min(80vw,760px); height:360px; border-radius:46px 46px 0 0; background:linear-gradient(135deg,#ECECF1,#FFFFFF 42%,#D9DBE3); box-shadow:0 28px 90px rgba(0,0,0,.22), inset 0 0 0 2px rgba(0,0,0,.08); }
+.apple-hero .apple-hero__device::before { content:""; position:absolute; inset:18px 18px 0; border-radius:30px 30px 0 0; background:linear-gradient(140deg,#0C0C0F,#23252B 38%,#62656F 100%); }
+.apple-hero .apple-hero__device::after { content:""; position:absolute; left:50%; top:34px; width:120px; height:8px; border-radius:999px; transform:translateX(-50%); background:rgba(255,255,255,.22); }
+.apple-hero .apple-hero__device-small { position:absolute; bottom:0; right:10%; width:180px; height:260px; border-radius:32px; background:#F5F5F7; box-shadow:0 18px 60px rgba(0,0,0,.22), inset 0 0 0 2px rgba(0,0,0,.08); }
+.apple-hero .apple-hero__device-small::before { content:""; position:absolute; inset:12px; border-radius:24px; background:linear-gradient(180deg,#202124,#545762); }
+.apple-hero .apple-hero__attribution { margin:20px auto 0; max-width:760px; color:var(--hero-muted); font-size:12px; line-height:1.4; }
+@media (max-width:760px) { .apple-hero { min-height:690px; padding:56px 18px 30px; } .apple-hero .apple-hero__title { font-size:48px; } .apple-hero .apple-hero__dek { font-size:21px; } .apple-hero .apple-hero__actions { flex-wrap:wrap; gap:12px; } .apple-hero .apple-hero__stage { height:330px; } .apple-hero .apple-hero__device { width:92vw; height:300px; border-radius:34px 34px 0 0; } .apple-hero .apple-hero__device-small { right:4%; width:118px; height:190px; border-radius:24px; } }
 </style>
 </head>
 <body>
-<section class="h-hero">
-  <div class="h-hero__inner">
-    <span class="h-hero__kicker">New</span>
-    <h1 class="h-hero__title">Lorem ipsum dolor sit amet</h1>
-    <p class="h-hero__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
-    <div class="h-hero__actions">
-      <a class="h-btn h-btn--primary" href="#">Get started</a>
-      <a class="h-btn h-btn--ghost" href="#">Learn more</a>
+<section class="apple-hero product-visual device-silhouette">
+  <div class="apple-hero__inner">
+    <header>
+      <span class="apple-hero__eyebrow">Design study</span>
+      <h1 class="apple-hero__title">A quieter way to launch a device story.</h1>
+      <p class="apple-hero__dek">Oversized type, calm surfaces, and focused blue actions put the product form at the center without carrying brand identity.</p>
+    </header>
+    <div class="apple-hero__actions">
+      <a class="apple-hero__button" href="#">View pattern</a>
+      <a class="apple-hero__link" href="#">Compare modules</a>
     </div>
+    <div class="apple-hero__stage" aria-hidden="true">
+      <div class="apple-hero__device"></div>
+      <div class="apple-hero__device-small"></div>
+    </div>
+    <aside class="apple-hero__attribution" data-resemblio-attribution>Inspired by: Apple (https://www.apple.com). No affiliation with Apple. Independent design reference.</aside>
   </div>
 </section>
-
 </body>
 </html>

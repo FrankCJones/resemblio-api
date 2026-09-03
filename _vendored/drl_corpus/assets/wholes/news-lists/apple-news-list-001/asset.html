@@ -4,7 +4,7 @@
   Pattern: story-card-grid, asymmetric-grid
   Inspired by: Apple (https://www.apple.com/newsroom/)
   Notes:
-    - (no notes)
+    - Source-attributed and identity-scrubbed Apple-inspired design study.
 -->
 <!doctype html>
 <html lang="en">
@@ -14,41 +14,44 @@
 <title>apple-news-list-001 · Design Reference Library</title>
 <link rel="stylesheet" href="tokens.css"/>
 <style>
-.nl { background: var(--ds-bg); padding: 96px 32px; }
-.nl__inner { max-width: 880px; margin: 0 auto; }
-.nl__head { margin-bottom: 32px; }
-.nl__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
-              text-transform: uppercase; letter-spacing: 0.08em;
-              color: var(--ds-text-muted); }
-.nl__title { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
-             margin: 16px 0 0; }
-.nl__items { padding: 0; list-style: none; }
-.nl__items li { padding: 24px 0; border-bottom: 1px solid var(--ds-hairline); }
-.nl__date { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
-            color: var(--ds-text-muted); text-transform: uppercase;
-            letter-spacing: 0.06em; }
-.nl__items h3 { font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
-                margin: 8px 0; line-height: 1.2; }
-.nl__items p { font-family: var(--ds-font-body); font-size: var(--ds-text-base);
-               color: var(--ds-text-muted); line-height: 1.5; margin: 0; }
-
+.apple-news-list { --nl-bg:#F5F5F7; --nl-card:#FFFFFF; --nl-ink:#1D1D1F; --nl-muted:#6E6E73; --nl-blue:#0066CC; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--nl-bg); color:var(--nl-ink); padding:86px 22px; }
+.apple-news-list * { box-sizing:border-box; }
+.apple-news-list .apple-news-list__inner { max-width:1120px; margin:0 auto; }
+.apple-news-list .apple-news-list__head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:30px; }
+.apple-news-list .apple-news-list__eyebrow { display:block; color:#86868B; font-size:17px; font-weight:600; margin-bottom:7px; }
+.apple-news-list .apple-news-list__title { font-size:56px; line-height:1.07; letter-spacing:0; margin:0; max-width:720px; }
+.apple-news-list .apple-news-list__all { color:var(--nl-blue); font-size:17px; text-decoration:none; white-space:nowrap; }
+.apple-news-list .apple-news-list__all::after { content:"›"; padding-left:5px; }
+.apple-news-list .apple-news-list__grid { display:grid; grid-template-columns:1.4fr 1fr; gap:18px; }
+.apple-news-list .apple-news-list__lead, .apple-news-list .apple-news-list__item { background:var(--nl-card); border-radius:26px; overflow:hidden; box-shadow:0 1px 0 rgba(0,0,0,.05); }
+.apple-news-list .apple-news-list__lead { min-height:560px; display:flex; flex-direction:column; }
+.apple-news-list .apple-news-list__media { flex:1; min-height:290px; background:radial-gradient(circle at 40% 36%,#FFFFFF 0 14%,transparent 15%),linear-gradient(135deg,#DADDE7,#FDFDFE 56%,#B9C0CF); position:relative; }
+.apple-news-list .apple-news-list__media::after { content:""; position:absolute; left:50%; bottom:0; width:58%; height:250px; transform:translateX(-50%); border-radius:34px 34px 0 0; background:linear-gradient(145deg,#1E2025,#5D616B); box-shadow:0 18px 60px rgba(0,0,0,.22); }
+.apple-news-list .apple-news-list__copy { padding:28px; }
+.apple-news-list time, .apple-news-list .apple-news-list__date { color:#86868B; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+.apple-news-list h3 { margin:8px 0 10px; font-size:28px; line-height:1.14; }
+.apple-news-list p { margin:0; color:var(--nl-muted); font-size:16px; line-height:1.45; }
+.apple-news-list .apple-news-list__stack { display:grid; gap:18px; }
+.apple-news-list .apple-news-list__item { padding:24px; }
+.apple-news-list .apple-news-list__item h3 { font-size:22px; }
+.apple-news-list .apple-news-list__attribution { color:var(--nl-muted); font-size:12px; line-height:1.4; margin-top:22px; text-align:center; }
+@media (max-width:860px) { .apple-news-list .apple-news-list__head { display:block; } .apple-news-list .apple-news-list__title { font-size:40px; margin-bottom:12px; } .apple-news-list .apple-news-list__grid { grid-template-columns:1fr; } .apple-news-list .apple-news-list__lead { min-height:auto; } }
 </style>
 </head>
 <body>
-<section class="nl">
-  <div class="nl__inner">
-    <header class="nl__head">
-      <span class="nl__kicker">New</span>
-      <h2 class="nl__title">Lorem ipsum dolor sit amet</h2>
-    </header>
-    <ul class="nl__items">
-      <li><article><span class="nl__date">Lorem</span><h3>Lorem</h3><p>Lorem</p></article></li>
-      <li><article><span class="nl__date">Lorem</span><h3>Lorem</h3><p>Lorem</p></article></li>
-      <li><article><span class="nl__date">Lorem</span><h3>Lorem</h3><p>Lorem</p></article></li>
-      <li><article><span class="nl__date">Lorem</span><h3>Lorem</h3><p>Lorem</p></article></li>
-    </ul>
+<section class="apple-news-list product-visual device-silhouette">
+  <div class="apple-news-list__inner">
+    <header class="apple-news-list__head"><div><span class="apple-news-list__eyebrow">Latest stories</span><h2 class="apple-news-list__title">Editorial cards with a product-first calm.</h2></div><a class="apple-news-list__all" href="#">Read more updates</a></header>
+    <div class="apple-news-list__grid">
+      <article class="apple-news-list__lead"><div class="apple-news-list__media" aria-hidden="true"></div><div class="apple-news-list__copy"><time datetime="2026-09-03">September 3, 2026</time><h3>A new display story framed with generous whitespace.</h3><p>The lead item uses a large abstract device form, clipped media area, and restrained text stack to create a newsroom-like feature module.</p></div></article>
+      <div class="apple-news-list__stack">
+        <article class="apple-news-list__item"><time datetime="2026-08-28">August 28, 2026</time><h3>How a compact list can still feel premium.</h3><p>Small metadata, heavy headline weight, and ample padding make each update easy to scan.</p></article>
+        <article class="apple-news-list__item"><time datetime="2026-08-14">August 14, 2026</time><h3>Quiet cards help technical details land.</h3><p>The pale page field keeps the reader focused on hierarchy instead of decoration.</p></article>
+        <article class="apple-news-list__item"><time datetime="2026-08-01">August 1, 2026</time><h3>Blue links carry action without heavy buttons.</h3><p>Text actions support browsing patterns where the story matters more than conversion pressure.</p></article>
+      </div>
+    </div>
+    <aside class="apple-news-list__attribution" data-resemblio-attribution>Inspired by: Apple (https://www.apple.com). No affiliation with Apple. Independent design reference.</aside>
   </div>
 </section>
-
 </body>
 </html>

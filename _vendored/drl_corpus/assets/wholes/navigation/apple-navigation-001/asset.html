@@ -4,7 +4,7 @@
   Pattern: flush-top-nav, mega-menu
   Inspired by: Apple (https://www.apple.com)
   Notes:
-    - (no notes)
+    - Source-attributed and identity-scrubbed Apple-inspired design study.
 -->
 <!doctype html>
 <html lang="en">
@@ -14,41 +14,42 @@
 <title>apple-navigation-001 · Design Reference Library</title>
 <link rel="stylesheet" href="tokens.css"/>
 <style>
-.n-nav { background: var(--ds-bg); border-bottom: 1px solid var(--ds-hairline); }
-.n-nav__inner { max-width: 1200px; margin: 0 auto; padding: 16px 32px;
-                display: flex; align-items: center; gap: 32px; }
-.n-nav__brand { font-family: var(--ds-font-display); font-weight: 600;
-                font-size: var(--ds-text-lg); color: var(--ds-text);
-                text-decoration: none; }
-.n-nav__links { display: flex; gap: 24px; flex: 1; }
-.n-nav__links a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
-                  font-weight: 500; color: var(--ds-text); text-decoration: none; }
-.n-nav__actions { display: flex; align-items: center; gap: 16px; }
-.n-nav__signin { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
-                 font-weight: 500; color: var(--ds-text); text-decoration: none; }
-.n-btn { display: inline-flex; padding: 8px 14px; border-radius: var(--ds-radius-sm, 6px);
-         font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
-         font-weight: 500; text-decoration: none; }
-.n-btn--primary { background: var(--ds-accent); color: var(--ds-bg); }
-
+.apple-nav-shell { --nav-ink:#1D1D1F; --nav-muted:#424245; --nav-blue:#0066CC; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:#FBFBFD; color:var(--nav-ink); min-height:220px; padding-top:0; }
+.apple-nav-shell * { box-sizing:border-box; }
+.apple-nav { height:44px; background:rgba(255,255,255,.82); backdrop-filter:saturate(180%) blur(18px); border-bottom:1px solid rgba(0,0,0,.08); }
+.apple-nav .apple-nav__inner { max-width:1024px; height:44px; margin:0 auto; padding:0 22px; display:flex; align-items:center; justify-content:space-between; gap:22px; }
+.apple-nav .apple-nav__mark { width:16px; height:18px; border-radius:6px 6px 8px 8px; background:#1D1D1F; display:inline-block; transform:skew(-7deg); }
+.apple-nav .apple-nav__links { display:flex; align-items:center; justify-content:center; gap:28px; flex:1; }
+.apple-nav .apple-nav__links a, .apple-nav .apple-nav__tools a { color:var(--nav-muted); text-decoration:none; font-size:12px; line-height:1; white-space:nowrap; }
+.apple-nav .apple-nav__links a:hover, .apple-nav .apple-nav__tools a:hover { color:var(--nav-ink); }
+.apple-nav .apple-nav__tools { display:flex; align-items:center; gap:18px; }
+.apple-nav .apple-nav__action { color:var(--nav-blue) !important; }
+.apple-nav .apple-nav__mega { max-width:1024px; margin:0 auto; padding:34px 22px 40px; display:grid; grid-template-columns:1.2fr repeat(3, 1fr); gap:34px; }
+.apple-nav .apple-nav__mega h3 { margin:0 0 10px; color:#86868B; font-size:12px; font-weight:500; }
+.apple-nav .apple-nav__mega a { display:block; color:var(--nav-ink); text-decoration:none; font-size:24px; font-weight:600; line-height:1.2; padding:5px 0; }
+.apple-nav .apple-nav__mega .apple-nav .apple-nav__small a { font-size:12px; font-weight:500; color:var(--nav-muted); }
+.apple-nav .apple-nav__attribution { max-width:1024px; margin:0 auto; padding:0 22px 18px; color:#6E6E73; font-size:12px; line-height:1.4; }
+@media (max-width:760px) { .apple-nav .apple-nav__links { display:none; } .apple-nav .apple-nav__mega { grid-template-columns:1fr; gap:20px; } .apple-nav .apple-nav__mega a { font-size:21px; } }
 </style>
 </head>
 <body>
-<header class="n-nav">
-  <div class="n-nav__inner">
-    <a class="n-nav__brand" href="#">Wordmark</a>
-    <nav class="n-nav__links">
-      <a href="#">Lorem</a>
-      <a href="#">Lorem</a>
-      <a href="#">Lorem</a>
-      <a href="#">Lorem</a>
-    </nav>
-    <div class="n-nav__actions">
-      <a class="n-nav__signin" href="#">Sign in</a>
-      <a class="n-btn n-btn--primary" href="#">Sign up</a>
+<header class="apple-nav-shell">
+  <nav class="apple-nav" aria-label="Primary">
+    <div class="apple-nav__inner">
+      <span class="apple-nav__mark" aria-hidden="true"></span>
+      <div class="apple-nav__links">
+        <a href="#">Store</a><a href="#">Devices</a><a href="#">Displays</a><a href="#">Audio</a><a href="#">Support</a>
+      </div>
+      <div class="apple-nav__tools"><a href="#">Search</a><a class="apple-nav__action" href="#">Buy</a></div>
     </div>
-  </div>
+  </nav>
+  <section class="apple-nav__mega" aria-label="Expanded menu preview">
+    <article><h3>Explore</h3><a href="#">All devices</a><a href="#">New releases</a><a href="#">Compare models</a></article>
+    <article class="apple-nav__small"><h3>Shop</h3><a href="#">Accessories</a><a href="#">Certified repairs</a><a href="#">Financing</a></article>
+    <article class="apple-nav__small"><h3>More</h3><a href="#">Education</a><a href="#">Business</a><a href="#">Trade in</a></article>
+    <article class="apple-nav__small"><h3>Quick links</h3><a href="#">Order status</a><a href="#">Guides</a><a href="#">Setup help</a></article>
+  </section>
+  <aside class="apple-nav__attribution" data-resemblio-attribution>Inspired by: Apple (https://www.apple.com). No affiliation with Apple. Independent design reference.</aside>
 </header>
-
 </body>
 </html>

@@ -4,7 +4,7 @@
   Pattern: story-card-grid, bento-grid
   Inspired by: Apple (https://www.apple.com)
   Notes:
-    - (no notes)
+    - Source-attributed and identity-scrubbed Apple-inspired design study.
 -->
 <!doctype html>
 <html lang="en">
@@ -14,47 +14,41 @@
 <title>apple-feature-grid-001 · Design Reference Library</title>
 <link rel="stylesheet" href="tokens.css"/>
 <style>
-.fg-grid { background: var(--ds-bg); color: var(--ds-text); padding: 96px 32px; }
-.fg-grid__inner { max-width: 1200px; margin: 0 auto; }
-.fg-grid__head { max-width: 720px; margin-bottom: 48px; }
-.fg-grid__kicker { font-family: var(--ds-font-mono); font-size: var(--ds-text-xs);
-                   text-transform: uppercase; letter-spacing: 0.08em;
-                   color: var(--ds-text-muted); }
-.fg-grid__title { font-family: var(--ds-font-display); font-size: var(--ds-text-3xl);
-                  line-height: 1.15; margin: 16px 0 12px; }
-.fg-grid__dek { font-family: var(--ds-font-body); font-size: var(--ds-text-lg);
-                color: var(--ds-text-muted); margin: 0; }
-.fg-grid__tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.fg-tile { padding: 24px; border: 1px solid var(--ds-border);
-           border-radius: var(--ds-radius-md, 8px); background: var(--ds-surface); }
-.fg-tile h3 { font-family: var(--ds-font-display); font-size: var(--ds-text-xl);
-              margin: 0 0 8px; }
-.fg-tile p { font-family: var(--ds-font-body); font-size: var(--ds-text-base);
-             color: var(--ds-text-muted); line-height: 1.5;
-             margin: 0 0 16px; }
-.fg-tile a { font-family: var(--ds-font-body); font-size: var(--ds-text-sm);
-             font-weight: 500; color: var(--ds-accent); text-decoration: none; }
-
+.apple-feature-grid { --fg-bg:#F5F5F7; --fg-card:#FFFFFF; --fg-ink:#1D1D1F; --fg-muted:#6E6E73; --fg-blue:#0066CC; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--fg-bg); color:var(--fg-ink); padding:86px 22px; }
+.apple-feature-grid * { box-sizing:border-box; }
+.apple-feature-grid .apple-feature-grid__inner { max-width:1200px; margin:0 auto; }
+.apple-feature-grid .apple-feature-grid__head { text-align:center; margin:0 auto 36px; max-width:780px; }
+.apple-feature-grid .apple-feature-grid__eyebrow { display:block; color:#86868B; font-size:17px; font-weight:600; margin-bottom:8px; }
+.apple-feature-grid .apple-feature-grid__title { font-size:56px; line-height:1.07; letter-spacing:0; margin:0; }
+.apple-feature-grid .apple-feature-grid__tiles { display:grid; grid-template-columns:1.35fr 1fr; gap:18px; }
+.apple-feature-grid .apple-feature-grid__card { position:relative; min-height:330px; border-radius:30px; background:var(--fg-card); overflow:hidden; padding:32px; box-shadow:0 1px 0 rgba(0,0,0,.05); }
+.apple-feature-grid .apple-feature-grid__card h3 { font-size:30px; line-height:1.12; margin:0 0 8px; max-width:12ch; }
+.apple-feature-grid .apple-feature-grid__card p { color:var(--fg-muted); font-size:17px; line-height:1.4; margin:0; max-width:30ch; }
+.apple-feature-grid .apple-feature-grid__card a { color:var(--fg-blue); text-decoration:none; font-size:17px; display:inline-block; margin-top:16px; }
+.apple-feature-grid .apple-feature-grid__card a::after { content:"›"; padding-left:5px; }
+.apple-feature-grid .apple-feature-grid__card--wide { grid-row:span 2; min-height:680px; text-align:center; padding-top:48px; }
+.apple-feature-grid .apple-feature-grid__device { position:absolute; left:50%; bottom:-44px; width:76%; height:420px; transform:translateX(-50%); border-radius:38px 38px 0 0; background:linear-gradient(145deg,#E8E9EF,#FFFFFF 48%,#CED1DA); box-shadow:0 22px 70px rgba(0,0,0,.18), inset 0 0 0 2px rgba(0,0,0,.06); }
+.apple-feature-grid .apple-feature-grid__device::before { content:""; position:absolute; inset:18px 18px 0; border-radius:26px 26px 0 0; background:linear-gradient(150deg,#15161A,#4A4C55); }
+.apple-feature-grid .apple-feature-grid__chip { position:absolute; right:28px; bottom:28px; width:86px; height:86px; border-radius:22px; background:linear-gradient(135deg,#F5F5F7,#DADCE5); box-shadow:inset 0 0 0 1px rgba(0,0,0,.08); }
+.apple-feature-grid .apple-feature-grid__chip::before { content:""; position:absolute; inset:18px; border-radius:12px; border:2px solid rgba(0,0,0,.18); }
+.apple-feature-grid .apple-feature-grid__bars { position:absolute; right:30px; bottom:36px; display:flex; gap:6px; align-items:end; }
+.apple-feature-grid .apple-feature-grid__bars span { width:20px; border-radius:9999px; background:#2997FF; display:block; }
+.apple-feature-grid .apple-feature-grid__bars span:nth-child(1) { height:42px; } .apple-feature-grid .apple-feature-grid__bars span:nth-child(2) { height:78px; } .apple-feature-grid .apple-feature-grid__bars span:nth-child(3) { height:58px; }
+.apple-feature-grid .apple-feature-grid__attribution { margin:22px auto 0; color:var(--fg-muted); font-size:12px; line-height:1.4; text-align:center; }
+@media (max-width:850px) { .apple-feature-grid .apple-feature-grid__title { font-size:40px; } .apple-feature-grid .apple-feature-grid__tiles { grid-template-columns:1fr; } .apple-feature-grid .apple-feature-grid__card--wide { min-height:560px; } }
 </style>
 </head>
 <body>
-<section class="fg-grid">
-  <div class="fg-grid__inner">
-    <header class="fg-grid__head">
-      <span class="fg-grid__kicker">New</span>
-      <h2 class="fg-grid__title">Lorem ipsum dolor sit amet</h2>
-      <p class="fg-grid__dek">Consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
-    </header>
-    <div class="fg-grid__tiles">
-      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
-      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
-      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
-      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
-      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
-      <article class="fg-tile"><h3>Lorem</h3><p>Lorem</p><a href="#">Lorem</a></article>
+<section class="apple-feature-grid product-visual device-silhouette">
+  <div class="apple-feature-grid__inner">
+    <header class="apple-feature-grid__head"><span class="apple-feature-grid__eyebrow">Feature rhythm</span><h2 class="apple-feature-grid__title">One grid, several quiet reasons to care.</h2></header>
+    <div class="apple-feature-grid__tiles">
+      <article class="apple-feature-grid__card apple-feature-grid__card--wide"><h3>Built around the product.</h3><p>A large device silhouette gives the section weight while leaving the interface brand-neutral.</p><a href="#">Study the composition</a><div class="apple-feature-grid__device" aria-hidden="true"></div></article>
+      <article class="apple-feature-grid__card"><h3>Soft contrast.</h3><p>White modules sit inside a pale surface so dense details still feel light.</p><a href="#">View surface tokens</a><div class="apple-feature-grid__chip" aria-hidden="true"></div></article>
+      <article class="apple-feature-grid__card"><h3>Measured emphasis.</h3><p>Short headings, generous line height, and blue links keep action hierarchy clear.</p><a href="#">Compare spacing</a><div class="apple-feature-grid__bars" aria-hidden="true"><span></span><span></span><span></span></div></article>
     </div>
+    <aside class="apple-feature-grid__attribution" data-resemblio-attribution>Inspired by: Apple (https://www.apple.com). No affiliation with Apple. Independent design reference.</aside>
   </div>
 </section>
-
 </body>
 </html>
