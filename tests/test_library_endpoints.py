@@ -794,7 +794,7 @@ def test_related_excludes_current_category(
 def test_related_excludes_non_ready_category_links(
     client: TestClient, session: Session
 ) -> None:
-    """Related chips do not promote held category pages from Apple."""
+    """Related chips only promote Apple pilot pages with rebuilt substance."""
     av = _make_asset_version(
         session, url="https://www.apple.com/", version_label="2026-06"
     )
@@ -829,7 +829,7 @@ def test_related_excludes_non_ready_category_links(
     assert resp.status_code == 200
     related = resp.json()["data"]["related"]
     hrefs = {item["href"] for item in related}
-    assert "/library/apple/buttons/" in hrefs
+    assert "/library/apple/buttons/" not in hrefs
     assert "/library/apple/hero/" not in hrefs
     assert "Assets are not available" not in json.dumps(related)
 
@@ -1502,3 +1502,244 @@ def test_public_source_url_normalises_seed_urns_and_pseudo_urls() -> None:
     assert _public_source_url("resemblio://seed/drl_v1/a24/buttons/1", "a24") == "https://a24films.com"
     assert _public_source_url("https://A24", "a24") == "https://a24films.com"
     assert _public_source_url("https://stripe.com/", "stripe") == "https://stripe.com/"
+
+
+def test_apple_pilot_brand_canonical_prefers_rebuilt_hero(
+    client: TestClient, session: Session
+) -> None:
+    """Apple pilot brand canonical uses the rebuilt hero, not the old alphabet specimen."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-03",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="alphabet",
+        is_canonical=True,
+        rendered_html='<article data-rs-source="drl-component">Lorem ipsum Wordmark</article>',
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html=(
+            '<article class="apple-hero" data-rs-source="drl-component">'
+            'A quieter way to launch'
+            '</article>'
+        ),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple")
+
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["public_readiness_status"] == "ready"
+    assert "apple-hero" in data["rendered_html"]
+    assert "Lorem ipsum" not in data["rendered_html"]
+    assert "Wordmark" not in data["rendered_html"]
+
+
+def test_apple_pilot_related_links_only_promote_substance_pages(
+    client: TestClient, session: Session
+) -> None:
+    """Apple pilot related chips hide placeholder and one-control stub categories."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-03",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html=(
+            '<article class="apple-hero" data-rs-source="drl-component">'
+            'A quieter way to launch'
+            '</article>'
+        ),
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="article-layout",
+        is_canonical=True,
+        rendered_html=(
+            '<article class="apple-article" data-rs-source="drl-component">'
+            'How product storytelling gets room to breathe.'
+            '</article>'
+        ),
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="cta-block",
+        is_canonical=True,
+        rendered_html=(
+            '<section class="apple-cta" data-rs-source="drl-component">'
+            'Turn a quiet product moment into a confident choice.'
+            '</section>'
+        ),
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="buttons",
+        is_canonical=True,
+        rendered_html='<article data-rs-source="drl-component">Select configuration</article>',
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="alphabet",
+        is_canonical=True,
+        rendered_html='<article data-rs-source="drl-component">Lorem ipsum Wordmark</article>',
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple/categories/hero")
+
+    assert resp.status_code == 200
+    hrefs = {item["href"] for item in resp.json()["data"]["related"]}
+    assert "/library/apple/article-layout/" in hrefs
+    assert "/library/apple/cta-block/" in hrefs
+    assert "/library/apple/buttons/" not in hrefs
+    assert "/library/apple/alphabet/" not in hrefs
+
+
+def test_apple_pilot_sitemap_excludes_placeholder_categories(
+    client: TestClient, session: Session
+) -> None:
+    """Apple pilot sitemap exposes only Apple routes with rebuilt substance."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-03",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html=(
+            '<article class="apple-hero" data-rs-source="drl-component">'
+            'A quieter way to launch'
+            '</article>'
+        ),
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="buttons",
+        is_canonical=True,
+        rendered_html='<article data-rs-source="drl-component">Select configuration</article>',
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="alphabet",
+        is_canonical=True,
+        rendered_html='<article data-rs-source="drl-component">Lorem ipsum Wordmark</article>',
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/sitemap")
+
+    assert resp.status_code == 200
+    paths = {entry["path"] for entry in resp.json()["data"]["entries"]}
+    assert "/library/apple/" in paths
+    assert "/library/apple/hero/" in paths
+    assert "/library/apple/buttons/" not in paths
+    assert "/library/apple/alphabet/" not in paths
+
+
+def test_non_apple_canonical_still_prefers_alphabet(
+    client: TestClient, session: Session
+) -> None:
+    """Apple pilot canonical override does not change the general corpus rule."""
+    av = _make_asset_version(
+        session,
+        url="https://aeon.co/",
+        version_label="2026-09-03",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="aeon",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html='<article class="hero" data-rs-source="drl-component">Hero page</article>',
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="aeon",
+        category_slug="alphabet",
+        is_canonical=True,
+        rendered_html='<article class="a-page" data-rs-source="drl-component">Type specimen</article>',
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/aeon")
+
+    assert resp.status_code == 200
+    rendered = resp.json()["data"]["rendered_html"]
+    assert "a-page" in rendered
+    assert "Hero page" not in rendered
+
+
+def test_apple_pilot_related_links_normalise_plural_category_slugs(
+    client: TestClient, session: Session
+) -> None:
+    """Apple pilot related chips emit canonical public category URLs."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-03",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html=(
+            '<article class="apple-hero" data-rs-source="drl-component">'
+            'A quieter way to launch'
+            '</article>'
+        ),
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="article-layouts",
+        is_canonical=True,
+        rendered_html=(
+            '<article class="apple-article" data-rs-source="drl-component">'
+            'How product storytelling gets room to breathe.'
+            '</article>'
+        ),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple/categories/hero")
+
+    assert resp.status_code == 200
+    hrefs = {item["href"] for item in resp.json()["data"]["related"]}
+    assert "/library/apple/article-layout/" in hrefs
+    assert "/library/apple/article-layouts/" not in hrefs

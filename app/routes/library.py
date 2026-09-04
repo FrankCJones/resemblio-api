@@ -125,6 +125,23 @@ _INTERNAL_PROVENANCE_RE = re.compile(
     re.I,
 )
 PublicReadinessStatus = Literal["ready", "hold_no_marker", "fix_leak", "unknown"]
+_APPLE_PILOT_FEATURED_CATEGORY = "hero"
+_APPLE_PILOT_READY_SIGNATURES: dict[str | None, tuple[str, ...]] = {
+    None: ("apple-hero", "A quieter way to launch"),
+    "article-layout": ("apple-article", "How product storytelling gets room to breathe."),
+    "cta-block": ("apple-cta", "Turn a quiet product moment into a confident choice."),
+    "feature-grid": ("apple-feature-grid", "One grid, several quiet reasons to care."),
+    "footer": ("apple-footer", "Shop", "Support"),
+    "hero": ("apple-hero", "A quieter way to launch"),
+    "navigation": ("apple-nav", "Store"),
+    "news-list": ("apple-news-list", "Editorial cards with a product-first calm."),
+    "process-steps": ("apple-process", "A four-step path that feels almost invisible."),
+    "testimonials": ("apple-testimonials", "Editorial proof without visual noise."),
+}
+_APPLE_PILOT_FORBIDDEN_RE = re.compile(
+    r"(?:assets are not available|lorem ipsum|wordmark|tagline goes here)",
+    re.I,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -559,17 +576,22 @@ def _related_for(session: Session, brand_slug: str,
     )
     cat_rows = session.execute(cat_stmt).all()
     ready_cats: set[str] = set()
+    exclude_public_category = canonical_public_category_slug(exclude_category)
     for category_slug, rendered_html in cat_rows:
         if not category_slug or not isinstance(category_slug, str):
             continue
-        if category_slug == exclude_category:
+        public_category_slug = canonical_public_category_slug(category_slug)
+        if public_category_slug is None:
+            continue
+        if public_category_slug == exclude_public_category:
             continue
         readiness = _public_readiness_status(
-            category_slug=category_slug,
+            brand_slug=brand_slug,
+            category_slug=public_category_slug,
             rendered_html=rendered_html,
         )
         if readiness == "ready":
-            ready_cats.add(category_slug)
+            ready_cats.add(public_category_slug)
     cats = sorted(ready_cats)
     for cat in cats[:4]:
         related.append(RelatedItem(
@@ -658,8 +680,30 @@ def _extract_page_manifest_fields(
     return missing_groups, captured_groups
 
 
+def _apple_pilot_is_ready(
+    *,
+    category_slug: str | None,
+    rendered_html: str,
+) -> bool:
+    """Return True only for Apple pilot pages with rebuilt design substance.
+
+    The Apple pilot must not expose token specimens or mined one-control stubs
+    as public-ready design assets. Each public Apple page needs a known rebuilt
+    signature and must avoid the placeholder copy that made the live library
+    feel empty before the pilot reset.
+    """
+    if _APPLE_PILOT_FORBIDDEN_RE.search(rendered_html):
+        return False
+    signatures = _APPLE_PILOT_READY_SIGNATURES.get(category_slug)
+    if signatures is None:
+        return False
+    lowered = rendered_html.lower()
+    return all(signature.lower() in lowered for signature in signatures)
+
+
 def _public_readiness_status(
     *,
+    brand_slug: str | None = None,
     category_slug: str | None,
     rendered_html: str | None,
 ) -> PublicReadinessStatus:
@@ -669,17 +713,21 @@ def _public_readiness_status(
     public. Category pages need a DRL component marker because Phase F found
     many category URLs resolving with generic render output. Leak signatures
     override marker status because an internally contaminated page is never
-    public-ready.
+    public-ready. Apple is temporarily stricter for the one-brand pilot.
     """
     html = rendered_html or ""
     if _INTERNAL_PROVENANCE_RE.search(html):
         return "fix_leak"
+    if brand_slug == "apple":
+        return "ready" if _apple_pilot_is_ready(
+            category_slug=category_slug,
+            rendered_html=html,
+        ) else "hold_no_marker"
     if category_slug is None:
         return "ready"
     if _PUBLIC_COMPONENT_MARKER_RE.search(html):
         return "ready"
     return "hold_no_marker"
-
 
 # Single source of truth for the curated-metadata field names (D13).
 #
@@ -799,6 +847,7 @@ def _page_to_data(
     """Materialize the contract-shaped page payload from ORM rows."""
     missing_groups, captured_groups = _extract_page_manifest_fields(page.metadata_json)
     readiness = _public_readiness_status(
+        brand_slug=page.brand_slug,
         category_slug=category_slug,
         rendered_html=page.rendered_html,
     )
@@ -960,13 +1009,12 @@ def get_brand_canonical(
     brand_slug: str,
     session: Session = Depends(get_db),
 ) -> JSONResponse:
-    """Return the canonical brand page (latest pull, alphabet type-specimen).
+    """Return the canonical brand page for one brand.
 
-    Prefers category_slug='alphabet' per D19: the type-specimen is the intended
-    featured artifact. All 18 template classes share identical fetched_at within
-    one asset_version, so LIMIT 1 without this filter returns an arbitrary class.
-    Falls back to any canonical page when no alphabet page exists (pre-v5 corpora,
-    lightweight test fixtures). 404 only when no canonical page of any kind exists.
+    The general corpus still prefers the alphabet type specimen per D19. The
+    Apple pilot is narrower: it must open on a rebuilt design surface, so Apple
+    prefers the hero page. If the preferred page is absent, the route falls
+    back to any canonical page for that brand.
     """
     _validate_brand_slug(brand_slug)
 
@@ -990,7 +1038,10 @@ def get_brand_canonical(
             base = base.where(LibraryPage.category_slug == category_slug)
         return base
 
-    row = session.execute(_canonical_stmt(category_slug="alphabet")).first()
+    featured_category = (
+        _APPLE_PILOT_FEATURED_CATEGORY if brand_slug == "apple" else "alphabet"
+    )
+    row = session.execute(_canonical_stmt(category_slug=featured_category)).first()
     if row is None:
         row = session.execute(_canonical_stmt(category_slug=None)).first()
     if row is None:
@@ -1183,6 +1234,7 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
         if canonical_category_slug is None:
             continue
         readiness = _public_readiness_status(
+            brand_slug=brand_slug,
             category_slug=canonical_category_slug,
             rendered_html=rendered_html,
         )
