@@ -887,9 +887,21 @@ def _page_to_data(
     is_canonical: bool,
     is_version_snapshot: bool,
     related: list[RelatedItem],
+    missing_groups_override: list[str] | None = None,
+    captured_groups_override: list[str] | None = None,
 ) -> LibraryPageData:
     """Materialize the contract-shaped page payload from ORM rows."""
-    missing_groups, captured_groups = _extract_page_manifest_fields(page.metadata_json)
+    page_missing_groups, page_captured_groups = _extract_page_manifest_fields(page.metadata_json)
+    missing_groups = (
+        missing_groups_override
+        if missing_groups_override is not None
+        else page_missing_groups
+    )
+    captured_groups = (
+        captured_groups_override
+        if captured_groups_override is not None
+        else page_captured_groups
+    )
     readiness = _public_readiness_status(
         brand_slug=page.brand_slug,
         category_slug=category_slug,
@@ -934,6 +946,37 @@ def _page_to_data(
     return payload
 
 
+
+
+
+def _apple_root_manifest_fields(session: Session) -> tuple[list[str], list[str]]:
+    """Return route-level completion fields for the Apple brand root.
+
+    Apple's root page is rendered from the hero row, but the user-facing
+    promise is the full Apple asset library. The root metadata therefore
+    reports the ready public Apple route inventory instead of the stale
+    per-row capture manifest attached to the hero page.
+    """
+    stmt = (
+        select(LibraryPage.category_slug, LibraryPage.rendered_html)
+        .join(AssetVersion, AssetVersion.id == LibraryPage.asset_version_id)
+        .where(LibraryPage.brand_slug == "apple")
+        .where(AssetVersion.is_public.is_(True))
+    )
+    ready_categories: set[str] = set()
+    for category_slug, rendered_html in session.execute(stmt).all():
+        public_slug = canonical_public_category_slug(category_slug)
+        if public_slug is None or public_slug not in _APPLE_COMPLETED_CATEGORY_SLUGS:
+            continue
+        readiness = _public_readiness_status(
+            brand_slug="apple",
+            category_slug=public_slug,
+            rendered_html=rendered_html,
+        )
+        if readiness == "ready":
+            ready_categories.add(public_slug)
+    missing_categories = sorted(_APPLE_COMPLETED_CATEGORY_SLUGS - ready_categories)
+    return missing_categories, sorted(ready_categories)
 
 def _category_version_lookup(
     session: Session,
@@ -1091,11 +1134,17 @@ def get_brand_canonical(
     if row is None:
         raise HTTPException(status_code=404, detail="brand_not_found")
     page, asset_version = row
+    missing_groups_override = None
+    captured_groups_override = None
+    if brand_slug == "apple":
+        missing_groups_override, captured_groups_override = _apple_root_manifest_fields(session)
     data = _page_to_data(
         page, asset_version,
         category_slug=None, version_label=None, asset_id=None,
         is_canonical=True, is_version_snapshot=False,
         related=_related_for(session, brand_slug),
+        missing_groups_override=missing_groups_override,
+        captured_groups_override=captured_groups_override,
     )
     return _json(dict(data), cache=CACHE_PAGE)
 

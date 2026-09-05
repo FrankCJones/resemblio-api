@@ -1582,6 +1582,55 @@ def test_apple_completion_related_links_expose_all_completed_categories(
     assert "/library/apple/product-cards/" in hrefs
 
 
+
+def test_apple_brand_root_reports_ready_route_inventory(
+    client: TestClient, session: Session
+) -> None:
+    """Apple root manifest fields reflect ready routes, not stale hero metadata."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-05",
+    )
+    hero = _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="hero",
+        is_canonical=True,
+        rendered_html=_rich_apple_component_html("apple-hero", "A quieter way to launch"),
+    )
+    hero.metadata_json = _v2_metadata(
+        brand_slug="apple",
+        category_slug="hero",
+        captured_groups=["color"],
+        missing_slugs=["buttons", "inputs"],
+    )
+    for category_slug in ("buttons", "inputs"):
+        page = _make_page(
+            session,
+            av,
+            brand_slug="apple",
+            category_slug=category_slug,
+            is_canonical=True,
+            rendered_html=_rich_apple_component_html(f"apple-{category_slug}"),
+        )
+        page.metadata_json = _v2_metadata(
+            brand_slug="apple",
+            category_slug=category_slug,
+            captured_groups=[category_slug],
+            missing_slugs=[],
+        )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple")
+
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert {"hero", "buttons", "inputs"}.issubset(set(data["captured_groups"]))
+    assert "buttons" not in data["missing_groups"]
+    assert "inputs" not in data["missing_groups"]
+
 def test_apple_completion_sitemap_includes_completed_component_categories(
     client: TestClient, session: Session
 ) -> None:
