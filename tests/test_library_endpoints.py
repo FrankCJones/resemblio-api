@@ -1504,6 +1504,112 @@ def test_public_source_url_normalises_seed_urns_and_pseudo_urls() -> None:
     assert _public_source_url("https://stripe.com/", "stripe") == "https://stripe.com/"
 
 
+def _rich_apple_component_html(category_slug: str, body: str = "Phase G component body") -> str:
+    """Return enough real-component-shaped Apple HTML to satisfy readiness."""
+    filler = " ".join(f"detail-{i}" for i in range(180))
+    return (
+        f'<article class="{category_slug}" data-rs-source="drl-component">'
+        f'{body} {filler}'
+        '</article>'
+    )
+
+
+def test_apple_completion_promotes_rich_component_categories(
+    client: TestClient, session: Session
+) -> None:
+    """Completed Apple component groups are public-ready, indexable, and exportable."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-05",
+    )
+    _make_page(
+        session,
+        av,
+        brand_slug="apple",
+        category_slug="buttons",
+        is_canonical=True,
+        rendered_html=_rich_apple_component_html("apple-buttons", "Primary Secondary Focus Hover"),
+    )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple/categories/buttons")
+
+    assert resp.status_code == 200
+    data = resp.json()["data"]
+    assert data["public_readiness_status"] == "ready"
+    assert data["is_public_indexable"] is True
+    assert data["is_exportable"] is True
+
+
+def test_apple_completion_related_links_expose_all_completed_categories(
+    client: TestClient, session: Session
+) -> None:
+    """Apple related links are no longer capped to the old four-route slice."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-05",
+    )
+    for category_slug in (
+        "buttons",
+        "color-groups",
+        "editorial-cards",
+        "hero",
+        "inputs",
+        "product-cards",
+    ):
+        body = "A quieter way to launch" if category_slug == "hero" else "Phase G Apple asset"
+        css_class = "apple-hero" if category_slug == "hero" else f"apple-{category_slug}"
+        _make_page(
+            session,
+            av,
+            brand_slug="apple",
+            category_slug=category_slug,
+            is_canonical=True,
+            rendered_html=_rich_apple_component_html(css_class, body),
+        )
+    session.commit()
+
+    resp = client.get("/v1/library/brands/apple/categories/hero")
+
+    assert resp.status_code == 200
+    hrefs = {item["href"] for item in resp.json()["data"]["related"]}
+    assert "/library/apple/buttons/" in hrefs
+    assert "/library/apple/color-groups/" in hrefs
+    assert "/library/apple/editorial-cards/" in hrefs
+    assert "/library/apple/inputs/" in hrefs
+    assert "/library/apple/product-cards/" in hrefs
+
+
+def test_apple_completion_sitemap_includes_completed_component_categories(
+    client: TestClient, session: Session
+) -> None:
+    """The sitemap exposes completed Apple categories instead of hiding them."""
+    av = _make_asset_version(
+        session,
+        url="https://www.apple.com/",
+        version_label="2026-09-05",
+    )
+    for category_slug in ("buttons", "product-cards"):
+        _make_page(
+            session,
+            av,
+            brand_slug="apple",
+            category_slug=category_slug,
+            is_canonical=True,
+            rendered_html=_rich_apple_component_html(f"apple-{category_slug}"),
+        )
+    session.commit()
+
+    resp = client.get("/v1/library/sitemap")
+
+    assert resp.status_code == 200
+    paths = {entry["path"] for entry in resp.json()["data"]["entries"]}
+    assert "/library/apple/buttons/" in paths
+    assert "/library/apple/product-cards/" in paths
+
+
 def test_apple_pilot_brand_canonical_prefers_rebuilt_hero(
     client: TestClient, session: Session
 ) -> None:

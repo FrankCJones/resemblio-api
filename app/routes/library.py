@@ -126,7 +126,43 @@ _INTERNAL_PROVENANCE_RE = re.compile(
 )
 PublicReadinessStatus = Literal["ready", "hold_no_marker", "fix_leak", "unknown"]
 _APPLE_PILOT_FEATURED_CATEGORY = "hero"
-_APPLE_PILOT_READY_SIGNATURES: dict[str | None, tuple[str, ...]] = {
+_APPLE_COMPLETED_CATEGORY_SLUGS: frozenset[str] = frozenset({
+    "article-layout",
+    "buttons",
+    "color-groups",
+    "comparison-tiles",
+    "cta-block",
+    "editorial-cards",
+    "empty-states",
+    "feature-grid",
+    "footer",
+    "form-fields",
+    "hero",
+    "icon-buttons",
+    "inputs",
+    "layout-rhythm",
+    "links",
+    "loaders",
+    "modal-sheet",
+    "motion-primitives",
+    "navigation",
+    "news-list",
+    "process-steps",
+    "product-cards",
+    "promo-panels",
+    "radius-scales",
+    "search",
+    "segmented-controls",
+    "selection-controls",
+    "shadow-scales",
+    "spacing-scales",
+    "status-indicators",
+    "testimonials",
+    "tooltips",
+    "type-pairings",
+    "type-specimens",
+})
+_APPLE_STRONG_READY_SIGNATURES: dict[str | None, tuple[str, ...]] = {
     None: ("apple-hero", "A quieter way to launch"),
     "article-layout": ("apple-article", "How product storytelling gets room to breathe."),
     "cta-block": ("apple-cta", "Turn a quiet product moment into a confident choice."),
@@ -138,8 +174,9 @@ _APPLE_PILOT_READY_SIGNATURES: dict[str | None, tuple[str, ...]] = {
     "process-steps": ("apple-process", "A four-step path that feels almost invisible."),
     "testimonials": ("apple-testimonials", "Editorial proof without visual noise."),
 }
+_APPLE_READY_MIN_HTML_CHARS = 800
 _APPLE_PILOT_FORBIDDEN_RE = re.compile(
-    r"(?:assets are not available|lorem ipsum|wordmark|tagline goes here)",
+    r"(?:assets are not available|lorem ipsum|wordmark|tagline goes here|apple\s+logo|copyright|all rights reserved|\u00a9|\u00ae|\u2122|\uf8ff)",
     re.I,
 )
 
@@ -593,7 +630,8 @@ def _related_for(session: Session, brand_slug: str,
         if readiness == "ready":
             ready_cats.add(public_category_slug)
     cats = sorted(ready_cats)
-    for cat in cats[:4]:
+    category_limit = len(cats) if brand_slug == "apple" else 4
+    for cat in cats[:category_limit]:
         related.append(RelatedItem(
             label=f"{_title_case(cat)} from {_brand_display(brand_slug)}",
             href=f"/library/{brand_slug}/{cat}/",
@@ -685,20 +723,26 @@ def _apple_pilot_is_ready(
     category_slug: str | None,
     rendered_html: str,
 ) -> bool:
-    """Return True only for Apple pilot pages with rebuilt design substance.
+    """Return True only for completed Apple pages with real design substance.
 
-    The Apple pilot must not expose token specimens or mined one-control stubs
-    as public-ready design assets. Each public Apple page needs a known rebuilt
-    signature and must avoid the placeholder copy that made the live library
-    feel empty before the pilot reset.
+    Phase F promoted only ten named Apple routes. Phase G promotes the full
+    Apple completeness taxonomy after the source corpus became complete. A
+    category must be in the completed taxonomy, come from the real DRL component
+    path, avoid placeholder and protected-identity text, and carry enough HTML
+    substance to reject tiny one-control stubs.
     """
     if _APPLE_PILOT_FORBIDDEN_RE.search(rendered_html):
         return False
-    signatures = _APPLE_PILOT_READY_SIGNATURES.get(category_slug)
-    if signatures is None:
-        return False
+    public_category_slug = canonical_public_category_slug(category_slug)
+    signatures = _APPLE_STRONG_READY_SIGNATURES.get(public_category_slug)
     lowered = rendered_html.lower()
-    return all(signature.lower() in lowered for signature in signatures)
+    if signatures is not None:
+        return all(signature.lower() in lowered for signature in signatures)
+    if public_category_slug not in _APPLE_COMPLETED_CATEGORY_SLUGS:
+        return False
+    if _PUBLIC_COMPONENT_MARKER_RE.search(rendered_html) is None:
+        return False
+    return len(rendered_html.strip()) >= _APPLE_READY_MIN_HTML_CHARS
 
 
 def _public_readiness_status(

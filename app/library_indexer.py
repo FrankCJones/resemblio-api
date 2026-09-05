@@ -471,6 +471,32 @@ def _all_template_classes() -> tuple[str, ...]:
     return tuple(sorted(TEMPLATES_BY_CLASS.keys()))
 
 
+def _classes_to_compose_for_asset(
+    *,
+    dtcg_class: str | None,
+    mined_class: str | None,
+    has_real_component: bool,
+) -> tuple[str, ...]:
+    """Return category classes that should be written for one asset version.
+
+    Mined synthetics still write exactly one category so they cannot demote
+    unrelated whole pages during canonical reconciliation. Normal assets keep
+    the legacy DRL template set and, when a stored real component exists for a
+    non-template class, append that own class so finished atom assets such as
+    Apple product cards or motion primitives can receive public routes.
+    """
+    if mined_class:
+        return (mined_class,)
+    classes = list(_all_template_classes())
+    canonical_dtcg_class = canonical_public_category_slug(dtcg_class)
+    if (
+        has_real_component
+        and canonical_dtcg_class is not None
+        and canonical_dtcg_class not in classes
+    ):
+        classes.append(canonical_dtcg_class)
+    return tuple(sorted(classes))
+
 def _compose_one_page(
     class_name: str,
     *,
@@ -1605,8 +1631,10 @@ def _process_job(session: Session, job: LibraryIndexJob) -> JobOutcome:
     raw_dtcg_class = dtcg_json.get("class")
     dtcg_class: str | None = raw_dtcg_class if isinstance(raw_dtcg_class, str) else None
     real_component = get_asset_component(session, asset_version.id) if dtcg_class else None
-    classes_to_compose: tuple[str, ...] = (
-        (mined_class,) if mined_class else _all_template_classes()
+    classes_to_compose = _classes_to_compose_for_asset(
+        dtcg_class=dtcg_class,
+        mined_class=mined_class,
+        has_real_component=real_component is not None,
     )
     written = 0
     for class_name in classes_to_compose:

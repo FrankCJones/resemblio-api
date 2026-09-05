@@ -32,6 +32,7 @@ from app.constants import (
     SCHEMA_V1,
 )
 from app.library_indexer import (
+    _classes_to_compose_for_asset,
     _compose_one_page,
     _tokens_to_inline_css,
     derive_brand_slug,
@@ -64,6 +65,26 @@ def _registered_template_count() -> int:
 
     return len(TEMPLATES_BY_CLASS)
 
+
+def test_classes_to_compose_appends_real_non_template_component_class() -> None:
+    """Real components outside the legacy template set still get a route."""
+    classes = _classes_to_compose_for_asset(
+        dtcg_class="product-cards",
+        mined_class=None,
+        has_real_component=True,
+    )
+
+    assert "product-cards" in classes
+    assert len(classes) == _registered_template_count() + 1
+
+
+def test_classes_to_compose_keeps_mined_single_class_boundary() -> None:
+    """Mined synthetics keep their one-class reconciliation boundary."""
+    assert _classes_to_compose_for_asset(
+        dtcg_class="product-cards",
+        mined_class="buttons",
+        has_real_component=True,
+    ) == ("buttons",)
 
 def _make_asset_version(
     session: Session,
