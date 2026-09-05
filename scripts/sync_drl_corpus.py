@@ -193,13 +193,16 @@ def build_corpus_plan(
 
 
 def sha256_hex(path: pathlib.Path) -> str:
-    """Return the hex SHA-256 digest of a file's byte contents.
+    """Return an EOL-stable SHA-256 digest for vendored text files.
 
-    Used both by the sync script (to build the manifest) and by the test
-    (to re-verify the manifest after the fact).
+    The vendored corpus only allows HTML, CSS, and JSON. Git checks these
+    files out with platform-specific worktree endings on some Windows setups,
+    while CI uses LF. Normalizing CRLF to LF keeps manifest verification stable
+    across both environments without weakening content integrity.
     """
+    data = path.read_bytes().replace(b"\r\n", b"\n")
     h = hashlib.sha256()
-    h.update(path.read_bytes())
+    h.update(data)
     return h.hexdigest()
 
 

@@ -61,9 +61,9 @@ def _expected_asset_count() -> int:
 
 
 def _sha256(path: pathlib.Path) -> str:
-    """Return the hex SHA-256 of a file's contents."""
+    """Return the EOL-stable SHA-256 used by the vendored manifest."""
     h = hashlib.sha256()
-    h.update(path.read_bytes())
+    h.update(path.read_bytes().replace(b"\r\n", b"\n"))
     return h.hexdigest()
 
 
