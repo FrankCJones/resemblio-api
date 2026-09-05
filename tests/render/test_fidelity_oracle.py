@@ -319,7 +319,7 @@ class TestCandidateChromeDetection:
 
 
 class TestCorpusIteration:
-    """Corpus iteration must yield 955 assets in deterministic order."""
+    """Corpus iteration must yield the declared asset count in deterministic order."""
 
     @pytest.fixture
     def corpus_root(self):
@@ -330,11 +330,14 @@ class TestCorpusIteration:
             pytest.skip("vendored DRL corpus not present")
         return root
 
-    def test_yields_955_assets(self, corpus_root):
+    def test_yields_declared_asset_count(self, corpus_root):
+        import json
+
         from tests.render.fidelity_oracle import iter_corpus_assets
 
+        declared_count = json.loads((corpus_root / "corpus.json").read_text(encoding="utf-8"))["asset_count"]
         assets = list(iter_corpus_assets(corpus_root))
-        assert len(assets) == 955
+        assert len(assets) == declared_count
 
     def test_deterministic_across_two_runs(self, corpus_root):
         from tests.render.fidelity_oracle import iter_corpus_assets

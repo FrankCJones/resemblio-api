@@ -2,7 +2,7 @@
 
 The DRL ships two surfaces:
 
-- ``corpus.json`` at the DRL root (41 systems, 955 component-level assets).
+- ``corpus.json`` at the DRL root (41 systems, 974 component-level assets).
   This is the authoritative brand discovery source.
 - ``_extractions/<brand>/`` (24 brand directories pre-composed by the upstream
   pipeline). These are NOT the discovery source; they exist for 24 of the 40

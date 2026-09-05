@@ -8,14 +8,14 @@ tree.
 
 | Path | Description |
 |---|---|
-| `corpus.json` | Flat asset catalogue (955 assets, 41 systems) |
+| `corpus.json` | Flat asset catalogue (974 assets, 41 systems) |
 | `systems/<brand>/system.json` | Per-system design metadata (40 of 41 brands) |
-| `assets/<class>/<slug>/asset.html` | Real component markup (955 files) |
-| `assets/<class>/<slug>/tokens.css` | CSS custom-property tokens (955 files) |
+| `assets/<class>/<slug>/asset.html` | Real component markup (974 files) |
+| `assets/<class>/<slug>/tokens.css` | CSS custom-property tokens (974 files) |
 | `manifest.json` | Per-file sha256 integrity seal |
 | `VERSION` | Provenance: source + vendored timestamp + corpus generation date |
 
-Total: 1,951 files, ~11.6 MB.
+Total: 1,989 files, ~11.6 MB.
 
 ## What is NOT here
 
