@@ -43,6 +43,7 @@ _WORD_SPLIT_RE = re.compile(r"[^a-z0-9]+")
 _HEX_COLOR_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 _DOMAIN_STOPWORDS = frozenset({"www", "com", "co", "net", "org", "io", "app", "design", "studio"})
 _INTERNAL_NAME_PARTS = frozenset({"resemblio", "drl", "urn", "seed", "bootstrap", "mined", "rebuild"})
+_SAFE_SYSTEM_FONT_KEYWORDS = ("-apple-system",)
 
 
 class LibraryTokenSourceAttribution(TypedDict):
@@ -91,12 +92,20 @@ def _contains_blocked_text(value: str, protected: frozenset[str]) -> bool:
     lowered = value.lower()
     if _INTERNAL_PROVENANCE_RE.search(lowered):
         return True
-    return any(re.search(rf"\b{re.escape(part)}\b", lowered) for part in protected)
+    screened = lowered
+    for keyword in _SAFE_SYSTEM_FONT_KEYWORDS:
+        screened = screened.replace(keyword, "")
+    return any(re.search(rf"\b{re.escape(part)}\b", screened) for part in protected)
+
+
+def _without_design_system_prefix(kebab: str) -> str:
+    """Remove the DRL design-system prefix before consumer-facing grouping."""
+    return kebab.removeprefix("ds-")
 
 
 def _safe_leaf_name(raw: str, protected: frozenset[str], fallback: str) -> str | None:
     """Return a public-safe leaf token name, or None when it cannot be cleaned."""
-    kebab = _kebab(raw)
+    kebab = _without_design_system_prefix(_kebab(raw))
     if not kebab or _INTERNAL_PROVENANCE_RE.search(kebab):
         return None
     raw_parts = kebab.split("-")
@@ -139,7 +148,7 @@ def _safe_value(raw: Any, protected: frozenset[str]) -> Any | None:
 
 def _classify_flat_token(name: str, value: Any) -> tuple[str, str] | None:
     """Map a flat DRL token key to a DTCG group and leaf name."""
-    kebab = _kebab(name)
+    kebab = _without_design_system_prefix(_kebab(name))
     if not kebab:
         return None
     if kebab.startswith("font-"):
@@ -147,6 +156,12 @@ def _classify_flat_token(name: str, value: Any) -> tuple[str, str] | None:
     if kebab.startswith("space-"):
         return "dimension", kebab
     if kebab.startswith("radius-"):
+        return "dimension", kebab
+    if kebab.startswith("container-"):
+        return "dimension", kebab
+    if kebab.startswith("breakpoint-"):
+        return "dimension", kebab
+    if kebab.startswith("section-"):
         return "dimension", kebab
     if kebab.startswith("text-") and isinstance(value, str) and value.endswith(("px", "rem", "em")):
         return "dimension", kebab

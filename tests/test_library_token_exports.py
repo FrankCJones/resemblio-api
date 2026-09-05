@@ -2,8 +2,21 @@
 from __future__ import annotations
 
 import json
+import re
+from pathlib import Path
 
 from app.library_token_exports import build_library_token_payload
+
+
+_CSS_VAR_PATTERN = re.compile(r"--([a-zA-Z0-9_-]+)\s*:\s*([^;]+);")
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_APPLE_CORPUS_ROOT = _REPO_ROOT / "_vendored" / "drl_corpus"
+
+
+def _parse_tokens_css(path: Path) -> dict[str, str]:
+    """Read a token CSS file and return custom properties without leading dashes."""
+    text = path.read_text(encoding="utf-8")
+    return {match.group(1): match.group(2).strip() for match in _CSS_VAR_PATTERN.finditer(text)}
 
 
 def _dump_tokens(payload: dict[str, object]) -> str:
@@ -85,3 +98,66 @@ def test_source_attribution_stays_outside_token_names() -> None:
         "inspired_by": "a24films.com",
     }
     assert "a24" not in _dump_tokens(payload)
+
+def test_ds_prefixed_flat_tokens_normalize_to_consumer_leaf_names() -> None:
+    """DRL `ds` prefixed tokens keep their groups and lose redundant prefixes."""
+    payload = build_library_token_payload(
+        {
+            "tokens": {
+                "ds-bg": "#ffffff",
+                "ds-font-body": "-apple-system, BlinkMacSystemFont, sans-serif",
+                "ds-space-1": "4px",
+                "ds-radius-sm": "10px",
+                "ds-shadow-sm": "0 8px 24px rgb(0 0 0 / 0.12)",
+                "ds-duration-normal": "220ms",
+                "ds-ease-standard": "cubic-bezier(0.2, 0, 0, 1)",
+            }
+        },
+        brand_slug="apple",
+        source_url="https://www.apple.com",
+    )
+
+    assert payload is not None
+    assert payload["tokens"]["color"]["bg"]["$value"] == "#ffffff"
+    assert "ds-bg" not in payload["tokens"]["color"]
+    assert payload["tokens"]["fontFamily"]["body"]["$value"].startswith("-apple-system")
+    assert payload["tokens"]["dimension"]["space-1"]["$value"] == "4px"
+    assert payload["tokens"]["dimension"]["radius-sm"]["$value"] == "10px"
+    assert payload["tokens"]["shadow"]["sm"]["$value"].startswith("0 8px")
+    assert payload["tokens"]["duration"]["normal"]["$value"] == "220ms"
+    assert payload["tokens"]["cubicBezier"]["standard"]["$value"].startswith("cubic-bezier")
+
+
+def test_vendored_apple_foundation_tokens_build_export_payload() -> None:
+    """Apple vendored foundation tokens produce a useful export payload."""
+    token_paths = [
+        _APPLE_CORPUS_ROOT / "assets" / "alphabets" / "apple" / "tokens.css",
+        _APPLE_CORPUS_ROOT / "assets" / "atoms" / "motion-primitives" / "apple-motion-system-001" / "tokens.css",
+        _APPLE_CORPUS_ROOT / "assets" / "atoms" / "spacing-scales" / "apple-layout-rhythm-001" / "tokens.css",
+    ]
+    tokens: dict[str, str] = {}
+    for path in token_paths:
+        tokens.update(_parse_tokens_css(path))
+
+    payload = build_library_token_payload(
+        {"tokens": tokens},
+        brand_slug="apple",
+        source_url="https://www.apple.com",
+    )
+
+    assert payload is not None
+    assert payload["source_attribution"] == {
+        "source_url": "https://www.apple.com",
+        "inspired_by": "apple.com",
+    }
+    for group in ("color", "dimension", "fontFamily", "shadow", "duration", "cubicBezier"):
+        assert group in payload["tokens"]
+        assert payload["tokens"][group]
+    assert payload["tokens"]["color"]["bg"]["$value"] == "#FFFFFF"
+    assert "ds-bg" not in payload["tokens"]["color"]
+    leaf_names = json.dumps(
+        {group: sorted(leaves) for group, leaves in payload["tokens"].items()},
+        sort_keys=True,
+    )
+    assert "apple" not in leaf_names.lower()
+    assert payload["token_count"] >= 24
