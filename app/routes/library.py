@@ -576,6 +576,13 @@ def _hub_meta_for_brand(
     )
 
 
+
+def _apple_public_asset_slug(category_slug: str) -> str:
+    """Return the Apple user-facing route slug for a ready category."""
+    if category_slug == "form-fields":
+        return "forms"
+    return category_slug
+
 def _related_for(session: Session, brand_slug: str,
                  *, exclude_category: str | None = None) -> list[RelatedItem]:
     """Build the cross-link related list for a page.
@@ -614,12 +621,16 @@ def _related_for(session: Session, brand_slug: str,
     cat_rows = session.execute(cat_stmt).all()
     ready_cats: set[str] = set()
     exclude_public_category = canonical_public_category_slug(exclude_category)
+    if brand_slug == "apple" and exclude_public_category is not None:
+        exclude_public_category = _apple_public_asset_slug(exclude_public_category)
     for category_slug, rendered_html in cat_rows:
         if not category_slug or not isinstance(category_slug, str):
             continue
         public_category_slug = canonical_public_category_slug(category_slug)
         if public_category_slug is None:
             continue
+        if brand_slug == "apple":
+            public_category_slug = _apple_public_asset_slug(public_category_slug)
         if public_category_slug == exclude_public_category:
             continue
         readiness = _public_readiness_status(
@@ -975,6 +986,7 @@ def _apple_root_manifest_fields(session: Session) -> tuple[list[str], list[str]]
         )
         if readiness == "ready":
             ready_categories.add(public_slug)
+            ready_categories.add(_apple_public_asset_slug(public_slug))
     missing_categories = sorted(_APPLE_COMPLETED_CATEGORY_SLUGS - ready_categories)
     return missing_categories, sorted(ready_categories)
 
@@ -1326,6 +1338,8 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
         _add(f"/library/{brand_slug}/", ts)
         if canonical_category_slug is None:
             continue
+        if brand_slug == "apple":
+            canonical_category_slug = _apple_public_asset_slug(canonical_category_slug)
         readiness = _public_readiness_status(
             brand_slug=brand_slug,
             category_slug=canonical_category_slug,
@@ -1343,3 +1357,4 @@ def get_sitemap(session: Session = Depends(get_db)) -> JSONResponse:
         "total": len(entries),
     }
     return _json(payload, cache=CACHE_SITEMAP)
+

@@ -1606,7 +1606,7 @@ def test_apple_brand_root_reports_ready_route_inventory(
         captured_groups=["color"],
         missing_slugs=["buttons", "inputs"],
     )
-    for category_slug in ("buttons", "inputs"):
+    for category_slug in ("buttons", "inputs", "form-fields"):
         page = _make_page(
             session,
             av,
@@ -1627,9 +1627,11 @@ def test_apple_brand_root_reports_ready_route_inventory(
 
     assert resp.status_code == 200
     data = resp.json()["data"]
-    assert {"hero", "buttons", "inputs"}.issubset(set(data["captured_groups"]))
+    assert {"hero", "buttons", "inputs", "forms", "form-fields"}.issubset(set(data["captured_groups"]))
     assert "buttons" not in data["missing_groups"]
     assert "inputs" not in data["missing_groups"]
+    assert "forms" not in data["missing_groups"]
+    assert "form-fields" not in data["missing_groups"]
 
 def test_apple_completion_sitemap_includes_completed_component_categories(
     client: TestClient, session: Session
@@ -1640,7 +1642,7 @@ def test_apple_completion_sitemap_includes_completed_component_categories(
         url="https://www.apple.com/",
         version_label="2026-09-05",
     )
-    for category_slug in ("buttons", "product-cards"):
+    for category_slug in ("buttons", "form-fields", "product-cards"):
         _make_page(
             session,
             av,
@@ -1656,6 +1658,8 @@ def test_apple_completion_sitemap_includes_completed_component_categories(
     assert resp.status_code == 200
     paths = {entry["path"] for entry in resp.json()["data"]["entries"]}
     assert "/library/apple/buttons/" in paths
+    assert "/library/apple/forms/" in paths
+    assert "/library/apple/form-fields/" not in paths
     assert "/library/apple/product-cards/" in paths
 
 
@@ -1898,3 +1902,4 @@ def test_apple_pilot_related_links_normalise_plural_category_slugs(
     hrefs = {item["href"] for item in resp.json()["data"]["related"]}
     assert "/library/apple/article-layout/" in hrefs
     assert "/library/apple/article-layouts/" not in hrefs
+
