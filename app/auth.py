@@ -50,6 +50,9 @@ AUTH_FREE_PATHS = frozenset({
     # ``app/routes/internal_test.py``.
     "/v1/internal/auth/test_get_latest_magic_link",
     "/v1/internal/test/teardown_user",
+    # Same stacked test-auth gate as the endpoints above. The route itself
+    # additionally allows only disposable probe addresses and the `solo` tier.
+    "/v1/internal/test/set_subscription_tier",
 })
 
 # Constant-shape pepper used when the operator has not configured an old pepper

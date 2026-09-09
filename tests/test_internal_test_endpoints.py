@@ -278,3 +278,81 @@ def test_teardown_user_idempotent(
     assert body["schema_version"] == 1
     assert body["ok"] is True
     assert body["deleted_rows"] == 0
+
+
+# --- Synthetic export entitlement -----------------------------------------
+
+
+def test_set_subscription_tier_403_when_flag_unset(client: TestClient) -> None:
+    """Tier hook remains dark when the test-auth flag is absent."""
+    response = client.post(
+        "/v1/internal/test/set_subscription_tier",
+        json={"email": "e2e+probe-desktop-1@probe.resemblio.com", "subscription_tier": "solo"},
+        headers=_auth_headers(),
+    )
+    assert response.status_code == 403
+    assert response.json() == {"error": "test_auth_disabled"}
+
+
+def test_set_subscription_tier_requires_valid_test_header(
+    client: TestClient, enabled: None
+) -> None:
+    """Tier hook rejects callers without the second test-auth gate."""
+    response = client.post(
+        "/v1/internal/test/set_subscription_tier",
+        json={"email": "e2e+probe-desktop-1@probe.resemblio.com", "subscription_tier": "solo"},
+    )
+    assert response.status_code == 401
+    assert response.json() == {"error": "test_auth_invalid"}
+
+
+def test_set_subscription_tier_rejects_non_synthetic_email(
+    client: TestClient, session: Session, enabled: None
+) -> None:
+    """The tier hook cannot alter a real-address-shaped account."""
+    _seed_user_with_children(session, "customer@example.com")
+    response = client.post(
+        "/v1/internal/test/set_subscription_tier",
+        json={"email": "customer@example.com", "subscription_tier": "solo"},
+        headers=_auth_headers(),
+    )
+    assert response.status_code == 422
+    assert response.json() == {"error": "synthetic_email_required"}
+    user = session.execute(select(User).where(User.email == "customer@example.com")).scalar_one()
+    assert user.subscription_tier == "free"
+
+
+def test_set_subscription_tier_404_for_missing_synthetic_user(
+    client: TestClient, enabled: None
+) -> None:
+    """The hook never creates users as a side effect."""
+    response = client.post(
+        "/v1/internal/test/set_subscription_tier",
+        json={"email": "e2e+probe-desktop-1@probe.resemblio.com", "subscription_tier": "solo"},
+        headers=_auth_headers(),
+    )
+    assert response.status_code == 404
+    assert response.json() == {"error": "synthetic_user_not_found"}
+
+
+def test_set_subscription_tier_grants_solo_to_synthetic_user(
+    client: TestClient, session: Session, enabled: None
+) -> None:
+    """A pre-existing disposable CI user receives only the export tier."""
+    email = "e2e+probe-desktop-1@probe.resemblio.com"
+    user = _seed_user_with_children(session, email)
+    response = client.post(
+        "/v1/internal/test/set_subscription_tier",
+        json={"email": email, "subscription_tier": "solo"},
+        headers=_auth_headers(),
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "schema_version": 1,
+        "ok": True,
+        "email": email,
+        "user_id": user.id,
+        "subscription_tier": "solo",
+    }
+    session.expire_all()
+    assert session.get(User, user.id).subscription_tier == "solo"
