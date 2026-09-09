@@ -1,0 +1,87 @@
+name: Manage E2E test auth
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Enable or disable the dedicated production E2E test gate
+        required: true
+        type: choice
+        options:
+          - enable
+          - disable
+
+permissions:
+  contents: read
+
+concurrency:
+  group: resemblio-api-e2e-test-auth
+  cancel-in-progress: false
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Stage dedicated test secret
+        if: inputs.mode == 'enable'
+        env:
+          E2E_TEST_AUTH_TOKEN: ${{ secrets.RESEMBLIO_E2E_TEST_AUTH_TOKEN }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          test -n "$E2E_TEST_AUTH_TOKEN"
+          umask 077
+          printf '%s' "$E2E_TEST_AUTH_TOKEN" > /tmp/resemblio-e2e-test-auth-token
+          scp /tmp/resemblio-e2e-test-auth-token "${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/resemblio-e2e-test-auth-token"
+          rm -f /tmp/resemblio-e2e-test-auth-token
+
+      - name: Apply test-auth mode and restart API
+        env:
+          MODE: ${{ inputs.mode }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" "MODE=${MODE}" bash -s << 'REMOTE'
+          set -euo pipefail
+          ENV_FILE=/opt/resemblio-api/.env
+          TMP_FILE=$(mktemp)
+          sudo cat "$ENV_FILE" | grep -v '^RESEMBLIO_TEST_AUTH_ENABLED=' | grep -v '^RESEMBLIO_TEST_AUTH_TOKEN=' > "$TMP_FILE" || true
+
+          if [ "$MODE" = "enable" ]; then
+            TEST_TOKEN=$(cat /tmp/resemblio-e2e-test-auth-token)
+            rm -f /tmp/resemblio-e2e-test-auth-token
+            test -n "$TEST_TOKEN"
+            printf 'RESEMBLIO_TEST_AUTH_ENABLED=1\nRESEMBLIO_TEST_AUTH_TOKEN=%s\n' "$TEST_TOKEN" >> "$TMP_FILE"
+          elif [ "$MODE" = "disable" ]; then
+            rm -f /tmp/resemblio-e2e-test-auth-token
+          else
+            echo "Invalid mode: $MODE" >&2
+            exit 2
+          fi
+
+          sudo install -o root -g root -m 600 "$TMP_FILE" "$ENV_FILE"
+          rm -f "$TMP_FILE"
+          sudo systemctl restart resemblio-api
+          sleep 2
+          sudo systemctl is-active resemblio-api
+          curl -fsS http://127.0.0.1:8000/v1/healthz >/dev/null
+
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8000/v1/internal/test/set_subscription_tier -H 'Content-Type: application/json' -d '{"email":"e2e+probe-workflow-0@probe.resemblio.com","subscription_tier":"solo"}')
+          if [ "$MODE" = "enable" ] && [ "$STATUS" != "401" ]; then
+            echo "Expected enabled test gate to return 401 without X-Test-Auth, got $STATUS" >&2
+            exit 1
+          fi
+          if [ "$MODE" = "disable" ] && [ "$STATUS" != "403" ]; then
+            echo "Expected disabled test gate to return 403, got $STATUS" >&2
+            exit 1
+          fi
+          REMOTE
