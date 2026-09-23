@@ -70,6 +70,9 @@ from app.library_category_aliases import (
     category_lookup_slugs,
 )
 from app.missing_data_notice import hub_capture_signal_from_captured_groups
+from app.library_component_manifest import ComponentManifest, component_manifest_from_metadata
+from app.apple_component_manifest_registry import manifest_for_apple_category
+from app.apple_system_manifest import AppleSystemManifest, load_public_manifest
 from app.library_token_exports import LibraryTokenPayload, build_library_token_payload
 from app.models import AssetVersion, LibraryPage
 
@@ -126,42 +129,19 @@ _INTERNAL_PROVENANCE_RE = re.compile(
 )
 PublicReadinessStatus = Literal["ready", "hold_no_marker", "fix_leak", "unknown"]
 _APPLE_PILOT_FEATURED_CATEGORY = "hero"
-_APPLE_COMPLETED_CATEGORY_SLUGS: frozenset[str] = frozenset({
-    "article-layout",
-    "buttons",
-    "color-groups",
-    "comparison-tiles",
-    "cta-block",
-    "editorial-cards",
-    "empty-states",
-    "feature-grid",
-    "footer",
-    "form-fields",
-    "hero",
-    "icon-buttons",
-    "inputs",
-    "layout-rhythm",
-    "links",
-    "loaders",
-    "modal-sheet",
-    "motion-primitives",
-    "navigation",
-    "news-list",
-    "process-steps",
-    "product-cards",
-    "promo-panels",
-    "radius-scales",
-    "search",
-    "segmented-controls",
-    "selection-controls",
-    "shadow-scales",
-    "spacing-scales",
-    "status-indicators",
-    "testimonials",
-    "tooltips",
-    "type-pairings",
-    "type-specimens",
-})
+def _apple_manifest_category_slugs() -> frozenset[str]:
+    """Derive single-segment Apple category routes from the canonical artifact."""
+    prefix = "/library/apple/"
+    slugs: set[str] = set()
+    for record in load_public_manifest()["records"]:
+        for route in [record["route"], *record["aliases"]]:
+            suffix = route.removeprefix(prefix).strip("/")
+            if suffix and "/" not in suffix:
+                slugs.add(suffix)
+    return frozenset(slugs)
+
+
+_APPLE_COMPLETED_CATEGORY_SLUGS: frozenset[str] = _apple_manifest_category_slugs()
 _APPLE_STRONG_READY_SIGNATURES: dict[str | None, tuple[str, ...]] = {
     None: ("apple-hero", "A quieter way to launch"),
     "article-layout": ("apple-article", "How product storytelling gets room to breathe."),
@@ -213,6 +193,7 @@ class LibraryPageData(TypedDict, total=False):
     is_public_indexable: bool
     is_exportable: bool
     library_token_export: LibraryTokenPayload
+    component_manifest: ComponentManifest
     # Library v2 D3 acknowledgment fields (Phase 4, 2026-06-07).
     # Sourced from metadata_json.missing_data_notice and
     # metadata_json.capture_manifest written by the indexer.
@@ -925,6 +906,11 @@ def _page_to_data(
         source_url=source_url,
     )
     token_exportable = readiness == "ready" and token_payload is not None
+    component_manifest = component_manifest_from_metadata(page.metadata_json)
+    if page.brand_slug == "apple" and category_slug is not None:
+        component_manifest = manifest_for_apple_category(
+            canonical_public_category_slug(category_slug)
+        )
     payload = LibraryPageData(
         schema_version=LIBRARY_DATA_SCHEMA_VERSION,
         brand_slug=page.brand_slug,
@@ -953,6 +939,8 @@ def _page_to_data(
     # safe and the merged keys are a subset of LibraryPageData's optional keys.
     if token_exportable and token_payload is not None:
         payload["library_token_export"] = token_payload
+    if component_manifest is not None:
+        payload["component_manifest"] = component_manifest
     payload.update(_extract_curated_metadata(asset_version.dtcg_json))
     return payload
 
@@ -1029,6 +1017,12 @@ def _category_version_lookup(
 # Routes
 # ---------------------------------------------------------------------------
 
+
+@router.get("/library/manifests/apple")
+def get_apple_system_manifest() -> JSONResponse:
+    """Return the canonical public Apple system manifest without database IO."""
+    manifest: AppleSystemManifest = load_public_manifest()
+    return _json(dict(manifest), cache=CACHE_PAGE)
 
 @router.get("/library/brands")
 def list_brands(

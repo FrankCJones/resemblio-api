@@ -15,7 +15,11 @@ FastAPI service for authenticated extraction, API key lifecycle, credit ledger p
 - `app/users.py` - shared user creation helpers for Stripe customer creation and onboarding credit.
 - `app/storage.py` - Cloudflare R2 S3-compatible storage for extraction ZIP bundles.
 - `app/extractor_bridge.py` - thin wrapper around `../extractor/codex_extractor.py`, with API-owned ZIP packaging.
-- `app/routes/` - `/v1` endpoints for health, account, API keys, and extractions.
+- `app/routes/` - `/v1` endpoints for health, account, API keys, extractions, and the public library.
+- `app/apple_system_manifest.py` - deterministic 41-record Apple evidence compiler, public validator, compatibility projections, and artifact loader.
+- `app/data/apple_system_manifest.json` - canonical content-addressed public Apple artifact.
+- `private/apple_evidence_ledger.json` - private evidence path and hash ledger, never returned by API routes.
+- `scripts/compile_apple_evidence.py` - offline `check` and `write` command for canonical Apple artifacts.
 - `migrations/versions/` - Alembic migrations for users, API keys, key events, extractions, credit ledger, spend caps, and Stripe event idempotency.
 - `tests/` - offline pytest suite using SQLite, fake R2, fake extractor, and moto.
 - `scripts/create_first_user.py` - local seed helper for a dev account and starter key.
@@ -34,6 +38,7 @@ FastAPI service for authenticated extraction, API key lifecycle, credit ledger p
 
 Auth-free:
 
+- `GET /v1/library/manifests/apple` returns the checked-in canonical Apple system manifest in the standard API envelope. It performs no database or index reads.
 - `GET /v1/healthz` returns `{"status":"ok"}`.
 - `POST /v1/webhooks/stripe` verifies `Stripe-Signature`, handles credit top-ups, and ignores non-top-up events.
 
@@ -91,6 +96,13 @@ Run the API:
 
 ```powershell
 uvicorn app.main:app
+```
+
+Compile and verify the Apple artifact without network or database access:
+
+```powershell
+python -m scripts.compile_apple_evidence write
+python -m scripts.compile_apple_evidence check
 ```
 
 Run tests:

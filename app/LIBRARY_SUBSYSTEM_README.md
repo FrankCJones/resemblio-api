@@ -51,6 +51,11 @@ app/
                                D2 guard: ``_mined_atom_class()`` restricts the class loop
                                to one page for mined synthetics (dtcg["mined_atom_class"]).
                                Per-category canonical reconcile in ``_reconcile_canonical``.
+  apple_system_manifest.py    - Pure 41-record evidence compiler and validator. Reads the
+                               binding matrix and pinned vendored evidence, then produces the
+                               canonical public artifact plus a separate private ledger.
+  data/apple_system_manifest.json
+                             - API-owned content-addressed Apple authority consumed by all clients.
   whole_mining.py            - ``mine_atom_from_whole()``: extracts atom markup + CSS from
                                a DRL whole HTML file. Returns MinedAtom (frozen dataclass).
                                Pure - no DB, no filesystem writes.
@@ -630,6 +635,8 @@ JSON, or wrong-shape input).  If exit 2 fires during the ceremony, check you poi
 | HubCaptureSignal | `hub_capture_signal_v1` | app/missing_data_notice.py |
 | DeployCheckResult | `library_deploy_selfcheck_v1` | app/library_deploy_selfcheck.py |
 | LibraryPage.metadata_json | `library_page_meta_v1` | app/constants.py (LIBRARY_PAGE_METADATA_SCHEMA_VERSION) |
+| AppleSystemManifest | `resemblio_apple_system_manifest_v1` | app/apple_system_manifest.py |
+| AppleEvidenceLedger | `resemblio_apple_evidence_ledger_v1` | app/apple_system_manifest.py |
 | LibraryHubData | `library_data_v1` | app/routes/library.py |
 | LibraryAssertionReport | `library_assertion_report_v1` | app/library_assertion_report.py |
 | ReconciliationResult | `library_reconciliation_v1` | app/library_reseed_verification.py |
