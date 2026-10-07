@@ -12,6 +12,7 @@ from app.config import get_settings, validate_startup_settings
 from app.request_id import REQUEST_ID_HEADER, RequestIdMiddleware
 from app.routes import (
     account,
+    apple_exports,
     api_keys,
     billing,
     convert,
@@ -146,6 +147,7 @@ def create_app() -> FastAPI:
         )
     app.include_router(health.router, prefix="/v1", tags=["health"])
     app.include_router(account.router, prefix="/v1", tags=["account"])
+    app.include_router(apple_exports.router, prefix="/v1", tags=["apple_exports"])
     app.include_router(api_keys.router, prefix="/v1", tags=["api_keys"])
     app.include_router(credit.router, prefix="/v1", tags=["credit"])
     app.include_router(extractions.router, prefix="/v1", tags=["extractions"])

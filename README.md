@@ -18,6 +18,9 @@ FastAPI service for authenticated extraction, API key lifecycle, credit ledger p
 - `app/routes/` - `/v1` endpoints for health, account, API keys, extractions, and the public library.
 - `app/apple_system_manifest.py` - deterministic 41-record Apple evidence compiler, public validator, compatibility projections, and artifact loader.
 - `app/data/apple_system_manifest.json` - canonical content-addressed public Apple artifact.
+- `app/apple_export_product.py` - deterministic, scrub-checked Phase 7 DTCG artifact compiler using the API manifest.
+- `app/data/apple-export-tokens.json` - checked-in public token projection copied byte-for-byte from the web export product.
+- `app/routes/apple_exports.py` - authenticated, entitlement-gated, zero-credit DTCG delivery.
 - `private/apple_evidence_ledger.json` - private evidence path and hash ledger, never returned by API routes.
 - `scripts/compile_apple_evidence.py` - offline `check` and `write` command for canonical Apple artifacts.
 - `migrations/versions/` - Alembic migrations for users, API keys, key events, extractions, credit ledger, spend caps, and Stripe event idempotency.
@@ -55,6 +58,16 @@ Authenticated:
 - `GET /v1/account`
 - `GET /v1/credit/balance`
 - `POST /v1/credit/topup`
+- `GET /v1/apple/exports/dtcg?selection=complete`
+
+The Apple DTCG export route is outside the public `/v1/library` prefix and
+uses bearer authentication plus `LIBRARY_EXPORT_ENTITLED_TIERS`. It accepts
+`selection=complete`, `selection=classification&classification=foundation|component|composition`,
+or `selection=record&record=<record-id>` with repeatable `record` values. It
+returns the deterministic DTCG artifact under the standard `schema_version=2`
+envelope and does not read or mutate the credit ledger. Selector errors use
+stable web-compatible codes; authentication and tier entitlement are checked
+before selector parsing.
 
 Extraction JSON and ZIP manifests carry `schema_version`.
 
