@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.routes import apple_exports
 from app.apple_export_product import (
     AppleSelectorParseError,
     _load_projection,
@@ -201,3 +202,37 @@ def test_endpoint_selector_errors(client: TestClient, session: Session, query: s
     response = _request(client, plaintext, query)
     assert response.status_code == 400
     assert response.json()["error"] == code
+
+
+@pytest.mark.parametrize(
+    "construction_error",
+    [
+        "Apple token projection is unavailable",
+        "Apple token projection is invalid",
+        "Public artifact scrub rejected protected identity",
+    ],
+)
+def test_endpoint_export_construction_errors_fail_closed(
+    client: TestClient,
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    construction_error: str,
+) -> None:
+    """Construction and scrub failures return one opaque retryable contract."""
+    user, plaintext = _seed_user(
+        session,
+        email=f"construction-error-{construction_error.split()[3]}@example.com",
+    )
+    user.subscription_tier = "solo"
+    session.flush()
+
+    def reject_export(_selection: object) -> None:
+        """Model an internal projection or scrub validation failure."""
+        raise ValueError(construction_error)
+
+    monkeypatch.setattr(apple_exports, "build_export", reject_export)
+    response = _request(client, plaintext, "?selection=complete")
+
+    assert response.status_code == 503
+    assert response.json() == {"error": "library_export_unavailable"}
+    assert construction_error not in response.text
