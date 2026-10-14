@@ -64,8 +64,12 @@ The Apple DTCG export route is outside the public `/v1/library` prefix and
 uses bearer authentication plus `LIBRARY_EXPORT_ENTITLED_TIERS`. It accepts
 `selection=complete`, `selection=classification&classification=foundation|component|composition`,
 or `selection=record&record=<record-id>` with repeatable `record` values. It
-returns the deterministic DTCG artifact under the standard `schema_version=2`
-envelope and does not read or mutate the credit ledger. Selector errors use
+returns a pure DTCG document under `data.tokens` and a separate
+`resemblio_apple_export_manifest_v2` value under `data.manifest` in the
+standard `schema_version=2` envelope. The manifest binds
+`tokens/design.tokens.json` by SHA-256 and carries selection, provenance,
+attribution, scrub policy, version, and deterministic artifact identity. The
+route does not read or mutate the credit ledger. Selector errors use
 stable web-compatible codes; authentication and tier entitlement are checked
 before selector parsing.
 

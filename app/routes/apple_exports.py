@@ -38,4 +38,7 @@ def get_apple_dtcg_export(request: Request) -> JSONResponse:
         artifact = build_export(selection)
     except ValueError:
         return JSONResponse(status_code=503, content={"error": "library_export_unavailable"})
-    return JSONResponse(content={"schema_version": SCHEMA_V1_1, "data": artifact})
+    return JSONResponse(content={
+        "schema_version": SCHEMA_V1_1,
+        "data": {"tokens": artifact["tokens"], "manifest": artifact["manifest"]},
+    })

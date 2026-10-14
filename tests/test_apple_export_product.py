@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import hashlib
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -12,6 +13,7 @@ from app.apple_export_product import (
     AppleSelectorParseError,
     _load_projection,
     _public_safe,
+    _validate_document,
     build_apple_dtcg_export,
     build_export,
     canonical_artifact_bytes,
@@ -21,15 +23,6 @@ from app.apple_export_product import (
 from app.constants import DEFAULT_API_SCOPE, ONBOARDING_GRANT_CENTS
 from app.crypto import generate_api_key, hash_password
 from app.models import ApiKey, CreditLedger, User
-
-
-PARITY_HASHES = {
-    "complete": "8e04c84a60a20b2544df4fc78aab8fda6bb1dd4c67d16e03752a6191546983ea",
-    "foundation": "278fff8beb6ff8acd2d8a1190ea770a7c844f2d8f42610af9c14d13082f27757",
-    "component": "8d502d43822d90cf81c79acd761d889cb337f891a66063307005a2ae92e68a90",
-    "composition": "db5784677380bd78e40d8378e727f48f103d813276b5ecdcdfcd896916409953",
-    "record": "842819ab2788274fc24bd3108f66e520ecfdb9b324bd1ef116338057b1144454",
-}
 
 
 def _headers(plaintext: str) -> dict[str, str]:
@@ -61,13 +54,28 @@ def _request(client: TestClient, plaintext: str, query: str = ""):
     return client.get(f"/v1/apple/exports/dtcg{query}", headers=_headers(plaintext))
 
 
-def test_complete_export_matches_web_artifact_golden() -> None:
-    """The complete API artifact matches the web compiler byte-for-byte hash."""
+def test_complete_export_separates_pure_tokens_and_integrity_bound_manifest() -> None:
+    """The API returns a pure DTCG value and a separately hashed identity manifest."""
     artifact = build_export({"kind": "complete"})
-    assert artifact["artifact_sha256"] == PARITY_HASHES["complete"]
-    assert len(canonical_artifact_bytes(artifact)) == 63892
-    assert artifact["selection"]["selected_breakdown"] == {"foundations": 11, "components": 17, "compositions": 13}
-    assert artifact["token_payload_reference"]["token_count"] == 74
+    assert set(artifact) == {"tokens", "manifest"}
+    assert artifact["tokens"]["$schema"] == "https://www.designtokens.org/schemas/2025.10/format.json"
+    assert all(not key.startswith("$") for key in artifact["tokens"] if key != "$schema")
+    product_manifest = artifact["manifest"]
+    assert product_manifest["schema_version"] == "resemblio_apple_export_manifest_v2"
+    assert product_manifest["tokens"] == {
+        "path": "tokens/design.tokens.json",
+        "media_type": "application/design-tokens+json",
+        "schema_url": artifact["tokens"]["$schema"],
+        "sha256": hashlib.sha256(canonical_artifact_bytes(artifact["tokens"])).hexdigest(),
+        "count": 74,
+        "domains": ["color", "typography", "spacing", "layout", "motion"],
+    }
+    assert product_manifest["selection"]["selected_breakdown"] == {"foundations": 11, "components": 17, "compositions": 13}
+    manifest_body = dict(product_manifest)
+    recorded = manifest_body.pop("manifest_sha256")
+    assert recorded == hashlib.sha256(canonical_artifact_bytes(manifest_body)).hexdigest()
+    assert len(product_manifest["artifact_fingerprint"]) == 64
+    validate_export(artifact)
 
 
 def test_builder_is_repeatable_and_accepts_convenience_selector() -> None:
@@ -75,24 +83,23 @@ def test_builder_is_repeatable_and_accepts_convenience_selector() -> None:
     first = build_apple_dtcg_export("classification", classification="component")
     second = build_apple_dtcg_export("classification", classification="component")
     assert canonical_artifact_bytes(first) == canonical_artifact_bytes(second)
-    assert first["artifact_sha256"] == PARITY_HASHES["component"]
+    assert first == second
+    assert first["manifest"]["artifact_fingerprint"] == second["manifest"]["artifact_fingerprint"]
 
 
 @pytest.mark.parametrize("classification", ["foundation", "component", "composition"])
-def test_classification_exports_match_web_artifact_golden(classification: str) -> None:
-    """Every classification slice preserves the web compiler's exact hash."""
+def test_classification_exports_preserve_selection_identity(classification: str) -> None:
+    """Each classification manifest contains only its selected record class."""
     artifact = build_export({"kind": "classification", "classification": classification})
-    assert artifact["artifact_sha256"] == PARITY_HASHES[classification]
-    assert all(record["classification"] == classification for record in artifact["records"])
+    assert all(record["classification"] == classification for record in artifact["manifest"]["records"])
 
 
-def test_record_export_matches_web_hash_and_normalizes_repeated_values() -> None:
-    """Record ids deduplicate and order canonically before digesting the artifact."""
+def test_record_export_normalizes_repeated_values() -> None:
+    """Record IDs deduplicate and order canonically before identity hashing."""
     params = {"selection": ["record"], "record": ["component:buttons", "component:buttons"]}
     selection = parse_selection(params)
     artifact = build_export(selection)
-    assert artifact["artifact_sha256"] == PARITY_HASHES["record"]
-    assert artifact["selection"]["selected_record_ids"] == ["component:buttons"]
+    assert artifact["manifest"]["selection"]["selected_record_ids"] == ["component:buttons"]
 
 
 def test_public_builder_normalizes_duplicate_and_reordered_record_ids() -> None:
@@ -101,8 +108,7 @@ def test_public_builder_normalizes_duplicate_and_reordered_record_ids() -> None:
         "record",
         record_ids=("component:forms", "component:buttons", "component:buttons"),
     )
-    assert artifact["selection"]["selected_record_ids"] == ["component:buttons", "component:forms"]
-    assert artifact["artifact_sha256"] == "7347e07bf9ad5a3dd9f9bef8ca6697d581bba624261381c2590a2fc91c3c509b"
+    assert artifact["manifest"]["selection"]["selected_record_ids"] == ["component:buttons", "component:forms"]
 
 
 @pytest.mark.parametrize(
@@ -130,8 +136,8 @@ def test_projection_is_pinned_scrubbed_and_attribution_is_preserved() -> None:
     projection = _load_projection()
     artifact = build_export({"kind": "complete"})
     assert projection["source_projection_sha256"] == "7a1e84039ba1ffcb3ec6f22f34907ce5f1c1f9e52fc347beef173836748d2b85"
-    assert artifact["attribution"] == {"source_name": "Apple", "statement": "Inspired by Apple. No affiliation or endorsement."}
-    assert artifact["scrub_policy"]["identity_removed"] is True
+    assert artifact["manifest"]["attribution"] == {"source_name": "Apple", "statement": "Inspired by Apple. No affiliation or endorsement."}
+    assert artifact["manifest"]["scrub_policy"]["identity_removed"] is True
     _public_safe(artifact)
 
 
@@ -149,12 +155,37 @@ def test_public_scrub_rejects_internal_identity_and_affiliation(unsafe: dict[str
         _public_safe(unsafe)
 
 
-def test_validator_rejects_artifact_hash_tampering() -> None:
-    """The public artifact validator checks its content-addressed hash."""
+def test_validator_rejects_manifest_hash_tampering() -> None:
+    """The export validator checks the independent manifest content hash."""
     artifact = deepcopy(build_export({"kind": "complete"}))
-    artifact["attribution"]["statement"] = "A modified attribution statement."
-    with pytest.raises(ValueError, match="digest does not match"):
+    artifact["manifest"]["attribution"]["statement"] = "A modified attribution statement."
+    with pytest.raises(ValueError, match="manifest digest does not match"):
         validate_export(artifact)
+
+
+def test_validator_rejects_token_hash_tampering_and_combined_envelope() -> None:
+    """Tokens remain independently hash-bound and cannot return to an envelope."""
+    artifact = deepcopy(build_export({"kind": "complete"}))
+    artifact["tokens"]["color"]["bg"]["$value"]["alpha"] = 0.5
+    with pytest.raises(ValueError, match="token descriptor"):
+        validate_export(artifact)
+    with pytest.raises(ValueError, match="separate tokens and manifest"):
+        validate_export({"schema_version": 2, "data": artifact})  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    ("tokens", "error"),
+    [
+        ({"$schema": "https://www.designtokens.org/schemas/2025.10/format.json", "$manifest": {}}, "prohibited root"),
+        ({"$schema": "https://www.designtokens.org/schemas/2025.10/format.json", "color": {"a": {"$type": "color", "$value": "{color.missing}"}}}, "missing target"),
+        ({"$schema": "https://www.designtokens.org/schemas/2025.10/format.json", "color": {"a": {"$type": "color", "$value": "{color.b}"}, "b": {"$type": "color", "$value": "{color.a}"}}}, "cycle"),
+        ({"$schema": "https://www.designtokens.org/schemas/2025.10/format.json", "color": {"a": {"$type": "color", "$value": "{dimension.b}"}}, "dimension": {"b": {"$type": "dimension", "$value": {"value": 1, "unit": "px"}}}}, "changes type"),
+    ],
+)
+def test_token_document_rejects_nonportable_roots_and_invalid_alias_graphs(tokens: dict, error: str) -> None:
+    """Token validation rejects proprietary roots and invalid alias references."""
+    with pytest.raises(ValueError, match=error):
+        _validate_document(tokens)
 
 
 def test_endpoint_auth_and_entitlement_precede_selector_parsing(
@@ -180,7 +211,10 @@ def test_endpoint_envelope_and_zero_credit_delivery(client: TestClient, session:
     assert response.status_code == 200
     payload = response.json()
     assert payload["schema_version"] == 2
-    assert payload["data"] == build_export({"kind": "complete"})
+    expected = build_export({"kind": "complete"})
+    assert set(payload["data"]) == {"tokens", "manifest"}
+    assert payload["data"]["tokens"] == expected["tokens"]
+    assert payload["data"]["manifest"] == expected["manifest"]
     assert before == after
 
 

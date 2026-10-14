@@ -21,13 +21,15 @@ from app.apple_system_manifest import (
     load_public_manifest,
 )
 
-APPLE_EXPORT_SCHEMA_VERSION: Final = "resemblio_apple_export_product_v1"
+APPLE_EXPORT_SCHEMA_VERSION: Final = "resemblio_apple_export_manifest_v2"
 APPLE_EXPORT_ARTIFACT_VERSION: Final = "2026.10.2"
 APPLE_EXPORTER_VERSION: Final = "1.1.0"
 APPLE_TOKEN_PROJECTION_SCHEMA_VERSION: Final = "resemblio_public_token_projection_v1"
 APPLE_TOKEN_PROJECTION_VERSION: Final = "2026.10.2"
 APPLE_TOKEN_NORMALIZATION_POLICY_VERSION: Final = "dtcg_2025_10_public_safe_v2"
 DTCG_SCHEMA_URL: Final = "https://www.designtokens.org/schemas/2025.10/format.json"
+TOKEN_MEMBER_PATH: Final = "tokens/design.tokens.json"
+TOKEN_MEDIA_TYPE: Final = "application/design-tokens+json"
 TOKEN_PROJECTION_PATH: Final = Path(__file__).resolve().parent / "data" / "apple-export-tokens.json"
 CLASSIFICATIONS: Final = ("foundation", "component", "composition")
 TOKEN_TYPES: Final = ("color", "fontFamily", "dimension", "shadow", "cubicBezier", "duration")
@@ -99,8 +101,19 @@ class ExportRecord(TypedDict):
     guidance: dict[str, Any]
 
 
-class ExportArtifact(TypedDict):
-    """Complete deterministic DTCG export envelope."""
+class TokenDescriptor(TypedDict):
+    """Portable token-file identity and content digest in the export manifest."""
+
+    path: str
+    media_type: str
+    schema_url: str
+    sha256: str
+    count: int
+    domains: list[str]
+
+
+class ExportManifest(TypedDict):
+    """Integrity-bound Resemblio metadata separate from the pure token document."""
 
     schema_version: str
     artifact_id: str
@@ -108,16 +121,22 @@ class ExportArtifact(TypedDict):
     exporter_version: str
     normalization_policy_version: str
     reproducibility: dict[str, str]
-    artifact_sha256: str
-    manifest_reference: dict[str, Any]
-    token_payload_reference: dict[str, Any]
+    artifact_fingerprint: str
+    manifest_sha256: str
+    source_manifest_reference: dict[str, Any]
+    tokens: TokenDescriptor
     selection: SelectionContract
     attribution: dict[str, str]
     scrub_policy: dict[str, Any]
-    token_schema: str
-    token_document: dict[str, Any]
     records: list[ExportRecord]
     dependencies: list[ExportRecord]
+
+
+class ExportArtifact(TypedDict):
+    """Separate pure DTCG tokens and identity-preserving product manifest."""
+
+    tokens: dict[str, Any]
+    manifest: ExportManifest
 
 
 class AppleSelectorParseError(ValueError):
@@ -226,10 +245,14 @@ def _valid_measure(value: object, unit: str) -> bool:
 
 
 def _validate_document(document: Mapping[str, Any], expected: int | None = None) -> None:
-    """Validate token groups, leaves, types, units, and optional leaf count."""
+    """Validate pure DTCG roots, typed values, aliases, and optional leaf count."""
     if document.get("$schema") != DTCG_SCHEMA_URL:
         raise ValueError("Apple token document schema is unsupported")
+    if any(not isinstance(group, str) or group.startswith("$") for group in document if group != "$schema"):
+        raise ValueError("Apple token document contains a prohibited root property")
     token_count = 0
+    token_types: dict[str, str] = {}
+    aliases: dict[str, str] = {}
     for group, leaves in document.items():
         if group == "$schema":
             continue
@@ -240,7 +263,9 @@ def _validate_document(document: Mapping[str, Any], expected: int | None = None)
             if not isinstance(raw, dict) or set(raw) != {"$type", "$value"} or raw.get("$type") not in TOKEN_TYPES:
                 raise ValueError(f"Apple token {group}.{name} is malformed")
             kind, value = raw["$type"], raw["$value"]
+            token_types[f"{group}.{name}"] = cast(str, kind)
             if isinstance(value, str) and ALIAS_RE.fullmatch(value):
+                aliases[f"{group}.{name}"] = value[1:-1]
                 continue
             valid = (
                 _valid_color(value) if kind == "color" else
@@ -252,6 +277,19 @@ def _validate_document(document: Mapping[str, Any], expected: int | None = None)
             )
             if not valid:
                 raise ValueError(f"Apple token {group}.{name} has an invalid {kind} value")
+    for source, target in aliases.items():
+        if target not in token_types:
+            raise ValueError(f"Apple token alias {source} has a missing target")
+        if token_types[source] != token_types[target]:
+            raise ValueError(f"Apple token alias {source} changes type")
+    for source in aliases:
+        seen: set[str] = set()
+        target = source
+        while target in aliases:
+            if target in seen:
+                raise ValueError(f"Apple token alias cycle includes {source}")
+            seen.add(target)
+            target = aliases[target]
     if expected is not None and token_count != expected:
         raise ValueError(f"Apple token document must contain exactly {expected} tokens")
 
@@ -406,7 +444,7 @@ def _assemble_export(
     manifest: AppleSystemManifest,
     projection: Mapping[str, Any],
 ) -> ExportArtifact:
-    """Assemble the expected artifact from already validated source artifacts."""
+    """Assemble pure DTCG tokens and a separate integrity-bound manifest."""
     records_by_id = {record["record_id"]: cast(dict[str, Any], record) for record in manifest["records"]}
     kind = selection["kind"]
     if kind == "complete":
@@ -452,15 +490,24 @@ def _assemble_export(
         "record_count": 41,
         "breakdown": {"foundations": 11, "components": 17, "compositions": 13},
     }
-    payload_reference = {
-        "schema_version": APPLE_TOKEN_PROJECTION_SCHEMA_VERSION,
-        "projection_version": APPLE_TOKEN_PROJECTION_VERSION,
-        "normalization_policy_version": APPLE_TOKEN_NORMALIZATION_POLICY_VERSION,
-        "source_manifest_sha256": manifest["artifact_sha256"],
+    source_manifest_reference = {
+        **manifest_reference,
         "source_projection_sha256": projection["source_projection_sha256"],
-        "payload_sha256": _digest(token_document),
-        "token_count": token_count,
-        "token_domains": domains,
+    }
+    token_descriptor: TokenDescriptor = {
+        "path": TOKEN_MEMBER_PATH,
+        "media_type": TOKEN_MEDIA_TYPE,
+        "schema_url": DTCG_SCHEMA_URL,
+        "sha256": _digest(token_document),
+        "count": token_count,
+        "domains": domains,
+    }
+    fingerprint_inputs = {
+        "design_system_sha256": manifest["artifact_sha256"],
+        "normalization_policy_version": APPLE_TOKEN_NORMALIZATION_POLICY_VERSION,
+        "exporter_version": APPLE_EXPORTER_VERSION,
+        "package_schema_version": APPLE_EXPORT_SCHEMA_VERSION,
+        "selection_sha256": contract["selection_sha256"],
     }
     body: dict[str, Any] = {
         "schema_version": APPLE_EXPORT_SCHEMA_VERSION,
@@ -469,22 +516,21 @@ def _assemble_export(
         "exporter_version": APPLE_EXPORTER_VERSION,
         "normalization_policy_version": APPLE_TOKEN_NORMALIZATION_POLICY_VERSION,
         "reproducibility": {"mode": "deterministic", "timestamp_policy": "omitted", "serialization": "canonical-json-lf-utf8"},
-        "manifest_reference": manifest_reference,
-        "token_payload_reference": payload_reference,
+        "artifact_fingerprint": _digest(fingerprint_inputs),
+        "source_manifest_reference": source_manifest_reference,
+        "tokens": token_descriptor,
         "selection": contract,
         "attribution": manifest["attribution"],
         "scrub_policy": manifest["scrub_policy"],
-        "token_schema": "w3c-dtcg-2025.10",
-        "token_document": token_document,
         "records": [_export_record(record) for record in selected],
         "dependencies": [_export_record(record) for record in dependencies],
     }
-    artifact: ExportArtifact = {**body, "artifact_sha256": _digest(body)}
-    return artifact
+    export_manifest: ExportManifest = {**body, "manifest_sha256": _digest(body)}
+    return {"tokens": token_document, "manifest": export_manifest}
 
 
 def build_export(selection: AppleSelection) -> ExportArtifact:
-    """Build, hash, and safety-check the deterministic Phase 7 DTCG artifact."""
+    """Build and validate separate canonical tokens and manifest values."""
     manifest = load_public_manifest()
     projection = _load_projection()
     artifact = _assemble_export(selection, manifest, projection)
@@ -514,30 +560,44 @@ def validate_export(
     manifest: AppleSystemManifest | None = None,
     projection: Mapping[str, Any] | None = None,
 ) -> None:
-    """Fail closed on contract drift, closure errors, invalid tokens, and leaks."""
+    """Fail closed on token purity, identities, hashes, closure, and contract drift."""
     manifest = manifest or load_public_manifest()
     projection = projection or _load_projection()
-    expected_keys = {"schema_version", "artifact_id", "artifact_version", "exporter_version", "normalization_policy_version", "reproducibility", "artifact_sha256", "manifest_reference", "token_payload_reference", "selection", "attribution", "scrub_policy", "token_schema", "token_document", "records", "dependencies"}
-    if set(artifact) != expected_keys or artifact.get("schema_version") != APPLE_EXPORT_SCHEMA_VERSION or artifact.get("artifact_id") != "apple-system-dtcg":
+    if set(artifact) != {"tokens", "manifest"} or not isinstance(artifact.get("manifest"), dict) or not isinstance(artifact.get("tokens"), dict):
+        raise ValueError("Apple export must contain separate tokens and manifest values")
+    export_manifest = cast(Mapping[str, Any], artifact["manifest"])
+    token_document = cast(dict[str, Any], artifact["tokens"])
+    expected_keys = {"schema_version", "artifact_id", "artifact_version", "exporter_version", "normalization_policy_version", "reproducibility", "artifact_fingerprint", "manifest_sha256", "source_manifest_reference", "tokens", "selection", "attribution", "scrub_policy", "records", "dependencies"}
+    if set(export_manifest) != expected_keys or export_manifest.get("schema_version") != APPLE_EXPORT_SCHEMA_VERSION or export_manifest.get("artifact_id") != "apple-system-dtcg":
         raise ValueError("Apple export artifact identity is unsupported")
-    if artifact.get("artifact_version") != APPLE_EXPORT_ARTIFACT_VERSION or artifact.get("exporter_version") != APPLE_EXPORTER_VERSION or artifact.get("normalization_policy_version") != APPLE_TOKEN_NORMALIZATION_POLICY_VERSION:
+    if export_manifest.get("artifact_version") != APPLE_EXPORT_ARTIFACT_VERSION or export_manifest.get("exporter_version") != APPLE_EXPORTER_VERSION or export_manifest.get("normalization_policy_version") != APPLE_TOKEN_NORMALIZATION_POLICY_VERSION:
         raise ValueError("Apple export reproducibility contract is unsupported")
-    if artifact.get("reproducibility") != {"mode": "deterministic", "timestamp_policy": "omitted", "serialization": "canonical-json-lf-utf8"}:
+    if export_manifest.get("reproducibility") != {"mode": "deterministic", "timestamp_policy": "omitted", "serialization": "canonical-json-lf-utf8"}:
         raise ValueError("Apple export reproducibility fields are unsupported")
-    body = dict(artifact)
-    recorded_hash = body.pop("artifact_sha256", None)
+    body = dict(export_manifest)
+    recorded_hash = body.pop("manifest_sha256", None)
     if not isinstance(recorded_hash, str) or not HASH_RE.fullmatch(recorded_hash) or recorded_hash != _digest(body):
-        raise ValueError("Apple export artifact digest does not match")
-    _public_safe(artifact)
-    if artifact.get("attribution") != manifest["attribution"] or artifact.get("scrub_policy") != manifest["scrub_policy"]:
-        raise ValueError("Apple export attribution or scrub policy has drifted")
-    if artifact.get("token_schema") != "w3c-dtcg-2025.10":
-        raise ValueError("Apple export token schema is unsupported")
-    token_document = artifact.get("token_document")
-    if not isinstance(token_document, dict):
-        raise ValueError("Apple export token document is malformed")
+        raise ValueError("Apple export manifest digest does not match")
+    if not isinstance(export_manifest.get("artifact_fingerprint"), str) or not HASH_RE.fullmatch(export_manifest["artifact_fingerprint"]):
+        raise ValueError("Apple export artifact fingerprint is invalid")
     _validate_document(token_document)
-    raw_selection = artifact.get("selection")
+    token_descriptor = export_manifest.get("tokens")
+    if not isinstance(token_descriptor, dict) or token_descriptor != {
+        "path": TOKEN_MEMBER_PATH, "media_type": TOKEN_MEDIA_TYPE, "schema_url": DTCG_SCHEMA_URL,
+        "sha256": _digest(token_document),
+        "count": sum(len(group) for group in token_document.values() if isinstance(group, dict)),
+        "domains": token_descriptor.get("domains"),
+    }:
+        raise ValueError("Apple token descriptor does not identify the token document")
+    if not isinstance(token_descriptor.get("domains"), list) or any(domain not in DOMAIN_KEYS for domain in token_descriptor["domains"]):
+        raise ValueError("Apple token descriptor domains are invalid")
+    _public_safe(artifact)
+    if export_manifest.get("attribution") != manifest["attribution"] or export_manifest.get("scrub_policy") != manifest["scrub_policy"]:
+        raise ValueError("Apple export attribution or scrub policy has drifted")
+    source_reference = export_manifest.get("source_manifest_reference")
+    if not isinstance(source_reference, dict) or source_reference.get("artifact_sha256") != manifest["artifact_sha256"]:
+        raise ValueError("Apple export source manifest reference has drifted")
+    raw_selection = export_manifest.get("selection")
     if not isinstance(raw_selection, dict):
         raise ValueError("Apple export selection is malformed")
     kind = raw_selection.get("kind")
@@ -558,5 +618,5 @@ def validate_export(
 
 
 def canonical_artifact_bytes(artifact: ExportArtifact) -> bytes:
-    """Return the exact canonical JSON byte representation used for artifact hashes."""
+    """Return canonical bytes for the complete separate-token export values."""
     return _canonical_bytes(artifact)
