@@ -170,6 +170,16 @@ def _digest(value: object) -> str:
     return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
+def build_design_system_sha256(source_manifest_sha256: str, source_projection_sha256: str) -> str:
+    """Hash manifest and token projection content into one design-system identity."""
+    if not HASH_RE.fullmatch(source_manifest_sha256) or not HASH_RE.fullmatch(source_projection_sha256):
+        raise ValueError("Apple design-system identity requires canonical SHA-256 inputs")
+    return _digest({
+        "source_manifest_sha256": source_manifest_sha256,
+        "source_projection_sha256": source_projection_sha256,
+    })
+
+
 def _public_safe(value: object) -> None:
     """Reject internal provenance, protected identity, or affiliation claims."""
     serialized = json.dumps(value, ensure_ascii=True, sort_keys=True)
@@ -503,7 +513,10 @@ def _assemble_export(
         "domains": domains,
     }
     fingerprint_inputs = {
-        "design_system_sha256": manifest["artifact_sha256"],
+        "design_system_sha256": build_design_system_sha256(
+            manifest["artifact_sha256"],
+            projection["source_projection_sha256"],
+        ),
         "normalization_policy_version": APPLE_TOKEN_NORMALIZATION_POLICY_VERSION,
         "exporter_version": APPLE_EXPORTER_VERSION,
         "package_schema_version": APPLE_EXPORT_SCHEMA_VERSION,

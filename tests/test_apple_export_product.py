@@ -14,6 +14,7 @@ from app.apple_export_product import (
     _load_projection,
     _public_safe,
     _validate_document,
+    build_design_system_sha256,
     build_apple_dtcg_export,
     build_export,
     canonical_artifact_bytes,
@@ -76,6 +77,16 @@ def test_complete_export_separates_pure_tokens_and_integrity_bound_manifest() ->
     assert recorded == hashlib.sha256(canonical_artifact_bytes(manifest_body)).hexdigest()
     assert len(product_manifest["artifact_fingerprint"]) == 64
     validate_export(artifact)
+
+
+def test_design_system_identity_changes_for_token_projection_only() -> None:
+    """A token-only change must invalidate artifact and cache identity."""
+    manifest_sha256 = "a" * 64
+    first = build_design_system_sha256(manifest_sha256, "b" * 64)
+    token_changed = build_design_system_sha256(manifest_sha256, "c" * 64)
+
+    assert len(first) == 64
+    assert token_changed != first
 
 
 def test_builder_is_repeatable_and_accepts_convenience_selector() -> None:
