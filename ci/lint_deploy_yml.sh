@@ -54,6 +54,7 @@ REQUIRED=(
   "bash ci/entrypoints.sh"
   "Git-SHA parity"
   "SendEnv=GITHUB_SHA"
+  "production API env must not define RESEMBLIO_TEST_AUTH_ENABLED"
 )
 
 MISSING=0

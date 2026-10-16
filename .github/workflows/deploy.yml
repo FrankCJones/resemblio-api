@@ -134,6 +134,15 @@ jobs:
 
           cd /opt/resemblio-api/app
 
+          # Production must never carry the test-auth switch, even when its
+          # value is false. The API reads this flag from the sibling env file,
+          # so reject the entry before fetching, resetting, installing, or
+          # applying a migration.
+          if grep -q '^RESEMBLIO_TEST_AUTH_ENABLED=' /opt/resemblio-api/.env; then
+            echo "FATAL: production API env must not define RESEMBLIO_TEST_AUTH_ENABLED"
+            exit 1
+          fi
+
           # Probe: detect git-objects ownership drift before it bites the
           # `git fetch` below. Root cause of the e631585 deploy failure
           # (2026-06-02): a stray `sudo`/`root@` git op during a prior

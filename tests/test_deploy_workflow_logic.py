@@ -73,6 +73,7 @@ REQUIRED_MARKERS: tuple[str, ...] = (
     # `cto-reviews/2026-06-04-cicd-partial-deploy-investigation.md`.
     "Git-SHA parity",       # 6. in-heredoc parity assertion + diagnostic
     "SendEnv=GITHUB_SHA",   # 7. forwards GITHUB_SHA to the remote shell
+    "production API env must not define RESEMBLIO_TEST_AUTH_ENABLED",
 )
 
 
@@ -203,4 +204,18 @@ def test_git_sha_passed_via_env_and_sendenv(deploy_yml_text: str) -> None:
         "`bash -s` so the value reaches the remote shell even if sshd is not "
         "configured to AcceptEnv GITHUB_SHA. Matches the LOCAL_ALEMBIC_HEAD "
         "pattern already used in the same line."
+    )
+
+
+def test_test_auth_gate_precedes_repository_mutation(deploy_yml_text: str) -> None:
+    """Reject any production test-auth entry before changing the checkout."""
+    gate_idx = deploy_yml_text.find(
+        "production API env must not define RESEMBLIO_TEST_AUTH_ENABLED"
+    )
+    fetch_idx = deploy_yml_text.find("git fetch --quiet origin main")
+    assert gate_idx != -1, "production test-auth rejection is missing"
+    assert fetch_idx != -1, "production git fetch is missing"
+    assert gate_idx < fetch_idx, (
+        "The production test-auth rejection must run before git fetch so the "
+        "deploy fails before repository, dependency, migration, or service mutation."
     )
