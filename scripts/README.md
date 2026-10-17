@@ -6,7 +6,7 @@ Operational and one-shot scripts for the Resemblio API. Every script is run via 
 
 | File | Role | Idempotent | Run mode |
 |---|---|---|---|
-| `compile_apple_evidence.py` | Compile or verify the canonical 41-record public Apple artifact and separate private evidence ledger. Default `check` is read-only; `write` changes only the two generated local files. | yes | `check` or `write` positional action |
+| `compile_apple_evidence.py` | Compile or verify the canonical 41-record public Apple artifact and separate private evidence ledger. Default `check` requires the checked-in public artifact and verifies a private ledger when one exists; `write` changes only the two generated local files. | yes | `check` or `write` positional action |
 | `bootstrap_drl_library.py` | Discover every brand under `_vendored/drl/drl/_extractions/` and dispatch per-brand `seed_from_drl.apply_seed` runs. Anchors brand discovery on the DRL `_extractions/` directory. | yes (`content_hash` dedup) | `--apply` writes; default is dry-run |
 | `seed_from_drl.py` | Bulk-seed `extractions` + `asset_versions` rows from the Design Reference Library `corpus.json`. Supports `--source-system <slug>` to scope to one brand. | yes | `--apply` writes; default prints plan |
 | `verify_drl_bootstrap.py` | Post-bootstrap probe: assert every expected brand has rows + canonical `library_pages`. Read-only. | n/a | always read-only |

@@ -123,6 +123,11 @@ python -m scripts.compile_apple_evidence write
 python -m scripts.compile_apple_evidence check
 ```
 
+The public artifact is checked into Git. The private evidence ledger is
+generated locally and ignored by Git. A clean-clone `check` therefore requires
+exact public bytes and validates the compiled private ledger in memory; when a
+private ledger already exists, its bytes must also match.
+
 Run tests:
 
 ```powershell
