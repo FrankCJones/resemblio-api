@@ -29,11 +29,13 @@ NORMALIZATION_POLICY_VERSION: Final = "text_lf_utf8_v1"
 INVENTORY_VERSION: Final = "resemblio_apple_component_classification_matrix_v1"
 EXPECTED_BINDING_INVENTORY_SHA256: Final = "9d6a03d6d6fc966b2a9a648b9cc0d1f66cfa657f11f746721d22fc7d5c0c84dc"
 EXPECTED_PUBLIC_INVENTORY_SHA256: Final = "ec393780329578e479e9f5afbcdb79e7ca559d2da17970dd2addbe3a9c55d941"
+EXPECTED_MATRIX_FILE_SHA256: Final = (
+    "2eab2998867e68d11409b71fc4681fe0dba28ba478da0583913aecd975d5ac28"
+)
 
 API_ROOT: Final = Path(__file__).resolve().parents[1]
-RESEMBLIO_ROOT: Final = Path(__file__).resolve().parents[3]
 DEFAULT_MATRIX_PATH: Final = (
-    RESEMBLIO_ROOT / "02-prd" / "apple-pilot" /
+    API_ROOT / "_vendored" / "apple" /
     "2026-09-09-apple-component-classification-matrix.json"
 )
 DEFAULT_CORPUS_ROOT: Final = API_ROOT / "_vendored" / "drl_corpus"
@@ -624,6 +626,15 @@ def compile_apple_system_manifest(
     The function performs no writes; callers choose where to persist the two
     products only after validation succeeds.
     """
+    if matrix_path == DEFAULT_MATRIX_PATH:
+        try:
+            matrix_file_sha256 = normalized_file_sha256(matrix_path)
+        except OSError as exc:
+            raise ManifestCompileError("binding inventory is missing or invalid") from exc
+        if matrix_file_sha256 != EXPECTED_MATRIX_FILE_SHA256:
+            raise ManifestCompileError(
+                "binding inventory file changed without an approved compiler lock update"
+            )
     matrix = _load_json(matrix_path, "binding inventory")
     inventory = normalize_inventory(matrix)
     inventory_digest = _inventory_digest(inventory)

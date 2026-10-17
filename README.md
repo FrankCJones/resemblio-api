@@ -18,6 +18,7 @@ FastAPI service for authenticated extraction, API key lifecycle, credit ledger p
 - `app/routes/` - `/v1` endpoints for health, account, API keys, extractions, and the public library.
 - `app/apple_system_manifest.py` - deterministic 41-record Apple evidence compiler, public validator, compatibility projections, and artifact loader.
 - `app/data/apple_system_manifest.json` - canonical content-addressed public Apple artifact.
+- `_vendored/apple/` - repository-local, integrity-locked Apple classification matrix required by the compiler and clean CI checkouts.
 - `app/apple_export_product.py` - deterministic, scrub-checked Phase 7 DTCG artifact compiler using the API manifest.
 - `app/data/apple-export-tokens.json` - checked-in public token projection copied byte-for-byte from the web export product.
 - `app/routes/apple_exports.py` - authenticated, entitlement-gated, zero-credit DTCG delivery.

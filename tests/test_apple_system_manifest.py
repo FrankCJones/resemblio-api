@@ -13,8 +13,9 @@ from app.apple_component_manifest_registry import APPLE_COMPONENT_MANIFESTS
 from app.apple_system_manifest import (
     ARTIFACT_ID,
     DEFAULT_CORPUS_ROOT,
-    DEFAULT_PRIVATE_LEDGER_PATH,
+    DEFAULT_MATRIX_PATH,
     DEFAULT_PUBLIC_ARTIFACT_PATH,
+    EXPECTED_MATRIX_FILE_SHA256,
     SCHEMA_VERSION,
     ManifestCompileError,
     ManifestValidationError,
@@ -23,6 +24,7 @@ from app.apple_system_manifest import (
     compile_apple_system_manifest,
     component_manifest_slice,
     load_public_manifest,
+    normalized_file_sha256,
     normalize_inventory,
     readiness_projection,
     sha256_bytes,
@@ -56,15 +58,22 @@ def _component(manifest: dict[str, Any], slug: str) -> dict[str, Any]:
     return next(record for record in manifest["records"] if record["record_id"] == f"component:{slug}")
 
 
-def test_checked_in_products_match_clean_compiler_bytes() -> None:
-    """Two clean compiles and both checked-in products are byte-identical."""
+def test_checked_in_public_and_compiled_private_are_reproducible() -> None:
+    """Two clean compiles reproduce the public artifact and private ledger."""
     first = compile_apple_system_manifest()
     second = compile_apple_system_manifest()
 
     assert canonical_json_bytes(first.public_manifest) == canonical_json_bytes(second.public_manifest)
     assert canonical_json_bytes(first.private_ledger) == canonical_json_bytes(second.private_ledger)
     assert DEFAULT_PUBLIC_ARTIFACT_PATH.read_bytes() == canonical_json_bytes(first.public_manifest)
-    assert DEFAULT_PRIVATE_LEDGER_PATH.read_bytes() == canonical_json_bytes(first.private_ledger)
+    validate_private_ledger(first.private_ledger, first.public_manifest)
+
+
+def test_default_matrix_is_repo_local_and_integrity_locked() -> None:
+    """The default matrix is a repository-local, integrity-locked input."""
+    assert DEFAULT_MATRIX_PATH.is_relative_to(Path(__file__).resolve().parents[1])
+    assert DEFAULT_MATRIX_PATH.is_file()
+    assert normalized_file_sha256(DEFAULT_MATRIX_PATH) == EXPECTED_MATRIX_FILE_SHA256
 
 
 def test_canonical_inventory_and_private_resolution_are_exact() -> None:
@@ -83,8 +92,7 @@ def test_canonical_inventory_and_private_resolution_are_exact() -> None:
 
 def test_shuffled_matrix_containers_produce_identical_artifact(tmp_path: Path) -> None:
     """Input container order cannot change normalized inventory or output bytes."""
-    matrix_path = Path(__file__).resolve().parents[3] / "02-prd" / "apple-pilot" / "2026-09-09-apple-component-classification-matrix.json"
-    matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+    matrix = json.loads(DEFAULT_MATRIX_PATH.read_text(encoding="utf-8"))
     shuffled = deepcopy(matrix)
     shuffled["records"] = list(reversed(shuffled["records"]))
     shuffled["component_family_records"] = dict(reversed(list(shuffled["component_family_records"].items())))
@@ -93,7 +101,7 @@ def test_shuffled_matrix_containers_produce_identical_artifact(tmp_path: Path) -
     shuffled_path.write_text(json.dumps(shuffled), encoding="utf-8")
 
     assert normalize_inventory(matrix) == normalize_inventory(shuffled)
-    canonical = compile_apple_system_manifest(matrix_path=matrix_path)
+    canonical = compile_apple_system_manifest(matrix_path=DEFAULT_MATRIX_PATH)
     reordered = compile_apple_system_manifest(matrix_path=shuffled_path)
     assert canonical_json_bytes(canonical.public_manifest) == canonical_json_bytes(reordered.public_manifest)
     assert canonical_json_bytes(canonical.private_ledger) == canonical_json_bytes(reordered.private_ledger)
