@@ -633,3 +633,15 @@ def validate_export(
 def canonical_artifact_bytes(artifact: ExportArtifact) -> bytes:
     """Return canonical bytes for the complete separate-token export values."""
     return _canonical_bytes(artifact)
+
+
+def canonical_complete_token_bytes() -> bytes:
+    """Return the validated complete DTCG document as canonical JSON bytes.
+
+    The customer delivery contract has one complete token document. Historical
+    selection builders remain available for Phase 8 evidence, but delivery
+    callers use this helper so they cannot accidentally serialize the product
+    manifest or a selected slice.
+    """
+    artifact = build_export({"kind": "complete"})
+    return _canonical_bytes(artifact["tokens"])

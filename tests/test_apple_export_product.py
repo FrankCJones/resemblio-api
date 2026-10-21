@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import hashlib
+import json
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -18,6 +19,7 @@ from app.apple_export_product import (
     build_apple_dtcg_export,
     build_export,
     canonical_artifact_bytes,
+    canonical_complete_token_bytes,
     parse_selection,
     validate_export,
 )
@@ -50,9 +52,17 @@ def _seed_user(session: Session, email: str) -> tuple[User, str]:
     return user, plaintext
 
 
-def _request(client: TestClient, plaintext: str, query: str = ""):
-    """Call the protected Phase 7 endpoint with one query string."""
-    return client.get(f"/v1/apple/exports/dtcg{query}", headers=_headers(plaintext))
+def _request(
+    client: TestClient,
+    plaintext: str,
+    query: str = "",
+    extra_headers: dict[str, str] | None = None,
+):
+    """Call the protected DTCG endpoint with optional query and headers."""
+    headers = _headers(plaintext)
+    if extra_headers:
+        headers.update(extra_headers)
+    return client.get(f"/v1/apple/exports/dtcg{query}", headers=headers)
 
 
 def test_complete_export_separates_pure_tokens_and_integrity_bound_manifest() -> None:
@@ -199,54 +209,128 @@ def test_token_document_rejects_nonportable_roots_and_invalid_alias_graphs(token
         _validate_document(tokens)
 
 
-def test_endpoint_auth_and_entitlement_precede_selector_parsing(
+def test_complete_token_bytes_are_locked_to_the_reference_document() -> None:
+    """The sole customer artifact has stable canonical bytes and identity."""
+    token_bytes = canonical_complete_token_bytes()
+
+    assert len(token_bytes) == 6619
+    assert hashlib.sha256(token_bytes).hexdigest() == "2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"
+    assert token_bytes.endswith(b"\n")
+    assert not token_bytes.endswith(b"\n\n")
+    assert json.loads(token_bytes) == build_export({"kind": "complete"})["tokens"]
+
+
+def test_endpoint_auth_and_entitlement_precede_conditional_delivery(
     client: TestClient, session: Session
 ) -> None:
-    """Missing auth is rejected first and free accounts see entitlement denial first."""
-    anonymous = client.get("/v1/apple/exports/dtcg?selection=invalid")
+    """An If-None-Match wildcard cannot bypass authentication or entitlement."""
+    anonymous = client.get(
+        "/v1/apple/exports/dtcg?selection=invalid",
+        headers={"If-None-Match": "*"},
+    )
     assert anonymous.status_code == 401
     _, plaintext = _seed_user(session, email="free-export@example.com")
-    denied = _request(client, plaintext, "?selection=invalid")
+    denied = _request(
+        client,
+        plaintext,
+        "?selection=invalid",
+        {"If-None-Match": "*"},
+    )
     assert denied.status_code == 403
     assert denied.json() == {"error": "library_export_not_entitled"}
 
 
-def test_endpoint_envelope_and_zero_credit_delivery(client: TestClient, session: Session) -> None:
-    """Entitled delivery wraps the exact artifact and never appends a credit row."""
+def test_endpoint_returns_exact_complete_document_and_zero_credit_delivery(
+    client: TestClient, session: Session
+) -> None:
+    """Entitled delivery returns exact canonical bytes without a credit write."""
     user, plaintext = _seed_user(session, email="paid-export@example.com")
     user.subscription_tier = "solo"
     session.flush()
     before = list(session.scalars(select(CreditLedger).where(CreditLedger.user_id == user.id)))
-    response = _request(client, plaintext, "?selection=complete")
+    response = _request(client, plaintext)
     after = list(session.scalars(select(CreditLedger).where(CreditLedger.user_id == user.id)))
+
+    expected = canonical_complete_token_bytes()
+    expected_digest = hashlib.sha256(expected).hexdigest()
     assert response.status_code == 200
-    payload = response.json()
-    assert payload["schema_version"] == 2
-    expected = build_export({"kind": "complete"})
-    assert set(payload["data"]) == {"tokens", "manifest"}
-    assert payload["data"]["tokens"] == expected["tokens"]
-    assert payload["data"]["manifest"] == expected["manifest"]
+    assert response.content == expected
+    assert response.json() == build_export({"kind": "complete"})["tokens"]
+    assert response.headers["content-type"] == "application/design-tokens+json"
+    assert response.headers["content-disposition"] == 'attachment; filename="design.tokens.json"'
+    assert response.headers["cache-control"] == "private, max-age=0, must-revalidate"
+    assert response.headers["etag"] == f'"{expected_digest}"'
     assert before == after
 
 
 @pytest.mark.parametrize(
-    ("query", "code"),
+    "query",
     [
-        ("", "invalid_selection"),
-        ("?selection=complete&classification=component", "mixed_selection_contracts"),
-        ("?selection=classification&classification=other", "invalid_classification"),
-        ("?selection=record", "missing_records"),
-        ("?selection=record&record=component%3Aunknown", "unknown_record"),
+        "?selection=complete",
+        "?selection=classification&classification=component",
+        "?selection=record&record=component%3Abuttons",
+        "?selection=invalid&classification=other&record=component%3Aunknown",
     ],
 )
-def test_endpoint_selector_errors(client: TestClient, session: Session, query: str, code: str) -> None:
-    """Paid callers receive stable 400 selector codes inside a compact body."""
-    user, plaintext = _seed_user(session, email=f"error-{code}-{len(query)}@example.com")
+def test_endpoint_ignores_legacy_selectors_and_returns_only_complete_tokens(
+    client: TestClient,
+    session: Session,
+    query: str,
+) -> None:
+    """Legacy selectors cannot restore slices, manifests, or response envelopes."""
+    user, plaintext = _seed_user(session, email=f"legacy-{len(query)}@example.com")
     user.subscription_tier = "pro"
     session.flush()
     response = _request(client, plaintext, query)
-    assert response.status_code == 400
-    assert response.json()["error"] == code
+
+    assert response.status_code == 200
+    assert response.content == canonical_complete_token_bytes()
+    assert set(response.json()) == {"$schema", "color", "fontFamily", "dimension", "shadow", "cubicBezier", "duration"}
+
+
+@pytest.mark.parametrize(
+    "validator",
+    [
+        '"2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"',
+        'W/"2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"',
+        '"stale", "2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"',
+        "*",
+    ],
+)
+def test_endpoint_returns_bodyless_304_for_matching_validators_without_credit(
+    client: TestClient,
+    session: Session,
+    validator: str,
+) -> None:
+    """Strong, weak, listed, and wildcard validators revalidate after entitlement."""
+    user, plaintext = _seed_user(session, email=f"etag-{hashlib.sha256(validator.encode()).hexdigest()[:12]}@example.com")
+    user.subscription_tier = "studio"
+    session.flush()
+    before = list(session.scalars(select(CreditLedger).where(CreditLedger.user_id == user.id)))
+    response = _request(client, plaintext, extra_headers={"If-None-Match": validator})
+    after = list(session.scalars(select(CreditLedger).where(CreditLedger.user_id == user.id)))
+
+    assert response.status_code == 304
+    assert response.content == b""
+    assert response.headers["etag"] == '"2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"'
+    assert response.headers["cache-control"] == "private, max-age=0, must-revalidate"
+    assert before == after
+
+
+def test_endpoint_returns_body_for_stale_etag(client: TestClient, session: Session) -> None:
+    """A stale validator returns the complete canonical document with status 200."""
+    user, plaintext = _seed_user(session, email="etag-stale@example.com")
+    user.subscription_tier = "enterprise"
+    session.flush()
+
+    response = _request(
+        client,
+        plaintext,
+        extra_headers={"If-None-Match": f'"{"0" * 64}"'},
+    )
+
+    assert response.status_code == 200
+    assert response.content == canonical_complete_token_bytes()
 
 
 @pytest.mark.parametrize(
@@ -271,11 +355,11 @@ def test_endpoint_export_construction_errors_fail_closed(
     user.subscription_tier = "solo"
     session.flush()
 
-    def reject_export(_selection: object) -> None:
+    def reject_export() -> bytes:
         """Model an internal projection or scrub validation failure."""
         raise ValueError(construction_error)
 
-    monkeypatch.setattr(apple_exports, "build_export", reject_export)
+    monkeypatch.setattr(apple_exports, "canonical_complete_token_bytes", reject_export)
     response = _request(client, plaintext, "?selection=complete")
 
     assert response.status_code == 503

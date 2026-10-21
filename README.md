@@ -59,20 +59,18 @@ Authenticated:
 - `GET /v1/account`
 - `GET /v1/credit/balance`
 - `POST /v1/credit/topup`
-- `GET /v1/apple/exports/dtcg?selection=complete`
+- `GET /v1/apple/exports/dtcg`
 
 The Apple DTCG export route is outside the public `/v1/library` prefix and
-uses bearer authentication plus `LIBRARY_EXPORT_ENTITLED_TIERS`. It accepts
-`selection=complete`, `selection=classification&classification=foundation|component|composition`,
-or `selection=record&record=<record-id>` with repeatable `record` values. It
-returns a pure DTCG document under `data.tokens` and a separate
-`resemblio_apple_export_manifest_v2` value under `data.manifest` in the
-standard `schema_version=2` envelope. The manifest binds
-`tokens/design.tokens.json` by SHA-256 and carries selection, provenance,
-attribution, scrub policy, version, and deterministic artifact identity. The
-route does not read or mutate the credit ledger. Selector errors use
-stable web-compatible codes; authentication and tier entitlement are checked
-before selector parsing.
+uses bearer authentication plus `LIBRARY_EXPORT_ENTITLED_TIERS`. It returns
+one complete pure DTCG document as the exact bytes of `design.tokens.json`
+with media type `application/design-tokens+json`. It has no public selector,
+manifest envelope, classification slice, or record slice. Legacy query fields
+do not change the response. The strong ETag is the SHA-256 of the exact body,
+and matching strong or weak `If-None-Match` validators return a bodyless `304`
+after authentication and entitlement checks. Responses use
+`Cache-Control: private, max-age=0, must-revalidate`. The route does not read
+or mutate the credit ledger.
 
 Extraction JSON and ZIP manifests carry `schema_version`.
 
