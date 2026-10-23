@@ -22,22 +22,24 @@ from app.apple_system_manifest import (
 )
 
 APPLE_EXPORT_SCHEMA_VERSION: Final = "resemblio_apple_export_manifest_v2"
-APPLE_EXPORT_ARTIFACT_VERSION: Final = "2026.10.2"
-APPLE_EXPORTER_VERSION: Final = "1.1.0"
-APPLE_TOKEN_PROJECTION_SCHEMA_VERSION: Final = "resemblio_public_token_projection_v1"
-APPLE_TOKEN_PROJECTION_VERSION: Final = "2026.10.2"
-APPLE_TOKEN_NORMALIZATION_POLICY_VERSION: Final = "dtcg_2025_10_public_safe_v2"
+APPLE_EXPORT_ARTIFACT_VERSION: Final = "2026.10.3"
+APPLE_EXPORTER_VERSION: Final = "1.2.0"
+APPLE_TOKEN_PROJECTION_SCHEMA_VERSION: Final = "resemblio_public_token_projection_v2"
+APPLE_TOKEN_PROJECTION_VERSION: Final = "2026.10.3"
+APPLE_TOKEN_NORMALIZATION_POLICY_VERSION: Final = "dtcg_2025_10_public_safe_v3"
+APPLE_TOKEN_COMPILER_VERSION: Final = "resemblio_dtcg_compiler_1.0.0"
+APPLE_PREDECESSOR_ARTIFACT_SHA256: Final = "2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"
 DTCG_SCHEMA_URL: Final = "https://www.designtokens.org/schemas/2025.10/format.json"
 TOKEN_MEMBER_PATH: Final = "tokens/design.tokens.json"
 TOKEN_MEDIA_TYPE: Final = "application/design-tokens+json"
 TOKEN_PROJECTION_PATH: Final = Path(__file__).resolve().parent / "data" / "apple-export-tokens.json"
 CLASSIFICATIONS: Final = ("foundation", "component", "composition")
-TOKEN_TYPES: Final = ("color", "fontFamily", "dimension", "shadow", "cubicBezier", "duration")
+TOKEN_TYPES: Final = ("color", "fontFamily", "dimension", "number", "shadow", "cubicBezier", "duration")
 DOMAIN_KEYS: Final[dict[str, dict[str, tuple[str, ...]]]] = {
     "color": {"color": ("bg", "surface", "surface-2", "text", "text-muted", "text-strong", "border", "hairline", "accent", "accent-2", "success", "warning", "error", "info", "focus-ring")},
-    "typography": {"fontFamily": ("display", "body", "mono", "accent"), "dimension": ("text-2xs", "text-xs", "text-sm", "text-base", "text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl", "text-5xl", "text-6xl", "text-7xl")},
-    "spacing": {"dimension": ("space-0", "space-1", "space-2", "space-3", "space-4", "space-5", "space-6", "space-8", "space-10", "space-12", "space-16", "space-32", "section-gap")},
-    "layout": {"dimension": ("radius-none", "radius-xs", "radius-sm", "radius-md", "radius-lg", "radius-full", "container-sm", "container-md", "container-lg", "container-xl", "breakpoint-mobile", "breakpoint-tablet", "breakpoint-desktop", "section-padding-sm", "section-padding-md", "section-padding-lg"), "shadow": ("none", "xs", "sm", "md", "lg", "2xl")},
+    "typography": {"fontFamily": ("display", "body", "mono", "accent"), "dimension": ("text-2xs", "text-xs", "text-sm", "text-base", "text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl", "text-5xl", "text-6xl", "text-7xl"), "lineHeight": ("tight", "snug", "normal", "relaxed", "loose"), "letterSpacing": ("tight", "normal", "wide", "wider")},
+    "spacing": {"dimension": ("space-0", "space-1", "space-2", "space-3", "space-4", "space-5", "space-6", "space-8", "space-10", "space-12", "space-16", "space-32")},
+    "layout": {"dimension": ("radius-none", "radius-xs", "radius-sm", "radius-md", "radius-lg", "radius-full"), "shadow": ("none", "xs", "sm", "md", "lg", "2xl")},
     "motion": {"cubicBezier": ("standard", "emphasize", "decelerate", "accelerate"), "duration": ("instant", "fast", "normal", "slow")},
 }
 HASH_RE: Final = re.compile(r"^[0-9a-f]{64}$")
@@ -202,10 +204,13 @@ def _load_projection(path: Path = TOKEN_PROJECTION_PATH) -> dict[str, Any]:
     expected = {
         "schema_version": APPLE_TOKEN_PROJECTION_SCHEMA_VERSION,
         "projection_version": APPLE_TOKEN_PROJECTION_VERSION,
+        "compiler_version": APPLE_TOKEN_COMPILER_VERSION,
         "normalization_policy_version": APPLE_TOKEN_NORMALIZATION_POLICY_VERSION,
         "source_manifest_sha256": load_public_manifest()["artifact_sha256"],
+        "predecessor_artifact_sha256": APPLE_PREDECESSOR_ARTIFACT_SHA256,
         "token_schema": "w3c-dtcg-2025.10",
-        "token_count": 74,
+        "token_count": 72,
+        "schema_identity": DTCG_SCHEMA_URL,
     }
     if any(raw.get(key) != value for key, value in expected.items()):
         raise ValueError("Apple token projection metadata is unsupported")
@@ -220,9 +225,11 @@ def _load_projection(path: Path = TOKEN_PROJECTION_PATH) -> dict[str, Any]:
     if not isinstance(document, dict) or document.get("$schema") != DTCG_SCHEMA_URL:
         raise ValueError("Apple token document schema is unsupported")
     count = sum(len(group) for name, group in document.items() if name != "$schema" and isinstance(group, dict))
-    if count != 74:
-        raise ValueError("Apple token document must contain exactly 74 tokens")
-    _validate_document(document, expected=74)
+    if not isinstance(raw.get("source_css_sha256"), str) or not HASH_RE.fullmatch(raw["source_css_sha256"]):
+        raise ValueError("Apple token projection metadata is unsupported")
+    if count != 72:
+        raise ValueError("Apple token document must contain exactly 72 tokens")
+    _validate_document(document, expected=72)
     _public_safe(raw)
     return cast(dict[str, Any], raw)
 
@@ -242,7 +249,7 @@ def _valid_color(value: object) -> bool:
     )
 
 
-def _valid_measure(value: object, unit: str) -> bool:
+def _valid_measure(value: object, unit: str, *, allow_negative: bool = False) -> bool:
     """Check a non-negative finite DTCG measurement with its pinned unit."""
     return (
         isinstance(value, dict)
@@ -250,7 +257,7 @@ def _valid_measure(value: object, unit: str) -> bool:
         and value.get("unit") == unit
         and isinstance(value.get("value"), (int, float))
         and math.isfinite(value["value"])
-        and value.get("value") >= 0
+        and (allow_negative or value.get("value") >= 0)
     )
 
 
@@ -281,6 +288,7 @@ def _validate_document(document: Mapping[str, Any], expected: int | None = None)
                 _valid_color(value) if kind == "color" else
                 _valid_measure(value, "px") if kind == "dimension" else
                 _valid_measure(value, "ms") if kind == "duration" else
+                isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) if kind == "number" else
                 isinstance(value, list) and bool(value) and all(isinstance(item, str) and item for item in value) if kind == "fontFamily" else
                 isinstance(value, list) and len(value) == 4 and all(isinstance(item, (int, float)) and math.isfinite(item) for item in value) and 0 <= value[0] <= 1 and 0 <= value[2] <= 1 if kind == "cubicBezier" else
                 _valid_shadow(value)
@@ -311,7 +319,14 @@ def _valid_shadow(value: object) -> bool:
     allowed = {"color", "offsetX", "offsetY", "blur", "spread", "inset"}
     if not {"color", "offsetX", "offsetY", "blur", "spread"}.issubset(value) or set(value) - allowed:
         return False
-    return _valid_color(value["color"]) and all(_valid_measure(value[key], "px") for key in ("offsetX", "offsetY", "blur", "spread")) and ("inset" not in value or isinstance(value["inset"], bool))
+    return (
+        _valid_color(value["color"])
+        and _valid_measure(value["offsetX"], "px", allow_negative=True)
+        and _valid_measure(value["offsetY"], "px", allow_negative=True)
+        and _valid_measure(value["blur"], "px")
+        and _valid_measure(value["spread"], "px", allow_negative=True)
+        and ("inset" not in value or isinstance(value["inset"], bool))
+    )
 
 
 def parse_selection(params: Mapping[str, Sequence[str]]) -> AppleSelection:

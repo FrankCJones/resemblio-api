@@ -78,7 +78,7 @@ def test_complete_export_separates_pure_tokens_and_integrity_bound_manifest() ->
         "media_type": "application/design-tokens+json",
         "schema_url": artifact["tokens"]["$schema"],
         "sha256": hashlib.sha256(canonical_artifact_bytes(artifact["tokens"])).hexdigest(),
-        "count": 74,
+        "count": 72,
         "domains": ["color", "typography", "spacing", "layout", "motion"],
     }
     assert product_manifest["selection"]["selected_breakdown"] == {"foundations": 11, "components": 17, "compositions": 13}
@@ -156,7 +156,7 @@ def test_projection_is_pinned_scrubbed_and_attribution_is_preserved() -> None:
     """Projection integrity and canonical public attribution survive export."""
     projection = _load_projection()
     artifact = build_export({"kind": "complete"})
-    assert projection["source_projection_sha256"] == "7a1e84039ba1ffcb3ec6f22f34907ce5f1c1f9e52fc347beef173836748d2b85"
+    assert projection["source_projection_sha256"] == "dafcc67c2551b4919ea903b8480e2dc3ac8c5d114db19d6997f00a5e2948666e"
     assert artifact["manifest"]["attribution"] == {"source_name": "Apple", "statement": "Inspired by Apple. No affiliation or endorsement."}
     assert artifact["manifest"]["scrub_policy"]["identity_removed"] is True
     _public_safe(artifact)
@@ -213,8 +213,8 @@ def test_complete_token_bytes_are_locked_to_the_reference_document() -> None:
     """The sole customer artifact has stable canonical bytes and identity."""
     token_bytes = canonical_complete_token_bytes()
 
-    assert len(token_bytes) == 6619
-    assert hashlib.sha256(token_bytes).hexdigest() == "2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"
+    assert len(token_bytes) == 6196
+    assert hashlib.sha256(token_bytes).hexdigest() == "274087d7c084b605f7e40ab6376f2b52b79cbb96b57fd332fc190ad0b6541cd5"
     assert token_bytes.endswith(b"\n")
     assert not token_bytes.endswith(b"\n\n")
     assert json.loads(token_bytes) == build_export({"kind": "complete"})["tokens"]
@@ -285,15 +285,15 @@ def test_endpoint_ignores_legacy_selectors_and_returns_only_complete_tokens(
 
     assert response.status_code == 200
     assert response.content == canonical_complete_token_bytes()
-    assert set(response.json()) == {"$schema", "color", "fontFamily", "dimension", "shadow", "cubicBezier", "duration"}
+    assert set(response.json()) == {"$schema", "color", "fontFamily", "dimension", "lineHeight", "letterSpacing", "shadow", "cubicBezier", "duration"}
 
 
 @pytest.mark.parametrize(
     "validator",
     [
-        '"2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"',
-        'W/"2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"',
-        '"stale", "2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"',
+        '"274087d7c084b605f7e40ab6376f2b52b79cbb96b57fd332fc190ad0b6541cd5"',
+        'W/"274087d7c084b605f7e40ab6376f2b52b79cbb96b57fd332fc190ad0b6541cd5"',
+        '"stale", "274087d7c084b605f7e40ab6376f2b52b79cbb96b57fd332fc190ad0b6541cd5"',
         "*",
     ],
 )
@@ -312,7 +312,7 @@ def test_endpoint_returns_bodyless_304_for_matching_validators_without_credit(
 
     assert response.status_code == 304
     assert response.content == b""
-    assert response.headers["etag"] == '"2a083501b1247b0c9f5ce623e56f7ba8e4cf95269d28af801f679456d03e2244"'
+    assert response.headers["etag"] == '"274087d7c084b605f7e40ab6376f2b52b79cbb96b57fd332fc190ad0b6541cd5"'
     assert response.headers["cache-control"] == "private, max-age=0, must-revalidate"
     assert before == after
 
